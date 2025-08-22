@@ -5,10 +5,8 @@ import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Map,
-  SlidersHorizontal,
   X
 } from 'lucide-react';
-import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import HotelList from '@/components/hotels/HotelList';
 
@@ -67,7 +65,6 @@ interface FilterState {
 
 
 export default function SearchResultsPage() {
-  const { t } = useHydratedTranslation();
   const searchParams = useSearchParams();
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [filteredHotels, setFilteredHotels] = useState<Hotel[]>([]);
@@ -134,18 +131,11 @@ export default function SearchResultsPage() {
     fetchHotels();
   }, [searchParams]);
 
-  const updateFilter = (key: keyof FilterState, value: any) => {
+  const updateFilter = (key: keyof FilterState, value: FilterState[keyof FilterState]) => {
     setFilters(prev => ({
       ...prev,
       [key]: value
     }));
-  };
-
-  const toggleAmenity = (amenity: string) => {
-    const newAmenities = filters.amenities.includes(amenity)
-      ? filters.amenities.filter(a => a !== amenity)
-      : [...filters.amenities, amenity];
-    updateFilter('amenities', newAmenities);
   };
 
   const clearFilters = () => {

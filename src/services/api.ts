@@ -37,7 +37,7 @@ export class ApiService {
   }
 
   // Search hotels - using mock data since endpoint doesn't exist yet
-  static async searchHotels(params: {
+  static async searchHotels(_params: {
     location?: string;
     check_in: string;
     check_out: string;

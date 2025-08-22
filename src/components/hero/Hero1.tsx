@@ -1,22 +1,10 @@
 'use client'
-import { useState } from "react";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { motion } from "framer-motion";
 import SearchForm from "./SearchForm";
 
 const Hero1 = () => {
   const { t } = useHydratedTranslation();
-  const [activeTab, setActiveTab] = useState('hotels');
-
-  const tabs = [
-    { key: 'hotels', label: t('tabs.hotels', 'Hotels'), icon: '🏨' },
-    { key: 'tour', label: t('tabs.tour', 'Tour'), icon: '🗺️' },
-    { key: 'activity', label: t('tabs.activity', 'Activity'), icon: '🎯' },
-    { key: 'holidayRentals', label: t('tabs.holidayRentals', 'Holiday Rentals'), icon: '🏠' },
-    { key: 'car', label: t('tabs.car', 'Car'), icon: '🚗' },
-    { key: 'cruise', label: t('tabs.cruise', 'Cruise'), icon: '🚢' },
-    { key: 'flights', label: t('tabs.flights', 'Flights'), icon: '✈️' },
-  ];
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">

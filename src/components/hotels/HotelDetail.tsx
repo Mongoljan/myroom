@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Star, MapPin, Wifi, Car, Utensils, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, MapPin, Wifi, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 

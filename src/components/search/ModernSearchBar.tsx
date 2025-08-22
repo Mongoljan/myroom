@@ -7,11 +7,9 @@ import {
   MapPin, 
   Calendar, 
   X,
-  Clock,
   Star,
   Building
 } from 'lucide-react';
-import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import CustomGuestSelector from './CustomGuestSelector';
 
 interface SearchData {
@@ -40,7 +38,6 @@ const mockLocationSuggestions: LocationSuggestion[] = [
 ];
 
 export default function ModernSearchBar() {
-  const { t } = useHydratedTranslation();
   const [searchData, setSearchData] = useState<SearchData>({
     location: '',
     checkIn: '',
@@ -276,7 +273,7 @@ export default function ModernSearchBar() {
           <div className="relative">
             <CustomGuestSelector
               adults={searchData.adults}
-              children={searchData.children}
+              childrenCount={searchData.children}
               rooms={searchData.rooms}
               onGuestChange={handleGuestChange}
               className="border-none"

@@ -164,7 +164,7 @@ export default function ModernHero() {
                 <div className="lg:flex-1 w-full">
                   <CustomGuestSelector
                     adults={adults}
-                    children={children}
+                    childrenCount={children}
                     rooms={rooms}
                     onGuestChange={handleGuestChange}
                   />

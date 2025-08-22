@@ -7,7 +7,7 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface CustomGuestSelectorProps {
   adults: number;
-  children: number;
+  childrenCount: number;
   rooms: number;
   onGuestChange: (adults: number, children: number, rooms: number) => void;
   className?: string;
@@ -15,7 +15,7 @@ interface CustomGuestSelectorProps {
 
 export default function CustomGuestSelector({
   adults,
-  children,
+  childrenCount,
   rooms,
   onGuestChange,
   className = ''
@@ -38,13 +38,13 @@ export default function CustomGuestSelector({
 
   const updateGuests = (type: 'adults' | 'children' | 'rooms', increment: boolean) => {
     let newAdults = adults;
-    let newChildren = children;
+    let newChildren = childrenCount;
     let newRooms = rooms;
 
     if (type === 'adults') {
       newAdults = increment ? adults + 1 : Math.max(1, adults - 1);
     } else if (type === 'children') {
-      newChildren = increment ? children + 1 : Math.max(0, children - 1);
+      newChildren = increment ? childrenCount + 1 : Math.max(0, childrenCount - 1);
     } else if (type === 'rooms') {
       newRooms = increment ? rooms + 1 : Math.max(1, rooms - 1);
     }
@@ -55,8 +55,8 @@ export default function CustomGuestSelector({
   const getGuestText = () => {
     const parts = [];
     parts.push(`${adults} adult${adults !== 1 ? 's' : ''}`);
-    if (children > 0) {
-      parts.push(`${children} child${children !== 1 ? 'ren' : ''}`);
+    if (childrenCount > 0) {
+      parts.push(`${childrenCount} child${childrenCount !== 1 ? 'ren' : ''}`);
     }
     parts.push(`${rooms} room${rooms !== 1 ? 's' : ''}`);
     return parts.join(' · ');
@@ -147,13 +147,13 @@ export default function CustomGuestSelector({
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => updateGuests('children', false)}
-                    disabled={children <= 0}
+                    disabled={childrenCount <= 0}
                     className="w-10 h-10 rounded-full border-2 border-blue-200 flex items-center justify-center hover:border-blue-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-blue-200 transition-colors"
                   >
                     <Minus className="w-4 h-4 text-blue-600" />
                   </motion.button>
                   <div className="w-12 text-center">
-                    <span className="text-xl font-semibold text-gray-900">{children}</span>
+                    <span className="text-xl font-semibold text-gray-900">{childrenCount}</span>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
