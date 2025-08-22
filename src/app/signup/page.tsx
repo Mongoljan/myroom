@@ -1,14 +1,17 @@
 import Link from "next/link";
+import Image from 'next/image';
 
 export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <img
+          <Image
             className="mx-auto h-12 w-auto"
             src="/img/general/logo-dark.svg"
             alt="MyRoom"
+            width={48}
+            height={48}
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account

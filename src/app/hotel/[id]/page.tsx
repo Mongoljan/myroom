@@ -70,7 +70,7 @@ export default async function HotelPage({ params }: { params: { id: string } }) 
             <HotelDetail hotel={hotel} />
             <HotelAmenities amenities={hotel.amenities} />
             <Suspense fallback={<div>Loading reviews...</div>}>
-              <HotelReviews hotelId={hotel.id} rating={hotel.rating} reviewCount={hotel.reviewCount} />
+              <HotelReviews rating={hotel.rating} reviewCount={hotel.reviewCount} />
             </Suspense>
           </div>
           

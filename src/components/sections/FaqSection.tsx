@@ -1,7 +1,7 @@
 "use client";
 import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Plus, Minus, ChevronDown } from 'lucide-react';
 
 export default function FaqSection() {
@@ -12,7 +12,7 @@ export default function FaqSection() {
   const defaultFaqs = [
     {
       q: "What do I need to hire a car?",
-      a: "To rent a car, you'll need a valid driver's license, a credit card in your name, and you must meet the minimum age requirements. Additional documentation may be required for international rentals."
+      a: "To rent a car, you&apos;ll need a valid driver&apos;s license, a credit card in your name, and you must meet the minimum age requirements. Additional documentation may be required for international rentals."
     },
     {
       q: "How old do I have to be to rent a car?",
@@ -51,7 +51,7 @@ export default function FaqSection() {
     );
   };
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -61,7 +61,7 @@ export default function FaqSection() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -212,7 +212,7 @@ export default function FaqSection() {
                             exit={{ y: -10, opacity: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
                           >
-                            <div className="pl-14 border-l-3 border-gradient-to-b from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 border-l-2 border-blue-100 dark:border-blue-800/50">
+                            <div className="pl-14 border-gradient-to-b from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 border-l-2 border-blue-100 dark:border-blue-800/50">
                               <motion.p 
                                 className="text-gray-600 dark:text-gray-300 leading-relaxed"
                                 initial={{ opacity: 0 }}
@@ -242,7 +242,7 @@ export default function FaqSection() {
           viewport={{ once: true }}
         >
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Still have questions? We're here to help!
+            Still have questions? We&apos;re here to help!
           </p>
           <motion.button
             className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"

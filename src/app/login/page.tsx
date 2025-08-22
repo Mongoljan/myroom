@@ -1,14 +1,17 @@
 import Link from "next/link";
+import Image from 'next/image';
 
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <img
+          <Image
             className="mx-auto h-12 w-auto"
             src="/img/general/logo-dark.svg"
             alt="MyRoom"
+            width={48}
+            height={48}
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
@@ -45,7 +48,7 @@ export default function LoginPage() {
 
           <div className="text-center">
             <Link href="/signup" className="text-blue-600 hover:text-blue-500">
-              Don't have an account? Sign up
+              Don&apos;t have an account? Sign up
             </Link>
           </div>
         </form>

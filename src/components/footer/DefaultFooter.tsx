@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from 'next/image';
 
 const DefaultFooter = () => {
   return (
@@ -8,7 +9,9 @@ const DefaultFooter = () => {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center mb-4">
-              <img src="/img/general/logo-light.svg" alt="MyRoom" className="h-8" />
+              <div className="relative h-8 w-32">
+                <Image src="/img/general/logo-light.svg" alt="MyRoom" fill sizes="(max-width: 768px) 120px, 128px" />
+              </div>
             </Link>
             <p className="text-gray-300 mb-4 max-w-md">
               Discover amazing hotels at exclusive deals. Your perfect stay is just a click away.

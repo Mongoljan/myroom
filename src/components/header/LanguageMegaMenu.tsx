@@ -8,7 +8,7 @@ interface LanguageMegaMenuProps {
 
 const LanguageMegaMenu: React.FC<LanguageMegaMenuProps> = ({ textClass = "" }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { currentLanguage, setLanguage } = useTranslation();
+  const { i18n } = useTranslation();
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -17,7 +17,7 @@ const LanguageMegaMenu: React.FC<LanguageMegaMenuProps> = ({ textClass = "" }) =
     { code: 'ru', name: 'Русский', flag: '🇷🇺' },
   ];
 
-  const currentLang = languages.find(lang => lang.code === currentLanguage) || languages[0];
+  const currentLang = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   return (
     <div className="relative">
@@ -38,7 +38,7 @@ const LanguageMegaMenu: React.FC<LanguageMegaMenuProps> = ({ textClass = "" }) =
             <button
               key={language.code}
               onClick={() => {
-                setLanguage(language.code);
+                i18n.changeLanguage(language.code);
                 setIsOpen(false);
               }}
               className="w-full text-left px-4 py-2 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"

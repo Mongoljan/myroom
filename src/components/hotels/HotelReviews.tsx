@@ -13,12 +13,6 @@ interface Review {
   helpful: number;
 }
 
-interface HotelReviewsProps {
-  hotelId: string;
-  rating: number;
-  reviewCount: number;
-}
-
 // Mock reviews data
 const mockReviews: Review[] = [
   {
@@ -47,7 +41,13 @@ const mockReviews: Review[] = [
   }
 ];
 
-export default function HotelReviews({ hotelId, rating, reviewCount }: HotelReviewsProps) {
+interface HotelReviewsProps {
+  hotelId?: string;
+  rating: number;
+  reviewCount: number;
+}
+
+export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsProps, 'hotelId'>) {
   const { t } = useTranslation();
   const [reviews] = useState<Review[]>(mockReviews);
   const [showAll, setShowAll] = useState(false);

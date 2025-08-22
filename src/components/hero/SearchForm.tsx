@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
-import { Search, MapPin, Calendar, Users } from "lucide-react";
+import { Search, MapPin, Calendar } from "lucide-react";
 import DatePicker from "./DatePicker";
 import GuestSelector from "./GuestSelector";
 
@@ -99,7 +99,7 @@ const SearchForm: React.FC = () => {
         >
           <GuestSelector
             adults={searchData.adults}
-            children={searchData.children}
+            childrenCount={searchData.children}
             rooms={searchData.rooms}
             onGuestChange={(adults, children, rooms) => 
               setSearchData({ ...searchData, adults, children, rooms })

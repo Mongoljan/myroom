@@ -1,12 +1,13 @@
 'use client'
 import Link from "next/link";
+import Image from 'next/image';
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../common/LanguageSwitcher";
 import ThemeSwitcher from "../common/ThemeSwitcher";
 import MainMenu from "./MainMenu";
 import CurrencyMegaMenu from "./CurrencyMegaMenu";
-import LanguageMegaMenu from "./LanguageMegaMenu";
+// LanguageMegaMenu removed because it's not used in this header
 import MobileMenu from "./MobileMenu";
 
 const Header1 = () => {
@@ -38,11 +39,9 @@ const Header1 = () => {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
               <Link href="/" className="flex items-center mr-8">
-                <img 
-                  src="/img/general/logo-light.svg" 
-                  alt="logo icon" 
-                  className="h-8"
-                />
+                <div className="relative h-8 w-32">
+                  <Image src="/img/general/logo-light.svg" alt="logo icon" fill sizes="(max-width: 768px) 120px, 128px" />
+                </div>
               </Link>
               
               <div className="hidden xl:block">
@@ -103,7 +102,9 @@ const Header1 = () => {
           <div className="fixed left-0 top-0 h-full w-80 bg-white transform transition-transform">
             <div className="flex justify-between items-center p-6 border-b">
               <Link href="/" className="flex items-center">
-                <img src="/img/general/logo-dark.svg" alt="logo" className="h-8" />
+                <div className="relative h-8 w-32">
+                  <Image src="/img/general/logo-dark.svg" alt="logo" fill sizes="(max-width: 768px) 120px, 128px" />
+                </div>
               </Link>
               <button 
                 onClick={() => setMobileMenuOpen(false)}

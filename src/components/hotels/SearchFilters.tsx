@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const SearchFilters = () => {
-  const { t } = useTranslation();
+  useTranslation();
   const [priceRange, setPriceRange] = useState([0, 1000000]);
   const [selectedStars, setSelectedStars] = useState<number[]>([]);
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);

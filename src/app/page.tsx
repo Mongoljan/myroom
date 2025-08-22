@@ -4,7 +4,7 @@ import Hero1 from "@/components/hero/Hero1";
 import RecentlyViewed from "@/components/sections/RecentlyViewed";
 import RecommendedHotels from "@/components/sections/RecommendedHotels";
 import PopularDestinations from "@/components/sections/PopularDestinations";
-import EnhancedFaqSection from "@/components/sections/EnhancedFaqSection";
+import FaqSection from "@/components/sections/FaqSection";
 
 export const metadata = {
   title: "MyRoom - Hotel Booking Platform",
@@ -19,7 +19,7 @@ const Home = () => {
       <RecentlyViewed />
       <RecommendedHotels />
       <PopularDestinations />
-      <EnhancedFaqSection />
+      <FaqSection />
     </>
   );
 };

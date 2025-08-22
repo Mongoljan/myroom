@@ -4,14 +4,14 @@ import { useTranslation } from "react-i18next";
 
 interface GuestSelectorProps {
   adults: number;
-  children: number;
+  childrenCount: number;
   rooms: number;
   onGuestChange: (adults: number, children: number, rooms: number) => void;
 }
 
 const GuestSelector: React.FC<GuestSelectorProps> = ({ 
   adults, 
-  children, 
+  childrenCount, 
   rooms, 
   onGuestChange 
 }) => {
@@ -20,13 +20,13 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({
 
   const updateGuests = (type: 'adults' | 'children' | 'rooms', increment: boolean) => {
     let newAdults = adults;
-    let newChildren = children;
+    let newChildren = childrenCount;
     let newRooms = rooms;
 
     if (type === 'adults') {
       newAdults = increment ? adults + 1 : Math.max(1, adults - 1);
-    } else if (type === 'children') {
-      newChildren = increment ? children + 1 : Math.max(0, children - 1);
+  } else if (type === 'children') {
+  newChildren = increment ? childrenCount + 1 : Math.max(0, childrenCount - 1);
     } else if (type === 'rooms') {
       newRooms = increment ? rooms + 1 : Math.max(1, rooms - 1);
     }
@@ -34,11 +34,11 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({
     onGuestChange(newAdults, newChildren, newRooms);
   };
 
-  const guestText = `${adults} Adults${children > 0 ? `, ${children} Children` : ''}, ${rooms} Room${rooms > 1 ? 's' : ''}`;
+  const guestText = `${adults} Adults${childrenCount > 0 ? `, ${childrenCount} Children` : ''}, ${rooms} Room${rooms > 1 ? 's' : ''}`;
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
@@ -86,11 +86,11 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({
                 <button
                   onClick={() => updateGuests('children', false)}
                   className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-400"
-                  disabled={children <= 0}
+                  disabled={childrenCount <= 0}
                 >
                   -
                 </button>
-                <span className="w-8 text-center">{children}</span>
+                <span className="w-8 text-center">{childrenCount}</span>
                 <button
                   onClick={() => updateGuests('children', true)}
                   className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:border-gray-400"

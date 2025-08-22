@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Link from 'next/link';
 
 export default function PopularDestinations() {
-  const { t } = useTranslation();
+  useTranslation();
 
   const destinations = [
     { name: 'New York', image: '/img/destinations/new-york.jpg' },
