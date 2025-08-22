@@ -1,0 +1,7 @@
+<svg width="250" height="250" viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="250" height="250" fill="#f8f9fa"/>
+  <path d="M100 90L80 110L70 100L50 120V180H200V160L170 130L150 150L100 90Z" fill="#dee2e6"/>
+  <circle cx="85" cy="105" r="15" fill="#dee2e6"/>
+  <rect x="75" y="200" width="100" height="40" rx="4" fill="#6c757d"/>
+  <text x="125" y="220" text-anchor="middle" fill="white" font-family="Arial" font-size="12">Hotel Image</text>
+</svg>
