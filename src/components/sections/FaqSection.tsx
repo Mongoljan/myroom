@@ -1,11 +1,11 @@
 "use client";
-import { useTranslation } from 'react-i18next';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Plus, Minus, ChevronDown } from 'lucide-react';
 
 export default function FaqSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useHydratedTranslation();
   const [openItems, setOpenItems] = useState<number[]>([0]); // Allow multiple items to be open
 
   // Enhanced FAQ data with fallback
@@ -35,7 +35,10 @@ export default function FaqSection() {
   // Build FAQ array from translation or use fallback
   const faqs = [];
   for (let i = 1; i <= 9; i++) {
-    const item = t(`faq.q${i}`, { returnObjects: true });
+    // For complex objects, we need to check if translation exists first
+    const translationKey = `faq.q${i}`;
+    // Check if translation exists by trying to get it without fallback
+    const item = i18n?.exists?.(translationKey) ? t(translationKey, '') : null;
     if (item && typeof item === 'object' && 'q' in item && 'a' in item) {
       faqs.push(item as { q: string; a: string });
     }
@@ -103,7 +106,7 @@ export default function FaqSection() {
             viewport={{ once: true }}
           >
             <span className="bg-gradient-to-r from-gray-900 via-blue-600 to-purple-600 dark:from-white dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-              {t('faq.title') || 'Frequently Asked Questions'}
+              {t('faq.title', 'Frequently Asked Questions')}
             </span>
           </motion.h2>
           
@@ -114,7 +117,7 @@ export default function FaqSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            {t('faq.subtitle') || 'Find answers to common questions about our car rental service'}
+            {t('faq.subtitle', 'Find answers to common questions about our car rental service')}
           </motion.p>
         </motion.div>
 

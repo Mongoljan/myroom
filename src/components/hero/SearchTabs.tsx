@@ -1,6 +1,6 @@
 'use client'
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface SearchTabsProps {
   activeTab: string;
@@ -8,16 +8,16 @@ interface SearchTabsProps {
 }
 
 const SearchTabs: React.FC<SearchTabsProps> = ({ activeTab, onTabChange }) => {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
 
   const tabs = [
-    { id: 'hotels', label: t('tabs.hotels'), icon: '🏨' },
-    { id: 'tour', label: t('tabs.tour'), icon: '🗺️' },
-    { id: 'activity', label: t('tabs.activity'), icon: '🎯' },
-    { id: 'holiday-rentals', label: t('tabs.holidayRentals'), icon: '🏠' },
-    { id: 'car', label: t('tabs.car'), icon: '🚗' },
-    { id: 'cruise', label: t('tabs.cruise'), icon: '🚢' },
-    { id: 'flights', label: t('tabs.flights'), icon: '✈️' }
+    { id: 'hotels', label: t('tabs.hotels', 'Hotels'), icon: '🏨' },
+    { id: 'tour', label: t('tabs.tour', 'Tour'), icon: '🗺️' },
+    { id: 'activity', label: t('tabs.activity', 'Activity'), icon: '🎯' },
+    { id: 'holiday-rentals', label: t('tabs.holidayRentals', 'Holiday Rentals'), icon: '🏠' },
+    { id: 'car', label: t('tabs.car', 'Car'), icon: '🚗' },
+    { id: 'cruise', label: t('tabs.cruise', 'Cruise'), icon: '🚢' },
+    { id: 'flights', label: t('tabs.flights', 'Flights'), icon: '✈️' }
   ];
 
   return (

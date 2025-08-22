@@ -2,18 +2,16 @@
 import Link from "next/link";
 import Image from 'next/image';
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import LanguageSwitcher from "../common/LanguageSwitcher";
 import ThemeSwitcher from "../common/ThemeSwitcher";
 import MainMenu from "./MainMenu";
-import CurrencyMegaMenu from "./CurrencyMegaMenu";
-// LanguageMegaMenu removed because it's not used in this header
 import MobileMenu from "./MobileMenu";
 
 const Header1 = () => {
   const [navbar, setNavbar] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
 
   const changeBackground = () => {
     if (window.scrollY >= 10) {
@@ -50,29 +48,44 @@ const Header1 = () => {
             </div>
 
             <div className="flex items-center">
-              <div className="hidden xxl:flex items-center space-x-4">
-                <CurrencyMegaMenu textClass="text-white" />
-                <div className="w-px h-5 bg-white/20"></div>
+              {/* Theme and Language Controls - Always Visible */}
+              <div className="hidden md:flex items-center space-x-3 mr-6">
                 <LanguageSwitcher />
                 <ThemeSwitcher />
+                <div className="w-px h-5 bg-white/20"></div>
               </div>
 
-              <div className="hidden md:flex items-center ml-8 space-x-4">
+              {/* Booking Management Link */}
+              <div className="hidden lg:flex items-center mr-6">
+                <Link
+                  href="/booking/manage"
+                  className="text-white hover:text-blue-200 transition-colors text-sm font-medium"
+                >
+                  {t('navigation.manageBooking', 'Manage Booking')}
+                </Link>
+              </div>
+
+              <div className="hidden md:flex items-center space-x-3">
                 <Link
                   href="/login"
-                  className="px-6 py-2.5 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                  className="px-5 py-2 bg-white/10 text-white rounded-lg text-sm font-medium hover:bg-white/20 transition-colors backdrop-blur-sm"
                 >
-                  {t('navigation.becomeExpert')}
+                  {t('navigation.signIn', 'Sign In')}
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-6 py-2.5 border border-white text-white rounded-lg text-sm font-medium hover:bg-white/10 transition-colors"
+                  className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
                 >
-                  {t('navigation.signInRegister')}
+                  {t('navigation.signUp', 'Sign Up')}
                 </Link>
               </div>
 
-              <div className="flex xl:hidden items-center ml-6 space-x-4 text-white">
+              <div className="flex xl:hidden items-center ml-4 space-x-3 text-white">
+                {/* Mobile Theme/Language toggles */}
+                <div className="md:hidden flex items-center space-x-2">
+                  <LanguageSwitcher />
+                  <ThemeSwitcher />
+                </div>
                 <Link
                   href="/login"
                   className="flex items-center text-xl"

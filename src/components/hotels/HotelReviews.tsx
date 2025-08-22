@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Star, ThumbsUp, User } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface Review {
   id: string;
@@ -48,18 +48,18 @@ interface HotelReviewsProps {
 }
 
 export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsProps, 'hotelId'>) {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const [reviews] = useState<Review[]>(mockReviews);
   const [showAll, setShowAll] = useState(false);
 
   const displayedReviews = showAll ? reviews : reviews.slice(0, 3);
 
   const getRatingText = (rating: number) => {
-    if (rating >= 4.5) return t('hotel.excellent');
-    if (rating >= 4.0) return t('hotel.veryGood');
-    if (rating >= 3.5) return t('hotel.good');
-    if (rating >= 3.0) return t('hotel.fair');
-    return t('hotel.poor');
+    if (rating >= 4.5) return t('hotel.excellent', 'Excellent');
+    if (rating >= 4.0) return t('hotel.veryGood', 'Very Good');
+    if (rating >= 3.5) return t('hotel.good', 'Good');
+    if (rating >= 3.0) return t('hotel.fair', 'Fair');
+    return t('hotel.poor', 'Poor');
   };
 
   const formatDate = (dateString: string) => {
@@ -74,7 +74,7 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
     <div className="space-y-6">
       {/* Reviews Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">{t('hotel.reviews')}</h2>
+        <h2 className="text-2xl font-semibold">{t('hotel.reviews', 'Reviews')}</h2>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
@@ -82,7 +82,7 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
           </div>
           <div className="text-muted-foreground">
             <span className="font-medium">{getRatingText(rating)}</span>
-            <span className="ml-1">({reviewCount} {t('hotel.reviews')})</span>
+            <span className="ml-1">({reviewCount} {t('hotel.reviews', 'reviews')})</span>
           </div>
         </div>
       </div>

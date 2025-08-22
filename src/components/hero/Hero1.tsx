@@ -1,21 +1,21 @@
 'use client'
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { motion } from "framer-motion";
 import SearchForm from "./SearchForm";
 
 const Hero1 = () => {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const [activeTab, setActiveTab] = useState('hotels');
 
   const tabs = [
-    { key: 'hotels', label: t('tabs.hotels'), icon: '🏨' },
-    { key: 'tour', label: t('tabs.tour'), icon: '🗺️' },
-    { key: 'activity', label: t('tabs.activity'), icon: '🎯' },
-    { key: 'holidayRentals', label: t('tabs.holidayRentals'), icon: '🏠' },
-    { key: 'car', label: t('tabs.car'), icon: '🚗' },
-    { key: 'cruise', label: t('tabs.cruise'), icon: '🚢' },
-    { key: 'flights', label: t('tabs.flights'), icon: '✈️' },
+    { key: 'hotels', label: t('tabs.hotels', 'Hotels'), icon: '🏨' },
+    { key: 'tour', label: t('tabs.tour', 'Tour'), icon: '🗺️' },
+    { key: 'activity', label: t('tabs.activity', 'Activity'), icon: '🎯' },
+    { key: 'holidayRentals', label: t('tabs.holidayRentals', 'Holiday Rentals'), icon: '🏠' },
+    { key: 'car', label: t('tabs.car', 'Car'), icon: '🚗' },
+    { key: 'cruise', label: t('tabs.cruise', 'Cruise'), icon: '🚢' },
+    { key: 'flights', label: t('tabs.flights', 'Flights'), icon: '✈️' },
   ];
 
   return (
@@ -93,68 +93,63 @@ const Hero1 = () => {
             transition={{ duration: 0.8 }}
           >
             <motion.h1 
-              className="text-5xl md:text-7xl font-bold text-white mb-6 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent"
+              className="text-5xl md:text-6xl font-bold text-white mb-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              {t('hero.findNextPlace')}
+              {t('hero.findNextPlace', 'Find Your Perfect')}
             </motion.h1>
             
+            <motion.h2 
+              className="text-4xl md:text-5xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              {t('hero.hotelStay', 'Hotel Stay')}
+            </motion.h2>
+            
             <motion.p 
-              className="text-xl text-white/90 mb-12 max-w-2xl mx-auto"
+              className="text-lg text-white/80 mb-10 max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              {t('hero.discoverAmazing')}
+              {t('hero.discoverAmazing', 'Discover exceptional hotels worldwide with instant booking, real-time availability, and unmatched experiences.')}
             </motion.p>
           </motion.div>
 
-          {/* Search Tabs */}
-          <motion.div 
-            className="mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-          >
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {tabs.map((tab, index) => (
-                <motion.button
-                  key={tab.key}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.1 * index }}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`relative px-6 py-3 rounded-xl font-medium transition-all duration-300 backdrop-blur-sm border ${
-                    activeTab === tab.key
-                      ? 'bg-white text-blue-600 shadow-xl border-white/20'
-                      : 'text-white hover:bg-white/10 border-white/20 hover:border-white/40'
-                  }`}
-                >
-                  <span className="mr-2">{tab.icon}</span>
-                  {tab.label}
-                  {activeTab === tab.key && (
-                    <motion.div
-                      layoutId="activeTab"
-                      className="absolute inset-0 bg-white rounded-xl -z-10"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
 
           {/* Search Form */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="mb-16"
           >
             <SearchForm />
+          </motion.div>
+
+          {/* Stats Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
+          >
+            <div className="text-white">
+              <div className="text-3xl md:text-4xl font-bold mb-2">10,000+</div>
+              <div className="text-white/80">Hotels Worldwide</div>
+            </div>
+            <div className="text-white">
+              <div className="text-3xl md:text-4xl font-bold mb-2">50,000+</div>
+              <div className="text-white/80">Happy Customers</div>
+            </div>
+            <div className="text-white">
+              <div className="text-3xl md:text-4xl font-bold mb-2">24/7</div>
+              <div className="text-white/80">Customer Support</div>
+            </div>
           </motion.div>
         </div>
       </div>

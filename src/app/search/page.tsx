@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import Header1 from "@/components/header/Header1";
-import SearchPageContent from "@/components/search/SearchPageContent";
+import SearchResultsPage from "@/components/search/SearchResultsPage";
 
 function SearchPageFallback() {
   return (
@@ -78,11 +77,8 @@ function SearchPageFallback() {
 
 export default function SearchPage() {
   return (
-    <>
-      <Header1 />
-      <Suspense fallback={<SearchPageFallback />}>
-        <SearchPageContent />
-      </Suspense>
-    </>
+    <Suspense fallback={<SearchPageFallback />}>
+      <SearchResultsPage />
+    </Suspense>
   );
 }

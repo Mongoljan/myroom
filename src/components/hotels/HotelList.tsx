@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useTranslation } from "react-i18next";
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import WishlistButton from "@/components/common/WishlistButton";
 
 interface Hotel {
@@ -57,7 +57,7 @@ interface HotelListProps {
 
 const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hotel, viewMode }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -99,6 +99,10 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
               alt={hotel.property_name}
               fill
               className="object-cover"
+              unoptimized
+              onError={(e) => {
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop';
+              }}
             />
             
             {/* Wishlist Button */}
@@ -174,9 +178,9 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
 
               <div className="text-right">
                 <div className="text-2xl font-bold text-gray-900">
-                  {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : t('hotel.priceUnavailable')}
+                  {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : t('hotel.priceUnavailable', 'Price Unavailable')}
                 </div>
-                <div className="text-sm text-gray-600">{t('hotel.perNight')}</div>
+                <div className="text-sm text-gray-600">{t('hotel.perNight', 'per night')}</div>
                 <div className="text-sm text-gray-500 mt-1">
                   Total: {formatPrice(hotel.min_estimated_total)}
                 </div>
@@ -184,7 +188,7 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
                   href={`/hotel/${hotel.hotel_id}`}
                   className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                 >
-                  {t('hotel.viewDeal')}
+                  {t('hotel.viewDeal', 'View Deal')}
                 </Link>
               </div>
             </div>
@@ -212,6 +216,10 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
           alt={hotel.property_name}
           fill
           className="object-cover"
+          unoptimized
+          onError={(e) => {
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&h=600&fit=crop';
+          }}
         />
         
         {/* Wishlist Button */}
@@ -272,15 +280,15 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
         <div className="flex justify-between items-end">
           <div>
             <div className="text-lg font-bold text-gray-900">
-              {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : t('hotel.priceUnavailable')}
+              {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : t('hotel.priceUnavailable', 'Price Unavailable')}
             </div>
-            <div className="text-xs text-gray-600">{t('hotel.perNight')}</div>
+            <div className="text-xs text-gray-600">{t('hotel.perNight', 'per night')}</div>
           </div>
           <Link
             href={`/hotel/${hotel.hotel_id}`}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
           >
-            {t('hotel.viewDeal')}
+            {t('hotel.viewDeal', 'View Deal')}
           </Link>
         </div>
       </div>
@@ -289,7 +297,10 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
 };
 
 const HotelList: React.FC<HotelListProps> = ({ hotels, viewMode }) => {
-  if (hotels.length === 0) {
+  // Ensure hotels is always an array
+  const safeHotels = Array.isArray(hotels) ? hotels : [];
+  
+  if (safeHotels.length === 0) {
     return (
       <div className="text-center py-20">
         <div className="text-gray-400 mb-4">
@@ -309,7 +320,7 @@ const HotelList: React.FC<HotelListProps> = ({ hotels, viewMode }) => {
         ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'
         : 'space-y-6'
     }>
-      {hotels.map((hotel) => (
+      {safeHotels.map((hotel) => (
         <HotelCard key={hotel.hotel_id} hotel={hotel} viewMode={viewMode} />
       ))}
     </div>

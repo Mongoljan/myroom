@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface LanguageMegaMenuProps {
   textClass?: string;
@@ -8,7 +8,7 @@ interface LanguageMegaMenuProps {
 
 const LanguageMegaMenu: React.FC<LanguageMegaMenuProps> = ({ textClass = "" }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { i18n } = useTranslation();
+  const { i18n } = useHydratedTranslation();
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇺🇸' },

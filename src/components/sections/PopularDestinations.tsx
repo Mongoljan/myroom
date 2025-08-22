@@ -1,9 +1,9 @@
 "use client";
-import { useTranslation } from 'react-i18next';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import Link from 'next/link';
 
 export default function PopularDestinations() {
-  useTranslation();
+  useHydratedTranslation();
 
   const destinations = [
     { name: 'New York', image: '/img/destinations/new-york.jpg' },

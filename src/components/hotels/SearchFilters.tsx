@@ -1,9 +1,9 @@
 'use client'
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 const SearchFilters = () => {
-  useTranslation();
+  useHydratedTranslation();
   const [priceRange, setPriceRange] = useState([0, 1000000]);
   const [selectedStars, setSelectedStars] = useState<number[]>([]);
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);

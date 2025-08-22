@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, MapPin } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface Hotel {
   id: string;
@@ -64,7 +64,7 @@ const mockSimilarHotels: Hotel[] = [
 ];
 
 export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const [hotels, setHotels] = useState<Hotel[]>([]);
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                     <span className="font-medium text-sm">{hotel.rating}</span>
                   </div>
                   <span className="text-muted-foreground text-sm">
-                    ({hotel.reviewCount} {t('hotel.reviews')})
+                    ({hotel.reviewCount} {t('hotel.reviews', 'reviews')})
                   </span>
                 </div>
                 
@@ -127,7 +127,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                     <div className="flex items-baseline gap-1">
                       <span className="text-xl font-bold">${hotel.price}</span>
                       <span className="text-muted-foreground text-sm">
-                        / {t('hotel.night')}
+                        / {t('hotel.night', 'night')}
                       </span>
                     </div>
                   </div>

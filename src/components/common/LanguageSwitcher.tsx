@@ -1,8 +1,8 @@
 "use client";
-import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Globe } from 'lucide-react';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇺🇸' },
@@ -10,7 +10,7 @@ const languages = [
 ];
 
 export default function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+  const { i18n, mounted } = useHydratedTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
@@ -29,8 +29,8 @@ export default function LanguageSwitcher() {
         className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-200 text-white"
       >
         <Globe className="w-4 h-4" />
-        <span className="text-lg">{currentLanguage.flag}</span>
-        <span className="text-sm font-medium">{currentLanguage.code.toUpperCase()}</span>
+        <span className="text-lg">{mounted ? currentLanguage.flag : '🌐'}</span>
+        <span className="text-sm font-medium">{mounted ? currentLanguage.code.toUpperCase() : 'EN'}</span>
         <motion.svg
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}

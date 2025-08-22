@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useToast } from './ToastContainer';
 
 interface WishlistButtonProps {
@@ -11,7 +11,7 @@ interface WishlistButtonProps {
 }
 
 export default function WishlistButton({ hotelId, className = '' }: WishlistButtonProps) {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const { addToast } = useToast();
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +44,7 @@ export default function WishlistButton({ hotelId, className = '' }: WishlistButt
       // Show toast notification
       addToast({
         type: 'success',
-        title: isWishlisted ? t('common.removeFromWishlist') : t('common.addToWishlist'),
+        title: isWishlisted ? t('common.removeFromWishlist', 'Remove from Wishlist') : t('common.addToWishlist', 'Add to Wishlist'),
         message: isWishlisted ? 'Hotel removed from your wishlist' : 'Hotel added to your wishlist',
         duration: 3000
       });
@@ -69,7 +69,7 @@ export default function WishlistButton({ hotelId, className = '' }: WishlistButt
         ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}
         ${className}
       `}
-      title={isWishlisted ? t('common.removeFromWishlist') : t('common.addToWishlist')}
+      title={isWishlisted ? t('common.removeFromWishlist', 'Remove from Wishlist') : t('common.addToWishlist', 'Add to Wishlist')}
     >
       <Heart 
         className={`w-5 h-5 transition-all ${

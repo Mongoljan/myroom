@@ -1,13 +1,13 @@
 'use client'
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { motion } from "framer-motion";
 import { Search, MapPin, Calendar } from "lucide-react";
 import DatePicker from "./DatePicker";
 import GuestSelector from "./GuestSelector";
 
 const SearchForm: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useHydratedTranslation();
   const [searchData, setSearchData] = useState({
     location: '',
     checkIn: '2025-09-01',
@@ -46,14 +46,14 @@ const SearchForm: React.FC = () => {
         >
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
             <MapPin className="w-4 h-4 mr-1" />
-            {t('search.location')}
+            {t('search.location', 'Location')}
           </label>
           <div className="relative">
             <input
               type="text"
               value={searchData.location}
               onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
-              placeholder={t('search.locationPlaceholder')}
+              placeholder={t('search.locationPlaceholder', 'Where are you going?')}
               className="w-full p-3 pl-4 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200"
             />
           </div>
@@ -67,7 +67,7 @@ const SearchForm: React.FC = () => {
             label={
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-1" />
-                {t('search.checkIn')}
+                {t('search.checkIn', 'Check In')}
               </div>
             }
             value={searchData.checkIn}
@@ -84,7 +84,7 @@ const SearchForm: React.FC = () => {
             label={
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 mr-1" />
-                {t('search.checkOut')}
+                {t('search.checkOut', 'Check Out')}
               </div>
             }
             value={searchData.checkOut}
@@ -116,7 +116,7 @@ const SearchForm: React.FC = () => {
           className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-medium transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl"
         >
           <Search className="w-5 h-5" />
-          <span>{t('search.searchButton')}</span>
+          <span>{t('search.searchButton', 'Search')}</span>
         </motion.button>
       </div>
     </motion.div>
