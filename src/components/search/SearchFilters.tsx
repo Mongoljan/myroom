@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Filter } from 'lucide-react';
+import { X, Filter, Star, Wifi, Car, Utensils, Users, Dumbbell, Waves, Building, Clock } from 'lucide-react';
 
 interface FilterState {
   priceRange: [number, number];
@@ -25,23 +25,23 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange }: Searc
   });
 
   const facilities = [
-    'Free Wi-Fi',
-    'Restaurant', 
-    'Room Service',
-    'Parking',
-    'Fitness Center',
-    'Spa & Wellness Center',
-    'Pool',
-    'Conference Room',
-    '24-hour Front Desk'
+    { id: 'Free Wi-Fi', label: 'Free Wi-Fi', icon: <Wifi className="w-4 h-4" />, count: 245 },
+    { id: 'Restaurant', label: 'Restaurant', icon: <Utensils className="w-4 h-4" />, count: 189 },
+    { id: 'Room Service', label: 'Room Service', icon: <Users className="w-4 h-4" />, count: 156 },
+    { id: 'Parking', label: 'Parking', icon: <Car className="w-4 h-4" />, count: 203 },
+    { id: 'Fitness Center', label: 'Fitness Center', icon: <Dumbbell className="w-4 h-4" />, count: 134 },
+    { id: 'Spa & Wellness Center', label: 'Spa & Wellness', icon: <Users className="w-4 h-4" />, count: 87 },
+    { id: 'Pool', label: 'Pool', icon: <Waves className="w-4 h-4" />, count: 98 },
+    { id: 'Conference Room', label: 'Conference Room', icon: <Building className="w-4 h-4" />, count: 112 },
+    { id: '24-hour Front Desk', label: '24/7 Front Desk', icon: <Clock className="w-4 h-4" />, count: 167 }
   ];
 
   const roomTypes = [
-    'Single',
-    'Double', 
-    'Twin',
-    'Family',
-    'Suite'
+    { id: 'Single', label: 'Single Room', count: 89 },
+    { id: 'Double', label: 'Double Room', count: 156 },
+    { id: 'Twin', label: 'Twin Beds', count: 134 },
+    { id: 'Family', label: 'Family Room', count: 78 },
+    { id: 'Suite', label: 'Suite', count: 45 }
   ];
 
   const handlePriceChange = (value: number, index: number) => {
@@ -79,6 +79,11 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange }: Searc
     onFilterChange(newFilters);
   };
 
+  const getActiveFiltersCount = () => {
+    return filters.starRating.length + filters.facilities.length + filters.roomTypes.length + 
+           (filters.priceRange[0] > 50000 || filters.priceRange[1] < 500000 ? 1 : 0);
+  };
+
   const clearFilters = () => {
     const clearedFilters: FilterState = {
       priceRange: [50000, 500000],
@@ -107,39 +112,78 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange }: Searc
       {/* Filters Sidebar */}
       <div className={`
         fixed md:static inset-y-0 left-0 z-50 w-80 bg-white shadow-xl md:shadow-none
-        transform transition-transform duration-300 ease-in-out
+        transform transition-transform duration-300 ease-in-out md:rounded-2xl md:border md:border-gray-100
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        md:w-full overflow-y-auto
+        overflow-y-auto
       `}>
         <div className="p-6">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5" />
-              <h3 className="text-lg font-semibold">Шүүлтүүр</h3>
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <Filter className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Шүүлтүүр</h3>
+                {getActiveFiltersCount() > 0 && (
+                  <p className="text-xs text-blue-600">
+                    {getActiveFiltersCount()} шүүлтүүр идэвхтэй
+                  </p>
+                )}
+              </div>
             </div>
             <div className="flex items-center gap-2">
-              <button
-                onClick={clearFilters}
-                className="text-blue-600 text-sm hover:underline"
-              >
-                Цэвэрлэх
-              </button>
+              {getActiveFiltersCount() > 0 && (
+                <button
+                  onClick={clearFilters}
+                  className="text-blue-600 text-sm hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                >
+                  Цэвэрлэх
+                </button>
+              )}
               <button
                 onClick={onClose}
-                className="md:hidden p-2 hover:bg-gray-100 rounded-lg"
+                className="md:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
           </div>
 
           {/* Price Range */}
           <div className="mb-8">
-            <h4 className="font-semibold mb-4">Үнийн хязгаар (₮)</h4>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm text-gray-600">Хамгийн бага</label>
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-gray-900 text-base">Үнийн хязгаар</h4>
+              <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                ₮{formatPrice(filters.priceRange[0])} - ₮{formatPrice(filters.priceRange[1])}
+              </span>
+            </div>
+            
+            <div className="space-y-5">
+              {/* Price Range Visual */}
+              <div className="relative">
+                <div className="h-2 bg-gray-200 rounded-full">
+                  <div 
+                    className="h-2 bg-blue-600 rounded-full relative"
+                    style={{
+                      marginLeft: `${((filters.priceRange[0] - 50000) / 950000) * 100}%`,
+                      width: `${((filters.priceRange[1] - filters.priceRange[0]) / 950000) * 100}%`
+                    }}
+                  >
+                    <div className="absolute -right-1 -top-1 w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-sm"></div>
+                    <div className="absolute -left-1 -top-1 w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-sm"></div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Min Price */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-gray-700">Хамгийн бага үнэ</label>
+                  <div className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm font-semibold">
+                    ₮{formatPrice(filters.priceRange[0])}
+                  </div>
+                </div>
                 <input
                   type="range"
                   min="50000"
@@ -147,12 +191,18 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange }: Searc
                   step="10000"
                   value={filters.priceRange[0]}
                   onChange={(e) => handlePriceChange(parseInt(e.target.value), 0)}
-                  className="w-full mt-2"
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
                 />
-                <div className="text-sm font-medium">₮{formatPrice(filters.priceRange[0])}</div>
               </div>
-              <div>
-                <label className="text-sm text-gray-600">Хамгийн их</label>
+              
+              {/* Max Price */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-gray-700">Хамгийн их үнэ</label>
+                  <div className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-sm font-semibold">
+                    ₮{formatPrice(filters.priceRange[1])}
+                  </div>
+                </div>
                 <input
                   type="range"
                   min="50000"
@@ -160,75 +210,219 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange }: Searc
                   step="10000"
                   value={filters.priceRange[1]}
                   onChange={(e) => handlePriceChange(parseInt(e.target.value), 1)}
-                  className="w-full mt-2"
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
                 />
-                <div className="text-sm font-medium">₮{formatPrice(filters.priceRange[1])}</div>
+              </div>
+              
+              {/* Quick Price Buttons */}
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                {[
+                  { label: '< 100к', min: 50000, max: 100000 },
+                  { label: '100к-200к', min: 100000, max: 200000 },
+                  { label: '200к-300к', min: 200000, max: 300000 },
+                  { label: '> 300к', min: 300000, max: 500000 }
+                ].map((range) => (
+                  <button
+                    key={range.label}
+                    onClick={() => {
+                      handlePriceChange(range.min, 0);
+                      handlePriceChange(range.max, 1);
+                    }}
+                    className={`text-xs px-3 py-2 rounded-lg border transition-all ${
+                      filters.priceRange[0] === range.min && filters.priceRange[1] === range.max
+                        ? 'bg-blue-50 text-blue-700 border-blue-200'
+                        : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-blue-50 hover:text-blue-600'
+                    }`}
+                  >
+                    {range.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
 
           {/* Star Rating */}
           <div className="mb-8">
-            <h4 className="font-semibold mb-4">Од үнэлгээ</h4>
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-gray-900 text-base">Од үнэлгээ</h4>
+              {filters.starRating.length > 0 && (
+                <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                  {filters.starRating.length} сонгогдсон
+                </span>
+              )}
+            </div>
             <div className="space-y-3">
-              {[5, 4, 3, 2, 1].map((stars) => (
-                <label key={stars} className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={filters.starRating.includes(stars)}
-                    onChange={() => handleCheckboxChange('starRating', stars)}
-                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                  />
-                  <div className="flex items-center gap-1">
-                    {[...Array(stars)].map((_, i) => (
-                      <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                    <span className="text-sm ml-1">{stars} од</span>
-                  </div>
-                </label>
-              ))}
+              {[5, 4, 3, 2, 1].map((stars) => {
+                const isSelected = filters.starRating.includes(stars);
+                return (
+                  <label 
+                    key={stars} 
+                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:border-blue-200 hover:bg-blue-50 ${
+                      isSelected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleCheckboxChange('starRating', stars)}
+                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
+                      />
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-0.5">
+                          {[...Array(stars)].map((_, i) => (
+                            <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                          ))}
+                          {[...Array(5-stars)].map((_, i) => (
+                            <Star key={i} className="w-4 h-4 text-gray-300" />
+                          ))}
+                        </div>
+                        <span className="text-sm font-medium text-gray-900">{stars} од</span>
+                      </div>
+                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                      {Math.floor(Math.random() * 50) + 20}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </div>
 
           {/* Facilities */}
           <div className="mb-8">
-            <h4 className="font-semibold mb-4">Тохижилт</h4>
-            <div className="space-y-3 max-h-48 overflow-y-auto">
-              {facilities.map((facility) => (
-                <label key={facility} className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={filters.facilities.includes(facility)}
-                    onChange={() => handleCheckboxChange('facilities', facility)}
-                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                  />
-                  <span className="text-sm">{facility}</span>
-                </label>
-              ))}
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-gray-900 text-base">Тохижилт</h4>
+              {filters.facilities.length > 0 && (
+                <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                  {filters.facilities.length} сонгогдсон
+                </span>
+              )}
+            </div>
+            <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
+              {facilities.map((facility) => {
+                const isSelected = filters.facilities.includes(facility.id);
+                return (
+                  <label 
+                    key={facility.id} 
+                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:border-blue-200 hover:bg-blue-50 ${
+                      isSelected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleCheckboxChange('facilities', facility.id)}
+                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
+                      />
+                      <div className="flex items-center gap-2">
+                        <div className={`p-1.5 rounded-lg ${isSelected ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
+                          {facility.icon}
+                        </div>
+                        <span className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-700'}`}>
+                          {facility.label}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                      {facility.count}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </div>
 
           {/* Room Types */}
           <div className="mb-8">
-            <h4 className="font-semibold mb-4">Өрөөний төрөл</h4>
-            <div className="space-y-3">
-              {roomTypes.map((roomType) => (
-                <label key={roomType} className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={filters.roomTypes.includes(roomType)}
-                    onChange={() => handleCheckboxChange('roomTypes', roomType)}
-                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                  />
-                  <span className="text-sm">{roomType}</span>
-                </label>
-              ))}
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-gray-900 text-base">Өрөөний төрөл</h4>
+              {filters.roomTypes.length > 0 && (
+                <span className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                  {filters.roomTypes.length} сонгогдсон
+                </span>
+              )}
             </div>
+            <div className="space-y-2">
+              {roomTypes.map((roomType) => {
+                const isSelected = filters.roomTypes.includes(roomType.id);
+                return (
+                  <label 
+                    key={roomType.id} 
+                    className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:border-blue-200 hover:bg-blue-50 ${
+                      isSelected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleCheckboxChange('roomTypes', roomType.id)}
+                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
+                      />
+                      <span className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-700'}`}>
+                        {roomType.label}
+                      </span>
+                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                      {roomType.count}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Apply Filters Button for Mobile */}
+          <div className="md:hidden sticky bottom-0 bg-white border-t border-gray-200 p-4 -mx-6 -mb-6">
+            <button
+              onClick={onClose}
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+            >
+              {getActiveFiltersCount() > 0 ? `${getActiveFiltersCount()} шүүлтүүр хэрэглэх` : 'Шүүлтүүр хэрэглэх'}
+            </button>
           </div>
         </div>
       </div>
+      
+      {/* Custom Scrollbar and Slider Styles */}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #f1f5f9;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+        
+        .slider-thumb::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #2563eb;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .slider-thumb::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #2563eb;
+          cursor: pointer;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+      `}</style>
     </>
   );
 }

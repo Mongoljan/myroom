@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { motion } from "framer-motion";
 import { Search, MapPin, Calendar } from "lucide-react";
-import DatePicker from "./DatePicker";
+import DateRangePicker from "../common/DateRangePicker";
 import GuestSelector from "./GuestSelector";
 
 const SearchForm: React.FC = () => {
@@ -34,18 +34,18 @@ const SearchForm: React.FC = () => {
 
   return (
     <motion.div 
-      className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg rounded-2xl shadow-2xl p-6 max-w-4xl mx-auto border border-white/20"
+      className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-6 max-w-4xl mx-auto border border-white/20"
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
     >
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <motion.div 
           className="md:col-span-1"
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.2 }}
         >
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
-            <MapPin className="w-4 h-4 mr-1" />
+          <label className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <MapPin className="w-4 h-4 mr-1 text-gray-500" />
             {t('search.location', 'Location')}
           </label>
           <div className="relative">
@@ -54,7 +54,7 @@ const SearchForm: React.FC = () => {
               value={searchData.location}
               onChange={(e) => setSearchData({ ...searchData, location: e.target.value })}
               placeholder={t('search.locationPlaceholder', 'Where are you going?')}
-              className="w-full p-3 pl-4 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200"
+              className="w-full p-3 pl-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 transition-all duration-200"
             />
           </div>
         </motion.div>
@@ -63,33 +63,17 @@ const SearchForm: React.FC = () => {
           whileHover={{ scale: 1.02 }}
           transition={{ duration: 0.2 }}
         >
-          <DatePicker
+          <DateRangePicker
             label={
               <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1" />
-                {t('search.checkIn', 'Check In')}
+                <Calendar className="w-4 h-4 mr-1 text-gray-500" />
+                {t('search.dates', 'Dates')}
               </div>
             }
-            value={searchData.checkIn}
-            onChange={(date) => setSearchData({ ...searchData, checkIn: date })}
-            placeholder="Add date"
-          />
-        </motion.div>
-
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          transition={{ duration: 0.2 }}
-        >
-          <DatePicker
-            label={
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1" />
-                {t('search.checkOut', 'Check Out')}
-              </div>
-            }
-            value={searchData.checkOut}
-            onChange={(date) => setSearchData({ ...searchData, checkOut: date })}
-            placeholder="Add date"
+            checkIn={searchData.checkIn}
+            checkOut={searchData.checkOut}
+            onDateChange={(checkIn, checkOut) => setSearchData({ ...searchData, checkIn, checkOut })}
+            placeholder={t('search.selectDates', 'Check in - Check out')}
           />
         </motion.div>
 

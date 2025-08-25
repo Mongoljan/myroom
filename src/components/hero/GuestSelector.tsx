@@ -38,7 +38,7 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+      <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
@@ -46,9 +46,9 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({
       </label>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-3 text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between"
+        className="w-full p-3 text-left bg-white border border-gray-200 rounded-xl hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 flex items-center justify-between"
       >
-        <span className="text-gray-900 dark:text-white">{guestText}</span>
+        <span className="text-gray-900">{guestText}</span>
         <svg className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
@@ -60,11 +60,11 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({
             className="fixed inset-0 z-40" 
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 p-4 min-w-[320px]">
+          <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-4 min-w-[320px]">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white">{t('search.adults', 'Adults')}</div>
+                  <div className="font-medium text-gray-900">{t('search.adults', 'Adults')}</div>
                   <div className="text-sm text-gray-500">Age 13+</div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -87,7 +87,7 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({
 
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white">{t('search.children', 'Children')}</div>
+                  <div className="font-medium text-gray-900">{t('search.children', 'Children')}</div>
                   <div className="text-sm text-gray-500">Age 0-12</div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -110,7 +110,7 @@ const GuestSelector: React.FC<GuestSelectorProps> = ({
 
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-medium text-gray-900 dark:text-white">{t('search.rooms', 'Rooms')}</div>
+                  <div className="font-medium text-gray-900">{t('search.rooms', 'Rooms')}</div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <button

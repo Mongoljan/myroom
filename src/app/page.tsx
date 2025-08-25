@@ -7,6 +7,7 @@ import RecentlyViewed from "@/components/sections/RecentlyViewed";
 import RecommendedHotels from "@/components/sections/RecommendedHotels";
 import PopularDestinations from "@/components/sections/PopularDestinations";
 import FaqSection from "@/components/sections/FaqSection";
+import Partnerships from "@/components/sections/Partnerships";
 
 export const metadata = {
   title: "MyRoom - Modern Hotel Booking Platform",
@@ -20,6 +21,7 @@ const Home = () => {
       <main className="pt-20">
         <ModernHero />
         <WhyChooseUs />
+        <Partnerships />
         <RecentlyViewed />
         <div className="bg-gray-50">
           <RecommendedHotels />

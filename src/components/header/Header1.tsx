@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { useEffect, useState } from "react";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import LanguageSwitcher from "../common/LanguageSwitcher";
-import ThemeSwitcher from "../common/ThemeSwitcher";
 import MainMenu from "./MainMenu";
 import MobileMenu from "./MobileMenu";
 
@@ -48,43 +47,51 @@ const Header1 = () => {
             </div>
 
             <div className="flex items-center">
-              {/* Theme and Language Controls - Always Visible */}
-              <div className="hidden md:flex items-center space-x-3 mr-6">
-                <LanguageSwitcher />
-                <ThemeSwitcher />
-                <div className="w-px h-5 bg-white/20"></div>
+              {/* Phone Number */}
+              <div className="hidden lg:flex items-center mr-6">
+                <div className="flex items-center text-white text-sm font-medium">
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                  7777-7777
+                </div>
               </div>
 
-              {/* Booking Management Link */}
+              {/* Check Order Link */}
               <div className="hidden lg:flex items-center mr-6">
                 <Link
                   href="/booking/manage"
                   className="text-white hover:text-blue-200 transition-colors text-sm font-medium"
                 >
-                  {t('navigation.manageBooking', 'Manage Booking')}
+                  {t('navigation.checkOrder', 'захиалга шалгах')}
                 </Link>
+              </div>
+
+              {/* Language Controls */}
+              <div className="hidden md:flex items-center mr-6">
+                <LanguageSwitcher />
+                <div className="w-px h-5 bg-white/20 ml-3"></div>
               </div>
 
               <div className="hidden md:flex items-center space-x-3">
                 <Link
-                  href="/login"
-                  className="px-5 py-2 bg-white/10 text-white rounded-lg text-sm font-medium hover:bg-white/20 transition-colors backdrop-blur-sm"
+                  href="/hotel-login"
+                  className="px-5 py-2 bg-white text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
                 >
-                  {t('navigation.signIn', 'Sign In')}
+                  {t('navigation.hotelLogin', 'буудлаар нэвтрэх')}
                 </Link>
                 <Link
-                  href="/signup"
-                  className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                  href="/login"
+                  className="px-5 py-2 bg-transparent border border-white text-white rounded-lg text-sm font-medium hover:bg-white/10 transition-colors"
                 >
-                  {t('navigation.signUp', 'Sign Up')}
+                  {t('navigation.loginRegister', 'нэвтрэх/бүртгүүлэх')}
                 </Link>
               </div>
 
               <div className="flex xl:hidden items-center ml-4 space-x-3 text-white">
-                {/* Mobile Theme/Language toggles */}
+                {/* Mobile Language toggle */}
                 <div className="md:hidden flex items-center space-x-2">
                   <LanguageSwitcher />
-                  <ThemeSwitcher />
                 </div>
                 <Link
                   href="/login"

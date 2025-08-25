@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Calendar, MapPin, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import CustomGuestSelector from '@/components/search/CustomGuestSelector';
+import DateRangePicker from '@/components/common/DateRangePicker';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 export default function ModernHero() {
@@ -109,14 +110,14 @@ export default function ModernHero() {
               </span>
             </motion.h1>
             
-            <motion.p
+            {/* <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
             >
               {t('hero.discoverHotels', 'Discover exceptional hotels worldwide with instant booking, real-time availability, and unmatched experiences.')}
-            </motion.p>
+            </motion.p> */}
           </motion.div>
 
           {/* Modern Search Bar */}
@@ -132,7 +133,7 @@ export default function ModernHero() {
                 {/* Location */}
                 <div className="flex-1 p-6 w-full">
                   <div className="flex items-center">
-                    <MapPin className="w-6 h-6 text-gray-400 mr-4" />
+                    <MapPin className="w-6 h-6 text-gray-700 mr-4" />
                     <div className="flex-1">
                       <div className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">{t('search.location')}</div>
                       <input
@@ -150,25 +151,21 @@ export default function ModernHero() {
                 {/* Check-in Check-out */}
                 <div className="lg:flex-1 p-6 w-full">
                   <div className="flex items-center">
-                    <Calendar className="w-6 h-6 text-gray-400 mr-4" />
+                    <Calendar className="w-6 h-6 text-gray-700 mr-4" style={{ stroke: '#374151', fill: 'none' }} />
                     <div className="flex-1">
                       <div className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">{t('hero.checkInOut')}</div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <input
-                          type="date"
-                          value={checkIn}
-                          onChange={(e) => setCheckIn(e.target.value)}
-                          min={new Date().toISOString().split('T')[0]}
-                          className="text-gray-900 border-none outline-none text-lg font-medium"
-                          required
-                        />
-                        <input
-                          type="date"
-                          value={checkOut}
-                          onChange={(e) => setCheckOut(e.target.value)}
-                          min={checkIn || new Date().toISOString().split('T')[0]}
-                          className="text-gray-900 border-none outline-none text-lg font-medium"
-                          required
+                      <div className="relative z-[100]">
+                        <DateRangePicker
+                       
+                          checkIn={checkIn}
+                          checkOut={checkOut}
+                          onDateChange={(newCheckIn, newCheckOut) => {
+                            setCheckIn(newCheckIn);
+                            setCheckOut(newCheckOut);
+                          }}
+                          placeholder={t('search.selectDates', 'Check in - Check out')}
+                          minimal={true}
+                        
                         />
                       </div>
                     </div>

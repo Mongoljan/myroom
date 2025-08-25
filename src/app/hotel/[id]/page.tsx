@@ -5,6 +5,7 @@ import HotelAmenities from '@/components/hotels/HotelAmenities';
 import HotelReviews from '@/components/hotels/HotelReviews';
 import BookingCard from '@/components/hotels/BookingCard';
 import SimilarHotels from '@/components/hotels/SimilarHotels';
+import HotelRoomsSection from '@/components/hotels/HotelRoomsSection';
 import { ApiService } from '@/services/api';
 
 interface Hotel {
@@ -48,7 +49,10 @@ const getHotelById = async (id: string): Promise<Hotel | null> => {
   }
 };
 
-export default async function HotelPage({ params }: { params: { id: string } }) {
+export default async function HotelPage({ params, searchParams }: { 
+  params: { id: string };
+  searchParams?: { check_in?: string; check_out?: string; guests?: string };
+}) {
   const hotel = await getHotelById(params.id);
   
   if (!hotel) {
@@ -81,6 +85,15 @@ export default async function HotelPage({ params }: { params: { id: string } }) 
               }} />
             </div>
           </div>
+        </div>
+
+        {/* Rooms Section - Always Visible */}
+        <div className="mt-16">
+          <HotelRoomsSection 
+            hotelId={hotelData.hotel_id}
+            checkIn={searchParams?.check_in}
+            checkOut={searchParams?.check_out}
+          />
         </div>
         
         {/* Similar Hotels */}

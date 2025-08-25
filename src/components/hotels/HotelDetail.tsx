@@ -138,11 +138,11 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
           <span className="ml-2 text-sm text-gray-600">{hotel.rating_stars.label}</span>
         </div>
         
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{hotel.property_name}</h1>
+  <h1 className="text-3xl font-bold text-gray-900 mb-2">{hotel.property_name}</h1>
         <div className="flex items-center gap-4 text-gray-600">
-          <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1">
             <MapPin className="w-4 h-4" />
-            <span>{hotel.location.province_city}, {hotel.location.soum}, {hotel.location.district}</span>
+        <span className="text-gray-700">{hotel.location.province_city}, {hotel.location.soum}, {hotel.location.district}</span>
           </div>
         </div>
       </div>

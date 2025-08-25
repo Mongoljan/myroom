@@ -34,7 +34,7 @@ export default function FaqSection() {
 
   // Build FAQ array from translation or use fallback
   const faqs = [];
-  for (let i = 1; i <= 9; i++) {
+  for (let i = 1; i <= 13; i++) {
     // For complex objects, we need to check if translation exists first
     const translationKey = `faq.q${i}`;
     // Check if translation exists by trying to get it without fallback
@@ -77,7 +77,7 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white via-gray-50/50 to-white dark:from-gray-900 dark:via-gray-900/80 dark:to-gray-900">
+    <section className="py-24 bg-gradient-to-b from-white via-gray-50/50 to-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           className="text-center mb-16"
@@ -105,13 +105,13 @@ export default function FaqSection() {
             transition={{ duration: 0.8, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            <span className="bg-gradient-to-r from-gray-900 via-blue-600 to-purple-600 dark:from-white dark:via-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-gray-900 via-blue-600 to-purple-600 bg-clip-text text-transparent">
               {t('faq.title', 'Frequently Asked Questions')}
             </span>
           </motion.h2>
           
           <motion.p 
-            className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -139,7 +139,7 @@ export default function FaqSection() {
                   className="group"
                 >
                   <motion.div 
-                    className="bg-white dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+                    className="bg-white border border-gray-200/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
                     whileHover={{ 
                       y: -2,
                       boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
@@ -171,7 +171,7 @@ export default function FaqSection() {
                             </motion.div>
                           </motion.div>
                           
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white pr-4 leading-tight">
+                          <h3 className="text-lg font-semibold text-gray-900 pr-4 leading-tight">
                             {faq.q}
                           </h3>
                         </div>
@@ -179,7 +179,7 @@ export default function FaqSection() {
                         <motion.div
                           animate={{ rotate: isOpen ? 180 : 0 }}
                           transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                          className="flex-shrink-0 text-gray-400 hover:text-gray-600"
                         >
                           <ChevronDown className="w-5 h-5" />
                         </motion.div>
@@ -215,9 +215,9 @@ export default function FaqSection() {
                             exit={{ y: -10, opacity: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
                           >
-                            <div className="pl-14 border-gradient-to-b from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 border-l-2 border-blue-100 dark:border-blue-800/50">
+                            <div className="pl-14 border-l-2 border-blue-100">
                               <motion.p 
-                                className="text-gray-600 dark:text-gray-300 leading-relaxed"
+                                className="text-gray-600 leading-relaxed"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.3, delay: 0.2 }}
@@ -244,7 +244,7 @@ export default function FaqSection() {
           transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
         >
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
+          <p className="text-gray-600 mb-6">
             {t('faq.stillHaveQuestions', 'Асуулт байгаа юу? Бид танд туслахад бэлэн байна!')}
           </p>
           <motion.button

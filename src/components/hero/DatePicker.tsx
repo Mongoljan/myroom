@@ -23,20 +23,30 @@ const DatePicker: React.FC<DatePickerProps> = ({ label, value, onChange, placeho
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      <label className="block text-sm font-medium text-gray-700 mb-2">
         {label}
       </label>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full p-3 text-left bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+        className="w-full p-3 text-left bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer"
       >
-        <span className={value ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}>
-          {formatDate(value)}
-        </span>
+        <div className="flex items-center justify-between">
+          <span className={value ? 'text-gray-900 font-medium' : 'text-gray-500'}>
+            {formatDate(value)}
+          </span>
+          <svg 
+            className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
       </button>
       
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 p-4">
+        <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50 p-4 min-w-full">
           <input
             type="date"
             value={value}
@@ -44,7 +54,8 @@ const DatePicker: React.FC<DatePickerProps> = ({ label, value, onChange, placeho
               onChange(e.target.value);
               setIsOpen(false);
             }}
-            className="w-full p-2 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+            className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900 transition-all duration-200"
+            autoFocus
           />
         </div>
       )}

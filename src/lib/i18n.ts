@@ -54,19 +54,8 @@ const resources = {
         rentalDetails: "Rental Details",
         allRentals: "All Rentals"
       },
+      
       hero: {
-        findNextPlace: "Find Next Place To Visit",
-        discoverAmazing: "Discover amazing places at exclusive deals",
-        location: "Location",
-        whereGoing: "Where are you going?",
-        checkInOut: "Check in - Check out",
-        guests: "Guests",
-        guest: "Guest",
-        adults: "Adults",
-        children: "Children",
-        rooms: "Rooms",
-        agesNote: "Ages 0 - 17",
-        adultsCount: "adults",
         childrenCount: "children",
         roomCount: "room",
         noLocationsFound: "No locations found",
@@ -131,7 +120,21 @@ const resources = {
         manageBooking: "Manage Booking",
         signIn: "Sign In",
         signUp: "Sign Up",
-        pages: "Pages"
+        pages: "Pages",
+        articles: "Articles",
+        advice: "Advice",
+        checkOrder: "Check Order",
+        hotelLogin: "Hotel Login",
+        loginRegister: "Login/Register",
+        news: "News",
+        updates: "Updates",
+        travelTips: "Travel Tips",
+        hotelGuide: "Hotel Guide",
+        bookingHelp: "Booking Help",
+        dates: "Dates",
+        selectDates: "Check in - Check out",
+        night: "night",
+        nights: "nights"
       },
       hotel: {
         title: "Hotels",
@@ -149,6 +152,7 @@ const resources = {
         viewDetails: "View Details",
         amenities: "Amenities",
         reviews: "Reviews",
+        roomsAndRates: "Rooms & Rates",
         location: "Location",
         policies: "Policies",
         freeCancellation: "Free Cancellation",
@@ -225,7 +229,8 @@ const resources = {
         adultsAgeNote: "Age 13 or above",
         childrenAgeNote: "Age 0-12",
         roomsNote: "Separate accommodations",
-        guestsAndRooms: "Guests & Rooms"
+        guestsAndRooms: "Guests & Rooms",
+        selectDates: "Check in - Check out"
       },
       tabs: {
         hotels: "Hotels",
@@ -277,41 +282,61 @@ const resources = {
         title: "FAQ",
         subtitle: "Frequently Asked Questions",
         q1: {
-          q: "How can I get an invoice?",
-          a: "Once you proceed to payment for your booking, an invoice is automatically generated. You can download it by clicking 'Download Invoice' at the top right corner of the payment page."
+          q: "Can I book a room without creating an account?",
+          a: "Yes. You can select and book a room directly without creating an account, but please ensure your information is accurate. We are not responsible for incorrect details provided during booking."
         },
         q2: {
-          q: "How can I pay for my booking?",
-          a: "You can pay for your room via Qpay or bank transfer. If you choose bank transfer, please ensure you enter the correct account and transaction details."
+          q: "Are there any additional fees added to the room price on your platform?",
+          a: "No. We partner with property owners to offer the best available rates to our users and do not add hidden fees to the published room price."
         },
         q3: {
-          q: "What if I enter the wrong transaction details?",
-          a: "If you enter incorrect transaction details, your booking will not be confirmed. Please contact us immediately at 99972626 to confirm your booking or request a refund."
+          q: "How is my booking confirmed?",
+          a: "Your booking is confirmed immediately after full payment (100%) of the room charge has been received."
         },
         q4: {
-          q: "Can I pay in installments or pay in person on arrival?",
-          a: "No, we require 100% prepayment to avoid double bookings or unexpected cancellations and to ensure a smooth experience for all guests."
+          q: "How long do I have to complete payment to confirm a booking?",
+          a: "For individual customers, bookings are typically confirmed within 10 minutes after payment. For organizations, payment must be completed within 3 hours. For very large bookings (over certain thresholds) additional verification by phone may be required."
         },
         q5: {
-          q: "Can I get an e-barimt (e-receipt)?",
-          a: "Yes. When filling in your details, select your type (individual, company, or taxpayer) and enter your code. After your stay, your e-barimt will be automatically registered and sent to your email."
+          q: "How can I get an invoice?",
+          a: "An invoice is generated automatically when you proceed to payment. You can download it from the payment page by clicking 'Download Invoice' in the top-right corner of the payment section."
         },
         q6: {
-          q: "Can I cancel my booking?",
-          a: "Yes. We offer the most flexible cancellation terms possible, but fees may vary depending on your hotel, number of guests, rooms, and payment amount. If you cancel after the allowed period, 100% of the payment will be charged."
+          q: "How can I pay for my booking?",
+          a: "You can pay via Qpay or bank transfer. If you choose bank transfer, please enter the correct account and transaction details to ensure your booking is confirmed."
         },
         q7: {
-          q: "Are there any fees for cancelling a booking?",
-          a: "Cancellation fees depend on the hotel's internal policy. Please review the cancellation terms and fees during the booking process."
+          q: "What if I entered the wrong transaction details when transferring?",
+          a: "If incorrect transaction details are provided, your booking will not be confirmed. Please contact our support immediately at 99972626 to report the issue."
         },
         q8: {
-          q: "How are refunds processed?",
-          a: "Refunds are processed within 3 business days after deducting any applicable fees according to the hotel's cancellation policy."
+          q: "Can I pay in installments or pay on arrival?",
+          a: "No. To prevent double bookings and unexpected cancellations, we require 100% prepayment for bookings."
         },
         q9: {
-          q: "What if I can't arrive on the booked date or will be late?",
-          a: "If you do not cancel within the allowed period, 100% of the payment will be charged. If you are late, please inform your hotel to arrange your stay for the remaining nights."
+          q: "Can I get an e-barimt (e-receipt)?",
+          a: "Yes. Select your customer type (individual, company, or taxpayer) and provide your tax code during booking. The e-receipt will be registered and sent to your email after your stay."
+        },
+        q10: {
+          q: "Can I cancel my booking?",
+          a: "Yes. Cancellation policies and fees vary by property, number of guests, room types, and payment amounts. If you cancel after the allowed period, the full payment may be charged."
+        },
+        q11: {
+          q: "Are there fees for cancelling a booking?",
+          a: "Cancellation fees depend on the property&apos;s internal policy. Please review the cancellation days and fees shown during booking before confirming."
+        },
+        q12: {
+          q: "How are refunds processed?",
+          a: "Refunds are processed according to the property&apos;s cancellation policy; after deducting any applicable fees, refunds are returned within approximately 3 business days."
+        },
+        q13: {
+          q: "What if I cannot arrive on the booked date or will be late?",
+          a: "If you do not cancel within the allowed period, the full payment may be charged. If you will be late, please notify the property to arrange your stay for the remaining nights."
         }
+      },
+      partnerships: {
+        title: "Our Partnerships",
+        subtitle: "Trusted by leading companies worldwide"
       },
       features: {
         whyChooseUs: "Why Choose Us?",
@@ -460,7 +485,21 @@ const resources = {
         manageBooking: "Захиалга удирдах",
         signIn: "Нэвтрэх",
         signUp: "Бүртгүүлэх",
-        pages: "Хуудас"
+        pages: "Хуудас",
+        articles: "Нийтлэл",
+        advice: "Зөвлөгөө",
+        checkOrder: "Захиалга шалгах",
+        hotelLogin: "Буудлаар нэвтрэх",
+        loginRegister: "Нэвтрэх/Бүртгүүлэх",
+        news: "Мэдээ",
+        updates: "Мэдээлэл",
+        travelTips: "Аяллын зөвлөмж",
+        hotelGuide: "Зочид буудлын зөвлөгөө",
+        bookingHelp: "Захиалгын тусламж",
+        dates: "Огноо",
+        selectDates: "Орох - Гарах",
+        night: "шөнө",
+        nights: "шөнө"
       },
       hotel: {
         title: "Зочид буудал",
@@ -478,6 +517,7 @@ const resources = {
         viewDetails: "Дэлгэрэнгүй",
         amenities: "Тохижилт",
         reviews: "Сэтгэгдэл",
+        roomsAndRates: "Өрөө ба үнэ",
         location: "Байршил",
         policies: "Дүрэм журам",
         freeCancellation: "Үнэгүй цуцлах",
@@ -554,7 +594,8 @@ const resources = {
         adultsAgeNote: "13-аас дээш нас",
         childrenAgeNote: "0-12 нас",
         roomsNote: "Тусдаа өрөө",
-        guestsAndRooms: "Зочид ба Өрөө"
+        guestsAndRooms: "Зочид ба Өрөө",
+        selectDates: "Орох - Гарах"
       },
       tabs: {
         hotels: "Зочид буудал",
@@ -605,44 +646,64 @@ const resources = {
       faq: {
         title: "Түгээмэл асуултууд",
         subtitle: "Түгээмэл асуугддаг асуултууд",
-        q1: {
-          q: "Нэхэмжлэх хэрхэн гаргуулж авах вэ?",
-          a: "Та захиалгын төлбөр төлөх руу шилжсэнээр автоматаар нэхэмжлэх үүсэх бөгөөд төлбөр төлөх хуудасны баруун дээд булан дахь 'Нэхэмжлэх татах' дээр дарж татаж авах боломжтой."
+        q1: { 
+          q: "Бүртгэл үүсгэхгүйгээр шууд өрөө захиалах боломжтой юу?", 
+          a: "Тийм. Та өөрийн хүссэн өрөөгөө шууд сонгож захиалгаа баталгаажуулахад хангалттай. Харин таны мэдээлэл буруу, зөрсөн нөхцөлд бид хариуцлага хүлээхгүй тул та өөрийн мэдээллээ үнэн зөв бөглөж, захиалгаа хийгээрэй." 
         },
-        q2: {
-          q: "Захиалгын төлбөрийг хэрхэн төлөх боломжтой вэ?",
-          a: "Та өрөөний төлбөрийг QPay болон банкны дансаар шилжүүлэх замаар төлөх боломжтой. Хэрэв дансаар шилжүүлэх тохиолдолд дансны дугаар болон гүйлгээний утгыг үнэн зөв оруулж гүйлгээ хийнэ үү."
+        q2: { 
+          q: "Танай платформоор зарж буй өрөөний үнэ дээр ямар нэг нэмэлт төлбөр нэмэгддэг үү?", 
+          a: "Үгүй. Бид харилцагч газруудтайгаа түншлэлийн хүрээнд зөвхөн хэрэглэгчддээ зориулсан хамгийн бодит бөгөөд хямд үнийг санал болгодог." 
         },
-        q3: {
-          q: "Гүйлгээний мэдээллийг буруу оруулсан бол яах вэ?",
-          a: "Хэрэв буруу гүйлгээний мэдээлэл оруулсан бол таны захиалга баталгаажихгүй байх тул 99972626 дугаарт яаралтай холбогдож захиалгыг баталгаажуулах эсвэл буцаалт авах хүсэлт гаргана уу."
+        q3: { 
+          q: "Захиалга хэрхэн баталгаажих вэ?", 
+          a: "Та өрөөнийхөө төлбөрийг бүрэн 100% төлсний дараа таны захиалга шууд баталгаажна." 
         },
-        q4: {
-          q: "Төлбөрийг хэсэгчлэн төлөх эсвэл ирэх өдөр нь биечлэн төлөх боломжтой юу?",
-          a: "Үгүй. Давхар захиалга болон гэнэтийн цуцлалтаас урьдчилан сэргийлж, бүх зочдодоо тайван зорчлогыг хангах үүднээс бид захиалгын төлбөрийг 100% урьдчилан төлөхийг шаарддаг."
+        q4: { 
+          q: "Захиалгыг хэдий хэр хугацаанд баталгаажуулах шаардлагатай вэ?", 
+          a: "Хувь хүний хувьд захиалга баталгаажих хугацаа 10 минут бол байгууллагын хувьд 3 цагийн дотор төлбөрөө 100% хийснээр захиалга амжилттай баталгаажна. Хэрэв захиалгын дүн 5 сая-аас дээш тохиолдолд үнийн дүнг хувааж хийн, 99972626 руу мэдэгдэж баталгаажуулахыг анхаарна уу." 
         },
-        q5: {
-          q: "И-баримт авах боломжтой юу?",
-          a: "Тийм. Захиалагчийн мэдээлэл бөглөх хэсэгт хувь хүн, байгууллага эсвэл татвар төлөгчийн төрлийг сонгоод кодоо оруулна уу. Зочид буудалд байрлаж дууссаны дараа таны татварын код дээр и-баримт автоматаар бүртгэгдэж, имэйл хаягт нь илгээгдэнэ."
+        q5: { 
+          q: "Нэхэмжлэх хэрхэн гаргуулж авах вэ?", 
+          a: "Та захиалгын төлбөр төлөх рүү шилжсэнээр автоматаар нэхэмжлэх үүсэх бөгөөд төлбөр төлөх нөхцлийн баруун дээд булан дахь 'Нэхэмжлэх татах' дээр дарж татах боломжтой." 
         },
-        q6: {
-          q: "Захиалгыг цуцлах боломжтой юу?",
-          a: "Тийм. Бид хамгийн уян хатан цуцлалтын нөхцлийг санал болгодог. Гэхдээ таны сонгосон зочид буудал, зочдын тоо, өрөөний тоо, төлбөрийн хэмжээнээс хамаараад цуцлалтын хураамж ялгаатай байх магадлалтай. Зөвшөөрөгдсөн хугацаанаас хэтэрсэн тохиолдолд төлбөрийн 100% хураамж авагдана."
+        q6: { 
+          q: "Төлбөрөө хэрхэн төлөх боломжтой вэ?", 
+          a: "Та өрөөний төлбөрөө Qpay, дансаар гэсэн 2 сонголтоор хийх боломжтой. Хэрэв дансаар шилжүүлэх тохиолдолд данс болон гүйлгээний утгыг үнэн зөв хийж, нягтлан гүйлгээгээ хийгээрэй." 
         },
-        q7: {
-          q: "Захиалга цуцлахад хураамж авдаг уу?",
-          a: "Цуцлалтын хураамж нь зочид буудлын дотоод бодлогоос хамаардаг. Захиалга хийх явцад цуцлалтын нөхцөл, хураамжтай танилцаж баталгаажуулана уу."
+        q7: { 
+          q: "Гүйлгээний утгыг буруу бичиж шилжүүлэг хийсэн бол яах вэ?", 
+          a: "Гүйлгээний утга буруу бичиж шилжүүлэг хийсэн тохиолдолд таны захиалга баталгаажихгүй тул та манай 99972626 дугаар луу яаралтай холбогдож мэдэгдээрэй." 
         },
-        q8: {
-          q: "Буцаалтын мөнгө хэрхэн олгогддог вэ?",
-          a: "Зочид буудлын цуцлалтын бодлогын дагуу тохирох хураамжийг суутгасны дараа үлдсэн дүнг ажлын 3 хоногийн дотор буцаан олгоно."
+        q8: { 
+          q: "Төлбөрөө хувааж төлөх эсвэл очих өдрөө биечлэн төлөх боломжтой юу?", 
+          a: "Боломжгүй. Бид хэрэглэгчдийнхээ захиалгыг аль болох давхардах эсвэл цуцлагдах гэнэтийн эрсдэлээс урьдчилан сэргийлэх үүднээс шууд баталгаажуулан, санаа амар тайван аялуулахыг зорьж буй учир төлбөрөө заавал 100% урьдчилан төлөх шаардлагатай." 
         },
-        q9: {
-          q: "Захиалсан өдрөө ирж чадахгүй эсвэл хоцорч ирэх тохиолдолд яах вэ?",
-          a: "Хэрэв зөвшөөрөгдсөн хугацаанд цуцлалт хийгээгүй бол төлбөрийн 100% хураамж авагдана. Хэрэв хоцорч ирэх бол үлдсэн хоногуудаар байрлах боломжийн талаар зочид буудалтайгаа холбогдоно уу."
+        q9: { 
+          q: "И-баримт авах боломжтой юу?", 
+          a: "Захиалагчийн мэдээлэл бөглөх хэсэг дээр хувь хүн, байгууллага, татвар төлөгч иргэн гэсэн 3 төрлөөс сонгож, кодоо оруулна. Ингээд таныг өрөөндөө байрлаж дууссаны дараа захиалга биелмэгц таны татварын код дээр и-баримт автоматаар бүртгэгдэж, мөн мэйл хаяг руу тань давхар илгээгдэнэ." 
+        },
+        q10: { 
+          q: "Захиалгыг цуцлах боломжтой юу?", 
+          a: "Тийм. Бид 2 тал (захиалагч, буудал)-ын харилцан тэгш байдлыг хангах үүднээс хамгийн боломжит бага хураамжтай цуцлах нөхцлийг санал болгож байна. Таны буудаллах газар, хүний тоо, өрөөний тоо, төлбөрийн дүнгээс хамааран заасан хугацаанд багтаан харилцан адилгүй хураамж бодогдохыг анхаарна уу. Заасан боломжит хугацаанаас хэтэрсэн тохиолдолд цуцлах боломжгүй буюу төлбөр 100% суутгагдана." 
+        },
+        q11: { 
+          q: "Захиалга цуцлахад ямар нэг төлбөр авдаг уу?", 
+          a: "Таны сонгосон газраас хамааран дотоод журам нь харилцан адилгүй учир та захиалга хийх явцад гарч ирж буй цуцлалтын хоног, хураамжтай сайтар танилцаж захиалгаа баталгаажуулаарай." 
+        },
+        q12: { 
+          q: "Захиалгын буцаалт хэрхэн хийгдэх вэ?", 
+          a: "Тухайн буудлын цуцлалтын журмын дагуу хураамжийг суутган, үлдсэн буцаалтын дүнг ажлын 3 хоног дотор буцаан олгоно." 
+        },
+        q13: { 
+          q: "Захиалсан өдрөө очиж амжихааргүй эсвэл хоцорч очих болсон тохиолдолд яах вэ?", 
+          a: "Тухайн буудлын боломжит заасан хугацаанд багтаан захиалгаа цуцлаагүй тохиолдолд төлбөр 100% суутгагдана. Очих өдрөө хоцорч ирж байгаа тохиолдолд үлдсэн хоногтоо байрших эсэхээ буудалдаа мэдэгдэж байрших боломжтой." 
         },
         stillHaveQuestions: "Асуулт байгаа юу? Бид танд туслахад бэлэн байна!",
         contactSupport: "Дэмжлэг авах"
+      },
+      partnerships: {
+        title: "Хамтрагч байгууллагууд",
+        subtitle: "Дэлхийн тэргүүлэгч компаниудын итгэлийг хүлээн авсан"
       },
       features: {
         whyChooseUs: "Яагаад биднийг сонгох хэрэгтэй вэ?",

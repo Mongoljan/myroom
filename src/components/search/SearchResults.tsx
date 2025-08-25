@@ -16,6 +16,13 @@ interface FilterState {
   roomTypes: string[];
 }
 
+interface QuickFilterProps {
+  label: string;
+  count: number;
+  active?: boolean;
+  onClick: () => void;
+}
+
 export default function SearchResults() {
   const searchParams = useSearchParams();
   const [hotels, setHotels] = useState<SearchHotelResult[]>([]);
@@ -23,7 +30,13 @@ export default function SearchResults() {
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [sortBy, setSortBy] = useState('price');
+  const [sortBy, setSortBy] = useState('price_low');
+  const [filters, setFilters] = useState<FilterState>({
+    priceRange: [50000, 500000],
+    starRating: [],
+    facilities: [],
+    roomTypes: []
+  });
 
   // Load hotels from API or mock data
   useEffect(() => {
@@ -169,8 +182,34 @@ export default function SearchResults() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        {/* Header Skeleton */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
+          <div className="container mx-auto px-4 py-6">
+            <div className="animate-pulse">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="h-12 bg-blue-500 rounded-lg"></div>
+                <div className="h-12 bg-blue-500 rounded-lg"></div>
+                <div className="h-12 bg-blue-500 rounded-lg"></div>
+                <div className="h-12 bg-blue-500 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Loading Content */}
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center space-y-4">
+              <div className="relative">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-400 animate-ping"></div>
+              </div>
+              <div className="space-y-2">
+                <p className="text-lg font-semibold text-gray-900">Хайлт явуулж байна...</p>
+                <p className="text-sm text-gray-600">Танд хамгийн сайн зочид буудлыг олж байна</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -178,29 +217,107 @@ export default function SearchResults() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Search Form Header */}
-      <div className="bg-blue-600 py-8">
-        <div className="container mx-auto px-4">
+      {/* Professional Search Form Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
+        <div className="container mx-auto px-4 py-6">
           <HotelSearchForm />
         </div>
       </div>
 
-      {/* Results Section */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
-          <div className="lg:w-80">
-            {/* Mobile Filter Button */}
-            <button
-              onClick={() => setShowFilters(true)}
-              className="lg:hidden w-full bg-white border border-gray-200 rounded-lg px-4 py-3 flex items-center justify-center gap-2 mb-6"
+      {/* Breadcrumb Navigation */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center text-sm text-gray-600 overflow-x-auto">
+            <button 
+              onClick={() => window.location.href = '/'}
+              className="hover:text-blue-600 transition-colors whitespace-nowrap"
             >
-              <Filter className="w-5 h-5" />
-              Шүүлтүүр
+              Нүүр хуудас
             </button>
+            <span className="mx-2 text-gray-400">→</span>
+            <span className="whitespace-nowrap">Хайлт</span>
+            {searchLocation && (
+              <>
+                <span className="mx-2 text-gray-400">→</span>
+                <span className="text-gray-900 font-medium whitespace-nowrap">{searchLocation}</span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
 
-            {/* Filters */}
-            <div className="hidden lg:block">
+      {/* Main Results Container */}
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        <div className="flex flex-col xl:flex-row gap-4 xl:gap-8">
+          {/* Professional Filters Sidebar */}
+          <div className="xl:w-80 flex-shrink-0">
+            {/* Mobile Filter Button */}
+            <div className="xl:hidden mb-6">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowFilters(true)}
+                  className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm group"
+                >
+                  <Filter className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
+                  <span className="font-medium group-hover:text-blue-600 transition-colors">Шүүлтүүр</span>
+                  {(filters.starRating.length > 0 || filters.facilities.length > 0 || filters.roomTypes.length > 0) && (
+                    <div className="flex items-center justify-center w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full">
+                      {filters.starRating.length + filters.facilities.length + filters.roomTypes.length}
+                    </div>
+                  )}
+                </button>
+                
+                {/* Mobile Sort */}
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => handleSort(e.target.value)}
+                    className="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3 pr-8 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 transition-colors shadow-sm"
+                  >
+                    <option value="price_low">Бага үнэ</option>
+                    <option value="price_high">Өндөр үнэ</option>
+                    <option value="rating">Үнэлгээ</option>
+                    <option value="name">Нэр</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Mobile View Toggle */}
+              <div className="flex justify-center mt-4">
+                <div className="flex bg-gray-100 p-1 rounded-lg">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      viewMode === 'grid'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600'
+                    }`}
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                    <span>Грид</span>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                      viewMode === 'list'
+                        ? 'bg-white text-blue-600 shadow-sm'
+                        : 'text-gray-600'
+                    }`}
+                  >
+                    <List className="w-4 h-4" />
+                    <span>Жагсаалт</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Filters */}
+            <div className="hidden xl:block sticky top-4">
               <SearchFilters
                 isOpen={true}
                 onClose={() => {}}
@@ -209,86 +326,278 @@ export default function SearchResults() {
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Results Header */}
-            <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    {searchLocation ? `${searchLocation}-д ` : ''}Зочид буудлууд
-                  </h1>
-                  <div className="flex items-center gap-4 text-sm text-gray-600 mt-2">
-                    {checkIn && checkOut && (
-                      <div className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{checkIn} - {checkOut}</span>
+          {/* Professional Main Content */}
+          <div className="flex-1 min-w-0">
+            {/* Professional Search Results Header */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6 sm:mb-8">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 lg:gap-6">
+                {/* Results Info */}
+                <div className="flex-1 space-y-4">
+                  <div className="space-y-3">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                      {searchLocation ? `${searchLocation} дэх зочид буудлууд` : 'Зочид буудлууд'}
+                    </h1>
+                    
+                    {/* Search Details */}
+                    <div className="space-y-3">
+                      {checkIn && checkOut && (
+                        <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-4 text-sm">
+                          <div className="flex items-center gap-2 bg-blue-50 px-3 sm:px-4 py-2 rounded-full border border-blue-100">
+                            <MapPin className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                            <span className="font-medium text-blue-800">{checkIn} - {checkOut}</span>
+                          </div>
+                          <div className="flex items-center gap-2 bg-gray-50 px-3 sm:px-4 py-2 rounded-full">
+                            <span className="text-gray-600">
+                              {searchParams.get('adults') || '2'} том хүн
+                              {(searchParams.get('children') && parseInt(searchParams.get('children') || '0') > 0) && 
+                                `, ${searchParams.get('children')} хүүхэд`}
+                              {` • ${searchParams.get('rooms') || '1'} өрөө`}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Results Count */}
+                      <div className="flex flex-wrap items-center gap-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
+                          <span className="text-gray-700">
+                            <span className="font-bold text-lg text-green-600">{filteredHotels.length}</span> зочид буудал олдлоо
+                          </span>
+                        </div>
+                        {filteredHotels.length !== hotels.length && (
+                          <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full whitespace-nowrap">
+                            {hotels.length}-с шүүгдсэн
+                          </div>
+                        )}
                       </div>
-                    )}
-                    <span>{filteredHotels.length} зочид буудал олдлоо</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  {/* Sort Dropdown */}
-                  <select
-                    value={sortBy}
-                    onChange={(e) => handleSort(e.target.value)}
-                    className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="price_low">Үнээр (Бага → Их)</option>
-                    <option value="price_high">Үнээр (Их → Бага)</option>
-                    <option value="rating">Үнэлгээгээр</option>
-                    <option value="name">Нэрээр</option>
-                  </select>
+                {/* Professional Controls - Hidden on mobile, handled by mobile buttons above */}
+                <div className="hidden lg:flex flex-col lg:flex-row gap-4 lg:items-start">
+                  {/* Sort and View Controls */}
+                  <div className="flex flex-wrap items-center gap-3">
+                    {/* Sort Dropdown */}
+                    <div className="relative">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Эрэмбэлэх</label>
+                      <select
+                        value={sortBy}
+                        onChange={(e) => handleSort(e.target.value)}
+                        className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-8 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors shadow-sm min-w-[160px]"
+                      >
+                        <option value="price_low">Үнэ: бага → их</option>
+                        <option value="price_high">Үнэ: их → бага</option>
+                        <option value="rating">Үнэлгээгээр</option>
+                        <option value="name">Нэрээр А-Я</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none mt-5">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
 
-                  {/* View Mode Toggle */}
-                  <div className="hidden md:flex border border-gray-200 rounded-lg">
-                    <button
-                      onClick={() => setViewMode('grid')}
-                      className={`p-2 ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'text-gray-600'}`}
-                    >
-                      <Grid3X3 className="w-4 h-4" />
+                    {/* Professional View Toggle */}
+                    <div className="hidden sm:block">
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Харагдах арга</label>
+                      <div className="flex bg-gray-100 p-1 rounded-lg">
+                        <button
+                          onClick={() => setViewMode('grid')}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                            viewMode === 'grid'
+                              ? 'bg-white text-blue-600 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                        >
+                          <Grid3X3 className="w-4 h-4" />
+                          <span>Грид</span>
+                        </button>
+                        <button
+                          onClick={() => setViewMode('list')}
+                          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                            viewMode === 'list'
+                              ? 'bg-white text-blue-600 shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          }`}
+                        >
+                          <List className="w-4 h-4" />
+                          <span>Жагсаалт</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Quick Filters - Desktop only */}
+                  <div className="hidden xl:flex flex-wrap gap-2">
+                    <button className="text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors border border-blue-200">
+                      Өнөөдөр хямдрал
                     </button>
-                    <button
-                      onClick={() => setViewMode('list')}
-                      className={`p-2 ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-gray-600'}`}
-                    >
-                      <List className="w-4 h-4" />
+                    <button className="text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full hover:bg-green-100 transition-colors border border-green-200">
+                      5 од зочид буудал
+                    </button>
+                    <button className="text-xs bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors border border-purple-200">
+                      Wi-Fi үнэгүй
                     </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Results Grid */}
+            {/* Professional Results Layout */}
             <div className={`
-              ${viewMode === 'grid' 
-                ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' 
-                : 'space-y-6'
+              ${viewMode === 'grid'
+                ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6'
+                : 'space-y-4 sm:space-y-5'
               }
             `}>
-              {filteredHotels.map((hotel) => (
-                <HotelCard
-                  key={hotel.hotel_id}
-                  hotel={hotel}
-                  searchParams={searchParams}
-                />
+              {filteredHotels.map((hotel, index) => (
+                <div 
+                  key={hotel.hotel_id} 
+                  className="group"
+                  style={{
+                    animationDelay: `${index * 50}ms`,
+                    animation: 'fadeInUp 0.6s ease-out forwards'
+                  }}
+                >
+                  <HotelCard
+                    hotel={hotel}
+                    searchParams={searchParams}
+                    viewMode={viewMode}
+                    index={index}
+                  />
+                </div>
               ))}
             </div>
 
-            {/* No Results */}
-            {filteredHotels.length === 0 && (
-              <div className="bg-white rounded-xl shadow-sm p-12 text-center">
-                <div className="text-gray-400 mb-4">
-                  <MapPin className="w-16 h-16 mx-auto" />
+            {/* Add CSS animation */}
+            <style jsx>{`
+              @keyframes fadeInUp {
+                from {
+                  opacity: 0;
+                  transform: translateY(20px);
+                }
+                to {
+                  opacity: 1;
+                  transform: translateY(0);
+                }
+              }
+            `}</style>
+
+            {/* Professional Pagination */}
+            {filteredHotels.length > 12 && (
+              <div className="mt-12">
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    {/* Results info */}
+                    <div className="text-sm text-gray-600">
+                      <span className="font-medium text-gray-900">1-12</span> из {filteredHotels.length} зочид буудлын үр дүн
+                    </div>
+                    
+                    {/* Pagination controls */}
+                    <div className="flex items-center gap-2">
+                      <button className="flex items-center gap-2 px-4 py-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-lg border border-gray-200">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span>Өмнөх</span>
+                      </button>
+                      
+                      <div className="flex items-center gap-1 mx-2">
+                        {[1, 2, 3, '...', 8].map((page, i) => (
+                          <button
+                            key={i}
+                            className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${
+                              page === 1
+                                ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700'
+                                : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      <button className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors rounded-lg border border-blue-200">
+                        <span>Дараах</span>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Зочид буудал олдсонгүй
-                </h3>
-                <p className="text-gray-600">
-                  Өөр хайлтын үг эсвэл шүүлтүүр ашиглан дахин хайж үзээрэй.
-                </p>
+              </div>
+            )}
+
+            {/* Professional No Results State */}
+            {filteredHotels.length === 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-16 text-center">
+                <div className="max-w-lg mx-auto">
+                  <div className="relative mb-8">
+                    <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                      <MapPin className="w-12 h-12 text-blue-600" />
+                    </div>
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-blue-50 rounded-full -z-10 animate-pulse"></div>
+                  </div>
+                  
+                  <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                    Зочид буудал олдсонгүй
+                  </h3>
+                  
+                  <p className="text-gray-600 mb-2 text-lg leading-relaxed">
+                    Таны хайлтын шалгуурт тохирох зочид буудал олдсонгүй.
+                  </p>
+                  
+                  <p className="text-gray-500 mb-8">
+                    Хайлтын нөхцөлөө өөрчилж эсвэл шүүлтүүрээ шинэчилж үзээрэй.
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <button 
+                        onClick={() => {
+                          // Clear filters logic would go here
+                          console.log('Clear filters');
+                        }}
+                        className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                      >
+                        Шүүлтүүр тайлах
+                      </button>
+                      <button 
+                        onClick={() => {
+                          // Navigate to new search
+                          window.location.href = '/';
+                        }}
+                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+                      >
+                        Шинэ хайлт хийх
+                      </button>
+                    </div>
+                    
+                    {/* Popular destinations suggestion */}
+                    <div className="pt-4 border-t border-gray-100">
+                      <p className="text-sm text-gray-600 mb-3">Алдартай хотод хайлт хийээрэй:</p>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {['Улаанбаатар', 'Мөрөн', 'Эрдэнэт'].map((city) => (
+                          <button
+                            key={city}
+                            className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-blue-100 hover:text-blue-700 transition-colors"
+                            onClick={() => {
+                              // Navigate to city search
+                              const newParams = new URLSearchParams(searchParams.toString());
+                              newParams.set('location', city);
+                              window.location.href = `/search?${newParams.toString()}`;
+                            }}
+                          >
+                            {city}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
