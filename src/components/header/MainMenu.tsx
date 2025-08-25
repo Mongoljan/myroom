@@ -1,18 +1,21 @@
 'use client'
 import Link from "next/link";
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface MainMenuProps {
   style?: string;
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({ style = "" }) => {
+  const { t } = useHydratedTranslation();
+  
   const menuItems = [
-    { label: 'Home', href: '/' },
-    { label: 'Hotels', href: '/search' },
-    { label: 'Destinations', href: '/destinations' },
-    { label: 'Pages', href: '/pages' },
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Contact', href: '/contact' },
+    { label: t('navigation.home', 'Home'), href: '/' },
+    { label: t('navigation.hotels', 'Hotels'), href: '/search' },
+    { label: t('navigation.destinations', 'Destinations'), href: '/destinations' },
+    { label: t('navigation.pages', 'Pages'), href: '/pages' },
+    { label: t('navigation.dashboard', 'Dashboard'), href: '/dashboard' },
+    { label: t('navigation.contact', 'Contact'), href: '/contact' },
   ];
 
   return (

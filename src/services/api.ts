@@ -6,7 +6,15 @@ import {
   CheckBookingResponse,
   BookingActionRequest,
   ChangeDateRequest,
-  BookingActionResponse
+  BookingActionResponse,
+  SearchResponse,
+  SearchHotelResult,
+  RoomPrice,
+  FinalPrice,
+  AllRoomData,
+  CombinedData,
+  AllData,
+  RoomFeature
 } from '@/types/api';
 
 const BASE_URL = 'https://dev.kacc.mn/api';
@@ -17,27 +25,59 @@ export class ApiService {
     options: RequestInit = {}
   ): Promise<T> {
     try {
-      const response = await fetch(`${BASE_URL}${endpoint}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...options.headers,
-        },
+      const fullUrl = `${BASE_URL}${endpoint}`;
+      console.log('Making API request to:', fullUrl);
+      
+      // Build headers object  
+      const headers: Record<string, string> = {};
+      
+      // Copy existing headers if they exist
+      if (options.headers) {
+        if (options.headers instanceof Headers) {
+          options.headers.forEach((value, key) => {
+            headers[key] = value;
+          });
+        } else if (Array.isArray(options.headers)) {
+          options.headers.forEach(([key, value]) => {
+            headers[key] = value;
+          });
+        } else {
+          Object.assign(headers, options.headers);
+        }
+      }
+      
+      // Only add Content-Type for POST/PUT/PATCH requests
+      if (options.method && ['POST', 'PUT', 'PATCH'].includes(options.method.toUpperCase())) {
+        headers['Content-Type'] = 'application/json';
+      }
+      
+      const response = await fetch(fullUrl, {
         ...options,
+        headers,
       });
 
       if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.error(`API Error ${response.status}:`, errorText);
+        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      console.log('API Response success:', { 
+        url: fullUrl, 
+        status: response.status,
+        dataKeys: Object.keys(data),
+        count: data.count || data.length || 'unknown'
+      });
+      return data;
     } catch (error) {
       console.error('API Request failed:', error);
       throw error;
     }
   }
 
-  // Search hotels - using mock data since endpoint doesn't exist yet
-  static async searchHotels(_params: {
+  // Search hotels
+  static async searchHotels(params: {
     location?: string;
     check_in: string;
     check_out: string;
@@ -45,8 +85,33 @@ export class ApiService {
     children: number;
     rooms: number;
     acc_type: string;
-  }) {
-    // Return mock hotel data for now
+  }): Promise<SearchResponse> {
+    console.log('Search params:', params);
+    
+    const searchParams = new URLSearchParams();
+    if (params.location) searchParams.append('location', params.location);
+    searchParams.append('check_in', params.check_in);
+    searchParams.append('check_out', params.check_out);
+    searchParams.append('adults', params.adults.toString());
+    searchParams.append('children', params.children.toString());
+    searchParams.append('rooms', params.rooms.toString());
+    searchParams.append('acc_type', params.acc_type);
+
+    console.log('Search URL params:', searchParams.toString());
+    return this.request<SearchResponse>(`/search?${searchParams.toString()}`);
+  }
+
+  // Get hotel search results with mock fallback
+  static async searchHotelsMock(params: {
+    location?: string;
+    check_in: string;
+    check_out: string;
+    adults: number;
+    children: number;
+    rooms: number;
+    acc_type: string;
+  }): Promise<SearchHotelResult[]> {
+    // Return mock hotel data for testing
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([
@@ -218,13 +283,33 @@ export class ApiService {
   }
 
   // Get all room data (types, bed types, categories, etc.)
-  static async getAllRoomData() {
-    return this.request(`/all-room-data/`);
+  static async getAllRoomData(): Promise<AllRoomData> {
+    return this.request<AllRoomData>(`/all-room-data/`);
   }
 
   // Get combined data (includes facilities, provinces, etc.)
-  static async getCombinedData() {
-    return this.request(`/combined-data/`);
+  static async getCombinedData(): Promise<CombinedData> {
+    return this.request<CombinedData>(`/combined-data/`);
+  }
+
+  // Get room prices for a hotel
+  static async getRoomPrices(hotelId: number): Promise<RoomPrice[]> {
+    return this.request<RoomPrice[]>(`/room-prices/?hotel=${hotelId}`);
+  }
+
+  // Get final price for a room
+  static async getFinalPrice(roomPriceId: number): Promise<FinalPrice> {
+    return this.request<FinalPrice>(`/final-price/${roomPriceId}/`);
+  }
+
+  // Get all room-related data (facilities, amenities, etc.)
+  static async getAllData(): Promise<AllData> {
+    return this.request<AllData>('/all-data/');
+  }
+
+  // Get room features
+  static async getFeatures(): Promise<RoomFeature[]> {
+    return this.request<RoomFeature[]>('/features/');
   }
 
   // Check room availability

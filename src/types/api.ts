@@ -181,3 +181,133 @@ export interface CombinedData {
     rating: string;
   }>;
 }
+
+// Hotel search types
+export interface HotelLocation {
+  province_city: string | null;
+  soum: string | null;
+  district: string | null;
+}
+
+export interface CheapestRoom {
+  room_type_id: number;
+  room_category_id: number;
+  room_type_label: string;
+  room_category_label: string;
+  price_per_night: number;
+  nights: number;
+  available_in_this_type: number;
+  capacity_per_room_adults: number;
+  capacity_per_room_children: number;
+  capacity_per_room_total: number;
+  estimated_total_for_requested_rooms: number;
+}
+
+export interface HotelImage {
+  url: string;
+  description: string;
+}
+
+export interface HotelImages {
+  cover: HotelImage;
+  gallery: Array<{ img: HotelImage }>;
+}
+
+export interface RatingStars {
+  id: number;
+  label: string;
+  value: string;
+}
+
+export interface SearchHotelResult {
+  hotel_id: number;
+  property_name: string;
+  location: HotelLocation;
+  nights: number;
+  rooms_possible: number;
+  cheapest_room: CheapestRoom | null;
+  min_estimated_total: number;
+  images: HotelImages;
+  rating_stars: RatingStars;
+  google_map: string;
+  general_facilities: string[];
+}
+
+export interface SearchResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: SearchHotelResult[];
+}
+
+// Room pricing types
+export interface RoomPrice {
+  id: number;
+  base_price: number;
+  single_person_price: number | null;
+  half_day_price: number | null;
+  hotel: number;
+  room_type: number;
+  room_category: number;
+}
+
+export interface FinalPrice {
+  room_price_id: number;
+  final_price: number;
+}
+
+// Room facilities and amenities
+export interface RoomFacility {
+  id: number;
+  name_en: string;
+  name_mn: string;
+}
+
+export interface BathroomItem {
+  id: number;
+  name_en: string;
+  name_mn: string;
+}
+
+export interface FreeToiletry {
+  id: number;
+  name_en: string;
+  name_mn: string;
+}
+
+export interface FoodAndDrink {
+  id: number;
+  name_en: string;
+  name_mn: string;
+}
+
+export interface OutdoorAndView {
+  id: number;
+  name_en: string;
+  name_mn: string;
+}
+
+export interface RoomCategory {
+  id: number;
+  name: string;
+  is_custom: boolean;
+}
+
+export interface AllData {
+  room_types: RoomType[];
+  bed_types: BedType[];
+  room_facilities: RoomFacility[];
+  bathroom_items: BathroomItem[];
+  free_toiletries: FreeToiletry[];
+  food_and_drink: FoodAndDrink[];
+  outdoor_and_view: OutdoorAndView[];
+  room_category: RoomCategory[];
+}
+
+// Room features
+export interface RoomFeature {
+  pk: number;
+  name: string;
+  feature_type: 'text' | 'boolean' | 'choice';
+  choices: string | null;
+}

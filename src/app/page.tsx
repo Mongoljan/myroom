@@ -1,6 +1,8 @@
 import dynamic from "next/dynamic";
 import Header1 from "@/components/header/Header1";
+import Footer from "@/components/layout/Footer";
 import ModernHero from "@/components/hero/ModernHero";
+import WhyChooseUs from "@/components/sections/WhyChooseUs";
 import RecentlyViewed from "@/components/sections/RecentlyViewed";
 import RecommendedHotels from "@/components/sections/RecommendedHotels";
 import PopularDestinations from "@/components/sections/PopularDestinations";
@@ -15,13 +17,17 @@ const Home = () => {
   return (
     <>
       <Header1 />
-      <ModernHero />
-      <div className="bg-gray-50 dark:bg-gray-900">
-        <RecommendedHotels />
-        <PopularDestinations />
+      <main className="pt-20">
+        <ModernHero />
+        <WhyChooseUs />
         <RecentlyViewed />
+        <div className="bg-gray-50">
+          <RecommendedHotels />
+          <PopularDestinations />
+        </div>
         <FaqSection />
-      </div>
+      </main>
+      <Footer />
     </>
   );
 };

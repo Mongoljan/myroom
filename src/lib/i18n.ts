@@ -69,7 +69,15 @@ const resources = {
         adultsCount: "adults",
         childrenCount: "children",
         roomCount: "room",
-        noLocationsFound: "No locations found"
+        noLocationsFound: "No locations found",
+        findPerfect: "Find Your Perfect",
+        hotelStay: "Hotel Stay",
+        discoverHotels: "Discover exceptional hotels worldwide with instant booking, real-time availability, and unmatched experiences.",
+        selectDates: "Please select check-in and check-out dates",
+        invalidDates: "Check-out date must be after check-in date",
+        hotelsWorldwide: "Hotels Worldwide",
+        happyCustomers: "Happy Customers",
+        customerSupport: "Customer Support"
       },
       footer: {
         allInOneApp: "Your all-in-one travel app",
@@ -91,7 +99,13 @@ const resources = {
         customerService: "Customer Service",
         cancellationPolicy: "Cancellation Policy",
         termsOfService: "Terms of Service",
-        privacyPolicy: "Privacy Policy"
+        privacyPolicy: "Privacy Policy",
+        contactUs: "Contact Us",
+        address: "Peace Ave 14-6, 2nd Floor, Chingeltei District, Ulaanbaatar 14240, Ulaanbaatar, Mongolia",
+        specialOffers: "Special Offers",
+        partners: "Partners",
+        downloadApp: "Download App",
+        cookiePolicy: "Cookie Policy"
       },
       navigation: {
         home: "Home",
@@ -113,7 +127,13 @@ const resources = {
         register: "Register",
         logout: "Logout",
         becomeExpert: "Become An Expert",
-        signInRegister: "Sign In / Register"
+        signInRegister: "Sign In / Register",
+        manageBooking: "Manage Booking",
+        signIn: "Sign In",
+        signUp: "Sign Up",
+        destinations: "Destinations",
+        pages: "Pages",
+        dashboard: "Dashboard"
       },
       hotel: {
         title: "Hotels",
@@ -179,7 +199,8 @@ const resources = {
         perRoom: "per room",
         roomsAvailable: "rooms available",
         showOnMap: "Show on map",
-        priceUnavailable: "Price unavailable"
+        priceUnavailable: "Price unavailable",
+        night: "night"
       },
       search: {
         location: "Location",
@@ -203,7 +224,11 @@ const resources = {
         any: "Any",
         wonderful: "Wonderful 4.5+",
         veryGood: "Very good 4+",
-        good: "Good 3.5+"
+        good: "Good 3.5+",
+        adultsAgeNote: "Age 13 or above",
+        childrenAgeNote: "Age 0-12",
+        roomsNote: "Separate accommodations",
+        guestsAndRooms: "Guests & Rooms"
       },
       tabs: {
         hotels: "Hotels",
@@ -291,6 +316,16 @@ const resources = {
           a: "If you do not cancel within the allowed period, 100% of the payment will be charged. If you are late, please inform your hotel to arrange your stay for the remaining nights."
         }
       },
+      features: {
+        whyChooseUs: "Why Choose Us?",
+        whyChooseUsDesc: "Discover what makes us different",
+        instantConfirmation: "Instant Confirmation",
+        instantConfirmationDesc: "Get immediate booking confirmation for all your reservations.",
+        fastService: "Fast Service",
+        fastServiceDesc: "Experience quick and reliable service with our dedicated team.",
+        wideSelection: "Wide Selection",
+        wideSelectionDesc: "Choose from thousands of hotels across multiple destinations."
+      },
       errors: {
         general: "Something went wrong",
         networkError: "Network error occurred",
@@ -366,7 +401,15 @@ const resources = {
         agesNote: "0 - 17 нас",
         adultsCount: "насанд хүрэгчид",
         childrenCount: "хүүхэд",
-        roomCount: "өрөө"
+        roomCount: "өрөө",
+        findPerfect: "Төгс хүссэн",
+        hotelStay: "Зочид буудалд байрлах",
+        discoverHotels: "Дэлхийн өнцөг булан бүрээс онцгой зочид буудлуудыг олж, шууд захиалга өгөх, бодит цагийн боломжтой байдал болон дүйцэшгүй туршлагыг олж мэдээрэй.",
+        selectDates: "Орох болон гарах өдөр сонгоно уу",
+        invalidDates: "Гарах өдөр орох өдрөөс хойш байх ёстой",
+        hotelsWorldwide: "Дэлхийн зочид буудлууд",
+        happyCustomers: "Баяртай хэрэглэгчид",
+        customerSupport: "24/7 тусламж үйлчилгээ"
       },
       footer: {
         allInOneApp: "Таны бүх зорчлогын програм",
@@ -388,7 +431,13 @@ const resources = {
         customerService: "Хэрэглэгчийн үйлчилгээ",
         cancellationPolicy: "Цуцлалтын бодлого",
         termsOfService: "Үйлчилгээний нөхцөл",
-        privacyPolicy: "Нууцлалын бодлого"
+        privacyPolicy: "Нууцлалын бодлого",
+        contactUs: "Холбоо барих",
+        address: "Энхтайваны өргөн чөлөө 14-6, 2 давхар, Чингэлтэй дүүрэг, Улаанбаатар 14240, Улаанбаатар, Монгол Улс",
+        specialOffers: "Онцгой санал",
+        partners: "Хамтрагч байгууллага",
+        downloadApp: "Аппликешн татах",
+        cookiePolicy: "Cookie бодлого"
       },
       navigation: {
         home: "Нүүр",
@@ -410,7 +459,13 @@ const resources = {
         register: "Бүртгүүлэх",
         logout: "Гарах",
         becomeExpert: "Мэргэжилтэн болох",
-        signInRegister: "Нэвтрэх / Бүртгүүлэх"
+        signInRegister: "Нэвтрэх / Бүртгүүлэх",
+        manageBooking: "Захиалга удирдах",
+        signIn: "Нэвтрэх",
+        signUp: "Бүртгүүлэх",
+        destinations: "Очих газар",
+        pages: "Хуудас",
+        dashboard: "Хяналтын самбар"
       },
       hotel: {
         title: "Зочид буудал",
@@ -476,7 +531,8 @@ const resources = {
         perRoom: "өрөөнд",
         roomsAvailable: "өрөө боломжтой",
         showOnMap: "Газрын зураг дээр харах",
-        priceUnavailable: "Үнэ тодорхойгүй"
+        priceUnavailable: "Үнэ тодорхойгүй",
+        night: "шөнө"
       },
       search: {
         location: "Байршил",
@@ -500,7 +556,11 @@ const resources = {
         any: "Бүгд",
         wonderful: "Гайхалтай 4.5+",
         veryGood: "Маш сайн 4+",
-        good: "Сайн 3.5+"
+        good: "Сайн 3.5+",
+        adultsAgeNote: "13-аас дээш нас",
+        childrenAgeNote: "0-12 нас",
+        roomsNote: "Тусдаа өрөө",
+        guestsAndRooms: "Зочид ба Өрөө"
       },
       tabs: {
         hotels: "Зочид буудал",
@@ -553,40 +613,52 @@ const resources = {
         subtitle: "Түгээмэл асуугддаг асуултууд",
         q1: {
           q: "Нэхэмжлэх хэрхэн гаргуулж авах вэ?",
-          a: "Та захиалгын төлбөр төлөх рүү шилжсэнээр автоматаар нэхэмжлэх үүсэх бөгөөд төлбөр төлөх нөхцлийн баруун дээд булан дахь 'Нэхэмжлэх татах' дээр дарж татах боломжтой."
+          a: "Та захиалгын төлбөр төлөх руу шилжсэнээр автоматаар нэхэмжлэх үүсэх бөгөөд төлбөр төлөх хуудасны баруун дээд булан дахь 'Нэхэмжлэх татах' дээр дарж татаж авах боломжтой."
         },
         q2: {
-          q: "Төлбөрөө хэрхэн төлөх боломжтой вэ?",
-          a: "Та өрөөний төлбөрөө Qpay, дансаар гэсэн 2 сонголтоор хийх боломжтой. Хэрэв дансаар шилжүүлэх тохиолдолд данс болон гүйлгээний утгыг үнэн зөв хийж, нягтлан гүйлгээгээ хийгээрэй."
+          q: "Захиалгын төлбөрийг хэрхэн төлөх боломжтой вэ?",
+          a: "Та өрөөний төлбөрийг QPay болон банкны дансаар шилжүүлэх замаар төлөх боломжтой. Хэрэв дансаар шилжүүлэх тохиолдолд дансны дугаар болон гүйлгээний утгыг үнэн зөв оруулж гүйлгээ хийнэ үү."
         },
         q3: {
-          q: "Гүйлгээний утгыг буруу бичиж шилжүүлэг хийсэн бол яах вэ?",
-          a: "Гүйлгээний утга буруу бичиж шилжүүлэг хийсэн тохиолдолд таны захиалга баталгаажихгүй тул та манай 99972626 дугаар луу яаралтай холбогдон захиалгаа баталгаажуулах эсвэл буцаалт хийх боломжтой."
+          q: "Гүйлгээний мэдээллийг буруу оруулсан бол яах вэ?",
+          a: "Хэрэв буруу гүйлгээний мэдээлэл оруулсан бол таны захиалга баталгаажихгүй байх тул 99972626 дугаарт яаралтай холбогдож захиалгыг баталгаажуулах эсвэл буцаалт авах хүсэлт гаргана уу."
         },
         q4: {
-          q: "Төлбөрөө хувааж төлөх эсвэл очих өдрөө биечлэн төлөх боломжтой юу?",
-          a: "Боломжгүй. Бид хэрэглэгчдийнхээ захиалгыг аль болох давхардах эсвэл цуцлагдах гэнэтийн эрсдэлээс урьдчилан сэргийлэх үүднээс шууд баталгаажуулан, санаа амар тайван аялуулахыг зорьж буй учир төлбөрөө заавал 100% урьдчилан төлөх шаардлагатай."
+          q: "Төлбөрийг хэсэгчлэн төлөх эсвэл ирэх өдөр нь биечлэн төлөх боломжтой юу?",
+          a: "Үгүй. Давхар захиалга болон гэнэтийн цуцлалтаас урьдчилан сэргийлж, бүх зочдодоо тайван зорчлогыг хангах үүднээс бид захиалгын төлбөрийг 100% урьдчилан төлөхийг шаарддаг."
         },
         q5: {
           q: "И-баримт авах боломжтой юу?",
-          a: "Захиалагчийн мэдээлэл бөглөх хэсэг дээр хувь хүн, байгууллага, татвар төлөгч иргэн гэсэн 3 төрлөөс сонгож, кодоо оруулна. Ингээд таныг өрөөндөө байрлаж дууссаны дараа захиалга биелмэгц таны татварын код дээр и-баримт автоматаар бүртгэгдэж, мөн мэйл хаяг руу тань давхар илгээгдэнэ."
+          a: "Тийм. Захиалагчийн мэдээлэл бөглөх хэсэгт хувь хүн, байгууллага эсвэл татвар төлөгчийн төрлийг сонгоод кодоо оруулна уу. Зочид буудалд байрлаж дууссаны дараа таны татварын код дээр и-баримт автоматаар бүртгэгдэж, имэйл хаягт нь илгээгдэнэ."
         },
         q6: {
           q: "Захиалгыг цуцлах боломжтой юу?",
-          a: "Тийм. Бид 2 тал (захиалагч, буудал)-ын харилцан тэгш байдлыг хангах үүднээс хамгийн боломжит бага хураамжтай цуцлах нөхцлийг санал болгож байна. Таны буудаллах газар, хүний тоо, өрөөний тоо, төлбөрийн дүнгээс хамааран заасан хугацаанд багтаан харилцан адилгүй хураамж бодогдохыг анхаарна уу. Заасан боломжит хугацаанаас хэтэрсэн тохиолдолд цуцлах боломжгүй буюу төлбөр 100% суутгагдана."
+          a: "Тийм. Бид хамгийн уян хатан цуцлалтын нөхцлийг санал болгодог. Гэхдээ таны сонгосон зочид буудал, зочдын тоо, өрөөний тоо, төлбөрийн хэмжээнээс хамаараад цуцлалтын хураамж ялгаатай байх магадлалтай. Зөвшөөрөгдсөн хугацаанаас хэтэрсэн тохиолдолд төлбөрийн 100% хураамж авагдана."
         },
         q7: {
-          q: "Захиалга цуцлахад ямар нэг төлбөр авдаг уу?",
-          a: "Таны сонгосон газраас хамааран дотоод журам нь харилцан адилгүй учир та захиалга хийх явцад гарч ирж буй цуцлалтын хоног, хураамжтай сайтар танилцаж захиалгаа баталгаажуулаарай."
+          q: "Захиалга цуцлахад хураамж авдаг уу?",
+          a: "Цуцлалтын хураамж нь зочид буудлын дотоод бодлогоос хамаардаг. Захиалга хийх явцад цуцлалтын нөхцөл, хураамжтай танилцаж баталгаажуулана уу."
         },
         q8: {
-          q: "Захиалгын буцаалт хэрхэн хийгдэх вэ?",
-          a: "Тухайн буудлын цуцлалтын журмын дагуу хураамжийг суутган, үлдсэн буцаалтын дүнг ажлын 3 хоног дотор буцаан олгоно."
+          q: "Буцаалтын мөнгө хэрхэн олгогддог вэ?",
+          a: "Зочид буудлын цуцлалтын бодлогын дагуу тохирох хураамжийг суутгасны дараа үлдсэн дүнг ажлын 3 хоногийн дотор буцаан олгоно."
         },
         q9: {
-          q: "Захиалсан өдрөө очиж амжихааргүй эсвэл хоцорч очих болсон тохиолдолд яах вэ?",
-          a: "Тухайн буудлын боломжит заасан хугацаанд багтаан захиалгаа цуцлаагүй тохиолдолд төлбөр 100% суутгагдана. Очих өдрөө хоцорч ирж байгаа тохиолдолд үлдсэн хоногтоо байрших эсэхээ буудалдаа мэдэгдэж байрших боломжтой."
-        }
+          q: "Захиалсан өдрөө ирж чадахгүй эсвэл хоцорч ирэх тохиолдолд яах вэ?",
+          a: "Хэрэв зөвшөөрөгдсөн хугацаанд цуцлалт хийгээгүй бол төлбөрийн 100% хураамж авагдана. Хэрэв хоцорч ирэх бол үлдсэн хоногуудаар байрлах боломжийн талаар зочид буудалтайгаа холбогдоно уу."
+        },
+        stillHaveQuestions: "Асуулт байгаа юу? Бид танд туслахад бэлэн байна!",
+        contactSupport: "Дэмжлэг авах"
+      },
+      features: {
+        whyChooseUs: "Яагаад биднийг сонгох хэрэгтэй вэ?",
+        whyChooseUsDesc: "Биднийг онцгой болгодог зүйлсийг олж мэдээрэй",
+        instantConfirmation: "Шууд баталгаажуулт",
+        instantConfirmationDesc: "Таны бүх захиалгыг шууд баталгаажуулж байна.",
+        fastService: "Хурдан үйлчилгээ",
+        fastServiceDesc: "Бидний мэргэжлийн багаар хурдан, найдвартай үйлчилгээг мэдэрээрэй.",
+        wideSelection: "Өргөн сонголт",
+        wideSelectionDesc: "Олон улс орны мянга мянган зочид буудлаас сонгоорой."
       },
       errors: {
         general: "Алдаа гарлаа",
@@ -606,7 +678,8 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'en',
+    fallbackLng: 'mn',
+    lng: 'mn',
     debug: false,
     
     detection: {

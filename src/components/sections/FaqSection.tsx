@@ -117,7 +117,7 @@ export default function FaqSection() {
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            {t('faq.subtitle', 'Find answers to common questions about our car rental service')}
+            {t('faq.subtitle', 'Түгээмэл асуугддаг асуултууд')}
           </motion.p>
         </motion.div>
 
@@ -245,14 +245,14 @@ export default function FaqSection() {
           viewport={{ once: true }}
         >
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Still have questions? We&apos;re here to help!
+            {t('faq.stillHaveQuestions', 'Асуулт байгаа юу? Бид танд туслахад бэлэн байна!')}
           </p>
           <motion.button
             className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             whileHover={{ y: -2, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            Contact Support
+{t('faq.contactSupport', 'Дэмжлэг авах')}
             <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>

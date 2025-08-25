@@ -49,16 +49,17 @@ export default function CustomGuestSelector({
       newRooms = increment ? rooms + 1 : Math.max(1, rooms - 1);
     }
 
+    console.log(`Updating ${type}:`, { newAdults, newChildren, newRooms });
     onGuestChange(newAdults, newChildren, newRooms);
   };
 
   const getGuestText = () => {
     const parts = [];
-    parts.push(`${adults} adult${adults !== 1 ? 's' : ''}`);
+    parts.push(`${adults} ${t('search.adults', 'adults').toLowerCase()}`);
     if (childrenCount > 0) {
-      parts.push(`${childrenCount} child${childrenCount !== 1 ? 'ren' : ''}`);
+      parts.push(`${childrenCount} ${t('search.children', 'children').toLowerCase()}`);
     }
-    parts.push(`${rooms} room${rooms !== 1 ? 's' : ''}`);
+    parts.push(`${rooms} ${t('search.rooms', 'rooms').toLowerCase()}`);
     return parts.join(' · ');
   };
 
@@ -95,7 +96,11 @@ export default function CustomGuestSelector({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 overflow-hidden"
+            className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 z-[99999] overflow-hidden min-w-[300px]"
+            style={{ 
+              maxHeight: '400px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+            }}
           >
             <div className="p-6 space-y-6">
               {/* Adults */}
@@ -105,7 +110,7 @@ export default function CustomGuestSelector({
                     {t('search.adults', 'Adults')}
                   </div>
                   <div className="text-sm text-gray-500">
-                    Age 13 or above
+                    {t('search.adultsAgeNote', 'Age 13 or above')}
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -139,7 +144,7 @@ export default function CustomGuestSelector({
                     {t('search.children', 'Children')}
                   </div>
                   <div className="text-sm text-gray-500">
-                    Age 0-12
+                    {t('search.childrenAgeNote', 'Age 0-12')}
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -173,7 +178,7 @@ export default function CustomGuestSelector({
                     {t('search.rooms', 'Rooms')}
                   </div>
                   <div className="text-sm text-gray-500">
-                    Separate accommodations
+                    {t('search.roomsNote', 'Separate accommodations')}
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">

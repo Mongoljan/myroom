@@ -1,14 +1,17 @@
 'use client'
 import Link from "next/link";
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 const MobileMenu = () => {
+  const { t } = useHydratedTranslation();
+  
   const menuItems = [
-    { label: 'Home', href: '/' },
-    { label: 'Hotels', href: '/search' },
-    { label: 'Destinations', href: '/destinations' },
-    { label: 'Pages', href: '/pages' },
-    { label: 'Dashboard', href: '/dashboard' },
-    { label: 'Contact', href: '/contact' },
+    { label: t('navigation.home', 'Home'), href: '/' },
+    { label: t('navigation.hotels', 'Hotels'), href: '/search' },
+    { label: t('navigation.destinations', 'Destinations'), href: '/destinations' },
+    { label: t('navigation.pages', 'Pages'), href: '/pages' },
+    { label: t('navigation.dashboard', 'Dashboard'), href: '/dashboard' },
+    { label: t('navigation.contact', 'Contact'), href: '/contact' },
   ];
 
   return (
@@ -31,13 +34,13 @@ const MobileMenu = () => {
             href="/login"
             className="block w-full text-center bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Sign In
+{t('navigation.signIn', 'Sign In')}
           </Link>
           <Link
             href="/signup"
             className="block w-full text-center border border-blue-600 text-blue-600 py-3 rounded-lg hover:bg-blue-50 transition-colors"
           >
-            Register
+            {t('navigation.signUp', 'Sign Up')}
           </Link>
         </div>
       </div>
