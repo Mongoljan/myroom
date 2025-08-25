@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Shield, Zap, Users } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
@@ -31,7 +31,7 @@ export default function WhyChooseUs() {
     }
   ];
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -41,7 +41,7 @@ export default function WhyChooseUs() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { 
       opacity: 0, 
       y: 30 
@@ -50,8 +50,7 @@ export default function WhyChooseUs() {
       opacity: 1, 
       y: 0,
       transition: {
-        duration: 0.6,
-        ease: [0.25, 0.46, 0.45, 0.94]
+        duration: 0.6
       }
     }
   };

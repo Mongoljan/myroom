@@ -102,7 +102,7 @@ export class ApiService {
   }
 
   // Get hotel search results with mock fallback
-  static async searchHotelsMock(params: {
+  static async searchHotelsMock(_params: {
     location?: string;
     check_in: string;
     check_out: string;

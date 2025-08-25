@@ -131,9 +131,7 @@ const resources = {
         manageBooking: "Manage Booking",
         signIn: "Sign In",
         signUp: "Sign Up",
-        destinations: "Destinations",
-        pages: "Pages",
-        dashboard: "Dashboard"
+        pages: "Pages"
       },
       hotel: {
         title: "Hotels",
@@ -199,8 +197,7 @@ const resources = {
         perRoom: "per room",
         roomsAvailable: "rooms available",
         showOnMap: "Show on map",
-        priceUnavailable: "Price unavailable",
-        night: "night"
+        priceUnavailable: "Price unavailable"
       },
       search: {
         location: "Location",
@@ -463,9 +460,7 @@ const resources = {
         manageBooking: "Захиалга удирдах",
         signIn: "Нэвтрэх",
         signUp: "Бүртгүүлэх",
-        destinations: "Очих газар",
-        pages: "Хуудас",
-        dashboard: "Хяналтын самбар"
+        pages: "Хуудас"
       },
       hotel: {
         title: "Зочид буудал",
@@ -531,8 +526,7 @@ const resources = {
         perRoom: "өрөөнд",
         roomsAvailable: "өрөө боломжтой",
         showOnMap: "Газрын зураг дээр харах",
-        priceUnavailable: "Үнэ тодорхойгүй",
-        night: "шөнө"
+        priceUnavailable: "Үнэ тодорхойгүй"
       },
       search: {
         location: "Байршил",
