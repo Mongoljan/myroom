@@ -32,15 +32,19 @@ export default function FaqSection() {
     }
   ];
 
-  // Build FAQ array from translation or use fallback
+  // Build FAQ array from translation resources directly
   const faqs = [];
-  for (let i = 1; i <= 13; i++) {
-    // For complex objects, we need to check if translation exists first
-    const translationKey = `faq.q${i}`;
-    // Check if translation exists by trying to get it without fallback
-    const item = i18n?.exists?.(translationKey) ? t(translationKey, '') : null;
-    if (item && typeof item === 'object' && 'q' in item && 'a' in item) {
-      faqs.push(item as { q: string; a: string });
+  const currentLanguage = i18n.language || 'mn';
+  
+  // Access i18n resources directly for complex objects
+  const resources = i18n.getResourceBundle(currentLanguage, 'translation');
+  
+  if (resources?.faq) {
+    for (let i = 1; i <= 13; i++) {
+      const faqItem = resources.faq[`q${i}`];
+      if (faqItem && typeof faqItem === 'object' && 'q' in faqItem && 'a' in faqItem) {
+        faqs.push(faqItem);
+      }
     }
   }
   
@@ -77,10 +81,10 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="py-24 bg-gradient-to-b from-white via-gray-50/50 to-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-12 bg-white">
+      <div className="container mx-auto px-4 sm:px-3">
         <motion.div 
-          className="text-center mb-16"
+          className="text-center mb-8"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
@@ -91,27 +95,27 @@ export default function FaqSection() {
             whileInView={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-6"
+            className="inline-flex items-center justify-center w-10 h-10 bg-blue-600 rounded-xl mb-4"
           >
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </motion.div>
           
           <motion.h2 
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
+            className="text-2xl sm:text-3xl font-semibold mb-4"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            <span className="bg-gradient-to-r from-gray-900 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="text-gray-900">
               {t('faq.title', 'Frequently Asked Questions')}
             </span>
           </motion.h2>
           
           <motion.p 
-            className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+            className="text-sm text-gray-600 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -128,7 +132,7 @@ export default function FaqSection() {
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <div className="space-y-4">
+          <div className="space-y-2">
             {finalFaqs.map((faq, idx) => {
               const isOpen = openItems.includes(idx);
               
@@ -139,7 +143,7 @@ export default function FaqSection() {
                   className="group"
                 >
                   <motion.div 
-                    className="bg-white border border-gray-200/60 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+                    className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
                     whileHover={{ 
                       y: -2,
                       boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
@@ -147,7 +151,7 @@ export default function FaqSection() {
                     layout
                   >
                     <motion.button
-                      className="w-full text-left p-6 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
                       onClick={() => toggleItem(idx)}
                       whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.02)" }}
                       transition={{ duration: 0.2 }}
@@ -155,7 +159,7 @@ export default function FaqSection() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center flex-1 min-w-0">
                           <motion.div 
-                            className="flex-shrink-0 w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl flex items-center justify-center mr-4"
+                            className="flex-shrink-0 w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-3"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                           >
@@ -164,14 +168,14 @@ export default function FaqSection() {
                               transition={{ duration: 0.2, ease: "easeInOut" }}
                             >
                               {isOpen ? (
-                                <Minus className="w-5 h-5" />
+                                <Minus className="w-3 h-3" />
                               ) : (
-                                <Plus className="w-5 h-5" />
+                                <Plus className="w-3 h-3" />
                               )}
                             </motion.div>
                           </motion.div>
                           
-                          <h3 className="text-lg font-semibold text-gray-900 pr-4 leading-tight">
+                          <h3 className="text-sm font-medium text-gray-900 pr-3">
                             {faq.q}
                           </h3>
                         </div>
@@ -181,7 +185,7 @@ export default function FaqSection() {
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                           className="flex-shrink-0 text-gray-400 hover:text-gray-600"
                         >
-                          <ChevronDown className="w-5 h-5" />
+                          <ChevronDown className="w-4 h-4" />
                         </motion.div>
                       </div>
                     </motion.button>
@@ -209,15 +213,15 @@ export default function FaqSection() {
                           className="overflow-hidden"
                         >
                           <motion.div 
-                            className="px-6 pb-6"
+                            className="px-4 pb-4"
                             initial={{ y: -10, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: -10, opacity: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
                           >
-                            <div className="pl-14 border-l-2 border-blue-100">
+                            <div className="pl-10 border-l border-gray-200">
                               <motion.p 
-                                className="text-gray-600 leading-relaxed"
+                                className="text-sm text-gray-600"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.3, delay: 0.2 }}
@@ -238,16 +242,16 @@ export default function FaqSection() {
 
         {/* Call to action */}
         <motion.div
-          className="mt-16 text-center"
+          className="mt-8 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
         >
-          <p className="text-gray-600 mb-6">
+          <p className="text-sm text-gray-600 mb-4">
             {t('faq.stillHaveQuestions', 'Асуулт байгаа юу? Бид танд туслахад бэлэн байна!')}
           </p>
-          <motion.button
+          {/* <motion.button
             className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             whileHover={{ y: -2, scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -256,7 +260,7 @@ export default function FaqSection() {
             <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-          </motion.button>
+          </motion.button> */}
         </motion.div>
       </div>
     </section>
