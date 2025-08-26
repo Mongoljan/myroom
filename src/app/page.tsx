@@ -1,6 +1,4 @@
 import dynamic from "next/dynamic";
-import Header1 from "@/components/header/Header1";
-import Footer from "@/components/layout/Footer";
 import ModernHero from "@/components/hero/ModernHero";
 import WhyChooseUs from "@/components/sections/WhyChooseUs";
 import RecentlyViewed from "@/components/sections/RecentlyViewed";
@@ -17,19 +15,15 @@ export const metadata = {
 const Home = () => {
   return (
     <>
-      <Header1 />
-      <main className="pt-20">
-        <ModernHero />
-        <WhyChooseUs />
-        <Partnerships />
-        <RecentlyViewed />
-        <div className="bg-gray-50">
-          <RecommendedHotels />
-          <PopularDestinations />
-        </div>
-        <FaqSection />
-      </main>
-      <Footer />
+      <ModernHero />
+      <WhyChooseUs />
+      <Partnerships />
+      <RecentlyViewed />
+      <div className="bg-gray-50">
+        <RecommendedHotels />
+        <PopularDestinations />
+      </div>
+      <FaqSection />
     </>
   );
 };

@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="flex items-center justify-center bg-gray-50" style={{ minHeight: 'calc(100vh - 80px)' }}>
       <div className="max-w-md w-full space-y-8">
         <div>
           <Image

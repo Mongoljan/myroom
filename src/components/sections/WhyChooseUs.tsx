@@ -56,20 +56,20 @@ export default function WhyChooseUs() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-blue-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-12 bg-white">
+      <div className="max-w-6xl mx-auto px-4 sm:px-3">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-3">
             {t('features.whyChooseUs', 'Яагаад биднийг сонгох хэрэгтэй вэ?')}
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-sm text-gray-600 max-w-2xl mx-auto">
             {t('features.whyChooseUsDesc', 'Why choose us')}
           </p>
         </motion.div>
@@ -80,7 +80,7 @@ export default function WhyChooseUs() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           {features.map((feature, index) => (
             <motion.div
@@ -92,16 +92,16 @@ export default function WhyChooseUs() {
               <motion.div
                 whileHover={{ scale: 1.1 }}
                 transition={{ type: "spring", stiffness: 300 }}
-                className={`inline-flex items-center justify-center w-20 h-20 ${feature.color} rounded-2xl mb-6 group-hover:shadow-lg transition-shadow duration-300`}
+                className={`inline-flex items-center justify-center w-12 h-12 ${feature.color} rounded-xl mb-4 group-hover:shadow-sm transition-shadow duration-200`}
               >
-                <feature.icon className={`w-10 h-10 ${feature.iconColor}`} />
+                <feature.icon className={`w-6 h-6 ${feature.iconColor}`} />
               </motion.div>
 
               {/* Content */}
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {feature.title}
               </h3>
-              <p className="text-gray-600 leading-relaxed max-w-sm mx-auto">
+              <p className="text-sm text-gray-600 max-w-sm mx-auto">
                 {feature.description}
               </p>
             </motion.div>

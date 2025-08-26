@@ -114,7 +114,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange }: Searc
         fixed md:static inset-y-0 left-0 z-50 w-80 bg-white shadow-xl md:shadow-none
         transform transition-transform duration-300 ease-in-out md:rounded-2xl md:border md:border-gray-100
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        overflow-y-auto
+        overflow-y-auto md:sticky md:top-4
       `}>
         <div className="p-6">
           {/* Header */}

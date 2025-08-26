@@ -28,7 +28,7 @@ export default function SearchResults() {
   const [hotels, setHotels] = useState<SearchHotelResult[]>([]);
   const [filteredHotels, setFilteredHotels] = useState<SearchHotelResult[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('price_low');
   const [filters, setFilters] = useState<FilterState>({
@@ -181,7 +181,7 @@ export default function SearchResults() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-50">
         {/* Header Skeleton */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
           <div className="container mx-auto px-4 py-6">
@@ -216,7 +216,7 @@ export default function SearchResults() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50">
       {/* Professional Search Form Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
         <div className="container mx-auto px-4 py-6">
@@ -252,7 +252,7 @@ export default function SearchResults() {
           {/* Professional Filters Sidebar */}
           <div className="xl:w-80 flex-shrink-0">
             {/* Mobile Filter Button */}
-            <div className="xl:hidden mb-6">
+            <div className="md:hidden mb-6">
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowFilters(true)}
@@ -316,14 +316,6 @@ export default function SearchResults() {
               </div>
             </div>
 
-            {/* Desktop Filters */}
-            <div className="hidden xl:block sticky top-4">
-              <SearchFilters
-                isOpen={true}
-                onClose={() => {}}
-                onFilterChange={handleFilterChange}
-              />
-            </div>
           </div>
 
           {/* Professional Main Content */}
@@ -604,7 +596,7 @@ export default function SearchResults() {
         </div>
       </div>
 
-      {/* Mobile Filter Modal */}
+      {/* Responsive Filters - Desktop: Sidebar, Mobile: Modal */}
       <SearchFilters
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}

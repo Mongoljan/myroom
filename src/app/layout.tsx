@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ToastProvider } from "@/components/common/ToastContainer";
+import Header1 from "@/components/header/Header1";
+import Footer from "@/components/layout/Footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -38,7 +40,11 @@ export default function RootLayout({
         >
           <ToastProvider>
             <I18nProvider>
-              {children}
+              <Header1 />
+              <main className="pt-20">
+                {children}
+              </main>
+              <Footer />
             </I18nProvider>
           </ToastProvider>
         </ThemeProvider>

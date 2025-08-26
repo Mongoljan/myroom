@@ -7,7 +7,7 @@ const Hero1 = () => {
   const { t } = useHydratedTranslation();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900"></div>
@@ -73,15 +73,15 @@ const Hero1 = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 text-center">
-        <div className="max-w-4xl mx-auto">
+      <div className="relative z-10 container mx-auto px-4 text-center">
+        <div className="max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
             <motion.h1 
-              className="text-5xl md:text-6xl font-bold text-white mb-4"
+              className="text-3xl md:text-4xl font-bold text-white mb-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -90,7 +90,7 @@ const Hero1 = () => {
             </motion.h1>
             
             <motion.h2 
-              className="text-4xl md:text-5xl font-bold text-transparent bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text mb-6"
+              className="text-2xl md:text-3xl font-bold text-white mb-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
@@ -99,7 +99,7 @@ const Hero1 = () => {
             </motion.h2>
             
             <motion.p 
-              className="text-lg text-white/80 mb-10 max-w-2xl mx-auto"
+              className="text-sm text-white/80 mb-6 max-w-xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -114,7 +114,7 @@ const Hero1 = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="mb-16"
+            className="mb-8"
           >
             <SearchForm />
           </motion.div>
@@ -124,19 +124,19 @@ const Hero1 = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center"
           >
             <div className="text-white">
-              <div className="text-3xl md:text-4xl font-bold mb-2">10,000+</div>
-              <div className="text-white/80">Hotels Worldwide</div>
+              <div className="text-xl md:text-2xl font-bold mb-1">10,000+</div>
+              <div className="text-white/80 text-sm">Hotels Worldwide</div>
             </div>
             <div className="text-white">
-              <div className="text-3xl md:text-4xl font-bold mb-2">50,000+</div>
-              <div className="text-white/80">Happy Customers</div>
+              <div className="text-xl md:text-2xl font-bold mb-1">50,000+</div>
+              <div className="text-white/80 text-sm">Happy Customers</div>
             </div>
             <div className="text-white">
-              <div className="text-3xl md:text-4xl font-bold mb-2">24/7</div>
-              <div className="text-white/80">Customer Support</div>
+              <div className="text-xl md:text-2xl font-bold mb-1">24/7</div>
+              <div className="text-white/80 text-sm">Customer Support</div>
             </div>
           </motion.div>
         </div>
