@@ -65,11 +65,11 @@ export default function HotelAmenities({ amenities, facilities }: HotelAmenities
       <h2 className="text-2xl font-semibold">{t('hotel.amenities', 'Amenities')}</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {items.map((item, index) => (
-          <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+          <div key={index} className="flex items-center gap-3 p-3 bg-gray-100 border border-gray-200 rounded-lg">
             <div className="text-blue-600">
               {amenityIcons[item] || <Shield className="w-5 h-5" />}
             </div>
-            <span className="text-sm font-medium text-gray-700">{item}</span>
+            <span className="text-sm font-medium text-gray-900">{item}</span>
           </div>
         ))}
       </div>

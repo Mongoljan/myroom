@@ -39,7 +39,7 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors"
               >
                 {t(item.name)}
               </Link>
@@ -51,7 +51,7 @@ export default function Header() {
             {/* Language */}
             <button
               onClick={toggleLanguage}
-              className="flex items-center space-x-1 text-sm font-medium text-gray-600 hover:text-blue-600"
+              className="flex items-center space-x-1 text-sm font-medium text-gray-800 hover:text-blue-600"
             >
               <Globe className="w-4 h-4" />
               <span>{i18n.language?.toUpperCase() || 'MN'}</span>
@@ -67,7 +67,7 @@ export default function Header() {
 
             {/* Mobile Menu Button */}
             <button
-              className="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              className="lg:hidden p-2 rounded-md text-gray-800 hover:text-gray-900 hover:bg-gray-100"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
@@ -94,7 +94,7 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-md"
+                  className="block px-3 py-2 text-base font-medium text-gray-900 hover:text-blue-600 hover:bg-blue-50 rounded-md"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t(item.name)}

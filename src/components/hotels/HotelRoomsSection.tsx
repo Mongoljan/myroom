@@ -82,7 +82,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             <div className="space-y-2 text-sm">
               <p><span className="font-medium">Booking Code:</span> {bookingResult.booking_code}</p>
               <p><span className="font-medium">PIN Code:</span> {bookingResult.pin_code}</p>
-              <p className="text-gray-600">{bookingResult.message}</p>
+              <p className="text-gray-800">{bookingResult.message}</p>
             </div>
             <button
               onClick={onClose}
@@ -108,28 +108,28 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             <h2 className="text-xl font-bold text-gray-900">Book Room {room.room_number}</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
+              className="text-gray-900 hover:text-gray-800 text-2xl"
             >
               ×
             </button>
           </div>
-          <p className="text-gray-600 mt-1">{room.room_Description}</p>
+          <p className="text-gray-800 mt-1">{room.room_Description}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
             <div>
-              <span className="text-gray-600">Check-in:</span>
+              <span className="text-gray-800">Check-in:</span>
               <div className="font-medium">{new Date(checkIn).toLocaleDateString()}</div>
             </div>
             <div>
-              <span className="text-gray-600">Check-out:</span>
+              <span className="text-gray-800">Check-out:</span>
               <div className="font-medium">{new Date(checkOut).toLocaleDateString()}</div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Number of Rooms
             </label>
             <select
@@ -146,7 +146,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Full Name *
             </label>
             <input
@@ -160,7 +160,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Phone Number *
             </label>
             <input
@@ -174,7 +174,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               Email Address *
             </label>
             <input
@@ -191,7 +191,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
@@ -291,11 +291,11 @@ export default function HotelRoomsSection({ hotelId, checkIn = '', checkOut = ''
               {t('hotel.roomsAndRates', 'Rooms & Rates')}
             </h2>
             {checkIn && checkOut && (
-              <div className="flex items-center gap-4 text-gray-600">
+              <div className="flex items-center gap-4 text-gray-800">
                 <span>{new Date(checkIn).toLocaleDateString()} - {new Date(checkOut).toLocaleDateString()}</span>
               </div>
             )}
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-800 mt-1">
               {filteredAndSortedRooms.length} rooms available
             </p>
           </div>
@@ -303,7 +303,7 @@ export default function HotelRoomsSection({ hotelId, checkIn = '', checkOut = ''
           {/* Filters and Sorting */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-500" />
+              <Filter className="w-4 h-4 text-gray-900" />
               <select
                 value={filterBy}
                 onChange={(e) => setFilterBy(e.target.value as 'all' | 'available' | 'bathroom')}
@@ -316,7 +316,7 @@ export default function HotelRoomsSection({ hotelId, checkIn = '', checkOut = ''
             </div>
 
             <div className="flex items-center gap-2">
-              <SortAsc className="w-4 h-4 text-gray-500" />
+              <SortAsc className="w-4 h-4 text-gray-900" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'price' | 'size' | 'capacity')}
@@ -356,11 +356,11 @@ export default function HotelRoomsSection({ hotelId, checkIn = '', checkOut = ''
           </motion.div>
         ) : (
           <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
+            <div className="text-gray-900 mb-4">
               <Users className="w-16 h-16 mx-auto" />
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">No rooms found</h3>
-            <p className="text-gray-600">Try adjusting your filters or check back later.</p>
+            <p className="text-gray-800">Try adjusting your filters or check back later.</p>
           </div>
         )}
       </section>

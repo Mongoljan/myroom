@@ -12,21 +12,40 @@ interface FAQItem {
 
 interface HotelFAQProps {
   hotelName: string;
+  hotelFacilities?: string[];
+  hotelRating?: number;
 }
 
-export default function HotelFAQ({ hotelName }: HotelFAQProps) {
+export default function HotelFAQ({ hotelName, hotelFacilities = [], hotelRating }: HotelFAQProps) {
   const { t } = useHydratedTranslation();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  // Generate FAQ based on hotel facilities
+  const hasPool = hotelFacilities.some(f => f.toLowerCase().includes('pool') || f.toLowerCase().includes('усан'));
+  const hasRestaurant = hotelFacilities.some(f => f.toLowerCase().includes('restaurant') || f.toLowerCase().includes('ресторан'));
+  const hasWifi = hotelFacilities.some(f => f.toLowerCase().includes('wifi') || f.toLowerCase().includes('интернэт'));
+  const hasParking = hotelFacilities.some(f => f.toLowerCase().includes('parking') || f.toLowerCase().includes('зогсоол'));
+  const hasSpa = hotelFacilities.some(f => f.toLowerCase().includes('spa') || f.toLowerCase().includes('спа'));
 
   const faqData: FAQItem[] = [
     {
       question: t('faq.breakfast', `${hotelName}-д ямар цайны хоол өгдөг вэ?`),
-      answer: t('faq.breakfastAnswer', `${hotelName}-д амттай цайны хоол (зочдын үнэлгээ 8.5) өгдөг. Цайны хоолны сонголтод: Буфет орно.`),
+      answer: hasRestaurant 
+        ? t('faq.breakfastAnswer', `${hotelName}-д амттай цайны хоол өгдөг. Рестораны цагийн хуваарь болон сонголтын талаар дэлгэрэнгүй мэдээлэл авахын тулд зочид буудалтай холбогдоно уу.`)
+        : t('faq.breakfastAnswerNoRestaurant', `${hotelName}-д цайны хоолны талаар дэлгэрэнгүй мэдээлэл авахын тулд зочид буудалтай шууд холбогдоно уу.`),
     },
-    {
+    ...(hasPool ? [{
       question: t('faq.pool', `${hotelName}-д усан сан байдаг уу?`),
-      answer: t('faq.poolAnswer', 'Тийм, энэ зочид буудалд усан сантай.'),
-    },
+      answer: t('faq.poolAnswer', 'Тийм, энэ зочид буудалд усан сантай. Усан санны цагийн хуваарь болон журмын талаар дэлгэрэнгүй мэдээлэл авахын тулд зочид буудалтай холбогдоно уу.'),
+    }] : []),
+    ...(hasWifi ? [{
+      question: t('faq.wifi', `${hotelName}-д WiFi байдаг уу?`),
+      answer: t('faq.wifiAnswer', 'Тийм, зочид буудалд үнэгүй WiFi интернэт үйлчилгээ байдаг.'),
+    }] : []),
+    ...(hasParking ? [{
+      question: t('faq.parking', `${hotelName}-д зогсоол байдаг уу?`),
+      answer: t('faq.parkingAnswer', 'Тийм, зочид буудалд машин зогсоох талбай байдаг. Зогсоолын нөхцөл, үнийн талаар дэлгэрэнгүй мэдээлэл авахын тулд зочид буудалтай холбогдоно уу.'),
+    }] : []),
     {
       question: t('faq.rooms', `${hotelName}-д ямар өрөө захиалж болох вэ?`),
       answer: t('faq.roomsAnswer', 'Та дараах өрөөнүүдийг захиалж болно: Стандарт хос хүний өрөө, Люкс өрөө, Гэр бүлийн өрөө.'),
@@ -74,7 +93,7 @@ export default function HotelFAQ({ hotelName }: HotelFAQProps) {
           <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
             <button
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
-              className="w-full px-6 py-4 text-left bg-white hover:bg-gray-50 transition-colors duration-200"
+              className="w-full px-6 py-4 text-left bg-white hover:bg-gray-100 transition-colors duration-200"
             >
               <div className="flex justify-between items-center">
                 <span className="font-medium text-gray-900 pr-4">{faq.question}</span>
@@ -83,7 +102,7 @@ export default function HotelFAQ({ hotelName }: HotelFAQProps) {
                   transition={{ duration: 0.2 }}
                   className="flex-shrink-0"
                 >
-                  <ChevronDown className="w-5 h-5 text-gray-500" />
+                  <ChevronDown className="w-5 h-5 text-gray-900" />
                 </motion.div>
               </div>
             </button>
@@ -97,7 +116,7 @@ export default function HotelFAQ({ hotelName }: HotelFAQProps) {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="px-6 pb-4 text-gray-700 leading-relaxed border-t border-gray-100">
+                  <div className="px-6 pb-4 text-gray-800 leading-relaxed border-t border-gray-100">
                     {faq.answer}
                   </div>
                 </motion.div>

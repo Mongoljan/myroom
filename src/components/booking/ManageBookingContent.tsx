@@ -65,7 +65,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
           <h3 className="text-xl font-bold text-gray-900">Change Dates</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl"
+            className="text-gray-900 hover:text-gray-800 text-2xl"
           >
             ×
           </button>
@@ -73,7 +73,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               New Check-in Date
             </label>
             <input
@@ -87,7 +87,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
               New Check-out Date
             </label>
             <input
@@ -110,7 +110,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50"
+              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50"
             >
               Cancel
             </button>
@@ -181,7 +181,7 @@ export default function ManageBookingContent() {
       case 'cancelled':
         return 'text-red-700 bg-red-100';
       default:
-        return 'text-gray-700 bg-gray-100';
+        return 'text-gray-900 bg-gray-100';
     }
   };
 
@@ -218,7 +218,7 @@ export default function ManageBookingContent() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               Manage Your Booking
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-800">
               Enter your booking code and PIN to view and manage your reservation
             </p>
           </div>
@@ -228,7 +228,7 @@ export default function ManageBookingContent() {
             <form onSubmit={(e) => { e.preventDefault(); fetchBooking(); }} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Booking Code
                   </label>
                   <input
@@ -241,7 +241,7 @@ export default function ManageBookingContent() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     PIN Code
                   </label>
                   <input
@@ -292,7 +292,7 @@ export default function ManageBookingContent() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
                   <div className="space-y-3">
                     <h3 className="font-medium text-gray-900">Booking Info</h3>
-                    <div className="space-y-1 text-gray-600">
+                    <div className="space-y-1 text-gray-800">
                       <p><span className="font-medium">Code:</span> {bookingCode}</p>
                       <p><span className="font-medium">PIN:</span> {pinCode}</p>
                       <p><span className="font-medium">Total:</span> {formatCurrency(bookingData.total_sum)}</p>
@@ -301,7 +301,7 @@ export default function ManageBookingContent() {
 
                   <div className="space-y-3">
                     <h3 className="font-medium text-gray-900">Guest Information</h3>
-                    <div className="space-y-1 text-gray-600">
+                    <div className="space-y-1 text-gray-800">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4" />
                         {bookingData.bookings[0]?.customer_name}
@@ -363,15 +363,15 @@ export default function ManageBookingContent() {
                             {getStatusIcon(booking.status)}
                             {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                           </div>
-                          <span className="text-sm text-gray-600">Room {booking.room}</span>
+                          <span className="text-sm text-gray-800">Room {booking.room}</span>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center gap-2 text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-800">
                             <Calendar className="w-4 h-4" />
                             <span>Check-in: {formatDate(booking.check_in)}</span>
                           </div>
-                          <div className="flex items-center gap-2 text-gray-600">
+                          <div className="flex items-center gap-2 text-gray-800">
                             <Calendar className="w-4 h-4" />
                             <span>Check-out: {formatDate(booking.check_out)}</span>
                           </div>
@@ -386,7 +386,7 @@ export default function ManageBookingContent() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setShowDateModal(booking)}
-                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 text-sm"
+                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 text-sm"
                           >
                             <Edit3 className="w-4 h-4" />
                             Change Dates

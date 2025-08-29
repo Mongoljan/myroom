@@ -80,7 +80,7 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
             <span className="text-xl font-bold">{rating}</span>
           </div>
-          <div className="text-muted-foreground">
+          <div className="text-gray-800">
             <span className="font-medium">{getRatingText(rating)}</span>
             <span className="ml-1">({reviewCount} {t('hotel.reviews', 'reviews')})</span>
           </div>
@@ -88,7 +88,7 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
       </div>
 
       {/* Rating Breakdown */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 bg-muted/30 rounded-lg">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 bg-gray-100 rounded-lg">
         {[
           { label: 'Cleanliness', rating: 4.8 },
           { label: 'Service', rating: 4.7 },
@@ -98,7 +98,7 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
         ].map((item, index) => (
           <div key={index} className="text-center">
             <div className="text-lg font-semibold">{item.rating}</div>
-            <div className="text-sm text-muted-foreground">{item.label}</div>
+            <div className="text-sm text-gray-800">{item.label}</div>
           </div>
         ))}
       </div>
@@ -106,16 +106,16 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
       {/* Reviews List */}
       <div className="space-y-6">
         {displayedReviews.map((review) => (
-          <div key={review.id} className="border-b border-border pb-6 last:border-b-0">
+          <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-primary" />
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5 text-blue-600" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <h4 className="font-semibold">{review.userName}</h4>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <h4 className="font-semibold text-gray-900">{review.userName}</h4>
+                    <div className="flex items-center gap-2 text-sm text-gray-900">
                       <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
                           <Star
@@ -123,7 +123,7 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
                             className={`w-4 h-4 ${
                               i < review.rating
                                 ? 'fill-yellow-400 text-yellow-400'
-                                : 'text-gray-300'
+                                : 'text-gray-800'
                             }`}
                           />
                         ))}
@@ -133,11 +133,11 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
                     </div>
                   </div>
                 </div>
-                <p className="text-muted-foreground mb-3 leading-relaxed">
+                <p className="text-gray-800 mb-3 leading-relaxed">
                   {review.comment}
                 </p>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <button className="flex items-center gap-1 hover:text-foreground transition-colors">
+                <div className="flex items-center gap-2 text-sm text-gray-900">
+                  <button className="flex items-center gap-1 hover:text-gray-900 transition-colors">
                     <ThumbsUp className="w-4 h-4" />
                     <span>Helpful ({review.helpful})</span>
                   </button>
@@ -153,7 +153,7 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
         <div className="text-center">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="px-6 py-2 border border-border rounded-md hover:bg-muted/50 transition-colors"
+            className="px-6 py-2 border border-gray-200 rounded-md hover:bg-gray-100 transition-colors"
           >
             {showAll ? 'Show Less' : `Show All ${reviews.length} Reviews`}
           </button>

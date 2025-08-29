@@ -72,7 +72,7 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
           {/* Main Image */}
           <div className="lg:col-span-2 relative h-80 lg:h-96 rounded-xl overflow-hidden">
             <Image
-              src={hotel.images.gallery[currentImageIndex]?.img.url || hotel.images.cover.url || '/images/hotel-placeholder.jpg'}
+              src={hotel.images.gallery[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover.url) || '/images/hotel-placeholder.jpg'}
               alt={hotel.property_name}
               fill
               className="object-cover"
@@ -121,7 +121,7 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
                 onClick={() => setCurrentImageIndex(index + 1)}
               >
                 <Image
-                  src={image.img.url || '/images/hotel-placeholder.jpg'}
+                  src={image.url || '/images/hotel-placeholder.jpg'}
                   alt={`${hotel.property_name} - ${index + 1}`}
                   fill
                   className="object-cover hover:opacity-80 transition-opacity"
@@ -141,14 +141,14 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
           {[...Array(getStarRating(hotel.rating_stars.value))].map((_, i) => (
             <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
           ))}
-          <span className="ml-2 text-sm text-gray-600">{hotel.rating_stars.label}</span>
+          <span className="ml-2 text-sm text-gray-800">{hotel.rating_stars.label}</span>
         </div>
         
   <h1 className="text-3xl font-bold text-gray-900 mb-2">{hotel.property_name}</h1>
-        <div className="flex items-center gap-4 text-gray-600">
+        <div className="flex items-center gap-4 text-gray-800">
       <div className="flex items-center gap-1">
             <MapPin className="w-4 h-4" />
-        <span className="text-gray-700">{hotel.location.province_city}, {hotel.location.soum}, {hotel.location.district}</span>
+        <span className="text-gray-800">{hotel.location.province_city}, {hotel.location.soum}, {hotel.location.district}</span>
           </div>
         </div>
       </div>
@@ -156,7 +156,7 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
       {/* Description */}
       <div>
         <h2 className="text-xl font-semibold mb-3">{t('about_property', 'Зочид буудлын тухай')}</h2>
-        <p className="text-gray-600 leading-relaxed">
+        <p className="text-gray-900 leading-relaxed">
           {hotel.description || t('default_description', `${hotel.property_name} зочид буудалд тав тухтай орчинд амрах боломжтой. ${hotel.location.province_city} хотын төвд байрлах энэхүү зочид буудал орчин үеийн тохижилт, өндөр чанарын үйлчилгээгээр таны амралтыг дурсамжтай болгоно.`)}
         </p>
       </div>
@@ -166,14 +166,14 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
         <h3 className="text-lg font-semibold mb-3">{t('popular_amenities', 'Үндсэн тохижилт')}</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {hotel.general_facilities.slice(0, 6).map((facility, index) => (
-            <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+            <div key={index} className="flex items-center space-x-3 p-3 bg-gray-100 border border-gray-200 rounded-lg">
               <Wifi className="w-5 h-5 text-blue-600" />
-              <span className="text-gray-700">{facility}</span>
+              <span className="text-gray-900">{facility}</span>
             </div>
           ))}
         </div>
         {hotel.general_facilities.length > 6 && (
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-900">
             {t('more_amenities', `Мөн ${hotel.general_facilities.length - 6} тохижилт...`)}
           </p>
         )}

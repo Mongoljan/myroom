@@ -74,9 +74,9 @@ export default function HotelSearchForm() {
             {/* Location Input */}
             <div className="flex-1 relative">
               <div className="flex items-center p-4">
-                <MapPin className="w-5 h-5 text-gray-400 mr-3" />
+                <MapPin className="w-5 h-5 text-gray-900 mr-3" />
                 <div className="flex-1">
-                  <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>Location</div>
+                  <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>Location</div>
                   <input
                     type="text"
                     value={searchParams.location}
@@ -91,9 +91,9 @@ export default function HotelSearchForm() {
             {/* Date Range */}
             <div className="relative">
               <div className="flex items-center p-4">
-                <Calendar className="w-5 h-5 text-gray-400 mr-3" />
+                <Calendar className="w-5 h-5 text-gray-900 mr-3" />
                 <div>
-                  <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>Check in - Check out</div>
+                  <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>Check in - Check out</div>
                   <div className="flex items-center gap-2">
                     <input
                       type="date"
@@ -102,7 +102,7 @@ export default function HotelSearchForm() {
                       className={`${TYPOGRAPHY.body.standard} text-gray-900 border-none outline-none bg-transparent cursor-pointer`}
                       required
                     />
-                    <span className="text-gray-400">-</span>
+                    <span className="text-gray-900">-</span>
                     <input
                       type="date"
                       value={searchParams.checkOut}
@@ -144,9 +144,9 @@ export default function HotelSearchForm() {
               {/* Location Input */}
               <div className="p-4">
                 <div className="flex items-center">
-                  <MapPin className="w-5 h-5 text-gray-400 mr-3" />
+                  <MapPin className="w-5 h-5 text-gray-900 mr-3" />
                   <div className="flex-1">
-                    <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>Location</div>
+                    <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>Location</div>
                     <input
                       type="text"
                       value={searchParams.location}
@@ -161,9 +161,9 @@ export default function HotelSearchForm() {
               {/* Date Range - Mobile Friendly */}
               <div className="p-4">
                 <div className="flex items-start">
-                  <Calendar className="w-5 h-5 text-gray-400 mr-3 mt-1" />
+                  <Calendar className="w-5 h-5 text-gray-900 mr-3 mt-1" />
                   <div className="flex-1">
-                    <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-2`}>Check in - Check out</div>
+                    <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-2`}>Check in - Check out</div>
                     <div className="grid grid-cols-2 gap-2">
                       <input
                         type="date"

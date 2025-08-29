@@ -25,17 +25,17 @@ export default function Footer() {
             <div className="space-y-4">
               <h4 className={`${TYPOGRAPHY.heading.h3} mb-4`}>{t('footer.contactUs', 'ХОЛБОО БАРИХ').toUpperCase()}</h4>
               
-              <div className="flex items-center space-x-3 text-gray-300">
+              <div className="flex items-center space-x-3 text-gray-800">
                 <Phone className="w-5 h-5 text-blue-400" />
                 <span className={TYPOGRAPHY.body.standard}>+976-7777-7777</span>
               </div>
               
-              <div className="flex items-center space-x-3 text-gray-300">
+              <div className="flex items-center space-x-3 text-gray-800">
                 <Mail className="w-5 h-5 text-blue-400" />
                 <span className={TYPOGRAPHY.body.standard}>info@myroom.mn</span>
               </div>
               
-              <div className="flex items-start space-x-3 text-gray-300">
+              <div className="flex items-start space-x-3 text-gray-800">
                 <MapPin className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
                 <span className={TYPOGRAPHY.body.standard}>
                   {t('footer.address', 'Peace Ave 14-6, 2nd Floor, Chingeltei District, Ulaanbaatar 14240, Ulaanbaatar, Mongolia')}
@@ -47,7 +47,7 @@ export default function Footer() {
           {/* Hotel Services */}
           <div>
             <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>{t('navigation.hotels', 'ЗОЧИД БУУДАЛ').toUpperCase()}</h4>
-            <ul className="space-y-3 text-gray-300">
+            <ul className="space-y-3 text-gray-800">
               <li><Link href="/hotels" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('hotel.search', 'Зочид буудал хайх')}</Link></li>
               <li><Link href="/offers" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.specialOffers', 'Онцгой санал')}</Link></li>
               <li><Link href="/destinations" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('navigation.destinations', 'Аялах газар')}</Link></li>
@@ -58,7 +58,7 @@ export default function Footer() {
           {/* Customer Support */}
           <div>
             <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>{t('footer.support', 'ТУСЛАМЖ').toUpperCase()}</h4>
-            <ul className="space-y-3 text-gray-300">
+            <ul className="space-y-3 text-gray-800">
               <li><Link href="/help" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.helpCenter', 'Тусламжийн төв')}</Link></li>
               <li><Link href="/contact" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('navigation.contact', 'Холбоо барих')}</Link></li>
               <li><Link href="/cancellation" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.cancellationPolicy', 'Цуцлах бодлого')}</Link></li>
@@ -69,7 +69,7 @@ export default function Footer() {
           {/* About */}
           <div>
             <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>{t('footer.aboutUs', 'БИДНИЙ ТУХАЙ').toUpperCase()}</h4>
-            <ul className="space-y-3 text-gray-300">
+            <ul className="space-y-3 text-gray-800">
               <li><Link href="/about" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.aboutUs', 'Компанийн тухай')}</Link></li>
               <li><Link href="/careers" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.careers', 'Ажлын байр')}</Link></li>
               <li><Link href="/partners" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.partners', 'Хамтрагч байгууллага')}</Link></li>
@@ -82,7 +82,7 @@ export default function Footer() {
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
-              <span className={`${TYPOGRAPHY.body.standard} text-gray-300`}>{t('footer.downloadApp', 'Аппликешн татах')}:</span>
+              <span className={`${TYPOGRAPHY.body.standard} text-gray-800`}>{t('footer.downloadApp', 'Аппликешн татах')}:</span>
               <div className="flex items-center space-x-3">
                 <Link href="#" className="hover:opacity-80 transition-opacity">
                   <div className="bg-black rounded-lg px-4 py-2 flex items-center space-x-2">
@@ -120,7 +120,7 @@ export default function Footer() {
 
             {/* Social Media Links */}
             <div className="flex items-center space-x-4">
-              <span className={`${TYPOGRAPHY.body.standard} text-gray-300`}>{t('footer.followUs', 'Бидэнтэй холбогдох')}:</span>
+              <span className={`${TYPOGRAPHY.body.standard} text-gray-800`}>{t('footer.followUs', 'Бидэнтэй холбогдох')}:</span>
               <div className="flex space-x-3">
                 <Link href="#" className="w-10 h-10 bg-gray-700 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -155,10 +155,10 @@ export default function Footer() {
       <div className="bg-slate-950 py-6">
         <div className={CONTAINERS.standard}>
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
-            <p className={`${TYPOGRAPHY.body.standard} text-gray-400`}>
+            <p className={`${TYPOGRAPHY.body.standard} text-gray-900`}>
               © 2025 MyRoom. {t('footer.allRightsReserved', 'Зохиогч эрхийн хуулиар хамгаалагдсан')}.
             </p>
-            <div className={`flex items-center space-x-4 ${TYPOGRAPHY.body.standard} text-gray-400`}>
+            <div className={`flex items-center space-x-4 ${TYPOGRAPHY.body.standard} text-gray-900`}>
               <Link href="/privacy" className="hover:text-white transition-colors">
                 {t('footer.privacyPolicy', 'Нууцлалын бодлого')}
               </Link>

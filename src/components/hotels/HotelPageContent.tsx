@@ -12,38 +12,10 @@ import HotelSubNav from '@/components/hotels/HotelSubNav';
 import HotelFAQ from '@/components/hotels/HotelFAQ';
 import HotelHouseRules from '@/components/hotels/HotelHouseRules';
 
-interface Hotel {
-  hotel_id: number;
-  property_name: string;
-  location: {
-    province_city: string;
-    soum: string;
-    district: string;
-  };
-  images: {
-    cover: {
-      url: string;
-      description: string;
-    };
-    gallery: Array<{
-      img: {
-        url: string;
-        description: string;
-      };
-    }>;
-  };
-  rating_stars: {
-    id: number;
-    label: string;
-    value: string;
-  };
-  google_map: string;
-  general_facilities: string[];
-  description?: string;
-}
+import { SearchHotelResult } from '@/types/api';
 
 interface HotelPageContentProps {
-  hotel: Hotel;
+  hotel: SearchHotelResult;
   searchParams?: { 
     check_in?: string; 
     check_out?: string; 
@@ -73,7 +45,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
                 <BookingCard hotel={{
                   id: hotel.hotel_id.toString(),
                   name: hotel.property_name,
-                  price: 200000
+                  price: hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 200000
                 }} />
               </div>
             </div>
@@ -86,7 +58,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
         activeSection={activeSection} 
         onSectionChange={setActiveSection}
         hotelName={hotel.property_name}
-        price={200000}
+        price={hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 200000}
       />
 
       {/* Content Sections */}
@@ -97,6 +69,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
             <div id="rooms">
               <ImprovedHotelRoomsSection 
                 hotelId={hotel.hotel_id}
+                hotelName={hotel.property_name}
                 checkIn={searchParams?.check_in}
                 checkOut={searchParams?.check_out}
               />
@@ -121,7 +94,11 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
 
             {/* FAQ Section */}
             <div id="faq">
-              <HotelFAQ hotelName={hotel.property_name} />
+              <HotelFAQ 
+                hotelName={hotel.property_name} 
+                hotelFacilities={hotel.general_facilities}
+                hotelRating={parseFloat(hotel.rating_stars.value)}
+              />
             </div>
           </div>
           

@@ -204,7 +204,7 @@ export default function DateRangePicker({
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               type="button"
             >
-              <ChevronLeft className="w-4 h-4 text-gray-700" />
+              <ChevronLeft className="w-4 h-4 text-gray-900" />
             </button>
           )}
           <h3 className={`font-medium text-gray-900 text-xs ${monthOffset === 0 ? '' : 'ml-10'}`}>
@@ -220,7 +220,7 @@ export default function DateRangePicker({
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               type="button"
             >
-              <ChevronRight className="w-4 h-4 text-gray-700" />
+              <ChevronRight className="w-4 h-4 text-gray-900" />
             </button>
           )}
           {monthOffset === 0 && <div className="w-10" />}
@@ -228,7 +228,7 @@ export default function DateRangePicker({
 
         <div className="grid grid-cols-7 gap-1 mb-1">
           {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-            <div key={day} className="text-xs font-medium text-gray-500 text-center py-0.5">
+            <div key={day} className="text-xs font-medium text-gray-900 text-center py-0.5">
               {day}
             </div>
           ))}
@@ -252,7 +252,7 @@ export default function DateRangePicker({
             
             // Priority 1: DISABLED STATE (overrides everything)
             if (day.isDisabled) {
-              buttonClass += ' text-gray-300 cursor-not-allowed rounded-md';
+              buttonClass += ' text-gray-800 cursor-not-allowed rounded-md';
             }
             // Priority 2: SELECTED RANGE STATES
             else if (isRangeStart && isRangeEnd) {
@@ -316,7 +316,7 @@ export default function DateRangePicker({
   return (
     <div className="relative">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-900 mb-2">
           {label}
         </label>
       )}
@@ -339,19 +339,19 @@ export default function DateRangePicker({
       >
         {minimal ? (
           <span className={`text-md font-medium ${
-            checkIn || checkOut ? 'text-gray-900' : 'text-gray-500'
+            checkIn || checkOut ? 'text-gray-900' : 'text-gray-900'
           }`}>
             {formatDisplayDate()}
           </span>
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Calendar className="w-5 h-5 text-gray-500 mr-3" />
-              <span className={checkIn || checkOut ? 'text-gray-900 font-medium' : 'text-gray-500'}>
+              <Calendar className="w-5 h-5 text-gray-900 mr-3" />
+              <span className={checkIn || checkOut ? 'text-gray-900 font-medium' : 'text-gray-900'}>
                 {formatDisplayDate()}
               </span>
             </div>
-            <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
+            <ChevronRight className={`w-5 h-5 text-gray-900 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
           </div>
         )}
       </button>

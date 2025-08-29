@@ -81,7 +81,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {hotels.map((hotel) => (
           <Link key={hotel.id} href={`/hotel/${hotel.id}`}>
-            <div className="group cursor-pointer bg-card border border-border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
+            <div className="group cursor-pointer bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300">
               <div className="relative h-48 overflow-hidden">
                 <Image
                   src={hotel.image}
@@ -98,10 +98,10 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
               
               <div className="p-4 space-y-3">
                 <div>
-                  <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-primary transition-colors">
+                  <h3 className="font-semibold text-lg line-clamp-1 group-hover:text-blue-600 transition-colors text-gray-900">
                     {hotel.name}
                   </h3>
-                  <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                  <div className="flex items-center gap-1 text-gray-900 text-sm">
                     <MapPin className="w-3 h-3" />
                     <span className="line-clamp-1">{hotel.location}</span>
                   </div>
@@ -112,7 +112,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     <span className="font-medium text-sm">{hotel.rating}</span>
                   </div>
-                  <span className="text-muted-foreground text-sm">
+                  <span className="text-gray-900 text-sm">
                     ({hotel.reviewCount} {t('hotel.reviews', 'reviews')})
                   </span>
                 </div>
@@ -120,13 +120,13 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     {hotel.originalPrice && (
-                      <div className="text-muted-foreground text-sm line-through">
+                      <div className="text-gray-600 text-sm line-through">
                         ${hotel.originalPrice}
                       </div>
                     )}
                     <div className="flex items-baseline gap-1">
                       <span className="text-xl font-bold">${hotel.price}</span>
-                      <span className="text-muted-foreground text-sm">
+                      <span className="text-gray-900 text-sm">
                         / {t('hotel.night', 'night')}
                       </span>
                     </div>

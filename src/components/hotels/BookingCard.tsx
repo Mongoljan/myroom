@@ -102,24 +102,24 @@ export default function BookingCard({ hotel }: BookingCardProps) {
         {loadingPrices ? (
           <div className="flex items-center gap-2 mb-2">
             <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
-            <span className="text-sm text-gray-500">Үнэ ачаалж байна...</span>
+            <span className="text-sm text-gray-900">Үнэ ачаалж байна...</span>
           </div>
         ) : (
           <>
             <div className="flex items-baseline gap-2 mb-2">
               <span className="text-3xl font-bold text-gray-900">₮{formatPrice(currentPrice)}</span>
-              <span className="text-gray-600">/ {t('night', 'шөнө')}</span>
+              <span className="text-gray-800">/ {t('night', 'шөнө')}</span>
             </div>
             {savings > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-gray-500 line-through">₮{formatPrice(basePrice)}</span>
+                <span className="text-gray-900 line-through">₮{formatPrice(basePrice)}</span>
                 <span className="text-green-600 text-sm font-medium">
                   {t('save', 'Хэмнэх')} ₮{formatPrice(savings)}
                 </span>
               </div>
             )}
             {selectedRoomPrice && finalPrice && (
-              <div className="text-xs text-gray-600 mt-1">
+              <div className="text-xs text-gray-800 mt-1">
                 Үндсэн үнэ: ₮{formatPrice(selectedRoomPrice.base_price)} → Эцсийн үнэ: ₮{formatPrice(finalPrice.final_price)}
               </div>
             )}
@@ -154,7 +154,7 @@ export default function BookingCard({ hotel }: BookingCardProps) {
           <div>
             <label className="block text-sm font-medium mb-1">{t('check_in', 'Check In')}</label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-900" />
               <input
                 type="date"
                 value={checkIn}
@@ -166,7 +166,7 @@ export default function BookingCard({ hotel }: BookingCardProps) {
           <div>
             <label className="block text-sm font-medium mb-1">{t('check_out', 'Check Out')}</label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-900" />
               <input
                 type="date"
                 value={checkOut}
@@ -181,7 +181,7 @@ export default function BookingCard({ hotel }: BookingCardProps) {
         <div>
           <label className="block text-sm font-medium mb-1">{t('guests', 'Guests')}</label>
           <div className="relative">
-            <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-900" />
             <select
               value={guests}
               onChange={(e) => setGuests(Number(e.target.value))}
@@ -231,7 +231,7 @@ export default function BookingCard({ hotel }: BookingCardProps) {
         </button>
       </div>
 
-      <p className="text-xs text-gray-500 text-center mt-3">
+      <p className="text-xs text-gray-900 text-center mt-3">
         {t('free_cancellation', 'Free Cancellation')} • {t('no_prepayment', 'No Prepayment')}
       </p>
     </div>

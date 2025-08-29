@@ -132,7 +132,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           {/* Min Price */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700">Хамгийн бага үнэ</label>
+              <label className="text-sm font-medium text-gray-900">Хамгийн бага үнэ</label>
               <Badge variant="secondary" className="text-sm">
                 ₮{formatPrice(filters.priceRange[0])}
               </Badge>
@@ -151,7 +151,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           {/* Max Price */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700">Хамгийн их үнэ</label>
+              <label className="text-sm font-medium text-gray-900">Хамгийн их үнэ</label>
               <Badge variant="secondary" className="text-sm">
                 ₮{formatPrice(filters.priceRange[1])}
               </Badge>
@@ -184,7 +184,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 className={`text-xs px-3 py-2 rounded-lg border transition-all ${
                   filters.priceRange[0] === range.min && filters.priceRange[1] === range.max
                     ? 'bg-blue-50 text-blue-700 border-blue-200'
-                    : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-blue-50 hover:text-blue-600'
+                    : 'bg-gray-50 text-gray-800 border-gray-200 hover:bg-blue-50 hover:text-blue-600'
                 }`}
               >
                 {range.label}
@@ -215,19 +215,32 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => handleCheckboxChange('starRating', stars)}
-                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
-                  />
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleCheckboxChange('starRating', stars)}
+                      className="sr-only"
+                    />
+                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                      isSelected 
+                        ? 'bg-blue-600 border-blue-600' 
+                        : 'bg-white border-gray-300 hover:border-blue-400'
+                    }`}>
+                      {isSelected && (
+                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-0.5">
                       {[...Array(stars)].map((_, i) => (
                         <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                       ))}
                       {[...Array(5-stars)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 text-gray-300" />
+                        <Star key={i} className="w-4 h-4 text-gray-800" />
                       ))}
                     </div>
                     <span className="text-sm font-medium text-gray-900">{stars} од</span>
@@ -263,17 +276,30 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => handleCheckboxChange('facilities', facility.id)}
-                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
-                  />
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleCheckboxChange('facilities', facility.id)}
+                      className="sr-only"
+                    />
+                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                      isSelected 
+                        ? 'bg-blue-600 border-blue-600' 
+                        : 'bg-white border-gray-300 hover:border-blue-400'
+                    }`}>
+                      {isSelected && (
+                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
-                    <div className={`p-1.5 rounded-lg ${isSelected ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'}`}>
+                    <div className={`p-1.5 rounded-lg ${isSelected ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-800'}`}>
                       {facility.icon}
                     </div>
-                    <span className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-700'}`}>
+                    <span className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}>
                       {facility.label}
                     </span>
                   </div>
@@ -308,13 +334,26 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => handleCheckboxChange('roomTypes', roomType.id)}
-                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
-                  />
-                  <span className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-700'}`}>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleCheckboxChange('roomTypes', roomType.id)}
+                      className="sr-only"
+                    />
+                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
+                      isSelected 
+                        ? 'bg-blue-600 border-blue-600' 
+                        : 'bg-white border-gray-300 hover:border-blue-400'
+                    }`}>
+                      {isSelected && (
+                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <span className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}>
                     {roomType.label}
                   </span>
                 </div>
@@ -334,7 +373,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {getActiveFiltersCount() > 0 && (
               <button
                 onClick={clearFilters}
-                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors shadow-sm border border-gray-200"
+                className="flex-1 bg-gray-100 text-gray-900 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors shadow-sm border border-gray-200"
               >
                 Цэвэрлэх
               </button>
@@ -406,10 +445,19 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     );
   }
 
-  // Desktop embedded version
+  // Desktop embedded version - Enhanced with Aceternity-style glass morphism
   return (
-    <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-sm">
-      <div className="p-6">
+    <div className="w-full bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl ring-1 ring-white/20 relative overflow-hidden">
+      {/* Glass morphism background effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-white/10 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/30 via-purple-50/20 to-pink-50/10 pointer-events-none" />
+      
+      {/* Subtle animated border */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/20 to-transparent animate-pulse" />
+      </div>
+      
+      <div className="relative p-6 z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
           <div className="flex items-center gap-3">

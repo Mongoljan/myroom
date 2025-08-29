@@ -23,7 +23,7 @@ const facilityIcons: { [key: string]: React.ReactNode } = {
   'Spa & Wellness Center': <Users className="w-4 h-4 text-pink-600" />,
   'Pool': <Users className="w-4 h-4 text-cyan-600" />,
   'Conference Room': <Users className="w-4 h-4 text-indigo-600" />,
-  '24-hour Front Desk': <Users className="w-4 h-4 text-gray-600" />,
+  '24-hour Front Desk': <Users className="w-4 h-4 text-gray-800" />,
 };
 
 export default function HotelCard({ hotel, searchParams, viewMode = 'grid', index = 0 }: HotelCardProps) {
@@ -78,7 +78,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
                   <Star
                     key={i}
                     className={`w-3.5 h-3.5 ${
-                      i < stars ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                      i < stars ? 'text-yellow-400 fill-current' : 'text-gray-800'
                     }`}
                   />
                 ))}
@@ -110,8 +110,8 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
                 
                 {/* Location */}
                 {hotel.location.province_city && (
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <MapPin className="w-4 h-4 text-gray-400" />
+                  <div className="flex items-center gap-2 text-gray-800">
+                    <MapPin className="w-4 h-4 text-gray-900" />
                     <span className="text-sm">
                       {hotel.location.district && `${hotel.location.district} дүүрэг, `}
                       {hotel.location.soum && `${hotel.location.soum}, `}
@@ -153,7 +153,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
                   {hotel.general_facilities.slice(0, 6).map((facility, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-1.5 text-xs text-gray-700 bg-gray-50 rounded-full px-2.5 py-1 border border-gray-200"
+                      className="flex items-center gap-1.5 text-xs text-gray-900 bg-gray-50 rounded-full px-2.5 py-1 border border-gray-200"
                     >
                       {facilityIcons[facility] || <div className="w-3 h-3 bg-gray-400 rounded-full" />}
                       <span>{facility}</span>
@@ -177,7 +177,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
                       <span className="text-2xl font-bold text-gray-900">
                         ₮{formatPrice(hotel.cheapest_room.price_per_night)}
                       </span>
-                      <span className="text-sm text-gray-500">/{t('hotel.night', 'шөнө')}</span>
+                      <span className="text-sm text-gray-900">/{t('hotel.night', 'шөнө')}</span>
                     </div>
                     {hotel.min_estimated_total > 0 && (
                       <div className="text-sm text-green-600 font-medium">
@@ -231,7 +231,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
               <Star
                 key={i}
                 className={`w-3.5 h-3.5 ${
-                  i < stars ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                  i < stars ? 'text-yellow-400 fill-current' : 'text-gray-800'
                 }`}
               />
             ))}
@@ -273,8 +273,8 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
             
             {/* Location */}
             {hotel.location.province_city && (
-              <div className="flex items-center gap-2 text-gray-600">
-                <MapPin className="w-4 h-4 text-gray-400" />
+              <div className="flex items-center gap-2 text-gray-800">
+                <MapPin className="w-4 h-4 text-gray-900" />
                 <span className="text-sm line-clamp-1">
                   {hotel.location.district && `${hotel.location.district} дүүрэг, `}
                   {hotel.location.soum && `${hotel.location.soum}, `}
@@ -314,7 +314,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
               {hotel.general_facilities.slice(0, 3).map((facility, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-1 text-xs text-gray-700 bg-gray-50 rounded-full px-2.5 py-1 border border-gray-200"
+                  className="flex items-center gap-1 text-xs text-gray-900 bg-gray-50 rounded-full px-2.5 py-1 border border-gray-200"
                 >
                   {facilityIcons[facility] || <div className="w-3 h-3 bg-gray-400 rounded-full" />}
                   <span>{facility}</span>
@@ -332,7 +332,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
           <div className="border-t border-gray-100 pt-4 space-y-3">
             {hotel.min_estimated_total > 0 && (
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-800">
                   {hotel.nights} шөнийн нийт:
                 </span>
                 <span className="text-lg font-bold text-green-600">

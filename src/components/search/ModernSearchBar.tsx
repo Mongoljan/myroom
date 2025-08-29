@@ -147,9 +147,9 @@ export default function ModernSearchBar() {
               className="flex items-center p-4 cursor-text"
               onClick={() => setShowLocationSuggestions(true)}
             >
-              <MapPin className="w-5 h-5 text-gray-400 mr-3" />
+              <MapPin className="w-5 h-5 text-gray-900 mr-3" />
               <div className="flex-1">
-                <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>Location</div>
+                <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>Location</div>
                 <input
                   type="text"
                   value={searchData.location}
@@ -162,7 +162,7 @@ export default function ModernSearchBar() {
               {searchData.location && (
                 <button
                   onClick={() => setSearchData(prev => ({ ...prev, location: '' }))}
-                  className="text-gray-400 hover:text-gray-600 ml-2"
+                  className="text-gray-900 hover:text-gray-800 ml-2"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -179,7 +179,7 @@ export default function ModernSearchBar() {
                   className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 mt-2 max-h-80 overflow-y-auto"
                 >
                   <div className="p-4">
-                    <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-3`}>
+                    <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-3`}>
                       {searchData.location ? (
                         <div className="flex flex-col gap-1">
                           <span>Search results</span>
@@ -200,7 +200,7 @@ export default function ModernSearchBar() {
                           onClick={() => handleLocationSelect(suggestion)}
                           className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
                         >
-                          <div className="text-gray-400 mr-3">
+                          <div className="text-gray-900 mr-3">
                             {getLocationIcon(suggestion.type)}
                           </div>
                           <div className="flex-1">
@@ -217,7 +217,7 @@ export default function ModernSearchBar() {
                                 </span>
                               )}
                             </div>
-                            <div className={`${TYPOGRAPHY.body.caption} text-gray-500`}>
+                            <div className={`${TYPOGRAPHY.body.caption} text-gray-900`}>
                               {suggestion.fullName}
                             </div>
                           </div>
@@ -236,9 +236,9 @@ export default function ModernSearchBar() {
               onClick={() => setShowDatePicker(true)}
               className="flex items-center p-4 hover:bg-gray-50 transition-colors"
             >
-              <Calendar className="w-5 h-5 text-gray-400 mr-3" />
+              <Calendar className="w-5 h-5 text-gray-900 mr-3" />
               <div>
-                <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>Check in - Check out</div>
+                <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>Check in - Check out</div>
                 <div className={`${TYPOGRAPHY.body.standard} text-gray-900`}>
                   {searchData.checkIn && searchData.checkOut 
                     ? `${formatDate(searchData.checkIn)} - ${formatDate(searchData.checkOut)}`
@@ -266,14 +266,14 @@ export default function ModernSearchBar() {
                       <h3 className={`${TYPOGRAPHY.heading.h3} text-gray-900`}>Select Dates</h3>
                       <button
                         onClick={() => setShowDatePicker(false)}
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-gray-900 hover:text-gray-800"
                       >
                         <X className="w-5 h-5" />
                       </button>
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-700 mb-2`}>
+                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-900 mb-2`}>
                           Check-in Date
                         </label>
                         <input
@@ -284,7 +284,7 @@ export default function ModernSearchBar() {
                         />
                       </div>
                       <div>
-                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-700 mb-2`}>
+                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-900 mb-2`}>
                           Check-out Date
                         </label>
                         <input

@@ -74,9 +74,9 @@ export default function CustomGuestSelector({
         className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center">
-          <Users className="w-6 h-6 text-gray-400 mr-4" />
+          <Users className="w-6 h-6 text-gray-900 mr-4" />
           <div className="text-left">
-            <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>
+            <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>
               {t('search.guest', 'Guest')}
             </div>
             <div className={`${TYPOGRAPHY.form.input} text-gray-900`}>
@@ -85,7 +85,7 @@ export default function CustomGuestSelector({
           </div>
         </div>
         <ChevronDown 
-          className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${
+          className={`w-5 h-5 text-gray-900 transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`} 
         />
@@ -114,7 +114,7 @@ export default function CustomGuestSelector({
                   <div className={`${TYPOGRAPHY.modal.title} text-gray-900`}>
                     {t('search.adults', 'Adults')}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-900">
                     {t('search.adultsAgeNote', 'Age 13 or above')}
                   </div>
                 </div>
@@ -148,7 +148,7 @@ export default function CustomGuestSelector({
                   <div className={`${TYPOGRAPHY.modal.title} text-gray-900`}>
                     {t('search.children', 'Children')}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-900">
                     {t('search.childrenAgeNote', 'Age 0-12')}
                   </div>
                 </div>
@@ -182,7 +182,7 @@ export default function CustomGuestSelector({
                   <div className={`${TYPOGRAPHY.modal.title} text-gray-900`}>
                     {t('search.rooms', 'Rooms')}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-900">
                     {t('search.roomsNote', 'Separate accommodations')}
                   </div>
                 </div>

@@ -156,7 +156,7 @@ export default function LanguageSwitcher() {
                   <div className="px-4 py-3 bg-gradient-to-r from-indigo-50/80 to-purple-50/80 border-b border-gray-200/30">
                     <div className="flex items-center space-x-2">
                       <Globe className="w-4 h-4 text-indigo-500" />
-                      <span className="text-sm font-semibold text-gray-700">
+                      <span className="text-sm font-semibold text-gray-900">
                         {i18n.language === 'mn' ? 'Хэл сонгох' : 'Choose Language'}
                       </span>
                     </div>
@@ -205,14 +205,14 @@ export default function LanguageSwitcher() {
                             <div className={`font-semibold transition-colors ${
                               isActive 
                                 ? 'text-indigo-700' 
-                                : 'text-gray-700 group-hover:text-gray-900'
+                                : 'text-gray-900 group-hover:text-gray-900'
                             }`}>
                               {language.name}
                             </div>
                             <div className={`text-xs transition-colors ${
                               isActive 
                                 ? 'text-indigo-500' 
-                                : 'text-gray-500 group-hover:text-gray-600'
+                                : 'text-gray-900 group-hover:text-gray-800'
                             }`}>
                               {language.code.toUpperCase()}
                             </div>

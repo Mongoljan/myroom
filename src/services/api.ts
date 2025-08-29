@@ -244,51 +244,73 @@ export class ApiService {
     });
   }
 
-  // Get hotel details - using mock data since endpoint doesn't exist yet
+  // Get hotel details - using search API with specific hotel ID
   static async getHotelDetails(hotelId: number) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          hotel_id: hotelId,
-          property_name: hotelId === 1 ? 'Grand Hotel Ulaanbaatar' : 'Blue Sky Hotel',
-          location: {
-            province_city: 'Ulaanbaatar',
-            soum: hotelId === 1 ? 'Chingeltei' : 'Sukhbaatar',
-            district: `District ${hotelId}`
+    try {
+      // Use search API with name_id to get specific hotel details
+      const searchResult = await this.searchHotels({
+        name_id: hotelId,
+        check_in: new Date().toISOString().split('T')[0], // Today
+        check_out: new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0], // Tomorrow
+        adults: 2,
+        children: 0,
+        rooms: 1,
+        acc_type: 'hotel'
+      });
+      
+      if (searchResult.results && searchResult.results.length > 0) {
+        return searchResult.results[0]; // Return the first (and likely only) result
+      } else {
+        throw new Error(`Hotel with ID ${hotelId} not found`);
+      }
+    } catch (error) {
+      console.error('Failed to fetch hotel details:', error);
+      // Fallback to mock data if API fails
+      return this.getHotelDetailsMock(hotelId);
+    }
+  }
+  
+  // Fallback mock data method
+  private static getHotelDetailsMock(hotelId: number) {
+    return {
+      hotel_id: hotelId,
+      property_name: hotelId === 1 ? 'Grand Hotel Ulaanbaatar' : 'Blue Sky Hotel',
+      location: {
+        province_city: 'Ulaanbaatar',
+        soum: hotelId === 1 ? 'Chingeltei' : 'Sukhbaatar',
+        district: `District ${hotelId}`
+      },
+      images: {
+        cover: {
+          url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+          description: 'Hotel exterior'
+        },
+        gallery: [
+          {
+            url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+            description: 'Hotel exterior'
           },
-          images: {
-            cover: {
-              url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-              description: 'Hotel exterior'
-            },
-            gallery: [
-              {
-                url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-                description: 'Hotel exterior'
-              },
-              {
-                url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
-                description: 'Hotel room'
-              },
-              {
-                url: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
-                description: 'Hotel lobby'
-              }
-            ]
+          {
+            url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
+            description: 'Hotel room'
           },
-          rating_stars: {
-            id: hotelId,
-            label: hotelId === 1 ? '4 Star Hotel' : '5 Star Hotel',
-            value: hotelId === 1 ? '4' : '5'
-          },
-          google_map: '',
-          general_facilities: hotelId === 1 
-            ? ['Free WiFi', 'Restaurant', 'Room Service', 'Parking', 'Fitness Center']
-            : ['Free WiFi', 'Restaurant', 'Spa', 'Pool', 'Concierge'],
-          description: `Experience luxury and comfort at ${hotelId === 1 ? 'Grand Hotel Ulaanbaatar' : 'Blue Sky Hotel'}. Located in the heart of Ulaanbaatar, we offer world-class amenities and exceptional service.`
-        });
-      }, 800);
-    });
+          {
+            url: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
+            description: 'Hotel lobby'
+          }
+        ]
+      },
+      rating_stars: {
+        id: hotelId,
+        label: hotelId === 1 ? '4 Star Hotel' : '5 Star Hotel',
+        value: hotelId === 1 ? '4' : '5'
+      },
+      google_map: '',
+      general_facilities: hotelId === 1 
+        ? ['Free WiFi', 'Restaurant', 'Room Service', 'Parking', 'Fitness Center']
+        : ['Free WiFi', 'Restaurant', 'Spa', 'Pool', 'Concierge'],
+      description: `Experience luxury and comfort at ${hotelId === 1 ? 'Grand Hotel Ulaanbaatar' : 'Blue Sky Hotel'}. Located in the heart of Ulaanbaatar, we offer world-class amenities and exceptional service.`
+    };
   }
 
   // Get rooms for a specific hotel

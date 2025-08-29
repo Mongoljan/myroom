@@ -74,7 +74,7 @@ const SearchFilters = () => {
       <div className="mb-8">
         <h4 className="font-semibold text-gray-900 mb-4">Price per night</h4>
         <div className="space-y-4">
-          <div className="flex items-center justify-between text-sm text-gray-600">
+          <div className="flex items-center justify-between text-sm text-gray-800">
             <span>{formatPrice(priceRange[0])}</span>
             <span>{formatPrice(priceRange[1])}</span>
           </div>
@@ -108,7 +108,7 @@ const SearchFilters = () => {
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
-                <span className="ml-2 text-sm text-gray-700">{star} Star</span>
+                <span className="ml-2 text-sm text-gray-900">{star} Star</span>
               </div>
             </label>
           ))}
@@ -130,9 +130,9 @@ const SearchFilters = () => {
                   onChange={(e) => setSelectedRating(e.target.value)}
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                 />
-                <span className="ml-3 text-sm text-gray-700">{option.label}</span>
+                <span className="ml-3 text-sm text-gray-900">{option.label}</span>
               </div>
-              <span className="text-sm text-gray-500">{option.count}</span>
+              <span className="text-sm text-gray-900">{option.count}</span>
             </label>
           ))}
         </div>
@@ -150,7 +150,7 @@ const SearchFilters = () => {
                 onChange={() => handleFacilityToggle(facility)}
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
               />
-              <span className="ml-3 text-sm text-gray-700">{facility}</span>
+              <span className="ml-3 text-sm text-gray-900">{facility}</span>
             </label>
           ))}
         </div>
@@ -167,9 +167,9 @@ const SearchFilters = () => {
                   type="checkbox"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                 />
-                <span className="ml-3 text-sm text-gray-700">{style}</span>
+                <span className="ml-3 text-sm text-gray-900">{style}</span>
               </div>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-900">
                 {style === 'Budget' ? '32' : style === 'Mid-range' ? '45' : style === 'Luxury' ? '21' : style === 'Family friendly' ? '78' : '19'}
               </span>
             </label>
@@ -188,16 +188,16 @@ const SearchFilters = () => {
                   type="checkbox"
                   className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                 />
-                <span className="ml-3 text-sm text-gray-700">{neighborhood.name}</span>
+                <span className="ml-3 text-sm text-gray-900">{neighborhood.name}</span>
               </div>
-              <span className="text-sm text-gray-500">{neighborhood.count}</span>
+              <span className="text-sm text-gray-900">{neighborhood.count}</span>
             </label>
           ))}
         </div>
       </div>
 
       {/* Clear Filters */}
-      <button className="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+      <button className="w-full bg-gray-100 text-gray-900 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
         Clear all filters
       </button>
     </div>

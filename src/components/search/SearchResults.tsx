@@ -292,18 +292,18 @@ export default function SearchResults() {
       {/* Breadcrumb Navigation */}
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center text-sm text-gray-600 overflow-x-auto">
+          <div className="flex items-center text-sm text-gray-800 overflow-x-auto">
             <button 
               onClick={() => window.location.href = '/'}
               className={`hover:text-blue-600 transition-colors whitespace-nowrap ${TYPOGRAPHY.nav.secondary}`}
             >
               Нүүр хуудас
             </button>
-            <span className="mx-2 text-gray-400">→</span>
+            <span className="mx-2 text-gray-900">→</span>
             <span className={`whitespace-nowrap ${TYPOGRAPHY.nav.secondary}`}>Хайлт</span>
             {searchLocation && (
               <>
-                <span className="mx-2 text-gray-400">→</span>
+                <span className="mx-2 text-gray-900">→</span>
                 <span className={`text-gray-900 whitespace-nowrap ${TYPOGRAPHY.nav.primary}`}>{searchLocation}</span>
               </>
             )}
@@ -323,7 +323,7 @@ export default function SearchResults() {
                   onClick={() => setShowFilters(true)}
                   className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm group"
                 >
-                  <Filter className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
+                  <Filter className="w-5 h-5 text-gray-800 group-hover:text-blue-600 transition-colors" />
                   <span className={`${TYPOGRAPHY.button.standard} group-hover:text-blue-600 transition-colors`}>Шүүлтүүр</span>
                   {(filters.starRating.length > 0 || filters.facilities.length > 0 || filters.roomTypes.length > 0) && (
                     <Badge variant="default" className="w-5 h-5 rounded-full p-0 text-xs font-bold flex items-center justify-center">
@@ -345,7 +345,7 @@ export default function SearchResults() {
                     <option value="name">Нэр</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
@@ -360,7 +360,7 @@ export default function SearchResults() {
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       viewMode === 'grid'
                         ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600'
+                        : 'text-gray-800'
                     }`}
                   >
                     <Grid3X3 className="w-4 h-4" />
@@ -371,7 +371,7 @@ export default function SearchResults() {
                     className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       viewMode === 'list'
                         ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600'
+                        : 'text-gray-800'
                     }`}
                   >
                     <List className="w-4 h-4" />
@@ -413,7 +413,7 @@ export default function SearchResults() {
                             <span className="font-medium text-blue-800">{checkIn} - {checkOut}</span>
                           </div>
                           <div className="flex items-center gap-2 bg-gray-50 px-3 sm:px-4 py-2 rounded-full">
-                            <span className="text-gray-600">
+                            <span className="text-gray-800">
                               {searchParams.get('adults') || '2'} том хүн
                               {(searchParams.get('children') && parseInt(searchParams.get('children') || '0') > 0) && 
                                 `, ${searchParams.get('children')} хүүхэд`}
@@ -427,7 +427,7 @@ export default function SearchResults() {
                       <div className="flex flex-wrap items-center gap-3 text-sm">
                         <div className="flex items-center gap-2">
                           <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
-                          <span className="text-gray-700">
+                          <span className="text-gray-900">
                             <span className="font-bold text-lg text-green-600">{filteredHotels.length}</span> зочид буудал олдлоо
                           </span>
                         </div>
@@ -447,7 +447,7 @@ export default function SearchResults() {
                   <div className="flex flex-wrap items-center gap-3">
                     {/* Sort Dropdown */}
                     <div className="relative">
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Эрэмбэлэх</label>
+                      <label className="block text-xs font-medium text-gray-900 mb-1">Эрэмбэлэх</label>
                       <select
                         value={sortBy}
                         onChange={(e) => handleSort(e.target.value)}
@@ -459,7 +459,7 @@ export default function SearchResults() {
                         <option value="name">Нэрээр А-Я</option>
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none mt-5">
-                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
@@ -467,14 +467,14 @@ export default function SearchResults() {
 
                     {/* Professional View Toggle */}
                     <div className="hidden sm:block">
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Харагдах арга</label>
+                      <label className="block text-xs font-medium text-gray-900 mb-1">Харагдах арга</label>
                       <div className="flex bg-gray-100 p-1 rounded-lg">
                         <button
                           onClick={() => setViewMode('grid')}
                           className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
                             viewMode === 'grid'
                               ? 'bg-white text-blue-600 shadow-sm'
-                              : 'text-gray-600 hover:text-gray-900'
+                              : 'text-gray-800 hover:text-gray-900'
                           }`}
                         >
                           <Grid3X3 className="w-4 h-4" />
@@ -485,7 +485,7 @@ export default function SearchResults() {
                           className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
                             viewMode === 'list'
                               ? 'bg-white text-blue-600 shadow-sm'
-                              : 'text-gray-600 hover:text-gray-900'
+                              : 'text-gray-800 hover:text-gray-900'
                           }`}
                         >
                           <List className="w-4 h-4" />
@@ -557,13 +557,13 @@ export default function SearchResults() {
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     {/* Results info */}
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-800">
                       <span className="font-medium text-gray-900">1-12</span> из {filteredHotels.length} зочид буудлын үр дүн
                     </div>
                     
                     {/* Pagination controls */}
                     <div className="flex items-center gap-2">
-                      <button className="flex items-center gap-2 px-4 py-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-lg border border-gray-200">
+                      <button className="flex items-center gap-2 px-4 py-2 text-gray-900 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-lg border border-gray-200">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
@@ -577,7 +577,7 @@ export default function SearchResults() {
                             className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${
                               page === 1
                                 ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700'
-                                : 'text-gray-700 hover:bg-gray-100 hover:text-blue-600'
+                                : 'text-gray-900 hover:bg-gray-100 hover:text-blue-600'
                             }`}
                           >
                             {page}
@@ -612,11 +612,11 @@ export default function SearchResults() {
                     Зочид буудал олдсонгүй
                   </h3>
                   
-                  <p className="text-gray-600 mb-2 text-lg leading-relaxed">
+                  <p className="text-gray-800 mb-2 text-lg leading-relaxed">
                     Таны хайлтын шалгуурт тохирох зочид буудал олдсонгүй.
                   </p>
                   
-                  <p className="text-gray-500 mb-8">
+                  <p className="text-gray-900 mb-8">
                     Хайлтын нөхцөлөө өөрчилж эсвэл шүүлтүүрээ шинэчилж үзээрэй.
                   </p>
                   
@@ -636,7 +636,7 @@ export default function SearchResults() {
                           // Navigate to new search
                           window.location.href = '/';
                         }}
-                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+                        className="px-6 py-3 border border-gray-300 text-gray-900 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
                       >
                         Шинэ хайлт хийх
                       </button>
@@ -644,12 +644,12 @@ export default function SearchResults() {
                     
                     {/* Popular destinations suggestion */}
                     <div className="pt-4 border-t border-gray-100">
-                      <p className="text-sm text-gray-600 mb-3">Алдартай хотод хайлт хийээрэй:</p>
+                      <p className="text-sm text-gray-800 mb-3">Алдартай хотод хайлт хийээрэй:</p>
                       <div className="flex flex-wrap gap-2 justify-center">
                         {['Улаанбаатар', 'Мөрөн', 'Эрдэнэт'].map((city) => (
                           <button
                             key={city}
-                            className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full hover:bg-blue-100 hover:text-blue-700 transition-colors"
+                            className="px-3 py-1.5 text-sm bg-gray-100 text-gray-900 rounded-full hover:bg-blue-100 hover:text-blue-700 transition-colors"
                             onClick={() => {
                               // Navigate to city search
                               const newParams = new URLSearchParams(searchParams.toString());

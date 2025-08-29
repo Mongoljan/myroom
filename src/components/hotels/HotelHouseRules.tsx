@@ -103,7 +103,7 @@ export default function HotelHouseRules({ hotelName }: HotelHouseRulesProps) {
           <div key={index} className="bg-white">
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0 mt-1">
-                <rule.icon className="w-5 h-5 text-gray-600" />
+                <rule.icon className="w-5 h-5 text-gray-800" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">{rule.title}</h3>
@@ -112,7 +112,7 @@ export default function HotelHouseRules({ hotelName }: HotelHouseRulesProps) {
                   <div className="mb-3">
                     {rule.details.map((detail, detailIndex) => (
                       <div key={detailIndex} className="flex justify-between py-1">
-                        <span className="text-gray-700">{detail.label}</span>
+                        <span className="text-gray-900">{detail.label}</span>
                         <span className="font-medium text-gray-900">{detail.value}</span>
                       </div>
                     ))}
@@ -120,7 +120,7 @@ export default function HotelHouseRules({ hotelName }: HotelHouseRulesProps) {
                 )}
 
                 {rule.description && (
-                  <p className="text-gray-600 text-sm leading-relaxed mb-3">{rule.description}</p>
+                  <p className="text-gray-800 text-sm leading-relaxed mb-3">{rule.description}</p>
                 )}
 
                 {rule.subsections && (
@@ -128,7 +128,7 @@ export default function HotelHouseRules({ hotelName }: HotelHouseRulesProps) {
                     {rule.subsections.map((subsection, subsectionIndex) => (
                       <div key={subsectionIndex}>
                         <h4 className="font-semibold text-gray-800 mb-2">{subsection.title}</h4>
-                        <ul className="text-sm text-gray-600 space-y-1">
+                        <ul className="text-sm text-gray-800 space-y-1">
                           {subsection.items.map((item, itemIndex) => (
                             <li key={itemIndex}>{item}</li>
                           ))}

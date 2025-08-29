@@ -7,15 +7,18 @@ import { hotelRoomsService, EnrichedHotelRoom } from '@/services/hotelRoomsApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import Image from 'next/image';
 import SafeImage from '@/components/common/SafeImage';
+import BookingModal from '@/components/hotels/BookingModal';
 
 interface ImprovedHotelRoomsSectionProps {
   hotelId: number;
+  hotelName: string;
   checkIn?: string;
   checkOut?: string;
 }
 
 export default function ImprovedHotelRoomsSection({ 
   hotelId, 
+  hotelName,
   checkIn, 
   checkOut 
 }: ImprovedHotelRoomsSectionProps) {
@@ -183,10 +186,10 @@ export default function ImprovedHotelRoomsSection({
           </h2>
         </div>
         <div className="text-center py-12">
-          <div className="text-gray-500 mb-4">
-            <Bed className="w-16 h-16 mx-auto opacity-50" />
+          <div className="text-gray-900 mb-4">
+            <Bed className="w-16 h-16 mx-auto text-gray-900" />
           </div>
-          <p className="text-gray-600">{t('hotel.noRoomsAvailable', 'Одоогоор боломжтой өрөө байхгүй байна.')}</p>
+          <p className="text-gray-800">{t('hotel.noRoomsAvailable', 'Одоогоор боломжтой өрөө байхгүй байна.')}</p>
         </div>
       </section>
     );
@@ -198,7 +201,7 @@ export default function ImprovedHotelRoomsSection({
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           {t('hotel.rooms', 'Өрөөнүүд')}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-900">
           {t('hotel.roomsAvailable', `${rooms.length} өрөө боломжтой`)}
         </p>
         {error && (
@@ -212,7 +215,13 @@ export default function ImprovedHotelRoomsSection({
 
       <div className="space-y-6">
         {rooms.map((room) => (
-          <RoomCard key={room.id} room={room} />
+          <RoomCard 
+            key={room.id} 
+            room={room} 
+            hotelName={hotelName}
+            checkIn={checkIn}
+            checkOut={checkOut}
+          />
         ))}
       </div>
     </section>
@@ -221,10 +230,14 @@ export default function ImprovedHotelRoomsSection({
 
 interface RoomCardProps {
   room: EnrichedHotelRoom;
+  hotelName: string;
+  checkIn?: string;
+  checkOut?: string;
 }
 
-function RoomCard({ room }: RoomCardProps) {
+function RoomCard({ room, hotelName, checkIn, checkOut }: RoomCardProps) {
   const { t } = useHydratedTranslation();
+  const [showBookingModal, setShowBookingModal] = useState(false);
   
   const getIconForFacility = (facilityName: string) => {
     const name = facilityName.toLowerCase();
@@ -262,7 +275,7 @@ function RoomCard({ room }: RoomCardProps) {
             </div>
           ) : (
             <div className="h-48 lg:h-full bg-gray-200 flex items-center justify-center">
-              <Bed className="w-12 h-12 text-gray-400" />
+              <Bed className="w-12 h-12 text-gray-900" />
             </div>
           )}
         </div>
@@ -274,7 +287,7 @@ function RoomCard({ room }: RoomCardProps) {
               <h3 className="text-xl font-semibold text-gray-900 mb-1">
                 {room.roomCategoryName}
               </h3>
-              <div className="flex items-center text-gray-600 text-sm space-x-4">
+              <div className="flex items-center text-gray-800 text-sm space-x-4">
                 <span className="flex items-center">
                   <Users className="w-4 h-4 mr-1" />
                   {room.adultQty} насанд хүрсэн
@@ -287,19 +300,19 @@ function RoomCard({ room }: RoomCardProps) {
               </div>
             </div>
             <div className="text-right">
-              <div className="text-sm text-gray-600">{t('room.pricePerNight', 'Шөнийн үнэ')}</div>
+              <div className="text-sm text-gray-900">{t('room.pricePerNight', 'Шөнийн үнэ')}</div>
               <div className="text-2xl font-bold text-blue-600">150,000₮</div>
             </div>
           </div>
 
-          <p className="text-gray-600 mb-4 line-clamp-2">{room.room_Description}</p>
+          <p className="text-gray-900 mb-4 line-clamp-2">{room.room_Description}</p>
 
           {/* Room Features */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
             {room.facilitiesDetails.slice(0, 6).map((facility, index) => {
               const IconComponent = getIconForFacility(facility.name_mn);
               return (
-                <div key={index} className="flex items-center text-sm text-gray-600">
+                <div key={index} className="flex items-center text-sm text-gray-900">
                   {IconComponent ? (
                     <IconComponent className="w-4 h-4 mr-2 text-blue-600" />
                   ) : (
@@ -315,7 +328,7 @@ function RoomCard({ room }: RoomCardProps) {
 
           {/* Room Actions */}
           <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-900">
               {room.number_of_rooms_to_sell > 0 ? (
                 <span className="text-green-600">
                   {t('room.available', `${room.number_of_rooms_to_sell} өрөө боломжтой`)}
@@ -326,6 +339,7 @@ function RoomCard({ room }: RoomCardProps) {
             </div>
             <button 
               disabled={room.number_of_rooms_to_sell === 0}
+              onClick={() => setShowBookingModal(true)}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
             >
               {t('room.selectRoom', 'Өрөө сонгох')}
@@ -333,6 +347,17 @@ function RoomCard({ room }: RoomCardProps) {
           </div>
         </div>
       </div>
+
+      {/* Booking Modal */}
+      <BookingModal
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        room={room}
+        hotelName={hotelName}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        guests={room.adultQty + room.childQty}
+      />
     </motion.div>
   );
 }

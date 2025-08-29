@@ -119,7 +119,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-            <Bed className="w-16 h-16 text-gray-400" />
+            <Bed className="w-16 h-16 text-gray-900" />
           </div>
         )}
         
@@ -127,7 +127,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
         <div className="absolute top-4 right-4">
           {loading ? (
             <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-gray-800">
                 <Clock className="w-4 h-4 animate-spin" />
                 Checking...
               </div>
@@ -171,7 +171,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           <div className="text-sm text-blue-600 mb-2 font-medium">
             {getRoomCategoryName(room.room_category)} • {getRoomTypeName(room.room_type)}
           </div>
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+          <div className="flex items-center gap-4 text-sm text-gray-800 mb-2">
             <div className="flex items-center gap-1">
               <Maximize className="w-4 h-4" />
               {room.room_size} m²
@@ -187,7 +187,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
               </div>
             )}
           </div>
-          <div className="flex items-center gap-1 text-sm text-gray-600">
+          <div className="flex items-center gap-1 text-sm text-gray-800">
             <Bed className="w-4 h-4" />
             <span>{getBedTypeName(room.bed_type)}</span>
           </div>
@@ -201,14 +201,14 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
               {room.room_Facilities.slice(0, 6).map((facilityId) => (
                 <div 
                   key={facilityId}
-                  className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-lg text-xs text-gray-700"
+                  className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-lg text-xs text-gray-900"
                 >
                   {facilityIcons[facilityId] || <Wifi className="w-3 h-3" />}
                   {getFacilityName(facilityId)}
                 </div>
               ))}
               {room.room_Facilities.length > 6 && (
-                <div className="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
+                <div className="text-xs text-gray-900 bg-gray-50 px-2 py-1 rounded-lg">
                   +{room.room_Facilities.length - 6} more
                 </div>
               )}
@@ -221,7 +221,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           <div className={`w-2 h-2 rounded-full ${
             room.smoking_allowed ? 'bg-orange-400' : 'bg-green-400'
           }`} />
-          <span className="text-gray-600">
+          <span className="text-gray-800">
             {room.smoking_allowed ? 'Smoking allowed' : 'Non-smoking'}
           </span>
         </div>
@@ -232,7 +232,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             <div className="text-2xl font-bold text-gray-900">
               {formatCurrency(basePrice)}
             </div>
-            <div className="text-sm text-gray-600">per night</div>
+            <div className="text-sm text-gray-800">per night</div>
           </div>
           
           <button
@@ -241,7 +241,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
               isAvailable && !loading
                 ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-100 text-gray-900 cursor-not-allowed'
             }`}
           >
             {loading ? (
