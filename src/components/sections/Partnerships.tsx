@@ -2,16 +2,15 @@
 
 import Image from 'next/image';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { TYPOGRAPHY } from '@/styles/containers';
 
 const partners = [
-  { name: "Microsoft", logo: "/img/partners/microsoft.svg" },
-  { name: "Google", logo: "/img/partners/google.svg" },
-  { name: "Amazon", logo: "/img/partners/amazon.svg" },
-  { name: "Booking.com", logo: "/img/partners/booking.svg" },
-  { name: "Expedia", logo: "/img/partners/expedia.svg" },
-  { name: "Airbnb", logo: "/img/partners/airbnb.svg" },
-  { name: "TripAdvisor", logo: "/img/partners/tripadvisor.svg" },
-  { name: "Agoda", logo: "/img/partners/agoda.svg" },
+  { name: "Partner 1", logo: "/img/clients/1.svg" },
+  { name: "Partner 2", logo: "/img/clients/2.svg" },
+  { name: "Partner 3", logo: "/img/clients/3.svg" },
+  { name: "Partner 4", logo: "/img/clients/4.svg" },
+  { name: "Partner 5", logo: "/img/clients/5.svg" },
+  { name: "Partner 6", logo: "/img/clients/6.svg" },
 ];
 
 export default function Partnerships() {
@@ -19,51 +18,61 @@ export default function Partnerships() {
 
   return (
     <>
-      <section className="py-10 bg-white relative">
-        <div className="max-w-6xl mx-auto px-4 sm:px-3">
-          <div className="text-center mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">
+      <section className="py-20 bg-white relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className={`${TYPOGRAPHY.heading.h1} text-gray-900 mb-4`}>
               {t('partnerships.title', 'Хамтрагч байгууллагууд')}
             </h2>
-            <p className="text-sm text-gray-600">
-              {t('partnerships.subtitle', 'Дэлхийн тэргүүлэгч компаниудын итгэлийг хүлээн авсан')}
+            <p className={`${TYPOGRAPHY.body.large} text-gray-600 max-w-2xl mx-auto`}>
+              {t('partnerships.subtitle', 'Дэлхийн тэргүүлэгч технологи компаниуд болон аялал жуулчлалын салбарын удирдагчидтай хамтран ажиллаж байна')}
             </p>
           </div>
 
-          {/* Moving Carousel */}
-          <div className="relative overflow-hidden">
+          {/* Moving Carousel with enhanced height */}
+          <div className="relative overflow-hidden py-8">
             <div className="flex partnership-scroll whitespace-nowrap">
               {/* First set of logos */}
               {partners.map((partner, idx) => (
-                <div key={`first-${idx}`} className="flex-shrink-0 mx-6 flex items-center justify-center h-12 w-32">
+                <div key={`first-${idx}`} className="flex-shrink-0 mx-8 flex items-center justify-center h-20 w-40 bg-gray-50/50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-lg transition-all duration-300">
                   <Image
                     src={partner.logo}
                     alt={partner.name}
-                    width={140}
-                    height={60}
-                    className="max-h-8 w-auto object-contain grayscale opacity-70 hover:opacity-100 hover:grayscale-0 transition-all duration-200"
+                    width={160}
+                    height={80}
+                    className="max-h-12 w-auto object-contain grayscale opacity-60 hover:opacity-100 hover:grayscale-0 transition-all duration-300"
                     loading="lazy"
                   />
                 </div>
               ))}
               {/* Second set for seamless loop */}
               {partners.map((partner, idx) => (
-                <div key={`second-${idx}`} className="flex-shrink-0 mx-6 flex items-center justify-center h-12 w-32">
+                <div key={`second-${idx}`} className="flex-shrink-0 mx-8 flex items-center justify-center h-20 w-40 bg-gray-50/50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-lg transition-all duration-300">
                   <Image
                     src={partner.logo}
                     alt={partner.name}
-                    width={140}
-                    height={60}
-                    className="max-h-8 w-auto object-contain grayscale opacity-70 hover:opacity-100 hover:grayscale-0 transition-all duration-200"
+                    width={160}
+                    height={80}
+                    className="max-h-12 w-auto object-contain grayscale opacity-60 hover:opacity-100 hover:grayscale-0 transition-all duration-300"
                     loading="lazy"
                   />
                 </div>
               ))}
             </div>
             
-            {/* Gradient overlays for fade effect */}
-            <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white to-transparent pointer-events-none"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent pointer-events-none"></div>
+            {/* Enhanced gradient overlays */}
+            <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none"></div>
+          </div>
+          
+          {/* Trust badge */}
+          <div className="text-center mt-12">
+            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-full">
+              <div className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></div>
+              <span className={`${TYPOGRAPHY.body.standard} text-gray-700 font-medium`}>
+                {t('partnerships.trust', '50,000+ хэрэглэгчдийн итгэлийг хүлээн авсан')}
+              </span>
+            </div>
           </div>
         </div>
       </section>

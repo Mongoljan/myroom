@@ -3,11 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Filter, MapPin, Grid3X3, List } from 'lucide-react';
+import { TYPOGRAPHY } from '@/styles/containers';
 import HotelCard from './HotelCard';
 import SearchFilters from './SearchFilters';
 import HotelSearchForm from './HotelSearchForm';
 import { ApiService } from '@/services/api';
 import { SearchResponse, SearchHotelResult } from '@/types/api';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface FilterState {
   priceRange: [number, number];
@@ -78,16 +81,41 @@ export default function SearchResults() {
           // Try real API first
           console.log('Attempting real API call with params:', params);
           const response = await ApiService.searchHotels(params) as SearchResponse;
-          console.log('Real API succeeded, got', response.results.length, 'hotels');
-          setHotels(response.results);
-          setFilteredHotels(response.results);
+          console.log('Real API succeeded, got', response?.results?.length || 0, 'hotels');
+          
+          // Ensure response has proper structure
+          const results = response?.results || [];
+          const validResults = results.filter((hotel: SearchHotelResult) => 
+            hotel && 
+            hotel.hotel_id && 
+            hotel.property_name && 
+            hotel.location &&
+            hotel.rating_stars
+          );
+          
+          setHotels(validResults);
+          setFilteredHotels(validResults);
         } catch (apiError) {
           // Fallback to mock data
           console.log('Real API failed, using mock data. Error:', apiError);
-          const mockResults = await ApiService.searchHotelsMock(params) as SearchHotelResult[];
-          console.log('Using mock data with', mockResults.length, 'hotels');
-          setHotels(mockResults);
-          setFilteredHotels(mockResults);
+          try {
+            const mockResults = await ApiService.searchHotelsMock(params) as SearchHotelResult[];
+            console.log('Using mock data with', mockResults?.length || 0, 'hotels');
+            
+            // Validate mock data structure
+            const validMockResults = (mockResults || []).filter((hotel: SearchHotelResult) => 
+              hotel && 
+              hotel.hotel_id && 
+              hotel.property_name
+            );
+            
+            setHotels(validMockResults);
+            setFilteredHotels(validMockResults);
+          } catch (mockError) {
+            console.error('Mock data also failed:', mockError);
+            setHotels([]);
+            setFilteredHotels([]);
+          }
         }
       } catch (error) {
         console.error('Error loading hotels:', error);
@@ -184,7 +212,7 @@ export default function SearchResults() {
       <div className="bg-gray-50">
         {/* Header Skeleton */}
         <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
-          <div className="container mx-auto px-4 py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="animate-pulse">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="h-12 bg-blue-500 rounded-lg"></div>
@@ -197,16 +225,53 @@ export default function SearchResults() {
         </div>
 
         {/* Loading Content */}
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center space-y-4">
-              <div className="relative">
-                <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
-                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-400 animate-ping"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+            {/* Loading Filters Sidebar */}
+            <div className="lg:w-80 flex-shrink-0">
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <Skeleton className="h-6 w-24 mb-4" />
+                <div className="space-y-4">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-full" />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <p className="text-lg font-semibold text-gray-900">Хайлт явуулж байна...</p>
-                <p className="text-sm text-gray-600">Танд хамгийн сайн зочид буудлыг олж байна</p>
+            </div>
+
+            {/* Loading Main Content */}
+            <div className="flex-1 min-w-0">
+              {/* Loading Header */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+                <Skeleton className="h-8 w-64 mb-4" />
+                <div className="flex gap-4 mb-4">
+                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="h-8 w-24" />
+                </div>
+                <Skeleton className="h-4 w-48" />
+              </div>
+
+              {/* Loading Hotel Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6">
+                {[...Array(6)].map((_, index) => (
+                  <div key={index} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                    <Skeleton className="h-48 w-full rounded-xl mb-4" />
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/2 mb-3" />
+                    <div className="flex gap-2 mb-3">
+                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-6 w-20" />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <Skeleton className="h-6 w-24" />
+                      <Skeleton className="h-10 w-20" />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -219,27 +284,27 @@ export default function SearchResults() {
     <div className="bg-gray-50">
       {/* Professional Search Form Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
-        <div className="container mx-auto px-4 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <HotelSearchForm />
         </div>
       </div>
 
       {/* Breadcrumb Navigation */}
       <div className="bg-white border-b border-gray-200">
-        <div className="container mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center text-sm text-gray-600 overflow-x-auto">
             <button 
               onClick={() => window.location.href = '/'}
-              className="hover:text-blue-600 transition-colors whitespace-nowrap"
+              className={`hover:text-blue-600 transition-colors whitespace-nowrap ${TYPOGRAPHY.nav.secondary}`}
             >
               Нүүр хуудас
             </button>
             <span className="mx-2 text-gray-400">→</span>
-            <span className="whitespace-nowrap">Хайлт</span>
+            <span className={`whitespace-nowrap ${TYPOGRAPHY.nav.secondary}`}>Хайлт</span>
             {searchLocation && (
               <>
                 <span className="mx-2 text-gray-400">→</span>
-                <span className="text-gray-900 font-medium whitespace-nowrap">{searchLocation}</span>
+                <span className={`text-gray-900 whitespace-nowrap ${TYPOGRAPHY.nav.primary}`}>{searchLocation}</span>
               </>
             )}
           </div>
@@ -247,23 +312,23 @@ export default function SearchResults() {
       </div>
 
       {/* Main Results Container */}
-      <div className="container mx-auto px-4 py-4 sm:py-8">
-        <div className="flex flex-col xl:flex-row gap-4 xl:gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
           {/* Professional Filters Sidebar */}
-          <div className="xl:w-80 flex-shrink-0">
+          <div className="lg:w-80 flex-shrink-0">
             {/* Mobile Filter Button */}
-            <div className="md:hidden mb-6">
+            <div className="lg:hidden mb-6">
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowFilters(true)}
                   className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm group"
                 >
                   <Filter className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-                  <span className="font-medium group-hover:text-blue-600 transition-colors">Шүүлтүүр</span>
+                  <span className={`${TYPOGRAPHY.button.standard} group-hover:text-blue-600 transition-colors`}>Шүүлтүүр</span>
                   {(filters.starRating.length > 0 || filters.facilities.length > 0 || filters.roomTypes.length > 0) && (
-                    <div className="flex items-center justify-center w-5 h-5 bg-blue-600 text-white text-xs font-bold rounded-full">
+                    <Badge variant="default" className="w-5 h-5 rounded-full p-0 text-xs font-bold flex items-center justify-center">
                       {filters.starRating.length + filters.facilities.length + filters.roomTypes.length}
-                    </div>
+                    </Badge>
                   )}
                 </button>
                 
@@ -272,7 +337,7 @@ export default function SearchResults() {
                   <select
                     value={sortBy}
                     onChange={(e) => handleSort(e.target.value)}
-                    className="appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3 pr-8 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 transition-colors shadow-sm"
+                    className={`appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 transition-colors shadow-sm ${TYPOGRAPHY.form.input}`}
                   >
                     <option value="price_low">Бага үнэ</option>
                     <option value="price_high">Өндөр үнэ</option>
@@ -316,6 +381,15 @@ export default function SearchResults() {
               </div>
             </div>
 
+            {/* Desktop Filters - Show directly in sidebar */}
+            <div className="hidden lg:block">
+              <SearchFilters
+                isOpen={true}
+                onClose={() => {}}
+                onFilterChange={handleFilterChange}
+                embedded={true}
+              />
+            </div>
           </div>
 
           {/* Professional Main Content */}
@@ -326,7 +400,7 @@ export default function SearchResults() {
                 {/* Results Info */}
                 <div className="flex-1 space-y-4">
                   <div className="space-y-3">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                    <h1 className={`${TYPOGRAPHY.heading.h1} text-gray-900`}>
                       {searchLocation ? `${searchLocation} дэх зочид буудлууд` : 'Зочид буудлууд'}
                     </h1>
                     
@@ -358,9 +432,9 @@ export default function SearchResults() {
                           </span>
                         </div>
                         {filteredHotels.length !== hotels.length && (
-                          <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded-full whitespace-nowrap">
+                          <Badge variant="outline" className="text-xs whitespace-nowrap">
                             {hotels.length}-с шүүгдсэн
-                          </div>
+                          </Badge>
                         )}
                       </div>
                     </div>
@@ -423,15 +497,15 @@ export default function SearchResults() {
 
                   {/* Quick Filters - Desktop only */}
                   <div className="hidden xl:flex flex-wrap gap-2">
-                    <button className="text-xs bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors border border-blue-200">
+                    <Badge variant="secondary" className="cursor-pointer hover:bg-blue-100 hover:text-blue-700 transition-colors">
                       Өнөөдөр хямдрал
-                    </button>
-                    <button className="text-xs bg-green-50 text-green-700 px-3 py-1.5 rounded-full hover:bg-green-100 transition-colors border border-green-200">
+                    </Badge>
+                    <Badge variant="outline" className="cursor-pointer hover:bg-green-100 hover:text-green-700 transition-colors">
                       5 од зочид буудал
-                    </button>
-                    <button className="text-xs bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors border border-purple-200">
+                    </Badge>
+                    <Badge variant="secondary" className="cursor-pointer hover:bg-purple-100 hover:text-purple-700 transition-colors">
                       Wi-Fi үнэгүй
-                    </button>
+                    </Badge>
                   </div>
                 </div>
               </div>
@@ -596,12 +670,14 @@ export default function SearchResults() {
         </div>
       </div>
 
-      {/* Responsive Filters - Desktop: Sidebar, Mobile: Modal */}
-      <SearchFilters
-        isOpen={showFilters}
-        onClose={() => setShowFilters(false)}
-        onFilterChange={handleFilterChange}
-      />
+      {/* Mobile Filters Modal Only */}
+      <div className="lg:hidden">
+        <SearchFilters
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
+          onFilterChange={handleFilterChange}
+        />
+      </div>
     </div>
   );
 }

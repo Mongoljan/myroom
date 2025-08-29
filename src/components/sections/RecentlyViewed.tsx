@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Star, MapPin, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { TYPOGRAPHY } from '@/styles/containers';
 
 interface RecentHotel {
   id: string;
@@ -75,19 +76,19 @@ export default function RecentlyViewed() {
   }
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-8 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex items-center justify-between mb-12"
+          className="flex items-center justify-between mb-6"
         >
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            <h2 className={`${TYPOGRAPHY.heading.h1} text-gray-900 mb-2`}>
               Сүүлд үзсэн
             </h2>
-            <p className="text-gray-600">
+            <p className={`${TYPOGRAPHY.body.standard} text-gray-600`}>
               Сайн орж үзсэн бүгдэд модэлчилгэг 10 дотор харагдана.
             </p>
           </div>
@@ -121,7 +122,7 @@ export default function RecentlyViewed() {
 
               {hotel.badge && (
                 <div className="absolute top-3 left-3 z-10">
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                  <span className={`px-2 py-1 ${TYPOGRAPHY.card.badge} rounded-full ${
                     hotel.badge === 'NEW' ? 'bg-green-500 text-white' :
                     hotel.badge === 'BEST SELLER' ? 'bg-orange-500 text-white' :
                     hotel.badge === 'TOP RATED' ? 'bg-purple-500 text-white' :
@@ -143,11 +144,11 @@ export default function RecentlyViewed() {
                 </div>
 
                 <div className="p-4">
-                  <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                  <h3 className={`${TYPOGRAPHY.card.title} text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors`}>
                     {hotel.name}
                   </h3>
                   
-                  <div className="flex items-center text-sm text-gray-500 mb-3">
+                  <div className={`flex items-center ${TYPOGRAPHY.body.caption} text-gray-500 mb-3`}>
                     <MapPin className="w-4 h-4 mr-1" />
                     <span className="line-clamp-1">{hotel.location}</span>
                   </div>
@@ -155,7 +156,7 @@ export default function RecentlyViewed() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="ml-1 text-sm font-medium text-gray-900">
+                      <span className={`ml-1 ${TYPOGRAPHY.body.small} text-gray-900`}>
                         {hotel.rating}
                       </span>
                     </div>
@@ -164,16 +165,16 @@ export default function RecentlyViewed() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center space-x-2">
-                        <span className="text-lg font-bold text-gray-900">
+                        <span className={`${TYPOGRAPHY.card.price} text-gray-900`}>
                           ₮{formatPrice(hotel.price)}
                         </span>
                         {hotel.originalPrice && (
-                          <span className="text-sm text-gray-500 line-through">
+                          <span className={`${TYPOGRAPHY.body.caption} text-gray-500 line-through`}>
                             ₮{formatPrice(hotel.originalPrice)}
                           </span>
                         )}
                       </div>
-                      <span className="text-xs text-gray-500">шөнөтэй</span>
+                      <span className={`${TYPOGRAPHY.body.caption} text-gray-500`}>шөнөтэй</span>
                     </div>
                   </div>
                 </div>
@@ -189,7 +190,7 @@ export default function RecentlyViewed() {
           transition={{ delay: 0.4 }}
           className="text-center mt-10"
         >
-          <button className="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 font-semibold rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200">
+          <button className={`inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 ${TYPOGRAPHY.button.standard}`}>
             Бүгдийг харах
           </button>
         </motion.div>

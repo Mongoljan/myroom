@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, ChevronDown, Minus, Plus } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { TYPOGRAPHY } from '@/styles/containers';
 
 interface CustomGuestSelectorProps {
   adults: number;
@@ -27,14 +28,16 @@ export default function CustomGuestSelector({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (isOpen && dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isOpen]);
 
   const updateGuests = (type: 'adults' | 'children' | 'rooms', increment: boolean) => {
     let newAdults = adults;
@@ -68,15 +71,15 @@ export default function CustomGuestSelector({
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors rounded-xl"
+        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center">
           <Users className="w-6 h-6 text-gray-400 mr-4" />
           <div className="text-left">
-            <div className="text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">
+            <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>
               {t('search.guest', 'Guest')}
             </div>
-            <div className="text-lg font-medium text-gray-900">
+            <div className={`${TYPOGRAPHY.form.input} text-gray-900`}>
               {getGuestText()}
             </div>
           </div>
@@ -91,25 +94,27 @@ export default function CustomGuestSelector({
       {/* Dropdown */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 z-[99999] overflow-hidden min-w-[300px]"
-            style={{ 
-              maxHeight: '400px',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-            }}
-          >
-            <div className="p-6 space-y-6">
+            <motion.div
+              initial={{ opacity: 0, y: -10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="fixed bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden w-[320px] max-w-[90vw]"
+              style={{ 
+                zIndex: 999999999,
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)'
+              }}
+            >
+            <div className="p-4 space-y-4">
               {/* Adults */}
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-semibold text-gray-900 text-lg">
+                  <div className={`${TYPOGRAPHY.modal.title} text-gray-900`}>
                     {t('search.adults', 'Adults')}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-xs text-gray-500">
                     {t('search.adultsAgeNote', 'Age 13 or above')}
                   </div>
                 </div>
@@ -124,7 +129,7 @@ export default function CustomGuestSelector({
                     <Minus className="w-4 h-4 text-blue-600" />
                   </motion.button>
                   <div className="w-12 text-center">
-                    <span className="text-xl font-semibold text-gray-900">{adults}</span>
+                    <span className="text-sm font-medium text-gray-900">{adults}</span>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -140,10 +145,10 @@ export default function CustomGuestSelector({
               {/* Children */}
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-semibold text-gray-900 text-lg">
+                  <div className={`${TYPOGRAPHY.modal.title} text-gray-900`}>
                     {t('search.children', 'Children')}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-xs text-gray-500">
                     {t('search.childrenAgeNote', 'Age 0-12')}
                   </div>
                 </div>
@@ -158,7 +163,7 @@ export default function CustomGuestSelector({
                     <Minus className="w-4 h-4 text-blue-600" />
                   </motion.button>
                   <div className="w-12 text-center">
-                    <span className="text-xl font-semibold text-gray-900">{childrenCount}</span>
+                    <span className="text-sm font-medium text-gray-900">{childrenCount}</span>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -174,10 +179,10 @@ export default function CustomGuestSelector({
               {/* Rooms */}
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-semibold text-gray-900 text-lg">
+                  <div className={`${TYPOGRAPHY.modal.title} text-gray-900`}>
                     {t('search.rooms', 'Rooms')}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-xs text-gray-500">
                     {t('search.roomsNote', 'Separate accommodations')}
                   </div>
                 </div>
@@ -192,7 +197,7 @@ export default function CustomGuestSelector({
                     <Minus className="w-4 h-4 text-blue-600" />
                   </motion.button>
                   <div className="w-12 text-center">
-                    <span className="text-xl font-semibold text-gray-900">{rooms}</span>
+                    <span className="text-sm font-medium text-gray-900">{rooms}</span>
                   </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
@@ -206,16 +211,16 @@ export default function CustomGuestSelector({
               </div>
 
               {/* Done Button */}
-              <div className="pt-4 border-t border-gray-100">
+              <div className="pt-3 border-t border-gray-100">
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm"
                 >
-                  {t('common.done', 'Done')}
+                  {t('common.done', 'Болсон')}
                 </button>
               </div>
             </div>
-          </motion.div>
+            </motion.div>
         )}
       </AnimatePresence>
     </div>

@@ -3,59 +3,16 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { TYPOGRAPHY } from '@/styles/containers';
 import WishlistButton from "@/components/common/WishlistButton";
-
-interface Hotel {
-  hotel_id: number;
-  property_name: string;
-  location: {
-    province_city: string;
-    soum: string;
-    district: string;
-  };
-  nights: number;
-  rooms_possible: number;
-  cheapest_room: {
-    room_type_id: number;
-    room_category_id: number;
-    room_type_label: string;
-    room_category_label: string;
-    price_per_night: number;
-    nights: number;
-    available_in_this_type: number;
-    capacity_per_room_adults: number;
-    capacity_per_room_children: number;
-    capacity_per_room_total: number;
-    estimated_total_for_requested_rooms: number;
-  };
-  min_estimated_total: number;
-  images: {
-    cover: {
-      url: string;
-      description: string;
-    };
-    gallery: Array<{
-      img: {
-        url: string;
-        description: string;
-      };
-    }>;
-  };
-  rating_stars: {
-    id: number;
-    label: string;
-    value: string;
-  };
-  google_map: string;
-  general_facilities: string[];
-}
+import { SearchHotelResult } from '@/types/api';
 
 interface HotelListProps {
-  hotels: Hotel[];
+  hotels: SearchHotelResult[];
   viewMode: 'list' | 'grid';
 }
 
-const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hotel, viewMode }) => {
+const HotelCard: React.FC<{ hotel: SearchHotelResult; viewMode: 'list' | 'grid' }> = ({ hotel, viewMode }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { t } = useHydratedTranslation();
   
@@ -95,7 +52,7 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
           {/* Image */}
           <div className="relative md:w-80 h-64 md:h-auto">
             <Image
-              src={hotel.images.gallery[currentImageIndex]?.img.url || hotel.images.cover.url}
+              src={hotel.images.gallery[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover.url)}
               alt={hotel.property_name}
               fill
               className="object-cover"
@@ -145,10 +102,10 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
           </div>
 
           {/* Content */}
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-4">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{hotel.property_name}</h3>
+                <h3 className={`${TYPOGRAPHY.card.title} text-gray-900 mb-2`}>{hotel.property_name}</h3>
                 <div className="flex items-center mb-2">
                   {[...Array(getStarRating(hotel.rating_stars.value))].map((_, i) => (
                     <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
@@ -158,7 +115,7 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
                   <span className="ml-2 text-sm text-gray-600">{hotel.rating_stars.label}</span>
                 </div>
                 <p className="text-gray-600 mb-3">
-                  {hotel.location.province_city}, {hotel.location.soum}, {hotel.location.district}
+                  {[hotel.location.province_city, hotel.location.soum, hotel.location.district].filter(Boolean).join(', ')}
                 </p>
                 
                 {/* Facilities */}
@@ -177,10 +134,10 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
               </div>
 
               <div className="text-right">
-                <div className="text-2xl font-bold text-gray-900">
+                <div className={`${TYPOGRAPHY.card.price} text-gray-900`}>
                   {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : t('hotel.priceUnavailable', 'Price Unavailable')}
                 </div>
-                <div className="text-sm text-gray-600">{t('hotel.perNight', 'per night')}</div>
+                <div className={`${TYPOGRAPHY.body.caption} text-gray-600`}>{t('hotel.perNight', 'per night')}</div>
                 <div className="text-sm text-gray-500 mt-1">
                   Total: {formatPrice(hotel.min_estimated_total)}
                 </div>
@@ -195,9 +152,13 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
 
             {hotel.cheapest_room && (
               <div className="text-sm text-gray-600">
-                <span className="font-medium">{hotel.cheapest_room.room_type_label}</span> • 
-                <span className="ml-1">{hotel.cheapest_room.room_category_label}</span> • 
-                <span className="ml-1">Sleeps {hotel.cheapest_room.capacity_per_room_total}</span>
+                {hotel.cheapest_room && (
+                  <>
+                    <span className="font-medium">{hotel.cheapest_room.room_type_label}</span> • 
+                    <span className="ml-1">{hotel.cheapest_room.room_category_label}</span> • 
+                    <span className="ml-1">Sleeps {hotel.cheapest_room.capacity_per_room_total}</span>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -212,7 +173,7 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
       {/* Image */}
       <div className="relative h-48">
         <Image
-          src={hotel.images.gallery[currentImageIndex]?.img.url || hotel.images.cover.url}
+          src={hotel.images.gallery[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover.url)}
           alt={hotel.property_name}
           fill
           className="object-cover"
@@ -262,7 +223,7 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-3">
         <div className="flex items-center mb-2">
           {[...Array(getStarRating(hotel.rating_stars.value))].map((_, i) => (
             <svg key={i} className="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
@@ -272,17 +233,17 @@ const HotelCard: React.FC<{ hotel: Hotel; viewMode: 'list' | 'grid' }> = ({ hote
           <span className="ml-1 text-xs text-gray-600">{hotel.rating_stars.label}</span>
         </div>
 
-        <h3 className="font-bold text-gray-900 mb-1 line-clamp-2">{hotel.property_name}</h3>
-        <p className="text-sm text-gray-600 mb-3">
-          {hotel.location.province_city}, {hotel.location.soum}
+        <h3 className={`${TYPOGRAPHY.card.title} text-gray-900 mb-1 line-clamp-2`}>{hotel.property_name}</h3>
+        <p className={`${TYPOGRAPHY.body.caption} text-gray-600 mb-2`}>
+          {[hotel.location.province_city, hotel.location.soum].filter(Boolean).join(', ')}
         </p>
 
         <div className="flex justify-between items-end">
           <div>
-            <div className="text-lg font-bold text-gray-900">
+            <div className={`${TYPOGRAPHY.card.price} text-gray-900`}>
               {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : t('hotel.priceUnavailable', 'Price Unavailable')}
             </div>
-            <div className="text-xs text-gray-600">{t('hotel.perNight', 'per night')}</div>
+            <div className={`${TYPOGRAPHY.body.caption} text-gray-600`}>{t('hotel.perNight', 'per night')}</div>
           </div>
           <Link
             href={`/hotel/${hotel.hotel_id}`}

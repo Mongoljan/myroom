@@ -209,8 +209,8 @@ export interface HotelImage {
 }
 
 export interface HotelImages {
-  cover: HotelImage;
-  gallery: Array<{ img: HotelImage }>;
+  cover: string | HotelImage; // Can be direct string URL or object
+  gallery: Array<HotelImage>; // Direct array of HotelImage objects
 }
 
 export interface RatingStars {

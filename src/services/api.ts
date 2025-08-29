@@ -76,9 +76,19 @@ export class ApiService {
     }
   }
 
-  // Search hotels
+  // Search hotels with enhanced parameters
   static async searchHotels(params: {
+    // Location parameters (legacy)
     location?: string;
+    
+    // New search parameters
+    name?: string;           // Text search for hotel names
+    name_id?: number;        // Exact hotel ID search
+    province_id?: number;    // Province ID for location-based search
+    soum_id?: number;        // Soum ID for location-based search
+    district?: string;       // District name for location-based search
+    
+    // Booking parameters
     check_in: string;
     check_out: string;
     adults: number;
@@ -86,10 +96,28 @@ export class ApiService {
     rooms: number;
     acc_type: string;
   }): Promise<SearchResponse> {
-    console.log('Search params:', params);
+    console.log('Enhanced search params:', params);
     
     const searchParams = new URLSearchParams();
-    if (params.location) searchParams.append('location', params.location);
+    
+    // Handle different search modes
+    if (params.name_id) {
+      // Exact hotel ID search - only send name_id
+      searchParams.append('name_id', params.name_id.toString());
+    } else if (params.name) {
+      // Text search for hotel names
+      searchParams.append('name', params.name);
+    } else if (params.province_id || params.soum_id) {
+      // Location-based search with IDs
+      if (params.province_id) searchParams.append('province_id', params.province_id.toString());
+      if (params.soum_id) searchParams.append('soum_id', params.soum_id.toString());
+      if (params.district) searchParams.append('district', params.district);
+    } else if (params.location) {
+      // Legacy location string search (fallback)
+      searchParams.append('location', params.location);
+    }
+    
+    // Always append booking parameters
     searchParams.append('check_in', params.check_in);
     searchParams.append('check_out', params.check_out);
     searchParams.append('adults', params.adults.toString());
@@ -146,16 +174,12 @@ export class ApiService {
               },
               gallery: [
                 {
-                  img: {
-                    url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-                    description: 'Hotel exterior'
-                  }
+                  url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+                  description: 'Hotel exterior'
                 },
                 {
-                  img: {
-                    url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
-                    description: 'Hotel room'
-                  }
+                  url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
+                  description: 'Hotel room'
                 }
               ]
             },
@@ -198,16 +222,12 @@ export class ApiService {
               },
               gallery: [
                 {
-                  img: {
-                    url: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
-                    description: 'Hotel exterior'
-                  }
+                  url: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
+                  description: 'Hotel exterior'
                 },
                 {
-                  img: {
-                    url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
-                    description: 'Hotel room'
-                  }
+                  url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
+                  description: 'Hotel room'
                 }
               ]
             },
@@ -243,22 +263,16 @@ export class ApiService {
             },
             gallery: [
               {
-                img: {
-                  url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-                  description: 'Hotel exterior'
-                }
+                url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
+                description: 'Hotel exterior'
               },
               {
-                img: {
-                  url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
-                  description: 'Hotel room'
-                }
+                url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
+                description: 'Hotel room'
               },
               {
-                img: {
-                  url: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
-                  description: 'Hotel lobby'
-                }
+                url: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
+                description: 'Hotel lobby'
               }
             ]
           },

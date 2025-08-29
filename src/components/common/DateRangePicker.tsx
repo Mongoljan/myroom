@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
@@ -31,7 +32,9 @@ export default function DateRangePicker({
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
+  const [modalPosition, setModalPosition] = useState({ top: 0, right: 0 });
   const pickerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   const checkInDate = checkIn ? new Date(checkIn) : null;
   const checkOutDate = checkOut ? new Date(checkOut) : null;
@@ -46,18 +49,42 @@ export default function DateRangePicker({
 
   const nights = calculateNights();
 
+  // Calculate modal position when opening
+  useEffect(() => {
+    if (isOpen && buttonRef.current) {
+      const buttonRect = buttonRef.current.getBoundingClientRect();
+      setModalPosition({
+        top: buttonRect.bottom + 8, // 8px margin
+        right: window.innerWidth - buttonRect.right
+      });
+    }
+  }, [isOpen]);
+
   // Close picker when clicking outside
   useEffect(() => {
+    if (!isOpen) return;
+
     function handleClickOutside(event: MouseEvent) {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      
+      // Check if click is inside picker or button
+      const isInsidePicker = pickerRef.current?.contains(target);
+      const isInsideButton = buttonRef.current?.contains(target);
+      
+      if (!isInsidePicker && !isInsideButton) {
         setIsOpen(false);
       }
     }
 
-    if (isOpen) {
+    // Add a small delay to prevent immediate closing
+    const timeoutId = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
+    }, 150);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, [isOpen]);
 
   const formatDisplayDate = () => {
@@ -128,7 +155,7 @@ export default function DateRangePicker({
       // Complete the range
       if (date >= new Date(checkIn)) {
         onDateChange(checkIn, dateStr);
-        setIsOpen(false);
+        // Don't auto-close, let user click Done button
       } else {
         // If selected date is before check-in, start new selection
         onDateChange(dateStr, '');
@@ -165,23 +192,31 @@ export default function DateRangePicker({
     });
 
     return (
-      <div className="flex-1 px-3">
-        <div className="flex items-center justify-between mb-4">
+      <div className="flex-1 px-2">
+        <div className="flex items-center justify-between mb-3">
           {monthOffset === 0 && (
             <button
-              onClick={prevMonth}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                prevMonth();
+              }}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               type="button"
             >
               <ChevronLeft className="w-4 h-4 text-gray-700" />
             </button>
           )}
-          <h3 className={`font-semibold text-gray-900 ${monthOffset === 0 ? '' : 'ml-12'}`}>
+          <h3 className={`font-medium text-gray-900 text-xs ${monthOffset === 0 ? '' : 'ml-10'}`}>
             {monthName}
           </h3>
           {monthOffset === 1 && (
             <button
-              onClick={nextMonth}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                nextMonth();
+              }}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               type="button"
             >
@@ -191,9 +226,9 @@ export default function DateRangePicker({
           {monthOffset === 0 && <div className="w-10" />}
         </div>
 
-        <div className="grid grid-cols-7 gap-1 mb-2">
+        <div className="grid grid-cols-7 gap-1 mb-1">
           {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-            <div key={day} className="text-xs font-medium text-gray-500 text-center py-2">
+            <div key={day} className="text-xs font-medium text-gray-500 text-center py-0.5">
               {day}
             </div>
           ))}
@@ -201,65 +236,75 @@ export default function DateRangePicker({
 
         <div className="grid grid-cols-7 gap-1">
           {days.map((day, index) => {
+            // Hide days that don't belong to current month
+            if (!day.isCurrentMonth) {
+              return <div key={index} className="relative p-2 text-sm"></div>;
+            }
+
             const isInRange = isDateInRange(day.date);
             const isRangeStart = isDateRangeStart(day.date);
             const isRangeEnd = isDateRangeEnd(day.date);
             const isInHoverRange = isDateInHoverRange(day.date);
             const isToday = day.date.toDateString() === new Date().toDateString();
 
-            // Build classes with proper priority hierarchy
-            let buttonClass = 'relative p-2 text-sm font-medium transition-all duration-150';
+            // Build classes with proper priority hierarchy (only for current month days)
+            let buttonClass = 'relative p-1.5 text-xs font-medium transition-all duration-150';
             
             // Priority 1: DISABLED STATE (overrides everything)
             if (day.isDisabled) {
-              buttonClass += ' text-gray-300 cursor-not-allowed rounded-lg';
+              buttonClass += ' text-gray-300 cursor-not-allowed rounded-md';
             }
             // Priority 2: SELECTED RANGE STATES
             else if (isRangeStart && isRangeEnd) {
               // Single day selection
-              buttonClass += ' bg-blue-600 text-white font-semibold cursor-pointer rounded-lg';
+              buttonClass += ' bg-blue-600 text-white font-semibold cursor-pointer rounded-md';
             }
             else if (isRangeStart) {
-              buttonClass += ' bg-blue-600 text-white font-semibold cursor-pointer rounded-l-lg';
+              buttonClass += ' bg-blue-600 text-white font-semibold cursor-pointer rounded-l-md';
             }
             else if (isRangeEnd) {
-              buttonClass += ' bg-blue-600 text-white font-semibold cursor-pointer rounded-r-lg';
+              buttonClass += ' bg-blue-600 text-white font-semibold cursor-pointer rounded-r-md';
             }
             else if (isInRange) {
               // Days between range
-              buttonClass += ' bg-blue-100 text-blue-800 cursor-pointer';
+              buttonClass += ' bg-blue-200 text-blue-800 cursor-pointer';
             }
             // Priority 3: HOVER PREVIEW RANGE
             else if (isInHoverRange) {
-              buttonClass += ' bg-blue-50 text-blue-700 cursor-pointer rounded-lg';
+              buttonClass += ' bg-blue-100 text-blue-700 cursor-pointer rounded-md';
             }
-            // Priority 4: TODAY HIGHLIGHT
+            // Priority 4: TODAY HIGHLIGHT (More Subtle)
             else if (isToday) {
-              if (day.isCurrentMonth) {
-                buttonClass += ' bg-blue-50 text-blue-700 font-semibold cursor-pointer rounded-lg border border-blue-200';
-              } else {
-                buttonClass += ' text-gray-400 cursor-pointer rounded-lg hover:bg-gray-50';
-              }
+              buttonClass += ' text-gray-900 cursor-pointer rounded-md hover:bg-blue-100 relative';
             }
-            // Priority 5: NORMAL DAYS
+            // Priority 5: NORMAL CURRENT MONTH DAYS
             else {
-              if (day.isCurrentMonth) {
-                buttonClass += ' text-gray-900 cursor-pointer rounded-lg hover:bg-blue-50';
-              } else {
-                buttonClass += ' text-gray-400 cursor-pointer rounded-lg hover:bg-gray-50';
-              }
+              buttonClass += ' text-gray-900 cursor-pointer rounded-md hover:bg-blue-100';
             }
 
             return (
               <button
                 key={index}
-                onClick={() => !day.isDisabled && handleDateClick(day.date)}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!day.isDisabled) handleDateClick(day.date);
+                }}
                 onMouseEnter={() => !day.isDisabled && setHoverDate(day.date)}
                 onMouseLeave={() => setHoverDate(null)}
                 disabled={day.isDisabled}
                 className={buttonClass}
               >
                 {day.date.getDate()}
+                {/* Subtle today indicator for non-range days */}
+                {isToday && !isInRange && !isRangeStart && !isRangeEnd && !isInHoverRange && (
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></div>
+                )}
+                {/* Corner today indicator for range days */}
+                {isToday && (isInRange || isRangeStart || isRangeEnd) && (
+                  <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-yellow-400 rounded-full"></div>
+                )}
               </button>
             );
           })}
@@ -269,7 +314,7 @@ export default function DateRangePicker({
   };
 
   return (
-    <div className="relative" ref={pickerRef}>
+    <div className="relative">
       {label && (
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {label}
@@ -277,14 +322,23 @@ export default function DateRangePicker({
       )}
       
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        ref={buttonRef}
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(prev => !prev);
+        }}
+        onMouseDown={(e) => {
+          e.preventDefault();
+        }}
         className={minimal 
           ? "w-full text-left border-none outline-none bg-transparent cursor-pointer"
           : "w-full p-3 text-left bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer"
         }
       >
         {minimal ? (
-          <span className={`text-lg font-medium ${
+          <span className={`text-md font-medium ${
             checkIn || checkOut ? 'text-gray-900' : 'text-gray-500'
           }`}>
             {formatDisplayDate()}
@@ -302,8 +356,13 @@ export default function DateRangePicker({
         )}
       </button>
 
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-2xl z-[9999] p-6 min-w-[640px] max-w-2xl">
+      {isOpen && typeof window !== 'undefined' && createPortal(
+        <div 
+          ref={pickerRef}
+          className="fixed bg-white border border-gray-200 rounded-xl shadow-2xl z-[99999] p-4 w-[560px] max-w-[95vw]" 
+          style={{ top: modalPosition.top, right: modalPosition.right }}
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="flex">
             {/* Desktop: Two months side by side */}
             <div className="hidden md:flex w-full">
@@ -317,7 +376,23 @@ export default function DateRangePicker({
               {renderCalendar(0)}
             </div>
           </div>
-        </div>
+          
+          {/* Done Button */}
+          <div className="flex justify-end mt-4 pt-4 border-t border-gray-200">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsOpen(false);
+              }}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+{t('common.done', 'Болсон')}
+            </button>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

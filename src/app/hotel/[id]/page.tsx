@@ -1,11 +1,5 @@
-import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import HotelDetail from '@/components/hotels/HotelDetail';
-import HotelAmenities from '@/components/hotels/HotelAmenities';
-import HotelReviews from '@/components/hotels/HotelReviews';
-import BookingCard from '@/components/hotels/BookingCard';
-import SimilarHotels from '@/components/hotels/SimilarHotels';
-import HotelRoomsSection from '@/components/hotels/HotelRoomsSection';
+import HotelPageContent from '@/components/hotels/HotelPageContent';
 import { ApiService } from '@/services/api';
 
 interface Hotel {
@@ -50,10 +44,12 @@ const getHotelById = async (id: string): Promise<Hotel | null> => {
 };
 
 export default async function HotelPage({ params, searchParams }: { 
-  params: { id: string };
-  searchParams?: { check_in?: string; check_out?: string; guests?: string };
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ check_in?: string; check_out?: string; guests?: string }>;
 }) {
-  const hotel = await getHotelById(params.id);
+  const { id } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const hotel = await getHotelById(id);
   
   if (!hotel) {
     notFound();
@@ -63,44 +59,6 @@ export default async function HotelPage({ params, searchParams }: {
   const hotelData = hotel as Hotel;
 
   return (
-    <div className="bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            <HotelDetail hotel={hotelData} />
-            <HotelAmenities facilities={hotelData.general_facilities} />
-            <Suspense fallback={<div>Loading reviews...</div>}>
-              <HotelReviews rating={4.2} reviewCount={89} />
-            </Suspense>
-          </div>
-          
-          {/* Booking Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <BookingCard hotel={{
-                id: hotelData.hotel_id.toString(),
-                name: hotelData.property_name,
-                price: 200000
-              }} />
-            </div>
-          </div>
-        </div>
-
-        {/* Rooms Section - Always Visible */}
-        <div className="mt-16">
-          <HotelRoomsSection 
-            hotelId={hotelData.hotel_id}
-            checkIn={searchParams?.check_in}
-            checkOut={searchParams?.check_out}
-          />
-        </div>
-        
-        {/* Similar Hotels */}
-        <div className="mt-16">
-          <SimilarHotels currentHotelId={hotelData.hotel_id.toString()} />
-        </div>
-      </div>
-    </div>
+    <HotelPageContent hotel={hotelData} searchParams={resolvedSearchParams} />
   );
 }

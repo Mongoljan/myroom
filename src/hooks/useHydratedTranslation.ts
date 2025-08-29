@@ -13,7 +13,13 @@ export function useHydratedTranslation() {
     if (!mounted) {
       return fallback || key.split('.').pop() || key;
     }
-    return t(key);
+    
+    const translation = t(key);
+    // If translation returns the same as the key, it means translation not found
+    if (translation === key && fallback) {
+      return fallback;
+    }
+    return translation;
   };
 
   return {

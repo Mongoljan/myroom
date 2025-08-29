@@ -4,13 +4,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, MapPin, Mail } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { CONTAINERS, TYPOGRAPHY } from '@/styles/containers';
 
 export default function Footer() {
   const { t } = useHydratedTranslation();
   return (
     <footer className="bg-slate-900 text-white">
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className={`${CONTAINERS.standard} py-16`}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="col-span-1 lg:col-span-1">
@@ -18,25 +19,25 @@ export default function Footer() {
               <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-lg">MR</span>
               </div>
-              <span className="text-2xl font-bold">MyRoom</span>
+              <span className={TYPOGRAPHY.heading.h2}>MyRoom</span>
             </div>
             
             <div className="space-y-4">
-              <h4 className="font-semibold text-lg mb-4">{t('footer.contactUs', 'ХОЛБОО БАРИХ').toUpperCase()}</h4>
+              <h4 className={`${TYPOGRAPHY.heading.h3} mb-4`}>{t('footer.contactUs', 'ХОЛБОО БАРИХ').toUpperCase()}</h4>
               
               <div className="flex items-center space-x-3 text-gray-300">
                 <Phone className="w-5 h-5 text-blue-400" />
-                <span>+976-7777-7777</span>
+                <span className={TYPOGRAPHY.body.standard}>+976-7777-7777</span>
               </div>
               
               <div className="flex items-center space-x-3 text-gray-300">
                 <Mail className="w-5 h-5 text-blue-400" />
-                <span>info@myroom.mn</span>
+                <span className={TYPOGRAPHY.body.standard}>info@myroom.mn</span>
               </div>
               
               <div className="flex items-start space-x-3 text-gray-300">
                 <MapPin className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-                <span>
+                <span className={TYPOGRAPHY.body.standard}>
                   {t('footer.address', 'Peace Ave 14-6, 2nd Floor, Chingeltei District, Ulaanbaatar 14240, Ulaanbaatar, Mongolia')}
                 </span>
               </div>
@@ -45,34 +46,34 @@ export default function Footer() {
 
           {/* Hotel Services */}
           <div>
-            <h4 className="font-semibold text-lg mb-6">{t('navigation.hotels', 'ЗОЧИД БУУДАЛ').toUpperCase()}</h4>
+            <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>{t('navigation.hotels', 'ЗОЧИД БУУДАЛ').toUpperCase()}</h4>
             <ul className="space-y-3 text-gray-300">
-              <li><Link href="/hotels" className="hover:text-blue-400 transition-colors">{t('hotel.search', 'Зочид буудал хайх')}</Link></li>
-              <li><Link href="/offers" className="hover:text-blue-400 transition-colors">{t('footer.specialOffers', 'Онцгой санал')}</Link></li>
-              <li><Link href="/destinations" className="hover:text-blue-400 transition-colors">{t('navigation.destinations', 'Аялах газар')}</Link></li>
-              <li><Link href="/reviews" className="hover:text-blue-400 transition-colors">{t('hotel.reviews', 'Үнэлгээ сэтгэгдэл')}</Link></li>
+              <li><Link href="/hotels" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('hotel.search', 'Зочид буудал хайх')}</Link></li>
+              <li><Link href="/offers" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.specialOffers', 'Онцгой санал')}</Link></li>
+              <li><Link href="/destinations" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('navigation.destinations', 'Аялах газар')}</Link></li>
+              <li><Link href="/reviews" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('hotel.reviews', 'Үнэлгээ сэтгэгдэл')}</Link></li>
             </ul>
           </div>
 
           {/* Customer Support */}
           <div>
-            <h4 className="font-semibold text-lg mb-6">{t('footer.support', 'ТУСЛАМЖ').toUpperCase()}</h4>
+            <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>{t('footer.support', 'ТУСЛАМЖ').toUpperCase()}</h4>
             <ul className="space-y-3 text-gray-300">
-              <li><Link href="/help" className="hover:text-blue-400 transition-colors">{t('footer.helpCenter', 'Тусламжийн төв')}</Link></li>
-              <li><Link href="/contact" className="hover:text-blue-400 transition-colors">{t('navigation.contact', 'Холбоо барих')}</Link></li>
-              <li><Link href="/cancellation" className="hover:text-blue-400 transition-colors">{t('footer.cancellationPolicy', 'Цуцлах бодлого')}</Link></li>
-              <li><Link href="/faq" className="hover:text-blue-400 transition-colors">{t('faq.title', 'Түгээмэл асуулт')}</Link></li>
+              <li><Link href="/help" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.helpCenter', 'Тусламжийн төв')}</Link></li>
+              <li><Link href="/contact" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('navigation.contact', 'Холбоо барих')}</Link></li>
+              <li><Link href="/cancellation" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.cancellationPolicy', 'Цуцлах бодлого')}</Link></li>
+              <li><Link href="/faq" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('faq.title', 'Түгээмэл асуулт')}</Link></li>
             </ul>
           </div>
 
           {/* About */}
           <div>
-            <h4 className="font-semibold text-lg mb-6">{t('footer.aboutUs', 'БИДНИЙ ТУХАЙ').toUpperCase()}</h4>
+            <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>{t('footer.aboutUs', 'БИДНИЙ ТУХАЙ').toUpperCase()}</h4>
             <ul className="space-y-3 text-gray-300">
-              <li><Link href="/about" className="hover:text-blue-400 transition-colors">{t('footer.aboutUs', 'Компанийн тухай')}</Link></li>
-              <li><Link href="/careers" className="hover:text-blue-400 transition-colors">{t('footer.careers', 'Ажлын байр')}</Link></li>
-              <li><Link href="/partners" className="hover:text-blue-400 transition-colors">{t('footer.partners', 'Хамтрагч байгууллага')}</Link></li>
-              <li><Link href="/blog" className="hover:text-blue-400 transition-colors">{t('footer.blog', 'Блог мэдээлэл')}</Link></li>
+              <li><Link href="/about" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.aboutUs', 'Компанийн тухай')}</Link></li>
+              <li><Link href="/careers" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.careers', 'Ажлын байр')}</Link></li>
+              <li><Link href="/partners" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.partners', 'Хамтрагч байгууллага')}</Link></li>
+              <li><Link href="/blog" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.blog', 'Блог мэдээлэл')}</Link></li>
             </ul>
           </div>
         </div>
@@ -81,7 +82,7 @@ export default function Footer() {
         <div className="border-t border-gray-700 mt-12 pt-8">
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
-              <span className="text-gray-300">{t('footer.downloadApp', 'Аппликешн татах')}:</span>
+              <span className={`${TYPOGRAPHY.body.standard} text-gray-300`}>{t('footer.downloadApp', 'Аппликешн татах')}:</span>
               <div className="flex items-center space-x-3">
                 <Link href="#" className="hover:opacity-80 transition-opacity">
                   <div className="bg-black rounded-lg px-4 py-2 flex items-center space-x-2">
@@ -92,7 +93,7 @@ export default function Footer() {
                       height={20}
                       className="w-5 h-5"
                     />
-                    <div className="text-white text-xs">
+                    <div className={`${TYPOGRAPHY.body.small} text-white`}>
                       <div>Download on the</div>
                       <div className="font-semibold">App Store</div>
                     </div>
@@ -108,7 +109,7 @@ export default function Footer() {
                       height={20}
                       className="w-5 h-5"
                     />
-                    <div className="text-white text-xs">
+                    <div className={`${TYPOGRAPHY.body.small} text-white`}>
                       <div>Get it on</div>
                       <div className="font-semibold">Google Play</div>
                     </div>
@@ -119,7 +120,7 @@ export default function Footer() {
 
             {/* Social Media Links */}
             <div className="flex items-center space-x-4">
-              <span className="text-gray-300">{t('footer.followUs', 'Бидэнтэй холбогдох')}:</span>
+              <span className={`${TYPOGRAPHY.body.standard} text-gray-300`}>{t('footer.followUs', 'Бидэнтэй холбогдох')}:</span>
               <div className="flex space-x-3">
                 <Link href="#" className="w-10 h-10 bg-gray-700 hover:bg-blue-600 rounded-full flex items-center justify-center transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -152,12 +153,12 @@ export default function Footer() {
 
       {/* Bottom Copyright */}
       <div className="bg-slate-950 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className={CONTAINERS.standard}>
           <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
-            <p className="text-gray-400 text-sm">
+            <p className={`${TYPOGRAPHY.body.standard} text-gray-400`}>
               © 2025 MyRoom. {t('footer.allRightsReserved', 'Зохиогч эрхийн хуулиар хамгаалагдсан')}.
             </p>
-            <div className="flex items-center space-x-4 text-sm text-gray-400">
+            <div className={`flex items-center space-x-4 ${TYPOGRAPHY.body.standard} text-gray-400`}>
               <Link href="/privacy" className="hover:text-white transition-colors">
                 {t('footer.privacyPolicy', 'Нууцлалын бодлого')}
               </Link>

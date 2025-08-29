@@ -10,10 +10,14 @@ import {
   Star,
   Building
 } from 'lucide-react';
+import { TYPOGRAPHY } from '@/styles/containers';
 import CustomGuestSelector from './CustomGuestSelector';
+import { locationService, LocationSuggestion } from '@/services/locationApi';
+import { generateSearchVariations, hasCyrillic, hasLatin } from '@/utils/transliteration';
 
 interface SearchData {
   location: string;
+  selectedLocationSuggestion?: LocationSuggestion;
   checkIn: string;
   checkOut: string;
   adults: number;
@@ -21,21 +25,7 @@ interface SearchData {
   rooms: number;
 }
 
-interface LocationSuggestion {
-  id: string;
-  name: string;
-  type: 'city' | 'hotel' | 'landmark';
-  location: string;
-  popular?: boolean;
-}
-
-const mockLocationSuggestions: LocationSuggestion[] = [
-  { id: '1', name: 'London', type: 'city', location: 'United Kingdom', popular: true },
-  { id: '2', name: 'The Montcalm At Brewery London City', type: 'hotel', location: 'Westminster Borough, London' },
-  { id: '3', name: 'Barcelona', type: 'city', location: 'Spain', popular: true },
-  { id: '4', name: 'Ciutat Vella', type: 'landmark', location: 'Barcelona, Spain' },
-  { id: '5', name: 'New York', type: 'city', location: 'United States', popular: true },
-];
+// LocationSuggestion interface is now imported from the service
 
 export default function ModernSearchBar() {
   const [searchData, setSearchData] = useState<SearchData>({
@@ -55,19 +45,30 @@ export default function ModernSearchBar() {
   const dateRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (searchData.location.trim()) {
-      const filtered = mockLocationSuggestions.filter(suggestion =>
-        suggestion.name.toLowerCase().includes(searchData.location.toLowerCase()) ||
-        suggestion.location.toLowerCase().includes(searchData.location.toLowerCase())
-      );
-      setFilteredSuggestions(filtered);
-    } else {
-      setFilteredSuggestions(mockLocationSuggestions.filter(s => s.popular));
-    }
+    const fetchLocationSuggestions = async () => {
+      try {
+        if (searchData.location.trim()) {
+          const suggestions = await locationService.searchLocations(searchData.location);
+          setFilteredSuggestions(suggestions);
+        } else {
+          const popularSuggestions = await locationService.getPopularLocations();
+          setFilteredSuggestions(popularSuggestions);
+        }
+      } catch (error) {
+        console.error('Error fetching location suggestions:', error);
+        setFilteredSuggestions([]);
+      }
+    };
+
+    fetchLocationSuggestions();
   }, [searchData.location]);
 
   const handleLocationSelect = (suggestion: LocationSuggestion) => {
-    setSearchData(prev => ({ ...prev, location: suggestion.name }));
+    setSearchData(prev => ({ 
+      ...prev, 
+      location: suggestion.fullName,
+      selectedLocationSuggestion: suggestion 
+    }));
     setShowLocationSuggestions(false);
   };
 
@@ -82,13 +83,32 @@ export default function ModernSearchBar() {
 
   const handleSearch = () => {
     const params = new URLSearchParams({
-      location: searchData.location,
       check_in: searchData.checkIn,
       check_out: searchData.checkOut,
       adults: searchData.adults.toString(),
       children: searchData.children.toString(),
       rooms: searchData.rooms.toString(),
+      acc_type: 'hotel'
     });
+
+    // Add location-specific parameters based on selected suggestion
+    if (searchData.selectedLocationSuggestion) {
+      const locationParams = locationService.formatLocationForSearchAPI(searchData.selectedLocationSuggestion);
+      
+      if (locationParams.name_id) {
+        params.append('name_id', locationParams.name_id.toString());
+      } else if (locationParams.name) {
+        params.append('name', locationParams.name);
+      } else {
+        if (locationParams.province_id) params.append('province_id', locationParams.province_id.toString());
+        if (locationParams.soum_id) params.append('soum_id', locationParams.soum_id.toString());
+        if (locationParams.district) params.append('district', locationParams.district);
+      }
+    } else if (searchData.location) {
+      // Fallback to text search if no suggestion was selected
+      params.append('location', searchData.location);
+    }
+
     window.location.href = `/search?${params.toString()}`;
   };
 
@@ -103,8 +123,10 @@ export default function ModernSearchBar() {
 
   const getLocationIcon = (type: LocationSuggestion['type']) => {
     switch (type) {
-      case 'hotel': return <Building className="w-4 h-4" />;
-      case 'landmark': return <MapPin className="w-4 h-4" />;
+      case 'province': return <MapPin className="w-4 h-4" />;
+      case 'soum': return <Building className="w-4 h-4" />;
+      case 'district': return <MapPin className="w-4 h-4" />;
+      case 'property': return <Building className="w-4 h-4 text-blue-500" />;
       default: return <MapPin className="w-4 h-4" />;
     }
   };
@@ -127,14 +149,14 @@ export default function ModernSearchBar() {
             >
               <MapPin className="w-5 h-5 text-gray-400 mr-3" />
               <div className="flex-1">
-                <div className="text-xs font-medium text-gray-500 mb-1">Location</div>
+                <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>Location</div>
                 <input
                   type="text"
                   value={searchData.location}
                   onChange={(e) => setSearchData(prev => ({ ...prev, location: e.target.value }))}
                   onFocus={() => setShowLocationSuggestions(true)}
                   placeholder="Where are you going?"
-                  className="w-full text-sm text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent"
+                  className={`w-full ${TYPOGRAPHY.form.input} text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent`}
                 />
               </div>
               {searchData.location && (
@@ -157,8 +179,19 @@ export default function ModernSearchBar() {
                   className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 mt-2 max-h-80 overflow-y-auto"
                 >
                   <div className="p-4">
-                    <div className="text-xs font-medium text-gray-500 mb-3">
-                      {searchData.location ? 'Search results' : 'Popular destinations'}
+                    <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-3`}>
+                      {searchData.location ? (
+                        <div className="flex flex-col gap-1">
+                          <span>Search results</span>
+                          {(hasCyrillic(searchData.location) || hasLatin(searchData.location)) && (
+                            <span className="text-xs text-blue-600">
+                              Including transliteration matches
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        'Popular destinations'
+                      )}
                     </div>
                     <div className="space-y-1">
                       {filteredSuggestions.map((suggestion) => (
@@ -172,15 +205,20 @@ export default function ModernSearchBar() {
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="text-sm font-medium text-gray-900">
+                              <span className={`${TYPOGRAPHY.body.standard} text-gray-900`}>
                                 {suggestion.name}
                               </span>
-                              {suggestion.popular && (
-                                <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                              {suggestion.searchScore && suggestion.searchScore >= 90 && (
+                                <span className="w-2 h-2 bg-green-500 rounded-full" title="Exact match"></span>
+                              )}
+                              {suggestion.property_count > 0 && (
+                                <span className={`${TYPOGRAPHY.body.caption} text-blue-600`}>
+                                  ({suggestion.property_count} зочид буудал)
+                                </span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-500">
-                              {suggestion.location}
+                            <div className={`${TYPOGRAPHY.body.caption} text-gray-500`}>
+                              {suggestion.fullName}
                             </div>
                           </div>
                         </button>
@@ -200,8 +238,8 @@ export default function ModernSearchBar() {
             >
               <Calendar className="w-5 h-5 text-gray-400 mr-3" />
               <div>
-                <div className="text-xs font-medium text-gray-500 mb-1">Check in - Check out</div>
-                <div className="text-sm text-gray-900">
+                <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>Check in - Check out</div>
+                <div className={`${TYPOGRAPHY.body.standard} text-gray-900`}>
                   {searchData.checkIn && searchData.checkOut 
                     ? `${formatDate(searchData.checkIn)} - ${formatDate(searchData.checkOut)}`
                     : 'August 15 - September 14'
@@ -225,7 +263,7 @@ export default function ModernSearchBar() {
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">Select Dates</h3>
+                      <h3 className={`${TYPOGRAPHY.heading.h3} text-gray-900`}>Select Dates</h3>
                       <button
                         onClick={() => setShowDatePicker(false)}
                         className="text-gray-400 hover:text-gray-600"
@@ -235,31 +273,31 @@ export default function ModernSearchBar() {
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-700 mb-2`}>
                           Check-in Date
                         </label>
                         <input
                           type="date"
                           value={searchData.checkIn}
                           onChange={(e) => setSearchData(prev => ({ ...prev, checkIn: e.target.value }))}
-                          className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${TYPOGRAPHY.form.input}`}
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-700 mb-2`}>
                           Check-out Date
                         </label>
                         <input
                           type="date"
                           value={searchData.checkOut}
                           onChange={(e) => setSearchData(prev => ({ ...prev, checkOut: e.target.value }))}
-                          className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${TYPOGRAPHY.form.input}`}
                         />
                       </div>
                     </div>
                     <button
                       onClick={() => setShowDatePicker(false)}
-                      className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                      className={`w-full mt-6 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors ${TYPOGRAPHY.button.standard}`}
                     >
                       Apply Dates
                     </button>

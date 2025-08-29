@@ -72,10 +72,13 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
           {/* Main Image */}
           <div className="lg:col-span-2 relative h-80 lg:h-96 rounded-xl overflow-hidden">
             <Image
-              src={hotel.images.gallery[currentImageIndex]?.img.url || hotel.images.cover.url}
+              src={hotel.images.gallery[currentImageIndex]?.img.url || hotel.images.cover.url || '/images/hotel-placeholder.jpg'}
               alt={hotel.property_name}
               fill
               className="object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/images/hotel-placeholder.jpg';
+              }}
             />
             
             {hotel.images.gallery.length > 1 && (
@@ -118,10 +121,13 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
                 onClick={() => setCurrentImageIndex(index + 1)}
               >
                 <Image
-                  src={image.img.url}
+                  src={image.img.url || '/images/hotel-placeholder.jpg'}
                   alt={`${hotel.property_name} - ${index + 1}`}
                   fill
                   className="object-cover hover:opacity-80 transition-opacity"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/images/hotel-placeholder.jpg';
+                  }}
                 />
               </div>
             ))}
@@ -149,15 +155,15 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
 
       {/* Description */}
       <div>
-        <h2 className="text-xl font-semibold mb-3">{t('about_property', 'About Property')}</h2>
+        <h2 className="text-xl font-semibold mb-3">{t('about_property', 'Зочид буудлын тухай')}</h2>
         <p className="text-gray-600 leading-relaxed">
-          {hotel.description || `Experience comfort and luxury at ${hotel.property_name}. Located in the heart of ${hotel.location.province_city}, this property offers modern amenities and exceptional service to make your stay memorable.`}
+          {hotel.description || t('default_description', `${hotel.property_name} зочид буудалд тав тухтай орчинд амрах боломжтой. ${hotel.location.province_city} хотын төвд байрлах энэхүү зочид буудал орчин үеийн тохижилт, өндөр чанарын үйлчилгээгээр таны амралтыг дурсамжтай болгоно.`)}
         </p>
       </div>
 
       {/* Popular Facilities */}
       <div>
-        <h3 className="text-lg font-semibold mb-3">{t('popular_amenities', 'Popular Amenities')}</h3>
+        <h3 className="text-lg font-semibold mb-3">{t('popular_amenities', 'Үндсэн тохижилт')}</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {hotel.general_facilities.slice(0, 6).map((facility, index) => (
             <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
@@ -168,7 +174,7 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
         </div>
         {hotel.general_facilities.length > 6 && (
           <p className="mt-2 text-sm text-gray-600">
-            And {hotel.general_facilities.length - 6} more amenities...
+            {t('more_amenities', `Мөн ${hotel.general_facilities.length - 6} тохижилт...`)}
           </p>
         )}
       </div>

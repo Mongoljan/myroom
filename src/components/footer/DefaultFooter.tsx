@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from 'next/image';
+import { TYPOGRAPHY } from '@/styles/containers';
 
 const DefaultFooter = () => {
   return (
@@ -9,11 +9,14 @@ const DefaultFooter = () => {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center mb-4">
-              <div className="relative h-6 w-28">
-                <Image src="/img/general/logo-light.svg" alt="MyRoom" fill sizes="(max-width: 768px) 112px, 112px" />
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
+                  <span className="text-white font-bold text-lg">G</span>
+                </div>
+                <span className="text-white font-bold text-lg">GoTrip</span>
               </div>
             </Link>
-            <p className="text-sm text-gray-300 mb-3 max-w-md">
+            <p className={`${TYPOGRAPHY.body.standard} text-gray-300 mb-3 max-w-md`}>
               Discover amazing hotels at exclusive deals. Your perfect stay is just a click away.
             </p>
             <div className="flex space-x-3">
@@ -37,29 +40,29 @@ const DefaultFooter = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-sm font-semibold mb-3">Quick Links</h3>
+            <h3 className={`${TYPOGRAPHY.heading.h4} mb-3`}>Quick Links</h3>
             <ul className="space-y-1">
-              <li><Link href="/about" className="text-sm text-gray-300 hover:text-white transition-colors">About Us</Link></li>
-              <li><Link href="/contact" className="text-sm text-gray-300 hover:text-white transition-colors">Contact</Link></li>
-              <li><Link href="/help" className="text-sm text-gray-300 hover:text-white transition-colors">Help Center</Link></li>
-              <li><Link href="/careers" className="text-sm text-gray-300 hover:text-white transition-colors">Careers</Link></li>
+              <li><Link href="/about" className={`${TYPOGRAPHY.nav.secondary} text-gray-300 hover:text-white transition-colors`}>About Us</Link></li>
+              <li><Link href="/contact" className={`${TYPOGRAPHY.nav.secondary} text-gray-300 hover:text-white transition-colors`}>Contact</Link></li>
+              <li><Link href="/help" className={`${TYPOGRAPHY.nav.secondary} text-gray-300 hover:text-white transition-colors`}>Help Center</Link></li>
+              <li><Link href="/careers" className={`${TYPOGRAPHY.nav.secondary} text-gray-300 hover:text-white transition-colors`}>Careers</Link></li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
-            <h3 className="text-sm font-semibold mb-3">Support</h3>
+            <h3 className={`${TYPOGRAPHY.heading.h4} mb-3`}>Support</h3>
             <ul className="space-y-1">
-              <li><Link href="/privacy" className="text-sm text-gray-300 hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-sm text-gray-300 hover:text-white transition-colors">Terms of Service</Link></li>
-              <li><Link href="/cookies" className="text-sm text-gray-300 hover:text-white transition-colors">Cookie Policy</Link></li>
-              <li><Link href="/sitemap" className="text-sm text-gray-300 hover:text-white transition-colors">Sitemap</Link></li>
+              <li><Link href="/privacy" className={`${TYPOGRAPHY.nav.secondary} text-gray-300 hover:text-white transition-colors`}>Privacy Policy</Link></li>
+              <li><Link href="/terms" className={`${TYPOGRAPHY.nav.secondary} text-gray-300 hover:text-white transition-colors`}>Terms of Service</Link></li>
+              <li><Link href="/cookies" className={`${TYPOGRAPHY.nav.secondary} text-gray-300 hover:text-white transition-colors`}>Cookie Policy</Link></li>
+              <li><Link href="/sitemap" className={`${TYPOGRAPHY.nav.secondary} text-gray-300 hover:text-white transition-colors`}>Sitemap</Link></li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-6 pt-6 text-center text-gray-400">
-          <p className="text-sm">&copy; 2025 MyRoom. All rights reserved.</p>
+          <p className={`${TYPOGRAPHY.body.caption}`}>&copy; 2025 GoTrip. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -7,7 +7,7 @@ const Hero1 = () => {
   const { t } = useHydratedTranslation();
 
   return (
-    <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
+    <section className="relative h-[50vh] flex items-center justify-center overflow-hidden">
       {/* Animated Background */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900"></div>
@@ -73,7 +73,7 @@ const Hero1 = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -81,7 +81,7 @@ const Hero1 = () => {
             transition={{ duration: 0.8 }}
           >
             <motion.h1 
-              className="text-3xl md:text-4xl font-bold text-white mb-3"
+              className="text-2xl md:text-3xl font-bold text-white mb-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -90,7 +90,7 @@ const Hero1 = () => {
             </motion.h1>
             
             <motion.h2 
-              className="text-2xl md:text-3xl font-bold text-white mb-4"
+              className="text-xl md:text-2xl font-bold text-white mb-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
@@ -99,7 +99,7 @@ const Hero1 = () => {
             </motion.h2>
             
             <motion.p 
-              className="text-sm text-white/80 mb-6 max-w-xl mx-auto"
+              className="text-xs text-white/80 mb-4 max-w-xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
@@ -124,19 +124,19 @@ const Hero1 = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center"
+            className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center"
           >
             <div className="text-white">
-              <div className="text-xl md:text-2xl font-bold mb-1">10,000+</div>
-              <div className="text-white/80 text-sm">Hotels Worldwide</div>
+              <div className="text-lg md:text-xl font-bold mb-1">10,000+</div>
+              <div className="text-white/80 text-xs">Hotels Worldwide</div>
             </div>
             <div className="text-white">
-              <div className="text-xl md:text-2xl font-bold mb-1">50,000+</div>
-              <div className="text-white/80 text-sm">Happy Customers</div>
+              <div className="text-lg md:text-xl font-bold mb-1">50,000+</div>
+              <div className="text-white/80 text-xs">Happy Customers</div>
             </div>
             <div className="text-white">
-              <div className="text-xl md:text-2xl font-bold mb-1">24/7</div>
-              <div className="text-white/80 text-sm">Customer Support</div>
+              <div className="text-lg md:text-xl font-bold mb-1">24/7</div>
+              <div className="text-white/80 text-xs">Customer Support</div>
             </div>
           </motion.div>
         </div>

@@ -34,14 +34,14 @@ export default function RootLayout({
       >
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <ToastProvider>
             <I18nProvider>
               <Header1 />
-              <main className="pt-20">
+              <main className="pt-10">
                 {children}
               </main>
               <Footer />

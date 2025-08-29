@@ -17,12 +17,12 @@ const Home = () => {
     <>
       <ModernHero />
       <WhyChooseUs />
-      <Partnerships />
       <RecentlyViewed />
       <div className="bg-gray-50">
         <RecommendedHotels />
         <PopularDestinations />
       </div>
+      <Partnerships />
       <FaqSection />
     </>
   );

@@ -57,11 +57,15 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
           {/* Hotel Image - List View */}
           <div className="relative md:w-80 h-48 md:h-auto min-h-[200px] flex-shrink-0">
             <Image
-              src={hotel.images.cover.url}
-              alt={hotel.images.cover.description}
+              src={typeof hotel.images?.cover === 'string' ? hotel.images.cover : hotel.images?.cover?.url || hotel.images?.gallery?.[0]?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop'}
+              alt={hotel.images?.gallery?.[0]?.description || hotel.property_name || 'Hotel image'}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
               sizes="(max-width: 768px) 100vw, 320px"
+              unoptimized
+              onError={(e) => {
+                e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop';
+              }}
             />
             
             {/* Image Overlay with Rating */}
@@ -206,11 +210,15 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid', inde
       {/* Hotel Image - Grid View */}
       <div className="relative h-56">
         <Image
-          src={hotel.images.cover.url}
-          alt={hotel.images.cover.description}
+          src={typeof hotel.images?.cover === 'string' ? hotel.images.cover : hotel.images?.cover?.url || hotel.images?.gallery?.[0]?.url || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop'}
+          alt={hotel.images?.gallery?.[0]?.description || hotel.property_name || 'Hotel image'}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          unoptimized
+          onError={(e) => {
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop';
+          }}
         />
         
         {/* Image Overlay */}

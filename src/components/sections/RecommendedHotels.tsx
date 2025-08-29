@@ -1,17 +1,18 @@
 "use client";
 import Link from 'next/link';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { TYPOGRAPHY } from '@/styles/containers';
 
 export default function RecommendedHotels() {
   const { t } = useHydratedTranslation();
 
   return (
-    <section className="py-10">
-      <div className="container mx-auto px-4">
+    <section className="py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-1">{t('hotel.recommended', 'Recommended Hotels')}</h2>
-            <p className="text-sm text-gray-600">{t('hotel.recommendedDesc', 'Discover our handpicked selection of exceptional hotels')}</p>
+            <h2 className={`${TYPOGRAPHY.heading.h2} text-gray-900 mb-1`}>{t('hotel.recommended', 'Recommended Hotels')}</h2>
+            <p className={`${TYPOGRAPHY.body.standard} text-gray-600`}>{t('hotel.recommendedDesc', 'Discover our handpicked selection of exceptional hotels')}</p>
           </div>
           <Link 
             href="/hotels/recommended" 
