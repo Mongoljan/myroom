@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Search, X, Building } from 'lucide-react';
+import { MapPin, Search, X, Building } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import CustomGuestSelector from '@/components/search/CustomGuestSelector';
 import DateRangePicker from '@/components/common/DateRangePicker';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { locationService, type LocationSuggestion } from '@/services/locationApi';
-import { TYPOGRAPHY } from '@/styles/containers';
 
 export default function ProfessionalHero() {
   const { t } = useHydratedTranslation();

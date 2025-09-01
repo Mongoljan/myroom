@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Users, Calendar, CreditCard, User, Mail, Phone, MapPin } from 'lucide-react';
-import { ApiService, CreateBookingRequest } from '@/services/api';
+import { X, User, Mail, Phone, MapPin } from 'lucide-react';
+import { ApiService } from '@/services/api';
+import { CreateBookingRequest, CreateBookingResponse } from '@/types/api';
 import { EnrichedHotelRoom } from '@/services/hotelRoomsApi';
-import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -37,11 +37,10 @@ export default function BookingModal({
   checkOut,
   guests = 2
 }: BookingModalProps) {
-  const { t } = useHydratedTranslation();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [bookingResult, setBookingResult] = useState<any>(null);
+  const [bookingResult, setBookingResult] = useState<CreateBookingResponse | null>(null);
 
   const [form, setForm] = useState<BookingForm>({
     guest_first_name: '',
@@ -95,18 +94,18 @@ export default function BookingModal({
     try {
       const bookingData: CreateBookingRequest = {
         hotel_id: room.hotel,
-        room_type_id: room.room_type,
-        room_category_id: room.room_category,
         check_in: checkIn || new Date().toISOString().split('T')[0],
         check_out: checkOut || new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0],
-        adults: form.adults,
-        children: form.children,
-        guest_first_name: form.guest_first_name,
-        guest_last_name: form.guest_last_name,
-        guest_email: form.guest_email,
-        guest_phone: form.guest_phone,
-        guest_address: form.guest_address,
-        special_requests: form.special_requests
+        customer_name: `${form.guest_first_name} ${form.guest_last_name}`,
+        customer_phone: form.guest_phone,
+        customer_email: form.guest_email,
+        rooms: [
+          {
+            room_category_id: room.room_category,
+            room_type_id: room.room_type,
+            room_count: 1
+          }
+        ]
       };
 
       const result = await ApiService.createBooking(bookingData);

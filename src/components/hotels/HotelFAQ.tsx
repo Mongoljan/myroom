@@ -16,7 +16,7 @@ interface HotelFAQProps {
   hotelRating?: number;
 }
 
-export default function HotelFAQ({ hotelName, hotelFacilities = [], hotelRating }: HotelFAQProps) {
+export default function HotelFAQ({ hotelName, hotelFacilities = [] }: HotelFAQProps) {
   const { t } = useHydratedTranslation();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -25,7 +25,6 @@ export default function HotelFAQ({ hotelName, hotelFacilities = [], hotelRating 
   const hasRestaurant = hotelFacilities.some(f => f.toLowerCase().includes('restaurant') || f.toLowerCase().includes('ресторан'));
   const hasWifi = hotelFacilities.some(f => f.toLowerCase().includes('wifi') || f.toLowerCase().includes('интернэт'));
   const hasParking = hotelFacilities.some(f => f.toLowerCase().includes('parking') || f.toLowerCase().includes('зогсоол'));
-  const hasSpa = hotelFacilities.some(f => f.toLowerCase().includes('spa') || f.toLowerCase().includes('спа'));
 
   const faqData: FAQItem[] = [
     {

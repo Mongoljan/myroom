@@ -1,13 +1,13 @@
 'use client';
 
-import { Clock, CreditCard, Users, AlertCircle, Bed, DollarSign } from 'lucide-react';
+import { Clock, CreditCard, Users, AlertCircle } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface HotelHouseRulesProps {
   hotelName: string;
 }
 
-export default function HotelHouseRules({ hotelName }: HotelHouseRulesProps) {
+export default function HotelHouseRules({}: HotelHouseRulesProps) {
   const { t } = useHydratedTranslation();
 
   const rules = [

@@ -49,7 +49,7 @@ export interface LocationResponse {
   properties: Property[];
 }
 
-import { getSearchScore, matchesWithTransliteration } from '@/utils/transliteration';
+import { getSearchScore } from '@/utils/transliteration';
 
 export class LocationService {
   private static instance: LocationService;

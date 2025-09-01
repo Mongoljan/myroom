@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface HotelSubNavProps {
@@ -14,14 +14,14 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
   const { t } = useHydratedTranslation();
   const [isSticky, setIsSticky] = useState(false);
 
-  const sections = [
+  const sections = useMemo(() => [
     { id: 'overview', label: t('hotel.overview', 'Ерөнхий') },
     { id: 'rooms', label: t('hotel.rooms', 'Өрөөнүүд') },
     { id: 'house-rules', label: t('hotel.houseRules', 'Дотоод журам') },
     { id: 'reviews', label: t('hotel.reviews', 'Шүүмж, үнэлгээ') },
     { id: 'facilities', label: t('hotel.facilities', 'Үйлчилгээ') },
     { id: 'faq', label: t('hotel.faq', 'Тугээмал асуулт') },
-  ];
+  ], [t]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -81,7 +81,7 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
     });
 
     return () => observer.disconnect();
-  }, [onSectionChange]);
+  }, [onSectionChange, sections]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);

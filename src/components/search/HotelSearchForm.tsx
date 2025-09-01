@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Calendar, MapPin, Search, Users } from 'lucide-react';
+import { Calendar, MapPin, Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { TYPOGRAPHY } from '@/styles/containers';
 import CustomGuestSelector from './CustomGuestSelector';
-import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface SearchParams {
   location: string;
@@ -17,7 +16,6 @@ interface SearchParams {
 }
 
 export default function HotelSearchForm() {
-  const { t } = useHydratedTranslation();
   const router = useRouter();
   const urlSearchParams = useSearchParams();
   const [searchParams, setSearchParams] = useState<SearchParams>({

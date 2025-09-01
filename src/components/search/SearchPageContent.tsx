@@ -25,12 +25,6 @@ export default function SearchPageContent() {
     console.log('VIEW MODE CHANGED TO:', viewMode);
   }, [viewMode]);
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState({
-    priceRange: [50000, 500000] as [number, number],
-    starRating: [] as number[],
-    facilities: [] as string[],
-    roomTypes: [] as string[]
-  });
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -94,8 +88,7 @@ export default function SearchPageContent() {
     fetchSearchResults();
   }, [searchParams]);
 
-  const handleFilterChange = (newFilters: typeof filters) => {
-    setFilters(newFilters);
+  const handleFilterChange = () => {
     // You can add logic here to refetch results with filters applied
   };
 

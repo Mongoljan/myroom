@@ -19,12 +19,6 @@ interface FilterState {
   roomTypes: string[];
 }
 
-interface QuickFilterProps {
-  label: string;
-  count: number;
-  active?: boolean;
-  onClick: () => void;
-}
 
 export default function SearchResults() {
   const searchParams = useSearchParams();
@@ -34,7 +28,7 @@ export default function SearchResults() {
   const [showFilters, setShowFilters] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('price_low');
-  const [filters, setFilters] = useState<FilterState>({
+  const [filters] = useState<FilterState>({
     priceRange: [50000, 500000],
     starRating: [],
     facilities: [],

@@ -36,7 +36,7 @@ const HotelList: React.FC<HotelListProps> = ({ hotels, viewMode }) => {
           </h3>
           
           <p className="text-gray-800 mb-6 max-w-md mx-auto leading-relaxed">
-            We couldn't find any properties matching your criteria. Try adjusting your search parameters or removing some filters.
+            We couldn&apos;t find any properties matching your criteria. Try adjusting your search parameters or removing some filters.
           </p>
           
           {/* Action suggestions */}

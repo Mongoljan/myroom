@@ -7,13 +7,12 @@ import {
   MapPin, 
   Calendar, 
   X,
-  Star,
   Building
 } from 'lucide-react';
 import { TYPOGRAPHY } from '@/styles/containers';
 import CustomGuestSelector from './CustomGuestSelector';
 import { locationService, LocationSuggestion } from '@/services/locationApi';
-import { generateSearchVariations, hasCyrillic, hasLatin } from '@/utils/transliteration';
+import { hasCyrillic, hasLatin } from '@/utils/transliteration';
 
 interface SearchData {
   location: string;

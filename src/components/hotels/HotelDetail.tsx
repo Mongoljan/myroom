@@ -2,27 +2,25 @@
 
 import { useState } from 'react';
 import { Star, MapPin, Wifi, ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
+import SafeImage from '@/components/common/SafeImage';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface Hotel {
   hotel_id: number;
   property_name: string;
   location: {
-    province_city: string;
-    soum: string;
-    district: string;
+    province_city: string | null;
+    soum: string | null;
+    district: string | null;
   };
   images: {
-    cover: {
+    cover: string | {
       url: string;
       description: string;
     };
     gallery: Array<{
-      img: {
-        url: string;
-        description: string;
-      };
+      url: string;
+      description: string;
     }>;
   };
   rating_stars: {
@@ -71,14 +69,11 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           {/* Main Image */}
           <div className="lg:col-span-2 relative h-80 lg:h-96 rounded-xl overflow-hidden">
-            <Image
-              src={hotel.images.gallery[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover.url) || '/images/hotel-placeholder.jpg'}
+            <SafeImage
+              src={hotel.images.gallery[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover.url) || ''}
               alt={hotel.property_name}
               fill
               className="object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = '/images/hotel-placeholder.jpg';
-              }}
             />
             
             {hotel.images.gallery.length > 1 && (
@@ -120,14 +115,11 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
                 className="relative h-36 lg:h-44 cursor-pointer rounded-xl overflow-hidden"
                 onClick={() => setCurrentImageIndex(index + 1)}
               >
-                <Image
-                  src={image.url || '/images/hotel-placeholder.jpg'}
+                <SafeImage
+                  src={image.url || ''}
                   alt={`${hotel.property_name} - ${index + 1}`}
                   fill
                   className="object-cover hover:opacity-80 transition-opacity"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/images/hotel-placeholder.jpg';
-                  }}
                 />
               </div>
             ))}

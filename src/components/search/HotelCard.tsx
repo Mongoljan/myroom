@@ -26,7 +26,7 @@ const facilityIcons: { [key: string]: React.ReactNode } = {
   '24-hour Front Desk': <Users className="w-4 h-4 text-gray-800" />,
 };
 
-export default function HotelCard({ hotel, searchParams, viewMode = 'grid', index = 0 }: HotelCardProps) {
+export default function HotelCard({ hotel, searchParams, viewMode = 'grid' }: HotelCardProps) {
   const { t } = useHydratedTranslation();
   
   const formatPrice = (price: number) => {

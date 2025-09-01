@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { Users, Bed, Coffee, Bath, Wifi } from 'lucide-react';
 import { hotelRoomsService, EnrichedHotelRoom } from '@/services/hotelRoomsApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
-import Image from 'next/image';
 import SafeImage from '@/components/common/SafeImage';
 import BookingModal from '@/components/hotels/BookingModal';
 

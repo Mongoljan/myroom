@@ -23,12 +23,13 @@ export default function SafeImage({
   const [hasError, setHasError] = useState(false);
 
   const handleError = () => {
+    console.warn(`Failed to load image: ${src}`);
     setHasError(true);
   };
 
   // Convert relative URLs to full URLs
   const getFullImageUrl = (imageSrc: string) => {
-    if (!imageSrc) return '/images/room-placeholder.svg';
+    if (!imageSrc) return '/images/hotel-placeholder.jpg';
     
     // If it's already a full URL, return as-is
     if (imageSrc.startsWith('http://') || imageSrc.startsWith('https://')) {
@@ -49,7 +50,7 @@ export default function SafeImage({
     return imageSrc;
   };
 
-  const finalImageSrc = hasError ? '/images/room-placeholder.svg' : getFullImageUrl(src);
+  const finalImageSrc = hasError ? '/images/hotel-placeholder.jpg' : getFullImageUrl(src);
 
   return (
     <Image

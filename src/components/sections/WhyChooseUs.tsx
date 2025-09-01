@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, Variants } from 'framer-motion';
-import { Shield, Clock, Award, Heart, Star, CheckCircle, Headphones, Globe, Zap, ShoppingBag } from 'lucide-react';
+import { Shield, Zap, ShoppingBag } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 import { useMemo } from 'react';

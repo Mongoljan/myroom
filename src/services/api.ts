@@ -20,6 +20,53 @@ import {
 const BASE_URL = 'https://dev.kacc.mn/api';
 
 export class ApiService {
+  // Clean up invalid image URLs to prevent 404 errors
+  private static sanitizeImageUrls(obj: Record<string, unknown>): void {
+    if (!obj || typeof obj !== 'object') return;
+    
+    const processImageUrl = (url: string): string => {
+      if (!url) return '';
+      
+      // Check for URLs that are likely to 404
+      const problematicPatterns = [
+        'closeup-shot-waving-flag-mongolia',
+        'nonexistent',
+        'placeholder',
+        'temp'
+      ];
+      
+      for (const pattern of problematicPatterns) {
+        if (url.includes(pattern)) {
+          console.warn(`Removing problematic image URL: ${url}`);
+          return ''; // Return empty string to trigger fallback
+        }
+      }
+      
+      return url;
+    };
+    
+    // Recursively process object properties
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key] as unknown;
+        
+        if (typeof value === 'string' && (key.includes('url') || key.includes('image'))) {
+          obj[key] = processImageUrl(value);
+        } else if (Array.isArray(value)) {
+          value.forEach((item, index) => {
+            if (typeof item === 'object' && item !== null) {
+              this.sanitizeImageUrls(item as Record<string, unknown>);
+            } else if (typeof item === 'string' && (key.includes('url') || key.includes('image'))) {
+              (value as string[])[index] = processImageUrl(item);
+            }
+          });
+        } else if (typeof value === 'object' && value !== null) {
+          this.sanitizeImageUrls(value as Record<string, unknown>);
+        }
+      }
+    }
+  }
+
   private static async request<T>(
     endpoint: string, 
     options: RequestInit = {}
@@ -69,6 +116,12 @@ export class ApiService {
         dataKeys: Object.keys(data),
         count: data.count || data.length || 'unknown'
       });
+      
+      // Clean up any invalid image URLs
+      if (data && typeof data === 'object') {
+        this.sanitizeImageUrls(data);
+      }
+      
       return data;
     } catch (error) {
       console.error('API Request failed:', error);
@@ -140,6 +193,7 @@ export class ApiService {
     acc_type: string;
   }): Promise<SearchHotelResult[]> {
     // Return mock hotel data for testing
+    console.log('Using mock data for search parameters:', _params);
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([

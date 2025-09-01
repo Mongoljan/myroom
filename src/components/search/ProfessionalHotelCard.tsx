@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Star, MapPin, Wifi, Car, Utensils, Users, ChevronLeft, ChevronRight, Heart, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -85,7 +85,7 @@ export default function ProfessionalHotelCard({ hotel, viewMode }: ProfessionalH
       }
     });
     
-    const result = [...prioritized, ...remaining].slice(0, 5);
+    const result: (string | null)[] = [...prioritized, ...remaining].slice(0, 5);
     
     // Fill remaining slots with null for consistent layout
     while (result.length < 5) {
