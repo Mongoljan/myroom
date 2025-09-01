@@ -26,6 +26,17 @@ interface SearchData {
 
 // LocationSuggestion interface is now imported from the service
 
+// Utility functions for default dates
+const getDefaultCheckInDate = () => {
+  return new Date().toISOString().split('T')[0]; // Today
+};
+
+const getDefaultCheckOutDate = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().split('T')[0]; // Tomorrow
+};
+
 export default function ModernSearchBar() {
   const [searchData, setSearchData] = useState<SearchData>({
     location: '',
@@ -81,9 +92,13 @@ export default function ModernSearchBar() {
   };
 
   const handleSearch = () => {
+    // Use default dates if none are provided
+    const checkInDate = searchData.checkIn || getDefaultCheckInDate();
+    const checkOutDate = searchData.checkOut || getDefaultCheckOutDate();
+    
     const params = new URLSearchParams({
-      check_in: searchData.checkIn,
-      check_out: searchData.checkOut,
+      check_in: checkInDate,
+      check_out: checkOutDate,
       adults: searchData.adults.toString(),
       children: searchData.children.toString(),
       rooms: searchData.rooms.toString(),

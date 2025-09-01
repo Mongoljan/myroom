@@ -9,6 +9,17 @@ import DateRangePicker from '@/components/common/DateRangePicker';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { locationService, type LocationSuggestion } from '@/services/locationApi';
 
+// Utility functions for default dates
+const getDefaultCheckInDate = () => {
+  return new Date().toISOString().split('T')[0]; // Today
+};
+
+const getDefaultCheckOutDate = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().split('T')[0]; // Tomorrow
+};
+
 export default function ProfessionalHero() {
   const { t } = useHydratedTranslation();
   const [destination, setDestination] = useState('');
@@ -51,19 +62,18 @@ export default function ProfessionalHero() {
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     
-    if (!checkIn || !checkOut) {
-      alert(t('hero.selectDates', 'Please select check-in and check-out dates'));
-      return;
-    }
+    // Use default dates if none are provided
+    const finalCheckIn = checkIn || getDefaultCheckInDate();
+    const finalCheckOut = checkOut || getDefaultCheckOutDate();
     
-    if (new Date(checkOut) <= new Date(checkIn)) {
+    if (new Date(finalCheckOut) <= new Date(finalCheckIn)) {
       alert(t('hero.invalidDates', 'Check-out date must be after check-in date'));
       return;
     }
     
     const params = new URLSearchParams({
-      check_in: checkIn,
-      check_out: checkOut,
+      check_in: finalCheckIn,
+      check_out: finalCheckOut,
       adults: adults.toString(),
       children: children.toString(),
       rooms: rooms.toString(),

@@ -1,5 +1,61 @@
 // API Types for Hotel Booking System
 
+// Property Basic Info API Response
+export interface PropertyBasicInfo {
+  id: number;
+  property_name_mn: string;
+  property_name_en: string;
+  start_date: string;
+  part_of_group: boolean;
+  group_name: string | null;
+  total_hotel_rooms: number;
+  available_rooms: number;
+  sales_room_limitation: boolean;
+  property: number;
+  star_rating: number;
+  languages: number[];
+}
+
+// Confirm Address API Response
+export interface ConfirmAddress {
+  id: number;
+  district: string;
+  zipCode: string;
+  total_floor_number: number;
+  property: number;
+  province_city: number;
+  soum: number;
+}
+
+// Property Images API Response
+export interface PropertyImage {
+  id: number;
+  property: number;
+  image: string;
+  description: string;
+}
+
+// Additional Info API Response
+export interface AdditionalInfo {
+  id: number;
+  About: string;
+  YoutubeUrl: string;
+  property: number;
+}
+
+// Property Details API Response
+export interface PropertyDetails {
+  id: number;
+  propertyBasicInfo: number;
+  confirmAddress: number;
+  propertyPolicies: number | null;
+  Additional_Information: number;
+  property_photos: PropertyImage[];
+  google_map: string;
+  property: number;
+  general_facilities: number[];
+}
+
 export interface RoomImage {
   id: number;
   image: string;
@@ -310,4 +366,33 @@ export interface RoomFeature {
   name: string;
   feature_type: 'text' | 'boolean' | 'choice';
   choices: string | null;
+}
+
+// Property policies
+export interface CancellationFee {
+  id: number;
+  cancel_time: string;
+  before_fee: string;
+  after_fee: string;
+  beforeManyRoom_fee: string;
+  afterManyRoom_fee: string;
+  subsequent_days_percentage: string;
+  special_condition_percentage: string;
+  created_at: string;
+  updated_at: string;
+  property: number;
+}
+
+export interface PropertyPolicy {
+  id: number;
+  cancellation_fee: CancellationFee;
+  check_in_from: string;
+  check_in_until: string;
+  check_out_from: string;
+  check_out_until: string;
+  breakfast_policy: string;
+  parking_situation: string;
+  allow_children: boolean;
+  allow_pets: boolean;
+  property: number;
 }

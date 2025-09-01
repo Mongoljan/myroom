@@ -147,7 +147,7 @@ export default function HotelDetail({ hotel }: HotelDetailProps) {
 
       {/* Description */}
       <div>
-        <h2 className="text-xl font-semibold mb-3">{t('about_property', 'Зочид буудлын тухай')}</h2>
+        <h2 className="text-xl text-black font-semibold mb-3">{t('about_property', 'Зочид буудлын тухай')}</h2>
         <p className="text-gray-900 leading-relaxed">
           {hotel.description || t('default_description', `${hotel.property_name} зочид буудалд тав тухтай орчинд амрах боломжтой. ${hotel.location.province_city} хотын төвд байрлах энэхүү зочид буудал орчин үеийн тохижилт, өндөр чанарын үйлчилгээгээр таны амралтыг дурсамжтай болгоно.`)}
         </p>

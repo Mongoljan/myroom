@@ -6,22 +6,37 @@ import { Search, MapPin, Calendar } from "lucide-react";
 import DateRangePicker from "../common/DateRangePicker";
 import GuestSelector from "./GuestSelector";
 
+// Utility functions for default dates
+const getDefaultCheckInDate = () => {
+  return new Date().toISOString().split('T')[0]; // Today
+};
+
+const getDefaultCheckOutDate = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().split('T')[0]; // Tomorrow
+};
+
 const SearchForm: React.FC = () => {
   const { t } = useHydratedTranslation();
   const [searchData, setSearchData] = useState({
     location: '',
-    checkIn: '2025-09-01',
-    checkOut: '2025-09-03',
+    checkIn: getDefaultCheckInDate(),
+    checkOut: getDefaultCheckOutDate(),
     adults: 2,
     children: 0,
     rooms: 2
   });
 
   const handleSearch = () => {
+    // Use default dates if none are provided
+    const checkInDate = searchData.checkIn || getDefaultCheckInDate();
+    const checkOutDate = searchData.checkOut || getDefaultCheckOutDate();
+    
     const params = new URLSearchParams({
       location: searchData.location,
-      check_in: searchData.checkIn,
-      check_out: searchData.checkOut,
+      check_in: checkInDate,
+      check_out: checkOutDate,
       adults: searchData.adults.toString(),
       children: searchData.children.toString(),
       rooms: searchData.rooms.toString(),

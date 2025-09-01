@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Suspense } from 'react';
-import HotelDetail from '@/components/hotels/HotelDetail';
+import EnhancedHotelDetail from '@/components/hotels/EnhancedHotelDetail';
 import HotelAmenities from '@/components/hotels/HotelAmenities';
 import HotelReviews from '@/components/hotels/HotelReviews';
 import BookingCard from '@/components/hotels/BookingCard';
@@ -35,7 +35,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
               <div id="overview">
-                <HotelDetail hotel={hotel} />
+                <EnhancedHotelDetail hotel={hotel} />
               </div>
             </div>
             
@@ -77,7 +77,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
 
             {/* House Rules Section */}
             <div id="house-rules">
-              <HotelHouseRules hotelName={hotel.property_name} />
+              <HotelHouseRules hotelId={hotel.hotel_id} hotelName={hotel.property_name} />
             </div>
 
             {/* Reviews Section */}

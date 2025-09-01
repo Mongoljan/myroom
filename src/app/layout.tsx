@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import I18nProvider from "@/components/providers/I18nProvider";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ToastProvider } from "@/components/common/ToastContainer";
 import Header1 from "@/components/header/Header1";
 import Footer from "@/components/layout/Footer";
@@ -32,22 +31,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <ToastProvider>
-            <I18nProvider>
-              <Header1 />
-              <main className="pt-10">
-                {children}
-              </main>
-              <Footer />
-            </I18nProvider>
-          </ToastProvider>
-        </ThemeProvider>
+        <ToastProvider>
+          <I18nProvider>
+            <Header1 />
+            <main className="pt-10">
+              {children}
+            </main>
+            <Footer />
+          </I18nProvider>
+        </ToastProvider>
       </body>
     </html>
   );

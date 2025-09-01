@@ -96,7 +96,7 @@ export default function BookingCard({ hotel }: BookingCardProps) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg">
+    <div className="bg-white border  border-gray-200 rounded-xl p-6 shadow-lg">
       <div className="mb-6">
         {loadingPrices ? (
           <div className="flex items-center gap-2 mb-2">

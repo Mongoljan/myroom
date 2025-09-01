@@ -14,7 +14,13 @@ import {
   AllRoomData,
   CombinedData,
   AllData,
-  RoomFeature
+  RoomFeature,
+  PropertyPolicy,
+  PropertyBasicInfo,
+  ConfirmAddress,
+  PropertyImage,
+  AdditionalInfo,
+  PropertyDetails
 } from '@/types/api';
 
 const BASE_URL = 'https://dev.kacc.mn/api';
@@ -382,6 +388,11 @@ export class ApiService {
     return this.request<CombinedData>(`/combined-data/`);
   }
 
+  // Get room features
+  static async getRoomFeatures(): Promise<RoomFeature[]> {
+    return this.request<RoomFeature[]>(`/features/`);
+  }
+
   // Get room prices for a hotel
   static async getRoomPrices(hotelId: number): Promise<RoomPrice[]> {
     return this.request<RoomPrice[]>(`/room-prices/?hotel=${hotelId}`);
@@ -468,6 +479,66 @@ export class ApiService {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+
+  // Get property policies
+  static async getPropertyPolicies(propertyId: number): Promise<PropertyPolicy[]> {
+    try {
+      return this.request<PropertyPolicy[]>(`/property-policies/?property=${propertyId}`);
+    } catch (error) {
+      console.error('Failed to fetch property policies:', error);
+      throw error;
+    }
+  }
+
+  // Get property basic info
+  static async getPropertyBasicInfo(propertyId: number): Promise<PropertyBasicInfo[]> {
+    try {
+      return this.request<PropertyBasicInfo[]>(`/property-basic-info/?property=${propertyId}`);
+    } catch (error) {
+      console.error('Failed to fetch property basic info:', error);
+      throw error;
+    }
+  }
+
+  // Get confirm address
+  static async getConfirmAddress(propertyId: number): Promise<ConfirmAddress[]> {
+    try {
+      return this.request<ConfirmAddress[]>(`/confirm-address?property=${propertyId}`);
+    } catch (error) {
+      console.error('Failed to fetch confirm address:', error);
+      throw error;
+    }
+  }
+
+  // Get property images
+  static async getPropertyImages(propertyId: number): Promise<PropertyImage[]> {
+    try {
+      return this.request<PropertyImage[]>(`/property-images/?property=${propertyId}`);
+    } catch (error) {
+      console.error('Failed to fetch property images:', error);
+      throw error;
+    }
+  }
+
+  // Get property details
+  static async getPropertyDetails(propertyId: number): Promise<PropertyDetails[]> {
+    try {
+      return this.request<PropertyDetails[]>(`/property-details/?property=${propertyId}`);
+    } catch (error) {
+      console.error('Failed to fetch property details:', error);
+      throw error;
+    }
+  }
+
+  // Get additional info
+  static async getAdditionalInfo(infoId: number): Promise<AdditionalInfo> {
+    try {
+      return this.request<AdditionalInfo>(`/additionalInfo/${infoId}`);
+    } catch (error) {
+      console.error('Failed to fetch additional info:', error);
+      throw error;
+    }
   }
 }
 

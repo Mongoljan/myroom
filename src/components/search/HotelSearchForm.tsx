@@ -6,6 +6,17 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { TYPOGRAPHY } from '@/styles/containers';
 import CustomGuestSelector from './CustomGuestSelector';
 
+// Utility functions for default dates
+const getDefaultCheckInDate = () => {
+  return new Date().toISOString().split('T')[0]; // Today
+};
+
+const getDefaultCheckOutDate = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  return tomorrow.toISOString().split('T')[0]; // Tomorrow
+};
+
 interface SearchParams {
   location: string;
   checkIn: string;
@@ -42,9 +53,13 @@ export default function HotelSearchForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Use default dates if none are provided
+    const checkInDate = searchParams.checkIn || getDefaultCheckInDate();
+    const checkOutDate = searchParams.checkOut || getDefaultCheckOutDate();
+    
     const params = new URLSearchParams({
-      check_in: searchParams.checkIn,
-      check_out: searchParams.checkOut,
+      check_in: checkInDate,
+      check_out: checkOutDate,
       adults: searchParams.adults.toString(),
       children: searchParams.children.toString(),
       rooms: searchParams.rooms.toString(),

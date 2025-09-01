@@ -6,11 +6,7 @@ import Image from 'next/image';
 import { 
   Users, 
   Maximize, 
-  Wifi, 
-  Coffee, 
-  Car, 
   Bath,
-  Mountain,
   Bed,
   CheckCircle,
   AlertCircle,
@@ -19,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Room, AvailabilityResponse, AllRoomData, CombinedData } from '@/types/api';
 import { ApiService, formatCurrency } from '@/services/api';
+import { IconMappingService } from '@/services/iconMappingService';
 
 interface RoomCardProps {
   room: Room;
@@ -28,13 +25,6 @@ interface RoomCardProps {
   onBook: (room: Room, available: number) => void;
 }
 
-const facilityIcons: { [key: number]: React.ReactNode } = {
-  1: <Wifi className="w-4 h-4" />,
-  2: <Coffee className="w-4 h-4" />,
-  3: <Car className="w-4 h-4" />,
-  4: <Bath className="w-4 h-4" />,
-  5: <Mountain className="w-4 h-4" />,
-};
 
 export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: RoomCardProps) {
   const [availability, setAvailability] = useState<AvailabilityResponse | null>(null);
@@ -168,8 +158,15 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           <h3 className="text-xl font-semibold text-gray-900 mb-1">
             {room.room_Description}
           </h3>
-          <div className="text-sm text-blue-600 mb-2 font-medium">
-            {getRoomCategoryName(room.room_category)} • {getRoomTypeName(room.room_type)}
+          <div className="flex items-center gap-4 text-sm text-blue-600 mb-2 font-medium">
+            <div className="flex items-center gap-1">
+              {IconMappingService.getRoomCategoryIcon(room.room_category)}
+              <span>{getRoomCategoryName(room.room_category)}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              {IconMappingService.getRoomTypeIcon(room.room_type)}
+              <span>{getRoomTypeName(room.room_type)}</span>
+            </div>
           </div>
           <div className="flex items-center gap-4 text-sm text-gray-800 mb-2">
             <div className="flex items-center gap-1">
@@ -188,7 +185,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             )}
           </div>
           <div className="flex items-center gap-1 text-sm text-gray-800">
-            <Bed className="w-4 h-4" />
+            {IconMappingService.getBedTypeIcon(room.bed_type)}
             <span>{getBedTypeName(room.bed_type)}</span>
           </div>
         </div>
@@ -198,15 +195,18 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           <div>
             <h4 className="text-sm font-medium text-gray-900 mb-2">Room Facilities</h4>
             <div className="flex flex-wrap gap-2">
-              {room.room_Facilities.slice(0, 6).map((facilityId) => (
-                <div 
-                  key={facilityId}
-                  className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-lg text-xs text-gray-900"
-                >
-                  {facilityIcons[facilityId] || <Wifi className="w-3 h-3" />}
-                  {getFacilityName(facilityId)}
-                </div>
-              ))}
+              {room.room_Facilities.slice(0, 6).map((facilityId) => {
+                const facilityName = getFacilityName(facilityId);
+                return (
+                  <div 
+                    key={facilityId}
+                    className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-lg text-xs text-gray-900"
+                  >
+                    {IconMappingService.getRoomFacilityIcon(facilityId, facilityName)}
+                    <span>{facilityName}</span>
+                  </div>
+                );
+              })}
               {room.room_Facilities.length > 6 && (
                 <div className="text-xs text-gray-900 bg-gray-50 px-2 py-1 rounded-lg">
                   +{room.room_Facilities.length - 6} more

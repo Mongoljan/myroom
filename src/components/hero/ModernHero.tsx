@@ -53,21 +53,30 @@ export default function ModernHero() {
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     
-    // Validate dates before search
-    if (!checkIn || !checkOut) {
-      alert(t('hero.selectDates', 'Please select check-in and check-out dates'));
-      return;
-    }
+    // Use default dates if none are provided
+    const getDefaultCheckInDate = () => {
+      return new Date().toISOString().split('T')[0]; // Today
+    };
+
+    const getDefaultCheckOutDate = () => {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return tomorrow.toISOString().split('T')[0]; // Tomorrow
+    };
+
+    const finalCheckIn = checkIn || getDefaultCheckInDate();
+    const finalCheckOut = checkOut || getDefaultCheckOutDate();
     
-    if (new Date(checkOut) <= new Date(checkIn)) {
+    // Validate final dates
+    if (new Date(finalCheckOut) <= new Date(finalCheckIn)) {
       alert(t('hero.invalidDates', 'Check-out date must be after check-in date'));
       return;
     }
     
     // Build search parameters with location data
     const params = new URLSearchParams({
-      check_in: checkIn,
-      check_out: checkOut,
+      check_in: finalCheckIn,
+      check_out: finalCheckOut,
       adults: adults.toString(),
       children: children.toString(),
       rooms: rooms.toString(),
