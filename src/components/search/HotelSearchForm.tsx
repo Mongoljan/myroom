@@ -92,24 +92,35 @@ export default function HotelSearchForm() {
       });
       
       // Save this search for recent searches
-      saveSearch({
-        destination: selectedLocationSuggestion.name,
-        checkIn: finalCheckIn,
-        checkOut: finalCheckOut,
-        guests: adults + children,
+      saveSearch(
+        selectedLocationSuggestion,
+        finalCheckIn,
+        finalCheckOut,
+        adults,
+        children,
         rooms
-      });
+      );
     } else if (destination) {
       // Fallback for basic text search
       params.append('location', destination);
       
-      saveSearch({
-        destination,
-        checkIn: finalCheckIn,
-        checkOut: finalCheckOut,
-        guests: adults + children,
+      // Create a basic location suggestion for recent searches
+      const basicLocationSuggestion: LocationSuggestion = {
+        id: destination,
+        name: destination,
+        fullName: destination,
+        type: 'province',
+        property_count: 0
+      };
+      
+      saveSearch(
+        basicLocationSuggestion,
+        finalCheckIn,
+        finalCheckOut,
+        adults,
+        children,
         rooms
-      });
+      );
     }
 
     router.push(`/search?${params.toString()}`);
@@ -239,11 +250,13 @@ export default function HotelSearchForm() {
                         {t('search.checkInOut')}
                       </label>
                       <DateRangePicker
-                        checkInDate={checkIn}
-                        checkOutDate={checkOut}
-                        onCheckInChange={setCheckIn}
-                        onCheckOutChange={setCheckOut}
-                        className="relative z-[1]"
+                        checkIn={checkIn}
+                        checkOut={checkOut}
+                        onDateChange={(newCheckIn, newCheckOut) => {
+                          setCheckIn(newCheckIn);
+                          setCheckOut(newCheckOut);
+                        }}
+                        minimal={true}
                       />
                     </div>
                   </div>
@@ -320,21 +333,19 @@ export default function HotelSearchForm() {
                     >
                       <div className="flex items-center flex-1 min-w-0">
                         <div className="flex-shrink-0 mr-3">
-                          {suggestion.type === 'destination' ? (
-                            <MapPin className="w-4 h-4 text-blue-600" />
-                          ) : (
+                          {suggestion.type === 'property' ? (
                             <Hotel className="w-4 h-4 text-gray-500" />
+                          ) : (
+                            <MapPin className="w-4 h-4 text-blue-600" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium text-gray-900 truncate">
                             {suggestion.name}
                           </div>
-                          {suggestion.description && (
-                            <div className="text-xs text-gray-500 truncate">
-                              {suggestion.description}
-                            </div>
-                          )}
+                          <div className="text-xs text-gray-500 truncate">
+                            {suggestion.fullName}
+                          </div>
                         </div>
                       </div>
                     </motion.button>
@@ -360,19 +371,20 @@ export default function HotelSearchForm() {
                       <button
                         key={index}
                         onClick={() => {
-                          setDestination(search.destination);
+                          setDestination(search.location.name);
+                          setSelectedLocationSuggestion(search.location);
                           setCheckIn(search.checkIn);
                           setCheckOut(search.checkOut);
-                          setAdults(search.guests > search.rooms ? search.guests - search.rooms : search.guests);
-                          setChildren(0);
-                          setRooms(search.rooms);
+                          setAdults(search.guests.adults);
+                          setChildren(search.guests.children);
+                          setRooms(search.guests.rooms);
                           setShowLocationSuggestions(false);
                         }}
                         className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors"
                       >
-                        <div className="text-sm text-gray-900">{search.destination}</div>
+                        <div className="text-sm text-gray-900">{search.location.name}</div>
                         <div className="text-xs text-gray-500">
-                          {search.checkIn} - {search.checkOut} • {search.guests} guests • {search.rooms} room{search.rooms > 1 ? 's' : ''}
+                          {search.checkIn} - {search.checkOut} • {search.guests.adults + search.guests.children} guests • {search.guests.rooms} room{search.guests.rooms > 1 ? 's' : ''}
                         </div>
                       </button>
                     ))}
