@@ -34,7 +34,7 @@ export default function RootLayout({
         <ToastProvider>
           <I18nProvider>
             <Header1 />
-            <main className="pt-10">
+            <main className="">
               {children}
             </main>
             <Footer />

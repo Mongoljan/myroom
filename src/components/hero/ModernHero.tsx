@@ -1,30 +1,36 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Search, X, Building } from 'lucide-react';
+import { Calendar, MapPin, Search, X, Clock, Hotel } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import CustomGuestSelector from '@/components/search/CustomGuestSelector';
 import DateRangePicker from '@/components/common/DateRangePicker';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { locationService, type LocationSuggestion } from '@/services/locationApi';
+import { useRecentSearches } from '@/hooks/useRecentSearches';
 import { TYPOGRAPHY } from '@/styles/containers';
 
 export default function ModernHero() {
   const { t } = useHydratedTranslation();
+  const { recentSearches, saveSearch } = useRecentSearches();
   const [destination, setDestination] = useState('');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(1);
+  const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
   const [selectedLocationSuggestion, setSelectedLocationSuggestion] = useState<LocationSuggestion | null>(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [locationModalPosition, setLocationModalPosition] = useState({ top: 0, left: 0 });
   const router = useRouter();
   const locationRef = useRef<HTMLDivElement>(null);
+  const locationInputRef = useRef<HTMLInputElement>(null);
+  const locationDropdownRef = useRef<HTMLDivElement>(null);
 
   // Only render particles on client to avoid hydration mismatch
   useEffect(() => {
@@ -91,6 +97,9 @@ export default function ModernHero() {
           params.append(key, value.toString());
         }
       });
+      
+      // Save to recent searches
+      saveSearch(selectedLocationSuggestion, finalCheckIn, finalCheckOut, adults, children, rooms);
     } else {
       // Fallback to simple location string
       params.append('location', destination);
@@ -144,19 +153,50 @@ export default function ModernHero() {
     loadPopular();
   }, []);
 
+  // Calculate location modal position
+  const calculateLocationPosition = () => {
+    if (!locationInputRef.current) return;
+    
+    const rect = locationInputRef.current.getBoundingClientRect();
+    const modalWidth = 400;
+    const modalHeight = 400;
+    const padding = 16;
+    
+    let top = rect.bottom + 8;
+    let left = rect.left;
+    
+    // Adjust if modal would go off screen right
+    if (left + modalWidth > window.innerWidth - padding) {
+      left = window.innerWidth - modalWidth - padding;
+    }
+    
+    // Adjust if modal would go off screen left
+    if (left < padding) {
+      left = padding;
+    }
+    
+    // Adjust if modal would go off screen bottom
+    if (top + modalHeight > window.innerHeight - padding) {
+      top = rect.top - modalHeight - 8;
+    }
+    
+    setLocationModalPosition({ top, left });
+  };
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (locationRef.current && !locationRef.current.contains(event.target as Node)) {
+      if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target as Node) &&
+          locationInputRef.current && !locationInputRef.current.contains(event.target as Node)) {
         setShowLocationSuggestions(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+    if (showLocationSuggestions) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showLocationSuggestions]);
 
   const handleLocationSelect = (suggestion: LocationSuggestion) => {
     setDestination(suggestion.fullName);
@@ -166,14 +206,18 @@ export default function ModernHero() {
 
   const getLocationIcon = (type: LocationSuggestion['type']) => {
     switch (type) {
-      case 'soum': return <Building className="w-4 h-4" />;
-      case 'district': return <MapPin className="w-4 h-4" />;
-      default: return <MapPin className="w-4 h-4" />;
+      case 'property': return <Hotel className="w-4 h-4 text-blue-900" />; // Hotel/Property
+      case 'province': 
+      case 'soum': 
+      case 'district': 
+      default: return <MapPin className="w-4 h-4 text-gray-500" />; // All locations
     }
   };
 
   return (
-    <section className="relative min-h-[60vh] sm:min-h-[50vh] lg:min-h-[40vh] bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+    <section className="relative min-h-[50vh] sm:min-h-[45vh] pt-5 lg:min-h-[35vh] bg-blue-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative min-h-[50vh]  sm:min-h-[45vh] lg:min-h-[35vh] bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-lg overflow-hidden">
       {/* Animated Gradient Background */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -300,14 +344,14 @@ export default function ModernHero() {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-20">
+      <div className="relative z-10 py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Hero Content */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-4"
+            className="text-center mb-3"
           >
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -374,11 +418,13 @@ export default function ModernHero() {
             style={{ overflow: 'visible' }}
           >
             <motion.div 
-              className="backdrop-blur-md bg-white/90 rounded-xl shadow-xl relative border border-white/20"
-              style={{ overflow: 'visible' }}
+              className="backdrop-blur-md bg-white/90 rounded-xl border border-gray-200 relative"
+              style={{ 
+                overflow: 'visible',
+                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
+              }}
               whileHover={{ 
-                scale: 1.02,
-                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)"
+                borderColor: "rgba(59, 130, 246, 0.3)",
               }}
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
@@ -400,15 +446,19 @@ export default function ModernHero() {
                   <div className="flex items-center">
                     <MapPin className="w-6 h-6 text-gray-700 mr-4" />
                     <div className="flex-1">
-                      <div className={`${TYPOGRAPHY.form.label} text-gray-500  mb-1`}>{t('search.location')}</div>
+                      {/* <div className={`${TYPOGRAPHY.form.label} text-gray-500  mb-1`}>{t('search.location')}</div> */}
                       <input
+                        ref={locationInputRef}
                         type="text"
                         value={destination}
                         onChange={(e) => {
                           setDestination(e.target.value);
                           setSelectedLocationSuggestion(null); // Clear selected suggestion when user types
                         }}
-                        onFocus={() => setShowLocationSuggestions(true)}
+                        onFocus={() => {
+                          calculateLocationPosition();
+                          setShowLocationSuggestions(true);
+                        }}
                         placeholder={t('search.locationPlaceholder')}
                         className={`w-full text-gray-900 placeholder-gray-400 border-none outline-none ${TYPOGRAPHY.form.input}`}
                         required
@@ -424,18 +474,60 @@ export default function ModernHero() {
                     )}
                   </div>
 
-                  {/* Location Suggestions Dropdown */}
+                </div>
+
+                {/* Location Suggestions Dropdown */}
+                {showLocationSuggestions && typeof window !== 'undefined' && createPortal(
                   <AnimatePresence>
-                    {showLocationSuggestions && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-full left-0 right-0 bg-white rounded-lg shadow-xl border border-gray-100 z-[999999] mt-2 max-h-64 overflow-y-auto"
-                      >
-                        <div className="p-3">
+                    <motion.div
+                      ref={locationDropdownRef}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="fixed bg-white rounded-xl border border-gray-200 z-[100000] max-h-96 overflow-y-auto w-[400px] max-w-[90vw]"
+                      style={{ 
+                        top: Math.max(8, locationModalPosition.top),
+                        left: Math.max(8, Math.min(locationModalPosition.left, window.innerWidth - 416)),
+                        boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="p-4">
+                          {/* Recent Searches Section */}
+                          {destination.length < 2 && recentSearches.length > 0 && (
+                            <div className="mb-4">
+                              <div className={`${TYPOGRAPHY.body.caption} text-gray-500 mb-2 flex items-center`}>
+                                <Clock className="w-3 h-3 mr-1" />
+                                Сүүлийн хайлтууд
+                              </div>
+                              <div className="space-y-1">
+                                {recentSearches.map((search) => (
+                                  <button
+                                    key={search.id}
+                                    onClick={() => handleLocationSelect(search.location)}
+                                    className="w-full flex items-center p-2 text-left hover:bg-blue-50/50 rounded-md transition-colors group border border-transparent hover:border-blue-200"
+                                  >
+                                    <div className="text-blue-900 mr-3">
+                                      <Clock className="w-4 h-4" />
+                                    </div>
+                                    <div className="flex-1">
+                                      <div className={`${TYPOGRAPHY.modal.content} text-gray-900 group-hover:text-blue-900`}>
+                                        {search.location.fullName}
+                                      </div>
+                                      <div className={`${TYPOGRAPHY.body.caption} text-gray-500`}>
+                                        {search.checkIn} - {search.checkOut} • {search.guests.adults} том хүн, {search.guests.children} хүүхэд • {search.guests.rooms} өрөө
+                                      </div>
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                              <div className="border-t border-gray-100 my-3"></div>
+                            </div>
+                          )}
+
+                          {/* Popular Locations / Search Results Section */}
                           <div className={`${TYPOGRAPHY.body.caption} text-gray-500 mb-2`}>
-                            {destination.length < 2 ? 'Алдартай газрууд' : 'Хайлтын үр дүн'}
+                            {destination.length < 2 ? 'Алдартай байршлууд' : 'Хайлтын үр дүн'}
                           </div>
                           
                           {isLoadingSuggestions ? (
@@ -448,9 +540,9 @@ export default function ModernHero() {
                                 <button
                                   key={suggestion.id}
                                   onClick={() => handleLocationSelect(suggestion)}
-                                  className="w-full flex items-center p-2 text-left hover:bg-gray-50 rounded-md transition-colors"
+                                  className="w-full flex items-center p-2 text-left hover:bg-blue-50/50 rounded-md transition-colors"
                                 >
-                                  <div className="text-gray-400 mr-3">
+                                  <div className="mr-3">
                                     {getLocationIcon(suggestion.type)}
                                   </div>
                                   <div className="flex-1">
@@ -458,7 +550,7 @@ export default function ModernHero() {
                                       {suggestion.fullName}
                                     </div>
                                     <div className={`${TYPOGRAPHY.body.caption} text-gray-500`}>
-                                      {suggestion.property_count} буудал
+                                      {suggestion.type === 'property' ? 'Зочид буудал' : `${suggestion.property_count} буудал`}
                                     </div>
                                   </div>
                                 </button>
@@ -471,17 +563,17 @@ export default function ModernHero() {
                             </div>
                           )}
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                    </motion.div>
+                  </AnimatePresence>,
+                  document.body
+                )}
 
                 {/* Check-in Check-out */}
                 <div className="lg:flex-1 p-4 w-full">
                   <div className="flex items-center">
                     <Calendar className="w-6 h-6 text-gray-700 mr-4" style={{ stroke: '#374151', fill: 'none' }} />
                     <div className="flex-1">
-                      <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>{t('hero.checkInOut')}</div>
+                      {/* <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>{t('hero.checkInOut')}</div> */}
                       <div className="relative z-[1]">
                         <DateRangePicker
                           checkIn={checkIn}
@@ -513,9 +605,13 @@ export default function ModernHero() {
                 <div className="p-4">
                   <motion.button
                     onClick={handleSearch}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-medium text-sm"
+                    whileHover={{ 
+                      boxShadow: "0 4px 12px -2px rgba(59, 130, 246, 0.3)"
+                    }}
+                    whileTap={{ 
+                      boxShadow: "0 2px 4px -1px rgba(59, 130, 246, 0.2)"
+                    }}
+                    className="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium text-sm"
                   >
                     <Search className="w-5 h-5" />
                     <span className="hidden xl:inline font-semibold tracking-wide">{t('search.searchButton')}</span>
@@ -526,6 +622,8 @@ export default function ModernHero() {
             </motion.div>
           </motion.div>
 
+        </div>
+      </div>
         </div>
       </div>
     </section>

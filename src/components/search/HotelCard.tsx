@@ -52,7 +52,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid' }: Ho
 
   if (isListView) {
     return (
-      <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200 group">
+      <div className="bg-white rounded-lg border border-gray-200 transition-all duration-200 overflow-hidden group">
         <div className="flex flex-col md:flex-row">
           {/* Hotel Image - List View */}
           <div className="relative md:w-80 h-48 md:h-auto min-h-[200px] flex-shrink-0">
@@ -72,7 +72,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid' }: Ho
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             
             {/* Rating Badge */}
-            <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1.5 shadow-sm">
+            <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-gray-200">
               <div className="flex items-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -190,7 +190,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid' }: Ho
               
               <Link
                 href={buildHotelUrl()}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition-colors shadow-sm hover:shadow-md flex items-center gap-2 group"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition-colors flex items-center gap-2 group"
               >
                 <span>{t('hotel.viewDetails', 'Дэлгэрэнгүй үзэх')}</span>
                 <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,7 +206,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid' }: Ho
 
   // Grid View
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-200 group">
+    <div className="bg-white rounded-lg border border-gray-200 transition-all duration-200 overflow-hidden group">
       {/* Hotel Image - Grid View */}
       <div className="relative h-56">
         <Image
@@ -225,7 +225,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid' }: Ho
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
         {/* Rating Badge */}
-        <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1.5 shadow-sm">
+        <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1.5 border border-gray-200">
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, i) => (
               <Star
@@ -241,7 +241,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid' }: Ho
 
         {/* Price Badge */}
         {hotel.cheapest_room && (
-          <div className="absolute top-3 right-3 bg-blue-600 text-white rounded-lg px-3 py-1.5 shadow-lg">
+          <div className="absolute top-3 right-3 bg-blue-600 text-white rounded-lg px-3 py-1.5">
             <div className="text-right">
               <div className="text-sm font-bold leading-tight">₮{formatPrice(hotel.cheapest_room.price_per_night)}</div>
               <div className="text-xs opacity-90">{t('hotel.night', 'шөнө')}</div>
@@ -344,7 +344,7 @@ export default function HotelCard({ hotel, searchParams, viewMode = 'grid' }: Ho
             {/* Action Button */}
             <Link
               href={buildHotelUrl()}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-semibold text-center text-sm transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2 group"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-semibold text-center text-sm transition-all duration-200 flex items-center justify-center gap-2 group"
             >
               <span>{t('hotel.viewDetails', 'Дэлгэрэнгүй үзэх')}</span>
               <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

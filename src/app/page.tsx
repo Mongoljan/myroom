@@ -18,10 +18,8 @@ const Home = () => {
       <ModernHero />
       <WhyChooseUs />
       <RecentlyViewed />
-      <div className="bg-gray-50">
-        <RecommendedHotels />
-        <PopularDestinations />
-      </div>
+      <RecommendedHotels />
+      <PopularDestinations />
       <Partnerships />
       <FaqSection />
     </>

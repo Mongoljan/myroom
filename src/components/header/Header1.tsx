@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link";
 import Image from 'next/image';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 import LanguageSwitcher from "../common/LanguageSwitcher";
@@ -9,51 +9,33 @@ import MainMenu from "./MainMenu";
 import MobileMenu from "./MobileMenu";
 
 const Header1 = () => {
-  const [navbar, setNavbar] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { t } = useHydratedTranslation();
 
-  const changeBackground = () => {
-    if (window.scrollY >= 10) {
-      setNavbar(true);
-    } else {
-      setNavbar(false);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", changeBackground);
-    return () => {
-      window.removeEventListener("scroll", changeBackground);
-    };
-  }, []);
-
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        navbar ? "bg-gray-900 shadow-lg" : "bg-gray-900 shadow-lg"
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="relative bg-blue-50/30 shadow-lg border-b border-blue-100/50">
+        <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Link href="/" className="flex items-center mr-8">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center mr-2">
-                    <span className="text-blue-600 font-bold text-lg">G</span>
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-800 to-blue-900 rounded-lg flex items-center justify-center mr-2 shadow-md">
+                    <span className="text-white font-bold text-lg">G</span>
                   </div>
-                  <span className="text-white font-bold text-lg">GoTrip</span>
+                  <span className={`text-blue-900 ${TYPOGRAPHY.heading.h1} font-bold tracking-tight`}>GoTrip</span>
                 </div>
               </Link>
               
               <div className="hidden xl:block">
-                <MainMenu style="text-white" />
+                <MainMenu style="text-blue-900" />
               </div>
             </div>
 
             <div className="flex items-center">
               {/* Phone Number */}
               <div className="hidden lg:flex items-center mr-6">
-                <div className={`flex items-center text-white ${TYPOGRAPHY.nav.secondary}`}>
+                <div className={`flex items-center text-blue-900 ${TYPOGRAPHY.nav.primary} font-medium`}>
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
@@ -65,7 +47,7 @@ const Header1 = () => {
               <div className="hidden lg:flex items-center mr-6">
                 <Link
                   href="/booking/manage"
-                  className={`text-white hover:text-blue-200 transition-colors ${TYPOGRAPHY.nav.secondary}`}
+                  className={`text-blue-900 hover:text-blue-800 transition-colors ${TYPOGRAPHY.nav.primary} font-medium`}
                 >
                   {t('navigation.checkOrder', 'захиалга шалгах')}
                 </Link>
@@ -74,25 +56,25 @@ const Header1 = () => {
               {/* Language Controls */}
               <div className="hidden md:flex items-center mr-6">
                 <LanguageSwitcher />
-                <div className="w-px h-5 bg-white/20 ml-3"></div>
+                <div className="w-px h-5 bg-gray-300 ml-3"></div>
               </div>
 
               <div className="hidden md:flex items-center space-x-3">
                 <Link
                   href="/hotel-login"
-                  className={`px-4 py-2.5 bg-white text-gray-900 rounded-md hover:bg-gray-100 transition-colors ${TYPOGRAPHY.button.standard}`}
+                  className={`px-4 py-2.5 bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ${TYPOGRAPHY.button.standard} font-medium`}
                 >
                   {t('navigation.hotelLogin', 'буудлаар нэвтрэх')}
                 </Link>
                 <Link
                   href="/login"
-                  className={`px-4 py-2.5 bg-transparent border border-white text-white rounded-md hover:bg-white/10 transition-colors ${TYPOGRAPHY.button.standard}`}
+                  className={`px-4 py-2.5 bg-white/80 border border-blue-200 text-blue-900 rounded-lg hover:bg-blue-50/50 hover:border-blue-300 transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
                 >
                   {t('navigation.loginRegister', 'нэвтрэх/бүртгүүлэх')}
                 </Link>
               </div>
 
-              <div className="flex xl:hidden items-center ml-4 space-x-3 text-white">
+              <div className="flex xl:hidden items-center ml-4 space-x-3 text-gray-600">
                 {/* Mobile Language toggle */}
                 <div className="md:hidden flex items-center space-x-2">
                   <LanguageSwitcher />

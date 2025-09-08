@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Suspense } from 'react';
 import EnhancedHotelDetail from '@/components/hotels/EnhancedHotelDetail';
 import HotelAmenities from '@/components/hotels/HotelAmenities';
@@ -11,6 +11,7 @@ import ImprovedHotelRoomsSection from '@/components/hotels/ImprovedHotelRoomsSec
 import HotelSubNav from '@/components/hotels/HotelSubNav';
 import HotelFAQ from '@/components/hotels/HotelFAQ';
 import HotelHouseRules from '@/components/hotels/HotelHouseRules';
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 
 import { SearchHotelResult } from '@/types/api';
 
@@ -25,6 +26,20 @@ interface HotelPageContentProps {
 
 export default function HotelPageContent({ hotel, searchParams }: HotelPageContentProps) {
   const [activeSection, setActiveSection] = useState('overview');
+  const { addRecentlyViewed } = useRecentlyViewed();
+
+  const handleSectionChange = useCallback((section: string) => {
+    setActiveSection(section);
+  }, []);
+
+  // Track this hotel as viewed when component mounts
+  useEffect(() => {
+    if (hotel) {
+      console.log('Adding hotel to recently viewed:', hotel.property_name);
+      addRecentlyViewed(hotel);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hotel]);
 
   return (
     <div className="bg-gray-50">
@@ -56,7 +71,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
       {/* Sticky Navigation */}
       <HotelSubNav 
         activeSection={activeSection} 
-        onSectionChange={setActiveSection}
+        onSectionChange={handleSectionChange}
         hotelName={hotel.property_name}
         price={hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 200000}
       />

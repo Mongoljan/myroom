@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface HotelSubNavProps {
@@ -59,13 +59,17 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
     };
   }, []);
 
+  const handleSectionChange = useCallback((sectionId: string) => {
+    onSectionChange(sectionId);
+  }, [onSectionChange]);
+
   useEffect(() => {
     // Handle section scrolling with intersection observer
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
-            onSectionChange(entry.target.id);
+            handleSectionChange(entry.target.id);
           }
         });
       },
@@ -81,7 +85,7 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
     });
 
     return () => observer.disconnect();
-  }, [onSectionChange, sections]);
+  }, [handleSectionChange, sections]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);

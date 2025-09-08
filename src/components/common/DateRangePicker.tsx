@@ -36,8 +36,15 @@ export default function DateRangePicker({
   const pickerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const checkInDate = checkIn ? new Date(checkIn) : null;
-  const checkOutDate = checkOut ? new Date(checkOut) : null;
+  // Parse dates using year/month/day directly to avoid timezone issues
+  const checkInDate = checkIn ? (() => {
+    const [year, month, day] = checkIn.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  })() : null;
+  const checkOutDate = checkOut ? (() => {
+    const [year, month, day] = checkOut.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  })() : null;
 
   // Calculate nights between dates
   const calculateNights = () => {
@@ -91,18 +98,19 @@ export default function DateRangePicker({
     if (!checkIn && !checkOut) return placeholder;
     
     const formatDate = (dateStr: string) => {
-      const date = new Date(dateStr);
-      return date.toLocaleDateString('en-US', { 
-        month: 'short', 
-        day: 'numeric'
-      });
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const date = new Date(year, month - 1, day);
+      const formattedYear = date.getFullYear();
+      const formattedMonth = (date.getMonth() + 1).toString().padStart(2, '0');
+      const formattedDay = date.getDate().toString().padStart(2, '0');
+      return `${formattedYear}/${formattedMonth}/${formattedDay}`;
     };
 
     if (checkIn && checkOut) {
-      const nightsText = nights === 1 ? `1 ${t('navigation.night', 'night')}` : `${nights} ${t('navigation.nights', 'nights')}`;
-      return `${formatDate(checkIn)} - ${formatDate(checkOut)} • ${nightsText}`;
+      const nightsText = nights === 1 ? `1 ${t('navigation.night')}` : `${nights} ${t('navigation.nights')}`;
+      return `${formatDate(checkIn)} - ${nightsText} - ${formatDate(checkOut)}`;
     } else if (checkIn) {
-      return `${formatDate(checkIn)} - Select checkout`;
+      return `${formatDate(checkIn)} - ${t('common.selectCheckout')}`;
     }
     return placeholder;
   };
@@ -145,14 +153,18 @@ export default function DateRangePicker({
   };
 
   const handleDateClick = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    // Format date without timezone conversion
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
     
     if (!checkIn || (checkIn && checkOut)) {
       // Start new selection
       onDateChange(dateStr, '');
     } else if (checkIn && !checkOut) {
       // Complete the range
-      if (date >= new Date(checkIn)) {
+      if (checkInDate && date >= checkInDate) {
         onDateChange(checkIn, dateStr);
         // Don't auto-close, let user click Done button
       } else {
@@ -185,10 +197,16 @@ export default function DateRangePicker({
   const renderCalendar = (monthOffset: number = 0) => {
     const displayMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + monthOffset, 1);
     const days = getDaysInMonth(displayMonth);
-    const monthName = displayMonth.toLocaleDateString('en-US', { 
-      month: 'long', 
-      year: 'numeric' 
-    });
+    
+    // Get month name with proper translation
+    const monthNames = [
+      'january', 'february', 'march', 'april', 'may', 'june',
+      'july', 'august', 'september', 'october', 'november', 'december'
+    ];
+    const monthIndex = displayMonth.getMonth();
+    const year = displayMonth.getFullYear();
+    const monthKey = monthNames[monthIndex];
+    const monthName = `${t(`calendar.months.${monthKey}`)} ${year}`;
 
     return (
       <div className="flex-1 px-2">
@@ -226,8 +244,16 @@ export default function DateRangePicker({
         </div>
 
         <div className="grid grid-cols-7 gap-1 mb-1">
-          {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-            <div key={day} className="text-xs font-medium text-gray-900 text-center py-0.5">
+          {[
+            t('calendar.sun', 'Su'),
+            t('calendar.mon', 'Mo'), 
+            t('calendar.tue', 'Tu'),
+            t('calendar.wed', 'We'),
+            t('calendar.thu', 'Th'),
+            t('calendar.fri', 'Fr'),
+            t('calendar.sat', 'Sa')
+          ].map((day, index) => (
+            <div key={index} className="text-xs font-medium text-gray-900 text-center py-0.5">
               {day}
             </div>
           ))}
@@ -251,7 +277,7 @@ export default function DateRangePicker({
             
             // Priority 1: DISABLED STATE (overrides everything)
             if (day.isDisabled) {
-              buttonClass += ' text-gray-800 cursor-not-allowed rounded-md';
+              buttonClass += ' text-gray-400 cursor-not-allowed rounded-md opacity-50';
             }
             // Priority 2: SELECTED RANGE STATES
             else if (isRangeStart && isRangeEnd) {
@@ -338,7 +364,7 @@ export default function DateRangePicker({
       >
         {minimal ? (
           <span className={`text-md font-medium ${
-            checkIn || checkOut ? 'text-gray-900' : 'text-gray-900'
+            checkIn || checkOut ? 'text-gray-900' : 'text-gray-400'
           }`}>
             {formatDisplayDate()}
           </span>
@@ -346,7 +372,7 @@ export default function DateRangePicker({
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <Calendar className="w-5 h-5 text-gray-900 mr-3" />
-              <span className={checkIn || checkOut ? 'text-gray-900 font-medium' : 'text-gray-900'}>
+              <span className={checkIn || checkOut ? 'text-gray-900 font-medium' : 'text-gray-400'}>
                 {formatDisplayDate()}
               </span>
             </div>
@@ -358,8 +384,12 @@ export default function DateRangePicker({
       {isOpen && typeof window !== 'undefined' && createPortal(
         <div 
           ref={pickerRef}
-          className="fixed bg-white border border-gray-200 rounded-xl shadow-2xl z-[99999] p-4 w-[560px] max-w-[95vw]" 
-          style={{ top: modalPosition.top, right: modalPosition.right }}
+          className="fixed bg-white border border-gray-200 rounded-xl z-[100000] p-4 w-[560px] max-w-[95vw]" 
+          style={{ 
+            top: Math.max(8, modalPosition.top), 
+            right: Math.max(8, modalPosition.right),
+            boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
+          }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex">
@@ -374,21 +404,6 @@ export default function DateRangePicker({
             <div className="md:hidden w-full">
               {renderCalendar(0)}
             </div>
-          </div>
-          
-          {/* Done Button */}
-          <div className="flex justify-end mt-4 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsOpen(false);
-              }}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-{t('common.done', 'Болсон')}
-            </button>
           </div>
         </div>,
         document.body

@@ -7,7 +7,7 @@ function SearchPageFallback() {
       {/* Search Form Section */}
       <section className="pt-24 pb-8 bg-gray-50">
         <div className="container mx-auto px-6">
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
             <div className="animate-pulse space-y-4">
               <div className="h-4 bg-gray-200 rounded w-1/4"></div>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -27,7 +27,7 @@ function SearchPageFallback() {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Filters Sidebar Loading */}
             <div className="lg:w-80">
-              <div className="bg-white rounded-xl shadow-md p-6 animate-pulse">
+              <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
                 <div className="space-y-4">
                   <div className="h-6 bg-gray-200 rounded w-1/2"></div>
                   <div className="space-y-2">
@@ -44,7 +44,7 @@ function SearchPageFallback() {
               <div className="animate-pulse space-y-6">
                 <div className="h-8 bg-gray-200 rounded w-1/3"></div>
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-xl shadow-md overflow-hidden">
+                  <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                     <div className="flex flex-col md:flex-row">
                       <div className="md:w-80 h-64 md:h-auto bg-gray-200"></div>
                       <div className="flex-1 p-6 space-y-4">

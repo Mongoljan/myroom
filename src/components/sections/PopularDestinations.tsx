@@ -44,25 +44,16 @@ export default function PopularDestinations() {
   ];
 
   return (
-    <section className="py-8 bg-white">
+    <section className="py-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className={`${TYPOGRAPHY.heading.h2} text-gray-900 mb-1`}>Алдартай газрууд</h2>
-            <p className={`${TYPOGRAPHY.body.standard} text-gray-600`}>Монгол орны хамгийн алдартай аялалын газрууд</p>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">Алдартай газрууд</h2>
+            <p className="text-sm text-gray-600">Монгол орны хамгийн алдартай аялалын газрууд</p>
           </div>
-          <Link 
-            href="/destinations" 
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
-          >
-            Бүгдийг харах
-            <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
         </div>
         
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {destinations.map((destination, index) => {
             const isLoaded = loadedImages.has(index);
             const hasError = errorImages.has(index);
@@ -71,11 +62,12 @@ export default function PopularDestinations() {
               <Link
                 key={index}
                 href={`/destinations/${destination.nameEn.toLowerCase().replace(' ', '-')}`}
-                className="group relative overflow-hidden rounded-lg aspect-[3/4] bg-gray-200 hover:shadow-lg transition-all duration-300"
+                className="group relative overflow-hidden rounded-lg bg-gray-200 transition-all duration-300"
+                style={{ aspectRatio: '280/200' }}
               >
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
-                <div className="absolute bottom-3 left-3 right-3 z-20">
-                  <h3 className="text-white font-medium text-sm">{destination.name}</h3>
+                <div className="absolute bottom-2 left-2 right-2 z-20">
+                  <h3 className="text-white font-semibold text-base">{destination.name}</h3>
                 </div>
                 
                 {!hasError && (

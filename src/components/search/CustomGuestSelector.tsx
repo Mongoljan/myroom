@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, ChevronDown, Minus, Plus } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -23,12 +24,45 @@ export default function CustomGuestSelector({
 }: CustomGuestSelectorProps) {
   const { t } = useHydratedTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Calculate modal position
+  const calculatePosition = () => {
+    if (!buttonRef.current) return;
+    
+    const rect = buttonRef.current.getBoundingClientRect();
+    const modalWidth = 320;
+    const modalHeight = 400;
+    const padding = 16;
+    
+    let top = rect.bottom + 8;
+    let left = rect.left;
+    
+    // Adjust if modal would go off screen right
+    if (left + modalWidth > window.innerWidth - padding) {
+      left = window.innerWidth - modalWidth - padding;
+    }
+    
+    // Adjust if modal would go off screen left
+    if (left < padding) {
+      left = padding;
+    }
+    
+    // Adjust if modal would go off screen bottom
+    if (top + modalHeight > window.innerHeight - padding) {
+      top = rect.top - modalHeight - 8;
+    }
+    
+    setModalPosition({ top, left });
+  };
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isOpen && dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (isOpen && dropdownRef.current && !dropdownRef.current.contains(event.target as Node) && 
+          buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -67,18 +101,26 @@ export default function CustomGuestSelector({
   };
 
   return (
-    <div ref={dropdownRef} className={`relative ${className}`}>
+    <div className={`relative ${className}`}>
       {/* Trigger Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        ref={buttonRef}
+        onClick={() => {
+          if (!isOpen) {
+            calculatePosition();
+            setIsOpen(true);
+          } else {
+            setIsOpen(false);
+          }
+        }}
         className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center">
           <Users className="w-6 h-6 text-gray-900 mr-4" />
           <div className="text-left">
-            <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>
+            {/* <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>
               {t('search.guest', 'Guest')}
-            </div>
+            </div> */}
             <div className={`${TYPOGRAPHY.form.input} text-gray-900`}>
               {getGuestText()}
             </div>
@@ -92,21 +134,22 @@ export default function CustomGuestSelector({
       </button>
 
       {/* Dropdown */}
-      <AnimatePresence>
-        {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              transition={{ duration: 0.15 }}
-              className="fixed bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden w-[320px] max-w-[90vw]"
-              style={{ 
-                zIndex: 999999999,
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)'
-              }}
-            >
+      {isOpen && typeof window !== 'undefined' && createPortal(
+        <AnimatePresence>
+          <motion.div
+            ref={dropdownRef}
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="fixed bg-white rounded-xl border border-gray-200 overflow-hidden w-[320px] max-w-[90vw] z-[100000]"
+            style={{ 
+              top: Math.max(8, modalPosition.top),
+              left: Math.max(8, Math.min(modalPosition.left, window.innerWidth - 336)),
+              boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-4 space-y-4">
               {/* Adults */}
               <div className="flex items-center justify-between">
@@ -220,9 +263,10 @@ export default function CustomGuestSelector({
                 </button>
               </div>
             </div>
-            </motion.div>
-        )}
-      </AnimatePresence>
+          </motion.div>
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }

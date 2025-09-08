@@ -1,8 +1,9 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, Languages, ChevronDown } from 'lucide-react';
+import { Globe, ChevronDown } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { TYPOGRAPHY } from '@/styles/containers';
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇺🇸', color: 'from-blue-500 to-red-600' },
@@ -17,6 +18,8 @@ export default function LanguageSwitcher() {
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
   const handleLanguageChange = (langCode: string) => {
+    console.log('Changing language to:', langCode);
+    console.log('Current language:', i18n.language);
     i18n.changeLanguage(langCode);
     setIsOpen(false);
   };
@@ -41,14 +44,14 @@ export default function LanguageSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-md border border-white/20 hover:border-white/30 transition-all duration-300"
+        className="group relative overflow-hidden rounded-xl bg-blue-50/40 backdrop-blur-sm border border-blue-200/50 hover:border-blue-300/70 transition-all duration-300"
       >
         {/* Animated background */}
         <motion.div
           animate={{
             background: isHovered 
-              ? `linear-gradient(45deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15))` 
-              : `linear-gradient(45deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1))`
+              ? `rgba(59, 130, 246, 0.15)` 
+              : `rgba(59, 130, 246, 0.10)`
           }}
           transition={{ duration: 0.3 }}
           className="absolute inset-0"
@@ -61,17 +64,10 @@ export default function LanguageSwitcher() {
             opacity: isHovered ? 0.3 : 0,
           }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full blur-md"
+          className="absolute -top-2 -right-2 w-8 h-8 bg-blue-400/40 rounded-full blur-md"
         />
 
-        <div className="relative flex items-center space-x-2 px-4 py-2.5">
-          <motion.div
-            animate={{ rotate: isOpen ? 180 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Languages className="w-4 h-4 text-white/80 group-hover:text-white transition-colors" />
-          </motion.div>
-          
+        <div className="relative flex items-center space-x-2 px-2 py-2.5">          
           <motion.div
             className="flex items-center space-x-1.5"
             animate={{ y: isOpen ? -1 : 0 }}
@@ -84,7 +80,7 @@ export default function LanguageSwitcher() {
             >
               {mounted ? currentLanguage.flag : '🌐'}
             </motion.span>
-            <span className="text-sm font-semibold text-white/90 group-hover:text-white transition-colors tracking-wide">
+            <span className={`${TYPOGRAPHY.nav.secondary} text-blue-900 group-hover:text-blue-800 transition-colors tracking-wide font-medium`}>
               {mounted ? currentLanguage.code.toUpperCase() : 'EN'}
             </span>
           </motion.div>
@@ -93,7 +89,7 @@ export default function LanguageSwitcher() {
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <ChevronDown className="w-3.5 h-3.5 text-white/70 group-hover:text-white/90 transition-colors" />
+            <ChevronDown className="w-3.5 h-3.5 text-blue-900/70 group-hover:text-blue-800/90 transition-colors" />
           </motion.div>
         </div>
 
@@ -115,7 +111,7 @@ export default function LanguageSwitcher() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/10 backdrop-blur-[1px]"
+              className="fixed inset-0 z-[9998] bg-transparent"
               onClick={() => setIsOpen(false)}
             />
             
@@ -145,18 +141,18 @@ export default function LanguageSwitcher() {
                 stiffness: 300,
                 duration: 0.3
               }}
-              className="absolute right-0 mt-3 w-64 z-50"
+              className="absolute right-0 mt-3 w-64 z-[9999]"
             >
               <div className="relative">
                 {/* Glow effect */}
                 <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-lg" />
                 
-                <div className="relative bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl overflow-hidden">
+                <div className="relative bg-white/98 backdrop-blur-sm border border-gray-200/50 rounded-2xl shadow-2xl overflow-hidden">
                   {/* Header */}
                   <div className="px-4 py-3 bg-gradient-to-r from-indigo-50/80 to-purple-50/80 border-b border-gray-200/30">
                     <div className="flex items-center space-x-2">
                       <Globe className="w-4 h-4 text-indigo-500" />
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className={`${TYPOGRAPHY.nav.secondary} text-gray-900`}>
                         {i18n.language === 'mn' ? 'Хэл сонгох' : 'Choose Language'}
                       </span>
                     </div>
@@ -202,14 +198,14 @@ export default function LanguageSwitcher() {
                           </motion.span>
                           
                           <div className="flex-1 text-left">
-                            <div className={`font-semibold transition-colors ${
+                            <div className={`${TYPOGRAPHY.body.standard} font-semibold transition-colors ${
                               isActive 
                                 ? 'text-indigo-700' 
                                 : 'text-gray-900 group-hover:text-gray-900'
                             }`}>
                               {language.name}
                             </div>
-                            <div className={`text-xs transition-colors ${
+                            <div className={`${TYPOGRAPHY.body.caption} transition-colors ${
                               isActive 
                                 ? 'text-indigo-500' 
                                 : 'text-gray-900 group-hover:text-gray-800'

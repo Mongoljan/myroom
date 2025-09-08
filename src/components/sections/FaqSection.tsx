@@ -121,26 +121,15 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="py-12 bg-white">
-      <div className="container mx-auto px-4 sm:px-3">
+    <section className="py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
-          className="text-center mb-8"
+          className="text-center mb-4"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
           viewport={{ once: true }}
         >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center justify-center w-10 h-10 bg-blue-600 rounded-xl mb-4"
-          >
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </motion.div>
           
           <motion.h2 
             className={`${TYPOGRAPHY.heading.h1} mb-4`}
@@ -155,24 +144,22 @@ export default function FaqSection() {
           </motion.h2>
           
           <motion.p 
-            className={`${TYPOGRAPHY.body.standard} text-gray-600 max-w-2xl mx-auto`}
+            className={`${TYPOGRAPHY.body.standard} text-gray-600 max-w-3xl mx-auto`}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            {t('faq.subtitle', 'Түгээмэл асуугддаг асуултууд')}
           </motion.p>
         </motion.div>
 
         <motion.div 
-          className="max-w-4xl mx-auto"
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
         >
-          <div className="space-y-2">
+          <div className="space-y-4">
             {/* Always render first 5 FAQs */}
             {firstFiveFaqs.map((faq, idx) => {
               const isOpen = openItems.includes(idx);
@@ -405,7 +392,7 @@ export default function FaqSection() {
           {/* Show More/Less Button */}
           {allFaqs.length > 5 && (
             <motion.div 
-              className="mt-6 text-center"
+              className="mt-4 text-center"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -433,28 +420,6 @@ export default function FaqSection() {
           )}
         </motion.div>
 
-        {/* Call to action */}
-        <motion.div
-          className="mt-8 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          viewport={{ once: true }}
-        >
-          <p className={`${TYPOGRAPHY.body.standard} text-gray-600 mb-4`}>
-            {t('faq.stillHaveQuestions', 'Асуулт байгаа юу? Бид танд туслахад бэлэн байна!')}
-          </p>
-          {/* <motion.button
-            className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-            whileHover={{ y: -2, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-{t('faq.contactSupport', 'Дэмжлэг авах')}
-            <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-          </motion.button> */}
-        </motion.div>
       </div>
     </section>
   );

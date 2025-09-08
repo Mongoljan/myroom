@@ -31,7 +31,32 @@ const resources = {
         searching: "Searching...",
         tryAgain: "Try Again",
         addToWishlist: "Add to Wishlist",
-        removeFromWishlist: "Remove from Wishlist"
+        removeFromWishlist: "Remove from Wishlist",
+        selectCheckout: "Select check-out",
+        done: "Done"
+      },
+      calendar: {
+        sun: "Su",
+        mon: "Mo",
+        tue: "Tu",
+        wed: "We",
+        thu: "Th",
+        fri: "Fr",
+        sat: "Sa",
+        months: {
+          january: "January",
+          february: "February", 
+          march: "March",
+          april: "April",
+          may: "May",
+          june: "June",
+          july: "July",
+          august: "August",
+          september: "September",
+          october: "October",
+          november: "November",
+          december: "December"
+        }
       },
       breadcrumb: {
         home: "Home",
@@ -386,7 +411,32 @@ const resources = {
         searching: "Хайж байна...",
         tryAgain: "Дахин оролдох",
         addToWishlist: "Дуртай жагсаалтанд нэмэх",
-        removeFromWishlist: "Дуртай жагсаалтаас хасах"
+        removeFromWishlist: "Дуртай жагсаалтаас хасах",
+        selectCheckout: "Гарах өдөр сонгох",
+        done: "Болсон"
+      },
+      calendar: {
+        sun: "Ня",
+        mon: "Да", 
+        tue: "Мя",
+        wed: "Лх",
+        thu: "Пү",
+        fri: "Ба",
+        sat: "Бя",
+        months: {
+          january: "1-р сар",
+          february: "2-р сар", 
+          march: "3-р сар",
+          april: "4-р сар",
+          may: "5-р сар",
+          june: "6-р сар",
+          july: "7-р сар",
+          august: "8-р сар",
+          september: "9-р сар",
+          october: "10-р сар",
+          november: "11-р сар",
+          december: "12-р сар"
+        }
       },
       breadcrumb: {
         home: "Нүүр",
@@ -509,8 +559,8 @@ const resources = {
         checkOut: "Явах өдөр",
         guests: "Зочин",
         rooms: "Өрөө",
-        adults: "Насанд хүрэгчид",
-        children: "Хүүхдүүд",
+        adults: "Том хүн",
+        children: "Хүүхэд",
         findHotels: "Зочид буудал хайх",
         pricePerNight: "шөнөд",
         bookNow: "Одоо захиалах",
@@ -575,8 +625,8 @@ const resources = {
         checkOut: "Явах өдөр",
         guest: "Зочин",
         guests: "Зочид",
-        adults: "Насанд хүрэгчид",
-        children: "Хүүхдүүд",
+        adults: "Том хүн",
+        children: "Хүүхэд",
         rooms: "Өрөө",
         searchButton: "Хайх",
         filters: "Шүүлтүүр",

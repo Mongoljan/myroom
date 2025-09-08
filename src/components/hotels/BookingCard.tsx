@@ -96,7 +96,7 @@ export default function BookingCard({ hotel }: BookingCardProps) {
   };
 
   return (
-    <div className="bg-white border  border-gray-200 rounded-xl p-6 shadow-lg">
+    <div className="bg-white border border-gray-200 rounded-xl p-6">
       <div className="mb-6">
         {loadingPrices ? (
           <div className="flex items-center gap-2 mb-2">
@@ -223,7 +223,7 @@ export default function BookingCard({ hotel }: BookingCardProps) {
       <div>
         <button
           onClick={handleBooking}
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+          className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2"
         >
           <CreditCard className="w-4 h-4" />
           {t('quick_book', 'Reserve Now')}

@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Star, MapPin, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { TYPOGRAPHY } from '@/styles/containers';
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { SearchHotelResult } from '@/types/api';
 
 interface RecentHotel {
   id: string;
@@ -19,51 +21,111 @@ interface RecentHotel {
 }
 
 export default function RecentlyViewed() {
+  const { recentlyViewed, removeRecentlyViewed } = useRecentlyViewed();
   const [recentHotels, setRecentHotels] = useState<RecentHotel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  // Helper function to extract image URL from hotel data
+  const getHotelImage = (hotel: SearchHotelResult): string => {
+    let imageUrl: string;
+
+    // Try cover image first
+    if (hotel.images?.cover) {
+      if (typeof hotel.images.cover === 'string') {
+        imageUrl = hotel.images.cover;
+        console.log(`Using cover image (string) for hotel ${hotel.property_name}:`, imageUrl);
+        return imageUrl;
+      } else if (hotel.images.cover.url) {
+        imageUrl = hotel.images.cover.url;
+        console.log(`Using cover image (object) for hotel ${hotel.property_name}:`, imageUrl);
+        return imageUrl;
+      }
+    }
+
+    // Try first gallery image as fallback
+    if (hotel.images?.gallery && hotel.images.gallery.length > 0) {
+      imageUrl = hotel.images.gallery[0].url;
+      console.log(`Using gallery image for hotel ${hotel.property_name}:`, imageUrl);
+      return imageUrl;
+    }
+
+    // Return a variety of fallback images instead of always the same one
+    const fallbackImages = [
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&auto=format', 
+      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop&auto=format'
+    ];
+    
+    imageUrl = fallbackImages[hotel.hotel_id % fallbackImages.length];
+    console.log(`Using fallback image for hotel ${hotel.property_name}:`, imageUrl);
+    return imageUrl;
+  };
 
   useEffect(() => {
-    const mockRecentHotels: RecentHotel[] = [
-      {
-        id: '1',
-        name: 'ART HOTEL Наула',
-        location: 'Улаанбаатар, Монгол',
-        rating: 4.8,
-        price: 250000,
-        originalPrice: 320000,
-        image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400',
-        badge: 'NEW'
-      },
-      {
-        id: '2', 
-        name: 'ART HOTEL Наула',
-        location: 'Улаанбаатар, Монгол',
-        rating: 4.7,
-        price: 180000,
-        image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400',
-        badge: 'BEST SELLER'
-      },
-      {
-        id: '3',
-        name: 'Hotel Степант Дэнгэдэлуул-1',
-        location: 'Улаанбаатар, Монгол',
-        rating: 4.9,
-        price: 420000,
-        image: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400',
-        badge: 'TOP RATED'
-      },
-      {
-        id: '4',
-        name: 'RED PANDA HOUSE',
-        location: 'Улаанбаатар, Монгол',
-        rating: 4.6,
-        price: 150000,
-        image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400'
+    const loadRecentHotels = () => {
+      setIsLoading(true);
+      
+      // Only show hotels that user has actually viewed - no fallbacks
+      if (recentlyViewed.length === 0) {
+        // No recently viewed hotels - show empty state
+        setRecentHotels([]);
+      } else {
+        // Convert recently viewed to RecentHotel format
+        const hotels: RecentHotel[] = recentlyViewed.map((item, index) => {
+          const hotel = item.hotel;
+          const viewedDate = new Date(item.viewedAt);
+          const now = new Date();
+          const diffTime = Math.abs(now.getTime() - viewedDate.getTime());
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          let badge: string | undefined;
+          if (diffDays === 1) {
+            badge = 'TODAY';
+          } else if (diffDays <= 3) {
+            badge = 'RECENT';
+          } else if (index === 0) {
+            badge = 'LAST VIEWED';
+          }
+
+          return {
+            id: item.id,
+            name: hotel.property_name,
+            location: `${hotel.location.province_city}, ${hotel.location.soum}`,
+            rating: parseFloat(hotel.rating_stars.value) || 4.0,
+            price: hotel.cheapest_room?.price_per_night || 0,
+            image: getHotelImage(hotel),
+            badge
+          };
+        });
+        setRecentHotels(hotels);
       }
-    ];
-    setRecentHotels(mockRecentHotels);
-  }, []);
+      
+      setIsLoading(false);
+    };
+
+    loadRecentHotels();
+  }, [recentlyViewed]);
+
+  // Check scroll positions
+  useEffect(() => {
+    const element = scrollRef.current;
+    if (element && recentHotels.length > 0) {
+      const checkScroll = () => {
+        setCanScrollLeft(element.scrollLeft > 0);
+        setCanScrollRight(element.scrollLeft < element.scrollWidth - element.clientWidth - 10);
+      };
+      
+      setTimeout(checkScroll, 100);
+    }
+  }, [recentHotels]);
+
 
   const removeFromRecent = (hotelId: string) => {
+    removeRecentlyViewed(hotelId);
     setRecentHotels(prev => prev.filter(hotel => hotel.id !== hotelId));
   };
 
@@ -71,129 +133,151 @@ export default function RecentlyViewed() {
     return new Intl.NumberFormat('mn-MN').format(price);
   };
 
-  if (recentHotels.length === 0) {
+  if (recentHotels.length === 0 && !isLoading) {
     return null;
   }
 
   return (
-    <section className="py-8 bg-white">
+    <section className="py-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex items-center justify-between mb-6"
+          className="mb-4"
         >
           <div>
-            <h2 className={`${TYPOGRAPHY.heading.h1} text-gray-900 mb-2`}>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">
               Сүүлд үзсэн
             </h2>
-            <p className={`${TYPOGRAPHY.body.standard} text-gray-600`}>
-              Сайн орж үзсэн бүгдэд модэлчилгэг 10 дотор харагдана.
+            <p className="text-sm text-gray-600">
+              {recentHotels.length === 1 
+                ? 'Сүүлд үзсэн зочид буудал' 
+                : `Сүүлд үзсэн ${recentHotels.length} зочид буудал`}
             </p>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <button className="p-2 rounded-full border border-gray-200 hover:border-gray-300 transition-colors">
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            <button className="p-2 rounded-full border border-gray-200 hover:border-gray-300 transition-colors">
-              <ChevronRight className="w-5 h-5 text-gray-600" />
-            </button>
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {recentHotels.map((hotel, index) => (
-            <motion.div
-              key={hotel.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
-            >
-              <button
-                onClick={() => removeFromRecent(hotel.id)}
-                className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-white"
+        {isLoading ? (
+          <div className="flex gap-4 overflow-x-auto pb-2">
+            {[...Array(4)].map((_, index) => (
+              <div
+                key={`skeleton-${index}`}
+                className="bg-white border border-gray-200 rounded-lg overflow-hidden animate-pulse min-w-[280px] flex-shrink-0"
               >
-                <X className="w-4 h-4 text-gray-600" />
-              </button>
-
-              {hotel.badge && (
-                <div className="absolute top-3 left-3 z-10">
-                  <span className={`px-2 py-1 ${TYPOGRAPHY.card.badge} rounded-full ${
-                    hotel.badge === 'NEW' ? 'bg-green-500 text-white' :
-                    hotel.badge === 'BEST SELLER' ? 'bg-orange-500 text-white' :
-                    hotel.badge === 'TOP RATED' ? 'bg-purple-500 text-white' :
-                    'bg-blue-500 text-white'
-                  }`}>
-                    {hotel.badge}
-                  </span>
+                <div className="h-36 bg-gray-200"></div>
+                <div className="p-3">
+                  <div className="h-3 bg-gray-200 rounded-md mb-1"></div>
+                  <div className="h-2 bg-gray-200 rounded-md mb-2 w-3/4"></div>
+                  <div className="h-2 bg-gray-200 rounded-md w-1/2"></div>
                 </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="relative">
+            <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth"
+                 style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}
+                 onScroll={() => {
+                   const element = scrollRef.current;
+                   if (element) {
+                     setCanScrollLeft(element.scrollLeft > 0);
+                     setCanScrollRight(element.scrollLeft < element.scrollWidth - element.clientWidth - 10);
+                   }
+                 }}>
+              <style jsx>{`
+                div::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
+              
+              {/* Left scroll button */}
+              {canScrollLeft && (
+                <button
+                  onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4 text-gray-600" />
+                </button>
               )}
-
+              
+              {/* Right scroll button */}
+              {canScrollRight && (
+                <button
+                  onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4 text-gray-600" />
+                </button>
+              )}
+            {recentHotels.map((hotel, index) => (
+              <motion.div
+                key={hotel.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group relative bg-white border border-gray-200 rounded-lg transition-all duration-200 overflow-hidden min-w-[280px] flex-shrink-0"
+              >
               <Link href={`/hotel/${hotel.id}`}>
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-36 overflow-hidden">
                   <Image
                     src={hotel.image}
-                    alt={hotel.name}
+                    alt={`${hotel.name} - Hotel image`}
                     fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="object-cover transition-transform duration-300"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    unoptimized
+                    onError={(e) => {
+                      // Fallback to a different image if the current one fails
+                      const target = e.currentTarget;
+                      const fallbackImages = [
+                        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format',
+                        'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&auto=format',
+                        'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop&auto=format'
+                      ];
+                      const currentIndex = fallbackImages.findIndex(img => img === target.src);
+                      const nextIndex = (currentIndex + 1) % fallbackImages.length;
+                      target.src = fallbackImages[nextIndex];
+                    }}
                   />
                 </div>
 
-                <div className="p-4">
-                  <h3 className={`${TYPOGRAPHY.card.title} text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors`}>
+                <div className="p-3">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
                     {hotel.name}
                   </h3>
                   
-                  <div className={`flex items-center ${TYPOGRAPHY.body.caption} text-gray-500 mb-3`}>
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span className="line-clamp-1">{hotel.location}</span>
+                  <div className="flex items-center text-gray-500 mb-2">
+                    <MapPin className="w-3 h-3 mr-1" />
+                    <span className="text-xs line-clamp-1">{hotel.location}</span>
                   </div>
 
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className={`ml-1 ${TYPOGRAPHY.body.small} text-gray-900`}>
+                      <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                      <span className="ml-1 text-xs text-gray-900">
                         {hotel.rating}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className={`${TYPOGRAPHY.card.price} text-gray-900`}>
-                          ₮{formatPrice(hotel.price)}
-                        </span>
-                        {hotel.originalPrice && (
-                          <span className={`${TYPOGRAPHY.body.caption} text-gray-500 line-through`}>
-                            ₮{formatPrice(hotel.originalPrice)}
-                          </span>
-                        )}
+                  <div className="border-t border-gray-100 pt-2 mt-2">
+                    <div className="text-right">
+                      <div className="text-sm font-bold text-gray-900">
+                        ₮{formatPrice(hotel.price)}
                       </div>
-                      <span className={`${TYPOGRAPHY.body.caption} text-gray-500`}>шөнөтэй</span>
+                      <div className="text-xs text-gray-500">шөнөдөө</div>
                     </div>
                   </div>
                 </div>
               </Link>
             </motion.div>
           ))}
-        </div>
+            </div>
+          </div>
+        )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="text-center mt-10"
-        >
-          <button className={`inline-flex items-center px-6 py-3 border-2 border-blue-600 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all duration-200 ${TYPOGRAPHY.button.standard}`}>
-            Бүгдийг харах
-          </button>
-        </motion.div>
       </div>
     </section>
   );

@@ -18,13 +18,13 @@ export default function Partnerships() {
 
   return (
     <>
-      <section className="py-20 bg-white relative">
+      <section className="py-4 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className={`${TYPOGRAPHY.heading.h1} text-gray-900 mb-4`}>
+          <div className="text-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-1">
               {t('partnerships.title', 'Хамтрагч байгууллагууд')}
             </h2>
-            <p className={`${TYPOGRAPHY.body.large} text-gray-600 max-w-2xl mx-auto`}>
+            <p className="text-sm text-gray-600 max-w-3xl mx-auto">
               {t('partnerships.subtitle', 'Дэлхийн тэргүүлэгч технологи компаниуд болон аялал жуулчлалын салбарын удирдагчидтай хамтран ажиллаж байна')}
             </p>
           </div>
@@ -66,8 +66,8 @@ export default function Partnerships() {
           </div>
           
           {/* Trust badge */}
-          <div className="text-center mt-12">
-            <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-full">
+          <div className="text-center mt-4">
+            <div className="inline-flex items-center px-6 py-3 bg-gray-50 border border-gray-200 rounded-lg">
               <div className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></div>
               <span className={`${TYPOGRAPHY.body.standard} text-gray-700 font-medium`}>
                 {t('partnerships.trust', '50,000+ хэрэглэгчдийн итгэлийг хүлээн авсан')}
