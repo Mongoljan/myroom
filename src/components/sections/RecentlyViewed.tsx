@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Star, MapPin, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, MapPin, X, ChevronLeft, ChevronRight, Wifi, Car, Utensils, Users } from 'lucide-react';
 import { TYPOGRAPHY } from '@/styles/containers';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { SearchHotelResult } from '@/types/api';
@@ -18,6 +18,13 @@ interface RecentHotel {
   originalPrice?: number;
   image: string;
   badge?: string;
+  // Real hotel data
+  cheapest_room?: {
+    available_in_this_type: number;
+    capacity_per_room_adults: number;
+  };
+  general_facilities: string[];
+  rating_label: string;
 }
 
 export default function RecentlyViewed() {
@@ -98,7 +105,14 @@ export default function RecentlyViewed() {
             rating: parseFloat(hotel.rating_stars.value) || 4.0,
             price: hotel.cheapest_room?.price_per_night || 0,
             image: getHotelImage(hotel),
-            badge
+            badge,
+            // Real data for enhanced display
+            cheapest_room: hotel.cheapest_room ? {
+              available_in_this_type: hotel.cheapest_room.available_in_this_type,
+              capacity_per_room_adults: hotel.cheapest_room.capacity_per_room_adults
+            } : undefined,
+            general_facilities: hotel.general_facilities || [],
+            rating_label: hotel.rating_stars.label
           };
         });
         setRecentHotels(hotels);
@@ -133,6 +147,32 @@ export default function RecentlyViewed() {
     return new Intl.NumberFormat('mn-MN').format(price);
   };
 
+  const facilityIcons: { [key: string]: React.ReactNode } = {
+    'Free Wi-Fi': <Wifi className="w-3 h-3 text-green-600" />,
+    'Free WiFi': <Wifi className="w-3 h-3 text-green-600" />,
+    'Parking': <Car className="w-3 h-3 text-blue-600" />,
+    'Restaurant': <Utensils className="w-3 h-3 text-orange-600" />,
+    'Room Service': <Users className="w-3 h-3 text-purple-600" />,
+  };
+
+  // Get current availability date range for display (Hotels.com style)
+  const getAvailabilityDateRange = () => {
+    const today = new Date();
+    const tomorrow = new Date(Date.now() + 24*60*60*1000);
+    
+    const formatDate = (date: Date) => {
+      return {
+        day: date.getDate(),
+        month: date.toLocaleDateString('mn-MN', { month: 'short' })
+      };
+    };
+    
+    const startDate = formatDate(today);
+    const endDate = formatDate(tomorrow);
+    
+    return { startDate, endDate };
+  };
+
   if (recentHotels.length === 0 && !isLoading) {
     return null;
   }
@@ -147,9 +187,7 @@ export default function RecentlyViewed() {
           className="mb-4"
         >
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">
-              Сүүлд үзсэн
-            </h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">Сүүлд үзсэн</h2>
             <p className="text-sm text-gray-600">
               {recentHotels.length === 1 
                 ? 'Сүүлд үзсэн зочид буудал' 
@@ -253,21 +291,51 @@ export default function RecentlyViewed() {
                     <span className="text-xs line-clamp-1">{hotel.location}</span>
                   </div>
 
+                  {/* Rating & Capacity */}
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center">
-                      <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                      <span className="ml-1 text-xs text-gray-900">
+                      <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-xs font-medium mr-1">
                         {hotel.rating}
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        {hotel.rating_label?.replace(/\d+\s*stars?/i, '').trim() || 'үнэлгээ'}
                       </span>
+                    </div>
+                    
+                    {/* Room capacity */}
+                    {hotel.cheapest_room && (
+                      <div className="text-xs text-gray-500">
+                        {hotel.cheapest_room.capacity_per_room_adults} том хүн
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Real Amenities */}
+                  <div className="mb-2">
+                    <div className="flex flex-wrap gap-1">
+                      {hotel.general_facilities.slice(0, 2).map((facility, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-0.5 text-xs text-green-600 bg-green-50 rounded-full px-1.5 py-0.5 border border-green-100"
+                        >
+                          {facilityIcons[facility] || <div className="w-2 h-2 bg-green-500 rounded-full" />}
+                          <span className="truncate max-w-12">{facility.length > 6 ? facility.slice(0, 6) + '...' : facility}</span>
+                        </div>
+                      ))}
+                      {hotel.general_facilities.length > 2 && (
+                        <div className="text-xs text-blue-600 bg-blue-50 rounded-full px-1.5 py-0.5 border border-blue-100">
+                          +{hotel.general_facilities.length - 2}
+                        </div>
+                      )}
                     </div>
                   </div>
 
                   <div className="border-t border-gray-100 pt-2 mt-2">
                     <div className="text-right">
+                      <div className="text-xs text-gray-500 mb-1">эхлэх үнэ</div>
                       <div className="text-sm font-bold text-gray-900">
-                        ₮{formatPrice(hotel.price)}
+                        ₮{formatPrice(hotel.price)}-с
                       </div>
-                      <div className="text-xs text-gray-500">шөнөдөө</div>
                     </div>
                   </div>
                 </div>

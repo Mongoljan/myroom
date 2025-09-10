@@ -314,7 +314,7 @@ export default function ProfessionalHero() {
                         >
                           <div className="p-3">
                             <div className="text-xs font-medium text-slate-500 mb-2 uppercase tracking-wider">
-                              {destination.length < 2 ? 'Алдартай газрууд' : 'Хайлтын үр дүн'}
+                              {destination.length < 2 ? 'Алдартай байршлууд' : 'Хайлтын үр дүн'}
                             </div>
                             
                             {isLoadingSuggestions ? (
@@ -395,7 +395,7 @@ export default function ProfessionalHero() {
                       whileTap={{ scale: 0.98 }}
                       className="w-full lg:w-auto bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl font-medium"
                     >
-                      <Search className="w-5 h-5" />
+                      <Search className="w-5 h-5 text-xl" />
                       <span>{t('search.searchButton', 'Хайх')}</span>
                     </motion.button>
                   </div>

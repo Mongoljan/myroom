@@ -3,11 +3,13 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Star, MapPin, Wifi, Car, Utensils, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Wifi, Car, Utensils, Users, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
-import { TYPOGRAPHY } from '@/styles/containers';
 import { ApiService } from '@/services/api';
 import { SearchHotelResult } from '@/types/api';
+import TextHoverEffect from '@/components/aceternity/TextHoverEffect';
+import PointerHighlight from '@/components/aceternity/PointerHighlight';
+import BackgroundGradientAnimation from '@/components/aceternity/BackgroundGradientAnimation';
 
 interface CategorizedHotel extends SearchHotelResult {
   category: 'popular' | 'discounted' | 'highly_rated' | 'cheapest' | 'newly_added';
@@ -16,7 +18,7 @@ interface CategorizedHotel extends SearchHotelResult {
 }
 
 export default function RecommendedHotels() {
-  const { t } = useHydratedTranslation();
+  const { } = useHydratedTranslation();
   const [hotels, setHotels] = useState<CategorizedHotel[]>([]);
   const [filteredHotels, setFilteredHotels] = useState<CategorizedHotel[]>([]);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -99,6 +101,7 @@ export default function RecommendedHotels() {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('mn-MN').format(price);
   };
+
 
   // Get hotel image with fallback
   const getHotelImage = (hotel: SearchHotelResult): string => {
@@ -202,15 +205,15 @@ export default function RecommendedHotels() {
     'Parking': <Car className="w-4 h-4 text-blue-600" />,
     'Restaurant': <Utensils className="w-4 h-4 text-orange-600" />,
     'Fitness Center': <Users className="w-4 h-4 text-red-600" />,
-  };
+  }; 
 
   return (
-    <section className="py-4">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <BackgroundGradientAnimation className="py-4" containerClassName="relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">Санал болгох зочид буудал</h2>
-            <p className="text-sm text-gray-600">Ангилал болон үнийн хэмжээгээр сонгосон шилмэл зочид буудлууд</p>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">Санал болгох</h2>
+            <p className="text-sm text-gray-600">Монголын орны томоохон хот, аялал жуулчлалын бүсүүд дэхь хамгийн хямдаас эхлээд тансаг зэрэглэлийн буудлуудаас та өөрийн хайж байгаа өрөөгөө хялбар олох боломжтой.</p>
           </div>
           <Link 
             href="/search" 
@@ -224,69 +227,59 @@ export default function RecommendedHotels() {
         </div>
 
         {/* Smart Filter tabs with counts */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {[
-            { key: 'all', label: 'Бүгд', count: hotels.length },
-            { key: 'popular', label: 'Эрэлттэй', count: hotels.filter(h => h.category === 'popular').length },
-            { key: 'discounted', label: 'Хямдралтай', count: hotels.filter(h => h.category === 'discounted').length },
-            { key: 'highly_rated', label: 'Өндөр үнэлгээтэй', count: hotels.filter(h => h.category === 'highly_rated').length },
-            { key: 'cheapest', label: 'Хамгийн хямд', count: hotels.filter(h => h.category === 'cheapest').length },
-            { key: 'newly_added', label: 'Шинээр нэмэгдсэн', count: hotels.filter(h => h.category === 'newly_added').length },
-          ].map((filter) => (
-            <motion.button
-              key={filter.key}
-              onClick={() => handleFilterChange(filter.key)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
-                activeFilter === filter.key
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {filter.label} {filter.count > 0 && <span className="ml-1 opacity-70">({filter.count})</span>}
-            </motion.button>
-          ))}
-        </div>
+        <PointerHighlight className="mb-6" highlightColor="rgba(59, 130, 246, 0.08)">
+          <div className="flex flex-wrap gap-3">
+            {[
+              { key: 'all', label: 'Бүгд', count: hotels.length },
+              { key: 'popular', label: 'Эрэлттэй', count: hotels.filter(h => h.category === 'popular').length },
+              { key: 'discounted', label: 'Хямдралтай', count: hotels.filter(h => h.category === 'discounted').length },
+              { key: 'highly_rated', label: 'Өндөр үнэлгээтэй', count: hotels.filter(h => h.category === 'highly_rated').length },
+              { key: 'cheapest', label: 'Хамгийн хямд', count: hotels.filter(h => h.category === 'cheapest').length },
+              { key: 'newly_added', label: 'Шинээр нэмэгдсэн', count: hotels.filter(h => h.category === 'newly_added').length },
+            ].map((filter) => (
+              <motion.button
+                key={filter.key}
+                onClick={() => handleFilterChange(filter.key)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm ${
+                  activeFilter === filter.key
+                    ? 'bg-blue-600 text-white shadow-blue-200'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-blue-300'
+                }`}
+              >
+                {filter.label} {filter.count > 0 && <span className="ml-1 opacity-70">({filter.count})</span>}
+              </motion.button>
+            ))}
+          </div>
+        </PointerHighlight>
 
         {/* Hotels Grid */}
         {isLoading ? (
-          <div className="flex gap-4 overflow-x-auto pb-2">
-            {[...Array(8)].map((_, index) => (
-              <div
-                key={`skeleton-${index}`}
-                className="bg-white border border-gray-200 rounded-lg overflow-hidden animate-pulse min-w-[280px] flex-shrink-0"
-              >
-                <div className="h-36 bg-gray-200"></div>
-                <div className="p-3">
-                  <div className="h-3 bg-gray-200 rounded mb-1"></div>
-                  <div className="h-2 bg-gray-200 rounded mb-2 w-3/4"></div>
-                  <div className="h-2 bg-gray-200 rounded w-1/2"></div>
+          <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
+            <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 px-4 sm:px-6 lg:px-8">
+              {[...Array(8)].map((_, index) => (
+                <div
+                  key={`skeleton-${index}`}
+                  className="bg-white border border-gray-200 rounded-lg overflow-hidden animate-pulse w-[260px] sm:w-[280px] flex-shrink-0"
+                >
+                  <div className="h-36 bg-gray-200"></div>
+                  <div className="p-3">
+                    <div className="h-3 bg-gray-200 rounded mb-1"></div>
+                    <div className="h-2 bg-gray-200 rounded mb-2 w-3/4"></div>
+                    <div className="h-2 bg-gray-200 rounded w-1/2"></div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         ) : filteredHotels.length > 0 ? (
-          <div className="relative">
-            <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth"
-                 style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}
-                 onScroll={() => {
-                   const element = scrollRef.current;
-                   if (element) {
-                     setCanScrollLeft(element.scrollLeft > 0);
-                     setCanScrollRight(element.scrollLeft < element.scrollWidth - element.clientWidth - 10);
-                   }
-                 }}>
-              <style jsx>{`
-                div::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
+          <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
             {/* Left scroll button */}
             {canScrollLeft && (
               <button
                 onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4 text-gray-600" />
               </button>
@@ -296,11 +289,29 @@ export default function RecommendedHotels() {
             {canScrollRight && (
               <button
                 onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
               >
                 <ChevronRight className="w-4 h-4 text-gray-600" />
               </button>
             )}
+
+            <div 
+              ref={scrollRef} 
+              className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 px-4 sm:px-6 lg:px-8 scrollbar-hide scroll-smooth"
+              style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}
+              onScroll={() => {
+                const element = scrollRef.current;
+                if (element) {
+                  setCanScrollLeft(element.scrollLeft > 0);
+                  setCanScrollRight(element.scrollLeft < element.scrollWidth - element.clientWidth - 10);
+                }
+              }}
+            >
+              <style jsx>{`
+                div::-webkit-scrollbar {
+                  display: none;
+                }
+              `}</style>
             
             {filteredHotels.slice(0, 8).map((hotel, index) => (
               <motion.div
@@ -309,8 +320,12 @@ export default function RecommendedHotels() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 min-w-[280px] flex-shrink-0"
+                className="w-[260px] sm:w-[280px] flex-shrink-0"
               >
+                <Link 
+                  href={`/hotel/${hotel.hotel_id}`}
+                  className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 block hover:shadow-lg"
+                >
                 {/* Hotel Image */}
                 <div className="relative h-36 overflow-hidden">
                   <Image
@@ -342,8 +357,10 @@ export default function RecommendedHotels() {
 
                 {/* Hotel Info */}
                 <div className="p-3">
-                  <h3 className="text-sm font-semibold text-gray-900 line-clamp-1 mb-1 group-hover:text-blue-600 transition-colors">
-                    {hotel.property_name}
+                  <h3 className="text-sm font-semibold text-gray-900 line-clamp-1 mb-1">
+                    <TextHoverEffect duration={0.2}>
+                      {hotel.property_name}
+                    </TextHoverEffect>
                   </h3>
                   
                   <div className="flex items-center text-gray-500 mb-2">
@@ -351,13 +368,33 @@ export default function RecommendedHotels() {
                     <span className="text-xs line-clamp-1">{hotel.location.province_city}</span>
                   </div>
 
-                  {/* Rating and Reviews */}
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center">
-                      <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-xs font-medium mr-1">
-                        {hotel.rating_stars.value}
-                      </div>
-                      <span className="text-xs text-gray-500">({Math.floor(Math.random() * 99) + 10})</span>
+                  {/* Rating */}
+                  <div className="flex items-center mb-2">
+                    <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-xs font-medium mr-1">
+                      {hotel.rating_stars.value}
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {hotel.rating_stars.label?.replace(/\d+\s*stars?/i, '').trim() || 'үнэлгээ'}
+                    </span>
+                  </div>
+
+                  {/* Real Amenities */}
+                  <div className="mb-2">
+                    <div className="flex flex-wrap gap-1">
+                      {hotel.general_facilities.slice(0, 3).map((facility, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-0.5 text-xs text-green-600 bg-green-50 rounded-full px-1.5 py-0.5 border border-green-100"
+                        >
+                          {facilityIcons[facility] || <div className="w-2 h-2 bg-green-500 rounded-full" />}
+                          <span className="truncate max-w-16">{facility.length > 8 ? facility.slice(0, 8) + '...' : facility}</span>
+                        </div>
+                      ))}
+                      {hotel.general_facilities.length > 3 && (
+                        <div className="text-xs text-blue-600 bg-blue-50 rounded-full px-1.5 py-0.5 border border-blue-100">
+                          +{hotel.general_facilities.length - 3}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -365,14 +402,15 @@ export default function RecommendedHotels() {
                   <div className="border-t border-gray-100 pt-2 mt-2">
                     {hotel.cheapest_room && (
                       <div className="text-right">
+                        <div className="text-xs text-gray-500 mb-1">эхлэх үнэ</div>
                         <div className="text-sm font-bold text-gray-900">
-                          ₮{formatPrice(hotel.cheapest_room.price_per_night)}
+                          ₮{formatPrice(hotel.cheapest_room.price_per_night)}-с
                         </div>
-                        <div className="text-xs text-gray-500">шөнөдөө</div>
                       </div>
                     )}
                   </div>
                 </div>
+                </Link>
               </motion.div>
             ))}
             </div>
@@ -388,6 +426,6 @@ export default function RecommendedHotels() {
           </div>
         )}
       </div>
-    </section>
+    </BackgroundGradientAnimation>
   );
 }

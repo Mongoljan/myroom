@@ -275,7 +275,7 @@ export default function SearchResults() {
   }
 
   return (
-    <div className="bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Professional Search Form Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -306,8 +306,8 @@ export default function SearchResults() {
       </div>
 
       {/* Main Results Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
           {/* Professional Filters Sidebar */}
           <div className="lg:w-80 flex-shrink-0">
             {/* Mobile Filter Button */}
@@ -389,71 +389,69 @@ export default function SearchResults() {
           {/* Professional Main Content */}
           <div className="flex-1 min-w-0">
             {/* Professional Search Results Header */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 mb-6 sm:mb-8">
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 lg:gap-6">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 mb-8">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 {/* Results Info */}
-                <div className="flex-1 space-y-4">
-                  <div className="space-y-3">
-                    <h1 className={`${TYPOGRAPHY.heading.h1} text-gray-900`}>
-                      {searchLocation ? `${searchLocation} дэх зочид буудлууд` : 'Зочид буудлууд'}
-                    </h1>
-                    
-                    {/* Search Details */}
-                    <div className="space-y-3">
-                      {checkIn && checkOut && (
-                        <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-2 sm:gap-4 text-sm">
-                          <div className="flex items-center gap-2 bg-blue-50 px-3 sm:px-4 py-2 rounded-full border border-blue-100">
-                            <MapPin className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                            <span className="font-medium text-blue-800">{checkIn} - {checkOut}</span>
-                          </div>
-                          <div className="flex items-center gap-2 bg-gray-50 px-3 sm:px-4 py-2 rounded-full">
-                            <span className="text-gray-800">
-                              {searchParams.get('adults') || '2'} том хүн
-                              {(searchParams.get('children') && parseInt(searchParams.get('children') || '0') > 0) && 
-                                `, ${searchParams.get('children')} хүүхэд`}
-                              {` • ${searchParams.get('rooms') || '1'} өрөө`}
-                            </span>
-                          </div>
+                <div className="flex-1">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                    {searchLocation ? `${searchLocation} дэх зочид буудлууд` : 'Зочид буудлууд'}
+                  </h1>
+                  
+                  {/* Search Details */}
+                  <div className="space-y-4">
+                    {checkIn && checkOut && (
+                      <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4">
+                        <div className="flex items-center gap-3 bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 rounded-xl border border-blue-200">
+                          <MapPin className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                          <span className="font-bold text-blue-800 text-base">{checkIn} - {checkOut}</span>
                         </div>
-                      )}
-                      
-                      {/* Results Count */}
-                      <div className="flex flex-wrap items-center gap-3 text-sm">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
-                          <span className="text-gray-900">
-                            <span className="font-bold text-lg text-green-600">{filteredHotels.length}</span> зочид буудал олдлоо
+                        <div className="flex items-center gap-3 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-3 rounded-xl border border-gray-200">
+                          <span className="text-gray-800 font-medium text-base">
+                            {searchParams.get('adults') || '2'} том хүн
+                            {(searchParams.get('children') && parseInt(searchParams.get('children') || '0') > 0) && 
+                              `, ${searchParams.get('children')} хүүхэд`}
+                            {` • ${searchParams.get('rooms') || '1'} өрөө`}
                           </span>
                         </div>
-                        {filteredHotels.length !== hotels.length && (
-                          <Badge variant="outline" className="text-xs whitespace-nowrap">
-                            {hotels.length}-с шүүгдсэн
-                          </Badge>
-                        )}
                       </div>
+                    )}
+                    
+                    {/* Results Count */}
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div className="flex items-center gap-3 bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 rounded-xl border border-green-200">
+                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
+                        <span className="text-gray-900 font-medium">
+                          <span className="font-bold text-xl text-green-600">{filteredHotels.length}</span> зочид буудал олдлоо
+                        </span>
+                      </div>
+                      {filteredHotels.length !== hotels.length && (
+                        <Badge variant="outline" className="text-sm font-medium px-3 py-1 bg-orange-50 text-orange-700 border-orange-200">
+                          {hotels.length}-с шүүгдсэн
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 {/* Professional Controls - Hidden on mobile, handled by mobile buttons above */}
-                <div className="hidden lg:flex flex-col lg:flex-row gap-4 lg:items-start">
+                <div className="hidden lg:flex flex-col lg:flex-row gap-6 lg:items-start">
                   {/* Sort and View Controls */}
-                  <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-4">
                     {/* Sort Dropdown */}
                     <div className="relative">
-                      <label className="block text-xs font-medium text-gray-900 mb-1">Эрэмбэлэх</label>
+                      <label className="block text-sm font-bold text-gray-900 mb-2">Эрэмбэлэх</label>
                       <select
                         value={sortBy}
                         onChange={(e) => handleSort(e.target.value)}
-                        className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2.5 pr-8 text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors shadow-sm min-w-[160px]"
+                        className="appearance-none bg-white border-2 border-gray-300 rounded-xl px-4 py-3 pr-10 text-base font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all shadow-lg min-w-[180px]"
                       >
                         <option value="price_low">Үнэ: бага → их</option>
                         <option value="price_high">Үнэ: их → бага</option>
                         <option value="rating">Үнэлгээгээр</option>
                         <option value="name">Нэрээр А-Я</option>
                       </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none mt-5">
-                        <svg className="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none mt-7">
+                        <svg className="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                       </div>
@@ -461,28 +459,28 @@ export default function SearchResults() {
 
                     {/* Professional View Toggle */}
                     <div className="hidden sm:block">
-                      <label className="block text-xs font-medium text-gray-900 mb-1">Харагдах арга</label>
-                      <div className="flex bg-gray-100 p-1 rounded-lg">
+                      <label className="block text-sm font-bold text-gray-900 mb-2">Харагдах арга</label>
+                      <div className="flex bg-gray-100 p-1.5 rounded-xl shadow-lg">
                         <button
                           onClick={() => setViewMode('grid')}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-base font-bold transition-all ${
                             viewMode === 'grid'
-                              ? 'bg-white text-blue-600 shadow-sm'
-                              : 'text-gray-800 hover:text-gray-900'
+                              ? 'bg-white text-blue-600 shadow-lg'
+                              : 'text-gray-800 hover:text-gray-900 hover:bg-gray-200'
                           }`}
                         >
-                          <Grid3X3 className="w-4 h-4" />
+                          <Grid3X3 className="w-5 h-5" />
                           <span>Грид</span>
                         </button>
                         <button
                           onClick={() => setViewMode('list')}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all ${
+                          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-base font-bold transition-all ${
                             viewMode === 'list'
-                              ? 'bg-white text-blue-600 shadow-sm'
-                              : 'text-gray-800 hover:text-gray-900'
+                              ? 'bg-white text-blue-600 shadow-lg'
+                              : 'text-gray-800 hover:text-gray-900 hover:bg-gray-200'
                           }`}
                         >
-                          <List className="w-4 h-4" />
+                          <List className="w-5 h-5" />
                           <span>Жагсаалт</span>
                         </button>
                       </div>
@@ -508,8 +506,8 @@ export default function SearchResults() {
             {/* Professional Results Layout */}
             <div className={`
               ${viewMode === 'grid'
-                ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6'
-                : 'space-y-4 sm:space-y-5'
+                ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6 sm:gap-8'
+                : 'space-y-6 sm:space-y-8'
               }
             `}>
               {filteredHotels.map((hotel, index) => (
@@ -517,8 +515,11 @@ export default function SearchResults() {
                   key={hotel.hotel_id} 
                   className="group"
                   style={{
-                    animationDelay: `${index * 50}ms`,
-                    animation: 'fadeInUp 0.6s ease-out forwards'
+                    animationName: 'fadeInUp',
+                    animationDuration: '0.6s',
+                    animationTimingFunction: 'ease-out',
+                    animationFillMode: 'forwards',
+                    animationDelay: `${index * 50}ms`
                   }}
                 >
                   <HotelCard

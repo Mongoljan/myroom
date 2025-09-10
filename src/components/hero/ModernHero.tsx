@@ -613,8 +613,8 @@ export default function ModernHero() {
                     }}
                     className="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium text-sm"
                   >
-                    <Search className="w-5 h-5" />
-                    <span className="hidden xl:inline font-semibold tracking-wide">{t('search.searchButton')}</span>
+                    <Search className="w-5 h-5 text-xl" />
+                    <span className="hidden text-[18px] xl:inline font-semibold tracking-wide">{t('search.searchButton')}</span>
                   </motion.button>
                 </div>
                 </div>

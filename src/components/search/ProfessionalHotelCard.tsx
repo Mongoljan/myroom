@@ -204,8 +204,9 @@ export default function ProfessionalHotelCard({ hotel, viewMode }: ProfessionalH
                 
                 {/* Price */}
                 <div className="text-right">
+                  <div className="text-xs text-slate-500 mb-1">эхлэх үнэ</div>
                   <div className="text-2xl font-bold text-slate-900">
-                    {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : 'N/A'}
+                    {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : 'N/A'}-с
                   </div>
                   <div className="text-sm text-slate-500">per night</div>
                 </div>
@@ -399,15 +400,18 @@ export default function ProfessionalHotelCard({ hotel, viewMode }: ProfessionalH
             boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)"
           }}
         >
-          <motion.div 
-            className="text-lg font-bold text-slate-900"
-            animate={{ 
-              textShadow: ["0 0 0px rgba(59, 130, 246, 0)", "0 0 8px rgba(59, 130, 246, 0.3)", "0 0 0px rgba(59, 130, 246, 0)"]
-            }}
-            transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-          >
-            {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : 'N/A'}
-          </motion.div>
+          <div className="text-center">
+            <div className="text-xs text-slate-500">эхлэх үнэ</div>
+            <motion.div 
+              className="text-lg font-bold text-slate-900"
+              animate={{ 
+                textShadow: ["0 0 0px rgba(59, 130, 246, 0)", "0 0 8px rgba(59, 130, 246, 0.3)", "0 0 0px rgba(59, 130, 246, 0)"]
+              }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+            >
+              {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : 'N/A'}-с
+            </motion.div>
+          </div>
         </motion.div>
       </div>
 
@@ -502,8 +506,9 @@ export default function ProfessionalHotelCard({ hotel, viewMode }: ProfessionalH
             </div>
           )}
           <div className="text-right">
+            <div className="text-xs text-slate-500 mb-1">эхлэх үнэ</div>
             <div className="text-lg font-bold text-slate-900">
-              {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : 'N/A'}
+              {hotel.cheapest_room ? formatPrice(hotel.cheapest_room.price_per_night) : 'N/A'}-с
             </div>
             <div className="text-xs text-slate-500">per night</div>
           </div>

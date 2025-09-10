@@ -48,7 +48,7 @@ export default function PopularDestinations() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">Алдартай газрууд</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">Алдартай байршлууд</h2>
             <p className="text-sm text-gray-600">Монгол орны хамгийн алдартай аялалын газрууд</p>
           </div>
         </div>
