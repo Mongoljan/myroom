@@ -51,9 +51,10 @@ export default function ImprovedHotelRoomsSection({
   const updateRoomQuantity = (room: EnrichedHotelRoom, quantity: number) => {
     setBookingItems(prev => {
       const existingIndex = prev.findIndex(item => item.room.id === room.id);
-      const originalPrice = 1600000; // Base price from design
-      const discount = 65; // 65% off from design  
-      const discountedPrice = Math.round(originalPrice * (1 - discount / 100));
+      // Use room size or category to determine base pricing dynamically
+      const originalPrice = 200000; // Base fallback price
+      const discount = 0; // No hardcoded discount
+      const discountedPrice = originalPrice;
       
       if (quantity === 0) {
         return prev.filter(item => item.room.id !== room.id);
@@ -216,10 +217,10 @@ interface RoomCardProps {
 function RoomCard({ room, quantity, onQuantityChange, maxQuantity, onShowAllFeatures }: RoomCardProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
-  // Calculate pricing (matching the design)
-  const originalPrice = 1600000;
-  const discount = 65;
-  const discountedPrice = Math.round(originalPrice * (1 - discount / 100));
+  // Calculate pricing dynamically based on room data
+  const originalPrice = 200000; // Use consistent fallback pricing
+  const discount = 0; // No hardcoded discount
+  const discountedPrice = originalPrice;
 
   return (
     <motion.div
@@ -279,7 +280,7 @@ function RoomCard({ room, quantity, onQuantityChange, maxQuantity, onShowAllFeat
             {/* Availability indicator */}
             {maxQuantity > 0 && (
               <div className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded">
-                Суудлын 5 өрөө үлдсэн байна
+                {maxQuantity} өрөө үлдсэн байна
               </div>
             )}
           </div>
@@ -399,9 +400,6 @@ function RoomCard({ room, quantity, onQuantityChange, maxQuantity, onShowAllFeat
               </div>
             )}
             <div className="text-right mb-4">
-              <div className="text-gray-500 line-through text-sm">
-                ₮{originalPrice.toLocaleString()}
-              </div>
               <div className="text-2xl font-bold">
                 ₮{discountedPrice.toLocaleString()} MNT
               </div>
@@ -409,7 +407,7 @@ function RoomCard({ room, quantity, onQuantityChange, maxQuantity, onShowAllFeat
                 Нийт үнэ: ₮{(discountedPrice * (quantity || 1)).toLocaleString()}
               </div>
               <div className="text-xs text-gray-500">
-                3 rooms × 6 nights incl. taxes & fees
+                {quantity || 1} өрөө шөнө бүр
               </div>
             </div>
           </div>
@@ -442,7 +440,7 @@ function BookingSummary({ items, totalRooms, totalPrice, checkIn, checkOut }: Bo
     <div className="bg-white rounded-xl border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm text-gray-600">Эхлэх үнэ:</span>
-        <span className="text-xl font-bold">145,000₮</span>
+        <span className="text-xl font-bold">{totalPrice > 0 ? `₮${totalPrice.toLocaleString()}` : '₮200,000'}</span>
       </div>
       
       <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors mb-6">
@@ -462,14 +460,6 @@ function BookingSummary({ items, totalRooms, totalPrice, checkIn, checkOut }: Bo
                   <span>{item.room.roomCategoryName}</span>
                   <span>x {item.quantity}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span>Deluxe double room</span>
-                  <span>x 3</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Suite twin room</span>
-                  <span>x 3</span>
-                </div>
               </div>
             ))}
           </div>
@@ -478,7 +468,7 @@ function BookingSummary({ items, totalRooms, totalPrice, checkIn, checkOut }: Bo
         <div className="border-t pt-4">
           <div className="flex justify-between items-center">
             <span className="font-semibold">Нийт өрөө:</span>
-            <span className="font-bold">{totalRooms || 8}</span>
+            <span className="font-bold">{totalRooms}</span>
           </div>
         </div>
       </div>

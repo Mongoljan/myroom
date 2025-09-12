@@ -3,13 +3,12 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { MapPin, Wifi, Car, Utensils, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { SearchHotelResult } from '@/types/api';
 import TextHoverEffect from '@/components/aceternity/TextHoverEffect';
 import PointerHighlight from '@/components/aceternity/PointerHighlight';
-import BackgroundGradientAnimation from '@/components/aceternity/BackgroundGradientAnimation';
 
 interface CategorizedHotel extends SearchHotelResult {
   category: 'popular' | 'discounted' | 'highly_rated' | 'cheapest' | 'newly_added';
@@ -199,17 +198,9 @@ export default function RecommendedHotels() {
     setActiveFilter(filter);
   };
 
-  const facilityIcons: { [key: string]: React.ReactNode } = {
-    'Free Wi-Fi': <Wifi className="w-4 h-4 text-green-600" />,
-    'Free WiFi': <Wifi className="w-4 h-4 text-green-600" />,
-    'Parking': <Car className="w-4 h-4 text-blue-600" />,
-    'Restaurant': <Utensils className="w-4 h-4 text-orange-600" />,
-    'Fitness Center': <Users className="w-4 h-4 text-red-600" />,
-  }; 
-
   return (
-    <BackgroundGradientAnimation className="py-4" containerClassName="relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section className="py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-xl font-bold text-gray-900 mb-1">Санал болгох</h2>
@@ -320,11 +311,11 @@ export default function RecommendedHotels() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="w-[260px] sm:w-[280px] flex-shrink-0"
+                className="min-w-[280px] flex-shrink-0"
               >
                 <Link 
                   href={`/hotel/${hotel.hotel_id}`}
-                  className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 block hover:shadow-lg"
+                  className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 hover:shadow-lg block"
                 >
                 {/* Hotel Image */}
                 <div className="relative h-36 overflow-hidden">
@@ -357,48 +348,27 @@ export default function RecommendedHotels() {
 
                 {/* Hotel Info */}
                 <div className="p-3">
-                  <h3 className="text-sm font-semibold text-gray-900 line-clamp-1 mb-1">
-                    <TextHoverEffect duration={0.2}>
-                      {hotel.property_name}
-                    </TextHoverEffect>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                    {hotel.property_name}
                   </h3>
                   
                   <div className="flex items-center text-gray-500 mb-2">
-                    <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                    <MapPin className="w-3 h-3 mr-1" />
                     <span className="text-xs line-clamp-1">{hotel.location.province_city}</span>
                   </div>
 
                   {/* Rating */}
-                  <div className="flex items-center mb-2">
-                    <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-xs font-medium mr-1">
-                      {hotel.rating_stars.value}
-                    </div>
-                    <span className="text-xs text-gray-500">
-                      {hotel.rating_stars.label?.replace(/\d+\s*stars?/i, '').trim() || 'үнэлгээ'}
-                    </span>
-                  </div>
-
-                  {/* Real Amenities */}
-                  <div className="mb-2">
-                    <div className="flex flex-wrap gap-1">
-                      {hotel.general_facilities.slice(0, 3).map((facility, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center gap-0.5 text-xs text-green-600 bg-green-50 rounded-full px-1.5 py-0.5 border border-green-100"
-                        >
-                          {facilityIcons[facility] || <div className="w-2 h-2 bg-green-500 rounded-full" />}
-                          <span className="truncate max-w-16">{facility.length > 8 ? facility.slice(0, 8) + '...' : facility}</span>
-                        </div>
-                      ))}
-                      {hotel.general_facilities.length > 3 && (
-                        <div className="text-xs text-blue-600 bg-blue-50 rounded-full px-1.5 py-0.5 border border-blue-100">
-                          +{hotel.general_facilities.length - 3}
-                        </div>
-                      )}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center">
+                      <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-xs font-medium mr-1">
+                        {hotel.rating_stars.value}
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        {hotel.rating_stars.label?.replace(/\d+\s*stars?/i, '').trim() || 'үнэлгээ'}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Price */}
                   <div className="border-t border-gray-100 pt-2 mt-2">
                     {hotel.cheapest_room && (
                       <div className="text-right">
@@ -426,6 +396,6 @@ export default function RecommendedHotels() {
           </div>
         )}
       </div>
-    </BackgroundGradientAnimation>
+    </section>
   );
 }

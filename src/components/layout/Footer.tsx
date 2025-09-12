@@ -44,36 +44,34 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Hotel Services */}
+          {/* БИДНИЙ ТУХАЙ */}
           <div>
-            <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>{t('navigation.hotels', 'ЗОЧИД БУУДАЛ').toUpperCase()}</h4>
+            <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>БИДНИЙ ТУХАЙ</h4>
             <ul className="space-y-3 text-gray-300">
-              <li><Link href="/hotels" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('hotel.search', 'Зочид буудал хайх')}</Link></li>
-              <li><Link href="/offers" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.specialOffers', 'Онцгой санал')}</Link></li>
-              <li><Link href="/destinations" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('navigation.destinations', 'Аялах газар')}</Link></li>
-              <li><Link href="/reviews" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('hotel.reviews', 'Үнэлгээ сэтгэгдэл')}</Link></li>
+              <li><Link href="/about" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Танилцуулга</Link></li>
+              <li><Link href="/terms" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Үйлчилгээний нөхцөл</Link></li>
+              <li><Link href="/privacy" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Нууцлалын бодлого</Link></li>
+              <li><Link href="/logo-download" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Лого татаж авах</Link></li>
             </ul>
           </div>
 
-          {/* Customer Support */}
+          {/* ТУСЛАМЖ */}
           <div>
-            <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>{t('footer.support', 'ТУСЛАМЖ').toUpperCase()}</h4>
+            <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>ТУСЛАМЖ</h4>
             <ul className="space-y-3 text-gray-300">
-              <li><Link href="/help" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.helpCenter', 'Тусламжийн төв')}</Link></li>
-              <li><Link href="/contact" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('navigation.contact', 'Холбоо барих')}</Link></li>
-              <li><Link href="/cancellation" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.cancellationPolicy', 'Цуцлах бодлого')}</Link></li>
-              <li><Link href="/faq" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('faq.title', 'Түгээмэл асуулт')}</Link></li>
+              <li><Link href="/guide" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Заавар</Link></li>
+              <li><Link href="/info" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Мэдээлэл</Link></li>
+              <li><Link href="/faq" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Түгээмэл асуулт, хариулт</Link></li>
+              <li><Link href="/feedback" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Санал, хүсэлт</Link></li>
             </ul>
           </div>
 
-          {/* About */}
+          {/* ХАМТАРЧ АЖИЛЛАХ */}
           <div>
-            <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>{t('footer.aboutUs', 'БИДНИЙ ТУХАЙ').toUpperCase()}</h4>
+            <h4 className={`${TYPOGRAPHY.heading.h3} mb-6`}>ХАМТАРЧ АЖИЛЛАХ</h4>
             <ul className="space-y-3 text-gray-300">
-              <li><Link href="/about" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.aboutUs', 'Компанийн тухай')}</Link></li>
-              <li><Link href="/careers" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.careers', 'Ажлын байр')}</Link></li>
-              <li><Link href="/partners" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.partners', 'Хамтрагч байгууллага')}</Link></li>
-              <li><Link href="/blog" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>{t('footer.blog', 'Блог мэдээлэл')}</Link></li>
+              <li><Link href="/pms" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Өрөө удирдлагын систем</Link></li>
+              <li><Link href="/register" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors`}>Бүртгүүлэх / Нэвтрэх</Link></li>
             </ul>
           </div>
         </div>

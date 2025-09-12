@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Filter, MapPin, Grid3X3, List } from 'lucide-react';
 import { TYPOGRAPHY } from '@/styles/containers';
-import HotelCard from './HotelCard';
+import BookingStyleHotelCard from './BookingStyleHotelCard';
 import SearchFilters from './SearchFilters';
 import HotelSearchForm from './HotelSearchForm';
 import { ApiService } from '@/services/api';
@@ -26,7 +26,7 @@ export default function SearchResults() {
   const [filteredHotels, setFilteredHotels] = useState<SearchHotelResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(true);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list'); // Default to list view
   const [sortBy, setSortBy] = useState('price_low');
   const [filters] = useState<FilterState>({
     priceRange: [50000, 500000],
@@ -203,9 +203,9 @@ export default function SearchResults() {
 
   if (loading) {
     return (
-      <div className="bg-gray-50">
+      <div className="bg-white">
         {/* Header Skeleton */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="animate-pulse">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -223,7 +223,7 @@ export default function SearchResults() {
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             {/* Loading Filters Sidebar */}
             <div className="lg:w-80 flex-shrink-0">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <Skeleton className="h-6 w-24 mb-4" />
                 <div className="space-y-4">
                   <Skeleton className="h-4 w-full" />
@@ -240,7 +240,7 @@ export default function SearchResults() {
             {/* Loading Main Content */}
             <div className="flex-1 min-w-0">
               {/* Loading Header */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+              <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
                 <Skeleton className="h-8 w-64 mb-4" />
                 <div className="flex gap-4 mb-4">
                   <Skeleton className="h-8 w-32" />
@@ -252,7 +252,7 @@ export default function SearchResults() {
               {/* Loading Hotel Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6">
                 {[...Array(6)].map((_, index) => (
-                  <div key={index} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                  <div key={index} className="bg-white rounded-xl border border-gray-200 p-4">
                     <Skeleton className="h-48 w-full rounded-xl mb-4" />
                     <Skeleton className="h-6 w-3/4 mb-2" />
                     <Skeleton className="h-4 w-1/2 mb-3" />
@@ -275,30 +275,30 @@ export default function SearchResults() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Professional Search Form Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      {/* Compact Search Form Header */}
+      <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <HotelSearchForm />
         </div>
       </div>
 
-      {/* Breadcrumb Navigation */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center text-sm text-gray-800 overflow-x-auto">
+      {/* Compact Breadcrumb Navigation */}
+      <div className="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 border-b border-blue-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <div className="flex items-center text-xs text-gray-600 overflow-x-auto">
             <button 
               onClick={() => window.location.href = '/'}
-              className={`hover:text-blue-600 transition-colors whitespace-nowrap ${TYPOGRAPHY.nav.secondary}`}
+              className="hover:text-blue-600 transition-colors whitespace-nowrap"
             >
               Нүүр хуудас
             </button>
-            <span className="mx-2 text-gray-900">→</span>
-            <span className={`whitespace-nowrap ${TYPOGRAPHY.nav.secondary}`}>Хайлт</span>
+            <span className="mx-1 text-gray-400">→</span>
+            <span className="whitespace-nowrap">Хайлт</span>
             {searchLocation && (
               <>
-                <span className="mx-2 text-gray-900">→</span>
-                <span className={`text-gray-900 whitespace-nowrap ${TYPOGRAPHY.nav.primary}`}>{searchLocation}</span>
+                <span className="mx-1 text-gray-400">→</span>
+                <span className="text-gray-800 whitespace-nowrap font-medium">{searchLocation}</span>
               </>
             )}
           </div>
@@ -306,21 +306,22 @@ export default function SearchResults() {
       </div>
 
       {/* Main Results Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
-          {/* Professional Filters Sidebar */}
-          <div className="lg:w-80 flex-shrink-0">
+      <div className="bg-gradient-to-b from-white/80 to-gray-50/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Compact Filters Sidebar */}
+          <div className="lg:w-72 flex-shrink-0">
             {/* Mobile Filter Button */}
-            <div className="lg:hidden mb-6">
-              <div className="flex gap-3">
+            <div className="lg:hidden mb-4">
+              <div className="flex gap-2">
                 <button
                   onClick={() => setShowFilters(true)}
-                  className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors shadow-sm group"
+                  className="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
                 >
-                  <Filter className="w-5 h-5 text-gray-800 group-hover:text-blue-600 transition-colors" />
-                  <span className={`${TYPOGRAPHY.button.standard} group-hover:text-blue-600 transition-colors`}>Шүүлтүүр</span>
+                  <Filter className="w-4 h-4 text-gray-600" />
+                  <span className="text-sm font-medium">Шүүлтүүр</span>
                   {(filters.starRating.length > 0 || filters.facilities.length > 0 || filters.roomTypes.length > 0) && (
-                    <Badge variant="default" className="w-5 h-5 rounded-full p-0 text-xs font-bold flex items-center justify-center">
+                    <Badge variant="default" className="w-4 h-4 rounded-full p-0 text-xs font-bold flex items-center justify-center">
                       {filters.starRating.length + filters.facilities.length + filters.roomTypes.length}
                     </Badge>
                   )}
@@ -331,7 +332,7 @@ export default function SearchResults() {
                   <select
                     value={sortBy}
                     onChange={(e) => handleSort(e.target.value)}
-                    className={`appearance-none bg-white border border-gray-200 rounded-xl px-4 py-3 pr-8 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 transition-colors shadow-sm ${TYPOGRAPHY.form.input}`}
+                    className="appearance-none bg-white border border-gray-200 rounded-lg px-3 py-2 pr-6 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 transition-colors"
                   >
                     <option value="price_low">Бага үнэ</option>
                     <option value="price_high">Өндөр үнэ</option>
@@ -339,7 +340,7 @@ export default function SearchResults() {
                     <option value="name">Нэр</option>
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
@@ -347,29 +348,29 @@ export default function SearchResults() {
               </div>
               
               {/* Mobile View Toggle */}
-              <div className="flex justify-center mt-4">
-                <div className="flex bg-gray-100 p-1 rounded-lg">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                      viewMode === 'grid'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-800'
-                    }`}
-                  >
-                    <Grid3X3 className="w-4 h-4" />
-                    <span>Грид</span>
-                  </button>
+              <div className="flex justify-center mt-3">
+                <div className="flex bg-gray-100 p-0.5 rounded">
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-medium transition-all ${
                       viewMode === 'list'
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-800'
+                        ? 'bg-white text-blue-600 border border-blue-200'
+                        : 'text-gray-700'
                     }`}
                   >
-                    <List className="w-4 h-4" />
+                    <List className="w-3 h-3" />
                     <span>Жагсаалт</span>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                      viewMode === 'grid'
+                        ? 'bg-white text-blue-600 border border-blue-200'
+                        : 'text-gray-700'
+                    }`}
+                  >
+                    <Grid3X3 className="w-3 h-3" />
+                    <span>Грид</span>
                   </button>
                 </div>
               </div>
@@ -386,27 +387,30 @@ export default function SearchResults() {
             </div>
           </div>
 
-          {/* Professional Main Content */}
+          {/* Main Content */}
           <div className="flex-1 min-w-0">
-            {/* Professional Search Results Header */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 mb-8">
+            {/* Compact Search Results Header */}
+            <div className="bg-white/90 backdrop-blur-sm rounded-lg border border-gray-200 shadow-sm p-6 mb-6 relative overflow-hidden">
+              {/* Subtle gradient background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-50/30 via-transparent to-purple-50/30 pointer-events-none"></div>
+              <div className="relative">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 {/* Results Info */}
                 <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                  <h1 className="text-lg font-semibold text-gray-900 mb-2">
                     {searchLocation ? `${searchLocation} дэх зочид буудлууд` : 'Зочид буудлууд'}
                   </h1>
                   
-                  {/* Search Details */}
-                  <div className="space-y-4">
+                  {/* Compact Search Details */}
+                  <div className="space-y-2">
                     {checkIn && checkOut && (
-                      <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center gap-3 sm:gap-4">
-                        <div className="flex items-center gap-3 bg-gradient-to-r from-blue-50 to-blue-100 px-4 py-3 rounded-xl border border-blue-200">
-                          <MapPin className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                          <span className="font-bold text-blue-800 text-base">{checkIn} - {checkOut}</span>
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-lg">
+                          <MapPin className="w-3 h-3 text-blue-600" />
+                          <span className="text-blue-900 font-medium">{checkIn} - {checkOut}</span>
                         </div>
-                        <div className="flex items-center gap-3 bg-gradient-to-r from-gray-50 to-gray-100 px-4 py-3 rounded-xl border border-gray-200">
-                          <span className="text-gray-800 font-medium text-base">
+                        <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-lg">
+                          <span className="text-gray-700 font-medium">
                             {searchParams.get('adults') || '2'} том хүн
                             {(searchParams.get('children') && parseInt(searchParams.get('children') || '0') > 0) && 
                               `, ${searchParams.get('children')} хүүхэд`}
@@ -416,16 +420,13 @@ export default function SearchResults() {
                       </div>
                     )}
                     
-                    {/* Results Count */}
-                    <div className="flex flex-wrap items-center gap-4">
-                      <div className="flex items-center gap-3 bg-gradient-to-r from-green-50 to-green-100 px-4 py-3 rounded-xl border border-green-200">
-                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse flex-shrink-0"></div>
-                        <span className="text-gray-900 font-medium">
-                          <span className="font-bold text-xl text-green-600">{filteredHotels.length}</span> зочид буудал олдлоо
-                        </span>
-                      </div>
+                    {/* Compact Results Count */}
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-gray-600">
+                        <span className="font-semibold text-sm text-gray-900">{filteredHotels.length}</span> зочид буудал олдлоо
+                      </span>
                       {filteredHotels.length !== hotels.length && (
-                        <Badge variant="outline" className="text-sm font-medium px-3 py-1 bg-orange-50 text-orange-700 border-orange-200">
+                        <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
                           {hotels.length}-с шүүгдсэн
                         </Badge>
                       )}
@@ -433,81 +434,66 @@ export default function SearchResults() {
                   </div>
                 </div>
 
-                {/* Professional Controls - Hidden on mobile, handled by mobile buttons above */}
-                <div className="hidden lg:flex flex-col lg:flex-row gap-6 lg:items-start">
-                  {/* Sort and View Controls */}
-                  <div className="flex flex-wrap items-center gap-4">
-                    {/* Sort Dropdown */}
-                    <div className="relative">
-                      <label className="block text-sm font-bold text-gray-900 mb-2">Эрэмбэлэх</label>
-                      <select
-                        value={sortBy}
-                        onChange={(e) => handleSort(e.target.value)}
-                        className="appearance-none bg-white border-2 border-gray-300 rounded-xl px-4 py-3 pr-10 text-base font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-all shadow-lg min-w-[180px]"
-                      >
-                        <option value="price_low">Үнэ: бага → их</option>
-                        <option value="price_high">Үнэ: их → бага</option>
-                        <option value="rating">Үнэлгээгээр</option>
-                        <option value="name">Нэрээр А-Я</option>
-                      </select>
-                      <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none mt-7">
-                        <svg className="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
-                    </div>
-
-                    {/* Professional View Toggle */}
-                    <div className="hidden sm:block">
-                      <label className="block text-sm font-bold text-gray-900 mb-2">Харагдах арга</label>
-                      <div className="flex bg-gray-100 p-1.5 rounded-xl shadow-lg">
-                        <button
-                          onClick={() => setViewMode('grid')}
-                          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-base font-bold transition-all ${
-                            viewMode === 'grid'
-                              ? 'bg-white text-blue-600 shadow-lg'
-                              : 'text-gray-800 hover:text-gray-900 hover:bg-gray-200'
-                          }`}
-                        >
-                          <Grid3X3 className="w-5 h-5" />
-                          <span>Грид</span>
-                        </button>
-                        <button
-                          onClick={() => setViewMode('list')}
-                          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-base font-bold transition-all ${
-                            viewMode === 'list'
-                              ? 'bg-white text-blue-600 shadow-lg'
-                              : 'text-gray-800 hover:text-gray-900 hover:bg-gray-200'
-                          }`}
-                        >
-                          <List className="w-5 h-5" />
-                          <span>Жагсаалт</span>
-                        </button>
-                      </div>
+                {/* Compact Controls - Hidden on mobile */}
+                <div className="hidden lg:flex items-center gap-3">
+                  {/* Compact Sort Dropdown */}
+                  <div className="relative">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Эрэмбэлэх</label>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => handleSort(e.target.value)}
+                      className="appearance-none bg-white border border-gray-300 rounded px-3 py-2 pr-8 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[140px]"
+                    >
+                      <option value="price_low">Үнэ: бага → их</option>
+                      <option value="price_high">Үнэ: их → бага</option>
+                      <option value="rating">Үнэлгээгээр</option>
+                      <option value="name">Нэрээр А-Я</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none mt-4">
+                      <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     </div>
                   </div>
 
-                  {/* Quick Filters - Desktop only */}
-                  <div className="hidden xl:flex flex-wrap gap-2">
-                    <Badge variant="secondary" className="cursor-pointer hover:bg-blue-100 hover:text-blue-700 transition-colors">
-                      Өнөөдөр хямдрал
-                    </Badge>
-                    <Badge variant="outline" className="cursor-pointer hover:bg-green-100 hover:text-green-700 transition-colors">
-                      5 од зочид буудал
-                    </Badge>
-                    <Badge variant="secondary" className="cursor-pointer hover:bg-purple-100 hover:text-purple-700 transition-colors">
-                      Wi-Fi үнэгүй
-                    </Badge>
+                  {/* Compact View Toggle */}
+                  <div className="hidden sm:block">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Харагдах арга</label>
+                    <div className="flex bg-gray-100 p-0.5 rounded">
+                      <button
+                        onClick={() => setViewMode('list')}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm font-medium transition-all ${
+                          viewMode === 'list'
+                            ? 'bg-white text-blue-600 border border-blue-200'
+                            : 'text-gray-700 hover:text-gray-900'
+                        }`}
+                      >
+                        <List className="w-4 h-4" />
+                        <span>Жагсаалт</span>
+                      </button>
+                      <button
+                        onClick={() => setViewMode('grid')}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm font-medium transition-all ${
+                          viewMode === 'grid'
+                            ? 'bg-white text-blue-600 border border-blue-200'
+                            : 'text-gray-700 hover:text-gray-900'
+                        }`}
+                      >
+                        <Grid3X3 className="w-4 h-4" />
+                        <span>Грид</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
+              </div>
             </div>
 
-            {/* Professional Results Layout */}
+            {/* Compact Results Layout */}
             <div className={`
               ${viewMode === 'grid'
-                ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6 sm:gap-8'
-                : 'space-y-6 sm:space-y-8'
+                ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 auto-rows-fr'
+                : 'space-y-3'
               }
             `}>
               {filteredHotels.map((hotel, index) => (
@@ -522,11 +508,10 @@ export default function SearchResults() {
                     animationDelay: `${index * 50}ms`
                   }}
                 >
-                  <HotelCard
+                  <BookingStyleHotelCard
                     hotel={hotel}
                     searchParams={searchParams}
                     viewMode={viewMode}
-                    index={index}
                   />
                 </div>
               ))}
@@ -549,7 +534,7 @@ export default function SearchResults() {
             {/* Professional Pagination */}
             {filteredHotels.length > 12 && (
               <div className="mt-12">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div className="bg-white rounded-xl border border-gray-200 p-6">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                     {/* Results info */}
                     <div className="text-sm text-gray-800">
@@ -571,7 +556,7 @@ export default function SearchResults() {
                             key={i}
                             className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${
                               page === 1
-                                ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700'
+                                ? 'bg-blue-600 text-white hover:bg-blue-700'
                                 : 'text-gray-900 hover:bg-gray-100 hover:text-blue-600'
                             }`}
                           >
@@ -594,10 +579,10 @@ export default function SearchResults() {
 
             {/* Professional No Results State */}
             {filteredHotels.length === 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-16 text-center">
+              <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
                 <div className="max-w-lg mx-auto">
                   <div className="relative mb-8">
-                    <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
                       <MapPin className="w-12 h-12 text-blue-600" />
                     </div>
                     <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-blue-50 rounded-full -z-10 animate-pulse"></div>
@@ -622,7 +607,7 @@ export default function SearchResults() {
                           // Clear filters logic would go here
                           console.log('Clear filters');
                         }}
-                        className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                        className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200"
                       >
                         Шүүлтүүр тайлах
                       </button>
@@ -631,14 +616,14 @@ export default function SearchResults() {
                           // Navigate to new search
                           window.location.href = '/';
                         }}
-                        className="px-6 py-3 border border-gray-300 text-gray-900 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+                        className="px-6 py-3 border border-gray-300 text-gray-900 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
                       >
                         Шинэ хайлт хийх
                       </button>
                     </div>
                     
                     {/* Popular destinations suggestion */}
-                    <div className="pt-4 border-t border-gray-100">
+                    <div className="pt-4 border-t border-gray-200">
                       <p className="text-sm text-gray-800 mb-3">Алдартай хотод хайлт хийээрэй:</p>
                       <div className="flex flex-wrap gap-2 justify-center">
                         {['Улаанбаатар', 'Мөрөн', 'Эрдэнэт'].map((city) => (
@@ -673,6 +658,7 @@ export default function SearchResults() {
           onFilterChange={handleFilterChange}
         />
       </div>
-    </div>
+        </div>
+      </div>
   );
 }

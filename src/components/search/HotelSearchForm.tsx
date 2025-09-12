@@ -1,12 +1,14 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Search, X, Clock, Hotel } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import CustomGuestSelector from './CustomGuestSelector';
 import DateRangePicker from '@/components/common/DateRangePicker';
+import SearchFormContainer from './SearchFormContainer';
+import LocationInput from './LocationInput';
+import LocationSuggestionsModal from './LocationSuggestionsModal';
+import SearchButton from './SearchButton';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { locationService, type LocationSuggestion } from '@/services/locationApi';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
@@ -127,6 +129,10 @@ export default function HotelSearchForm() {
     setRooms(newRooms);
   };
 
+  const handleLocationFocus = () => {
+    setShowLocationSuggestions(true);
+  };
+
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -143,148 +149,74 @@ export default function HotelSearchForm() {
   return (
     <div className="w-full">
       <div className="max-w-6xl mx-auto">
-        <form onSubmit={handleSearch} className="bg-white rounded-xl shadow-xl border border-blue-200/20 overflow-hidden backdrop-blur-sm">
-          <div className="grid grid-cols-1 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
-            
-            {/* Location Input */}
-            <div ref={locationRef} className="relative p-6 hover:bg-gray-50/50 transition-colors">
-              <div className="flex items-center w-full">
-                <div className="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                  <MapPin className="w-5 h-5 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-sm font-semibold text-gray-800 mb-1">
-                    {t('search.destination', 'Хаашаа')}
-                  </label>
-                  <input
-                    ref={locationInputRef}
-                    type="text"
-                    value={destination}
-                    onChange={(e) => handleLocationSearch(e.target.value)}
-                    placeholder={t('search.destinationPlaceholder', 'Хот, дүүрэг оруулна уу')}
-                    className="w-full text-base text-gray-900 placeholder-gray-500 bg-transparent border-none outline-none font-medium"
-                  />
-                </div>
-                {destination && (
-                  <button
-                    type="button"
-                    onClick={clearLocationSearch}
-                    className="text-gray-400 hover:text-gray-600 ml-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
+        <SearchFormContainer>
+          <form onSubmit={handleSearch}>
+            <div 
+              className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200" 
+              style={{ overflow: 'visible' }}
+            >
+              {/* Location Input */}
+              <div ref={locationRef}>
+                <LocationInput
+                  destination={destination}
+                  locationInputRef={locationInputRef}
+                  onLocationChange={handleLocationSearch}
+                  onLocationClear={clearLocationSearch}
+                  onLocationFocus={handleLocationFocus}
+                />
               </div>
-            </div>
 
-            {/* Date Range Picker */}
-            <div className="p-6 hover:bg-gray-50/50 transition-colors">
-              <div className="flex items-center w-full">
-                <div className="flex-shrink-0 w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                  <Calendar className="w-5 h-5 text-green-600" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-sm font-semibold text-gray-800 mb-1">
-                    {t('search.checkInOut', 'Хугацаа')}
-                  </label>
-                  <DateRangePicker
-                    checkIn={checkIn}
-                    checkOut={checkOut}
-                    onDateChange={(newCheckIn, newCheckOut) => {
-                      setCheckIn(newCheckIn);
-                      setCheckOut(newCheckOut);
-                    }}
-                    placeholder={t('search.selectDates', 'Огноо сонгох')}
-                    minimal={true}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Guests */}
-            <div className="p-6 hover:bg-gray-50/50 transition-colors">
-              <CustomGuestSelector
-                adults={adults}
-                childrenCount={children}
-                rooms={rooms}
-                onGuestChange={handleGuestChange}
-              />
-            </div>
-
-            {/* Search Button */}
-            <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50">
-              <button
-                type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 rounded-xl font-bold text-base transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 hover:scale-105"
-              >
-                <Search className="w-6 h-6" />
-                <span>{t('search.searchButton', 'Хайх')}</span>
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-
-      {/* Location Suggestions Modal - Portal */}
-      {isClient && showLocationSuggestions && typeof document !== 'undefined' && createPortal(
-        <AnimatePresence>
-          <motion.div
-            ref={locationDropdownRef}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            className="fixed z-[9999] bg-white rounded-xl shadow-xl border border-gray-200 max-h-80 overflow-y-auto"
-            style={{
-              top: locationRef.current ? locationRef.current.getBoundingClientRect().bottom + 8 : 0,
-              left: locationRef.current ? locationRef.current.getBoundingClientRect().left : 0,
-              width: locationRef.current ? locationRef.current.getBoundingClientRect().width : 300,
-              minWidth: '300px',
-            }}
-          >
-            {isLoadingSuggestions ? (
-              <div className="flex items-center justify-center py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">{t('search.searching', 'Хайж байна...')}</span>
-              </div>
-            ) : locationSuggestions.length > 0 ? (
-              <div className="py-2">
-                {locationSuggestions.slice(0, 8).map((suggestion, index) => (
-                  <motion.button
-                    key={`${suggestion.type}-${suggestion.name}-${index}`}
-                    onClick={() => handleLocationSelect(suggestion)}
-                    className="w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center"
-                    whileHover={{ backgroundColor: "rgb(249 250 251)" }}
-                  >
-                    <div className="flex items-center flex-1 min-w-0">
-                      <div className="flex-shrink-0 mr-3">
-                        {suggestion.type === 'property' ? (
-                          <Hotel className="w-4 h-4 text-gray-500" />
-                        ) : (
-                          <MapPin className="w-4 h-4 text-blue-600" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium text-gray-900 truncate">
-                          {suggestion.name}
-                        </div>
-                        <div className="text-xs text-gray-500 truncate">
-                          {suggestion.fullName}
-                        </div>
-                      </div>
+              {/* Date Range Picker */}
+              <div className="lg:flex-1 p-4 w-full">
+                <div className="flex items-center">
+                  <Calendar className="w-6 h-6 text-gray-700 mr-4" />
+                  <div className="flex-1">
+                    <div className="relative z-[1]">
+                      <DateRangePicker
+                        checkIn={checkIn}
+                        checkOut={checkOut}
+                        onDateChange={(newCheckIn, newCheckOut) => {
+                          setCheckIn(newCheckIn);
+                          setCheckOut(newCheckOut);
+                        }}
+                        placeholder={t('search.selectDates', 'Огноо сонгох')}
+                        minimal={true}
+                      />
                     </div>
-                  </motion.button>
-                ))}
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className="text-sm text-gray-500 text-center py-3">
-                Хайлтын үр дүн олдсонгүй
+
+              {/* Guests */}
+              <div className="lg:flex-1 w-full relative z-[1]">
+                <CustomGuestSelector
+                  adults={adults}
+                  childrenCount={children}
+                  rooms={rooms}
+                  onGuestChange={handleGuestChange}
+                  className="relative z-[1]"
+                />
               </div>
-            )}
-          </motion.div>
-        </AnimatePresence>,
-        document.body
-      )}
+
+              {/* Search Button */}
+              <SearchButton onClick={() => {}} />
+            </div>
+          </form>
+        </SearchFormContainer>
+
+        {/* Location Suggestions Modal */}
+        <LocationSuggestionsModal
+          isClient={isClient}
+          showLocationSuggestions={showLocationSuggestions}
+          locationDropdownRef={locationDropdownRef}
+          locationRef={locationRef}
+          destination={destination}
+          recentSearches={recentSearches}
+          isLoadingSuggestions={isLoadingSuggestions}
+          locationSuggestions={locationSuggestions}
+          onLocationSelect={handleLocationSelect}
+        />
+      </div>
     </div>
   );
 }

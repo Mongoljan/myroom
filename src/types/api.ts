@@ -49,7 +49,7 @@ export interface PropertyDetails {
   propertyBasicInfo: number;
   confirmAddress: number;
   propertyPolicies: number | null;
-  Additional_Information: number;
+  Additional_Information: number | null;
   property_photos: PropertyImage[];
   google_map: string;
   property: number;

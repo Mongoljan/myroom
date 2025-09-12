@@ -407,12 +407,12 @@ export default function FaqSection() {
                 {showAll ? (
                   <>
                     <Minus className="w-4 h-4 mr-2" />
-                    {t('faq.showLess', 'Цөөнийг харах')}
+                    {t('faq.showLess', 'Хураангуйлах')}
                   </>
                 ) : (
                   <>
                     <Plus className="w-4 h-4 mr-2" />
-                    {t('faq.showMore', `Илүү ихийг харах (+${remainingFaqs.length})`)}
+                    {t('faq.showMore', `Дэлгэрэнгүй харах (+${remainingFaqs.length})`)}
                   </>
                 )}
               </motion.button>

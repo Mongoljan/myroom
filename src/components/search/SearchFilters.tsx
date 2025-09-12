@@ -1,8 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { Filter, Star, Wifi, Car, Utensils, Users, Dumbbell, Waves, Building, Clock } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { useState, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Filter, Star, Wifi, Car, Utensils, Users, Dumbbell, Waves, 
+  Building, Clock, X, ChevronDown, SlidersHorizontal 
+} from 'lucide-react';
 
 interface FilterState {
   priceRange: [number, number];
@@ -15,8 +18,34 @@ interface SearchFiltersProps {
   isOpen: boolean;
   onClose: () => void;
   onFilterChange: (filters: FilterState) => void;
-  embedded?: boolean; // New prop to indicate when used in sidebar
+  embedded?: boolean;
 }
+
+const PRICE_RANGES = [
+  { label: '< 100K', min: 0, max: 100000 },
+  { label: '100K - 300K', min: 100000, max: 300000 },
+  { label: '300K - 500K', min: 300000, max: 500000 },
+  { label: '> 500K', min: 500000, max: 1000000 },
+] as const;
+
+const FACILITIES = [
+  { id: 'wifi', label: 'Free Wi-Fi', icon: Wifi, count: 245 },
+  { id: 'parking', label: 'Parking', icon: Car, count: 189 },
+  { id: 'restaurant', label: 'Restaurant', icon: Utensils, count: 156 },
+  { id: 'pool', label: 'Pool', icon: Waves, count: 78 },
+  { id: 'gym', label: 'Fitness Center', icon: Dumbbell, count: 134 },
+  { id: 'spa', label: 'Spa', icon: Users, count: 89 },
+  { id: 'business', label: 'Business Center', icon: Building, count: 167 },
+  { id: '24h', label: '24h Front Desk', icon: Clock, count: 203 },
+] as const;
+
+const ROOM_TYPES = [
+  'Standard Room',
+  'Deluxe Room', 
+  'Suite',
+  'Family Room',
+  'Presidential Suite'
+] as const;
 
 export default function SearchFilters({ isOpen, onClose, onFilterChange, embedded = false }: SearchFiltersProps) {
   const [filters, setFilters] = useState<FilterState>({
@@ -26,504 +55,293 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     roomTypes: []
   });
 
-  const facilities = [
-    { id: 'Free Wi-Fi', label: 'Free Wi-Fi', icon: <Wifi className="w-4 h-4" />, count: 245 },
-    { id: 'Restaurant', label: 'Restaurant', icon: <Utensils className="w-4 h-4" />, count: 189 },
-    { id: 'Room Service', label: 'Room Service', icon: <Users className="w-4 h-4" />, count: 156 },
-    { id: 'Parking', label: 'Parking', icon: <Car className="w-4 h-4" />, count: 203 },
-    { id: 'Fitness Center', label: 'Fitness Center', icon: <Dumbbell className="w-4 h-4" />, count: 134 },
-    { id: 'Spa & Wellness Center', label: 'Spa & Wellness', icon: <Users className="w-4 h-4" />, count: 87 },
-    { id: 'Pool', label: 'Pool', icon: <Waves className="w-4 h-4" />, count: 98 },
-    { id: 'Conference Room', label: 'Conference Room', icon: <Building className="w-4 h-4" />, count: 112 },
-    { id: '24-hour Front Desk', label: '24/7 Front Desk', icon: <Clock className="w-4 h-4" />, count: 167 }
-  ];
+  const [expandedSections, setExpandedSections] = useState({
+    price: true,
+    rating: true,
+    facilities: true,
+    rooms: true
+  });
 
-  const roomTypes = [
-    { id: 'Single', label: 'Single Room', count: 89 },
-    { id: 'Double', label: 'Double Room', count: 156 },
-    { id: 'Twin', label: 'Twin Beds', count: 134 },
-    { id: 'Family', label: 'Family Room', count: 78 },
-    { id: 'Suite', label: 'Suite', count: 45 }
-  ];
+  const formatPrice = useCallback((price: number): string => {
+    return new Intl.NumberFormat('mn-MN').format(price);
+  }, []);
 
-  const handlePriceChange = (value: number, index: number) => {
-    const newRange: [number, number] = [...filters.priceRange];
-    newRange[index] = value;
-    const newFilters = { ...filters, priceRange: newRange };
-    setFilters(newFilters);
-    onFilterChange(newFilters);
-  };
+  const toggleSection = useCallback((section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  }, []);
 
-  const handleCheckboxChange = (category: keyof FilterState, value: string | number) => {
-    const newFilters = { ...filters };
-    
-    if (category === 'starRating') {
-      const ratings = newFilters.starRating;
-      const numValue = value as number;
-      
-      if (ratings.includes(numValue)) {
-        newFilters.starRating = ratings.filter(r => r !== numValue);
-      } else {
-        newFilters.starRating = [...ratings, numValue];
-      }
-    } else if (category === 'facilities' || category === 'roomTypes') {
-      const items = newFilters[category] as string[];
-      const strValue = value as string;
-      
-      if (items.includes(strValue)) {
-        newFilters[category] = items.filter(item => item !== strValue) as string[];
-      } else {
-        newFilters[category] = [...items, strValue] as string[];
-      }
-    }
-    
-    setFilters(newFilters);
-    onFilterChange(newFilters);
-  };
+  const updateFilters = useCallback((newFilters: Partial<FilterState>) => {
+    const updatedFilters = { ...filters, ...newFilters };
+    setFilters(updatedFilters);
+    onFilterChange(updatedFilters);
+  }, [filters, onFilterChange]);
 
-  const getActiveFiltersCount = () => {
-    return filters.starRating.length + filters.facilities.length + filters.roomTypes.length + 
-           (filters.priceRange[0] > 50000 || filters.priceRange[1] < 500000 ? 1 : 0);
-  };
+  const toggleStarRating = useCallback((star: number) => {
+    const newRatings = filters.starRating.includes(star)
+      ? filters.starRating.filter(s => s !== star)
+      : [...filters.starRating, star].sort((a, b) => b - a);
+    updateFilters({ starRating: newRatings });
+  }, [filters.starRating, updateFilters]);
 
-  const clearFilters = () => {
-    const clearedFilters: FilterState = {
-      priceRange: [50000, 500000],
+  const toggleFacility = useCallback((facilityId: string) => {
+    const newFacilities = filters.facilities.includes(facilityId)
+      ? filters.facilities.filter(f => f !== facilityId)
+      : [...filters.facilities, facilityId];
+    updateFilters({ facilities: newFacilities });
+  }, [filters.facilities, updateFilters]);
+
+  const toggleRoomType = useCallback((roomType: string) => {
+    const newRoomTypes = filters.roomTypes.includes(roomType)
+      ? filters.roomTypes.filter(r => r !== roomType)
+      : [...filters.roomTypes, roomType];
+    updateFilters({ roomTypes: newRoomTypes });
+  }, [filters.roomTypes, updateFilters]);
+
+  const clearAllFilters = useCallback(() => {
+    const clearedFilters = {
+      priceRange: [50000, 500000] as [number, number],
       starRating: [],
       facilities: [],
       roomTypes: []
     };
     setFilters(clearedFilters);
     onFilterChange(clearedFilters);
-  };
+  }, [onFilterChange]);
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('mn-MN').format(price);
-  };
+  const activeFilterCount = useMemo(() => {
+    return filters.starRating.length + filters.facilities.length + filters.roomTypes.length;
+  }, [filters]);
 
-  const renderFilterContent = (isDialog = false) => (
-    <div className={`${isDialog ? 'space-y-6' : 'p-6 space-y-8'}`}>
-      {/* Price Range */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="font-bold text-gray-900 text-base">Үнийн хязгаар</h4>
-          <Badge variant="outline" className="text-xs">
-            ₮{formatPrice(filters.priceRange[0])} - ₮{formatPrice(filters.priceRange[1])}
-          </Badge>
-        </div>
-        
-        <div className="space-y-5">
-          {/* Price Range Visual */}
-          <div className="relative">
-            <div className="h-2 bg-gray-200 rounded-full">
-              <div 
-                className="h-2 bg-blue-600 rounded-full relative"
-                style={{
-                  marginLeft: `${((filters.priceRange[0] - 50000) / 950000) * 100}%`,
-                  width: `${((filters.priceRange[1] - filters.priceRange[0]) / 950000) * 100}%`
-                }}
-              >
-                <div className="absolute -right-1 -top-1 w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-sm"></div>
-                <div className="absolute -left-1 -top-1 w-4 h-4 bg-blue-600 border-2 border-white rounded-full shadow-sm"></div>
-              </div>
+  const FilterHeader = ({ title, count, section }: { 
+    title: string; 
+    count?: number; 
+    section: keyof typeof expandedSections;
+  }) => (
+    <button
+      onClick={() => toggleSection(section)}
+      className="flex items-center justify-between w-full p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+    >
+      <div className="flex items-center gap-2">
+        <h3 className="font-semibold text-gray-900 text-sm">{title}</h3>
+        {count && count > 0 && (
+          <span className="bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full">
+            {count}
+          </span>
+        )}
+      </div>
+      <ChevronDown 
+        className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+          expandedSections[section] ? 'rotate-180' : ''
+        }`}
+      />
+    </button>
+  );
+
+  const PriceRangeSection = () => (
+    <div className="space-y-3">
+      <FilterHeader title="Үнийн хязгаар" section="price" />
+      <AnimatePresence>
+        {expandedSections.price && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="grid grid-cols-2 gap-2 p-3">
+              {PRICE_RANGES.map((range) => (
+                <button
+                  key={range.label}
+                  onClick={() => updateFilters({ priceRange: [range.min, range.max] })}
+                  className={`p-2 text-xs rounded-lg border transition-all ${
+                    filters.priceRange[0] === range.min && filters.priceRange[1] === range.max
+                      ? 'bg-blue-50 border-blue-200 text-blue-700'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-blue-200'
+                  }`}
+                >
+                  {range.label}
+                </button>
+              ))}
             </div>
-          </div>
-          
-          {/* Min Price */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-900">Хамгийн бага үнэ</label>
-              <Badge variant="secondary" className="text-sm">
-                ₮{formatPrice(filters.priceRange[0])}
-              </Badge>
-            </div>
-            <input
-              type="range"
-              min="50000"
-              max="1000000"
-              step="10000"
-              value={filters.priceRange[0]}
-              onChange={(e) => handlePriceChange(parseInt(e.target.value), 0)}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
-            />
-          </div>
-          
-          {/* Max Price */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-900">Хамгийн их үнэ</label>
-              <Badge variant="secondary" className="text-sm">
-                ₮{formatPrice(filters.priceRange[1])}
-              </Badge>
-            </div>
-            <input
-              type="range"
-              min="50000"
-              max="1000000" 
-              step="10000"
-              value={filters.priceRange[1]}
-              onChange={(e) => handlePriceChange(parseInt(e.target.value), 1)}
-              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
-            />
-          </div>
-          
-          {/* Quick Price Buttons */}
-          <div className="grid grid-cols-2 gap-2 pt-2">
-            {[
-              { label: '< 100к', min: 50000, max: 100000 },
-              { label: '100к-200к', min: 100000, max: 200000 },
-              { label: '200к-300к', min: 200000, max: 300000 },
-              { label: '> 300к', min: 300000, max: 500000 }
-            ].map((range) => (
-              <button
-                key={range.label}
-                onClick={() => {
-                  handlePriceChange(range.min, 0);
-                  handlePriceChange(range.max, 1);
-                }}
-                className={`text-xs px-3 py-2 rounded-lg border transition-all ${
-                  filters.priceRange[0] === range.min && filters.priceRange[1] === range.max
-                    ? 'bg-blue-50 text-blue-700 border-blue-200'
-                    : 'bg-gray-50 text-gray-800 border-gray-200 hover:bg-blue-50 hover:text-blue-600'
-                }`}
-              >
-                {range.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Star Rating */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="font-bold text-gray-900 text-base">Од үнэлгээ</h4>
-          {filters.starRating.length > 0 && (
-            <Badge variant="outline" className="text-xs">
-              {filters.starRating.length} сонгогдсон
-            </Badge>
-          )}
-        </div>
-        <div className="space-y-3">
-          {[5, 4, 3, 2, 1].map((stars) => {
-            const isSelected = filters.starRating.includes(stars);
-            return (
-              <label 
-                key={stars} 
-                className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:border-blue-200 hover:bg-blue-50 ${
-                  isSelected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleCheckboxChange('starRating', stars)}
-                      className="sr-only"
-                    />
-                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                      isSelected 
-                        ? 'bg-blue-600 border-blue-600' 
-                        : 'bg-white border-gray-300 hover:border-blue-400'
-                    }`}>
-                      {isSelected && (
-                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-0.5">
-                      {[...Array(stars)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
-                      ))}
-                      {[...Array(5-stars)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 text-gray-800" />
-                      ))}
-                    </div>
-                    <span className="text-sm font-medium text-gray-900">{stars} од</span>
-                  </div>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  {Math.floor(Math.random() * 50) + 20}
-                </Badge>
-              </label>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Facilities */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="font-bold text-gray-900 text-base">Тохижилт</h4>
-          {filters.facilities.length > 0 && (
-            <Badge variant="outline" className="text-xs">
-              {filters.facilities.length} сонгогдсон
-            </Badge>
-          )}
-        </div>
-        <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar">
-          {facilities.map((facility) => {
-            const isSelected = filters.facilities.includes(facility.id);
-            return (
-              <label 
-                key={facility.id} 
-                className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:border-blue-200 hover:bg-blue-50 ${
-                  isSelected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleCheckboxChange('facilities', facility.id)}
-                      className="sr-only"
-                    />
-                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                      isSelected 
-                        ? 'bg-blue-600 border-blue-600' 
-                        : 'bg-white border-gray-300 hover:border-blue-400'
-                    }`}>
-                      {isSelected && (
-                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className={`p-1.5 rounded-lg ${isSelected ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-800'}`}>
-                      {facility.icon}
-                    </div>
-                    <span className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}>
-                      {facility.label}
-                    </span>
-                  </div>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  {facility.count}
-                </Badge>
-              </label>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Room Types */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="font-bold text-gray-900 text-base">Өрөөний төрөл</h4>
-          {filters.roomTypes.length > 0 && (
-            <Badge variant="outline" className="text-xs">
-              {filters.roomTypes.length} сонгогдсон
-            </Badge>
-          )}
-        </div>
-        <div className="space-y-2">
-          {roomTypes.map((roomType) => {
-            const isSelected = filters.roomTypes.includes(roomType.id);
-            return (
-              <label 
-                key={roomType.id} 
-                className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all hover:border-blue-200 hover:bg-blue-50 ${
-                  isSelected ? 'border-blue-200 bg-blue-50' : 'border-gray-200 bg-white'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      onChange={() => handleCheckboxChange('roomTypes', roomType.id)}
-                      className="sr-only"
-                    />
-                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all ${
-                      isSelected 
-                        ? 'bg-blue-600 border-blue-600' 
-                        : 'bg-white border-gray-300 hover:border-blue-400'
-                    }`}>
-                      {isSelected && (
-                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <span className={`text-sm font-medium ${isSelected ? 'text-blue-900' : 'text-gray-900'}`}>
-                    {roomType.label}
-                  </span>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  {roomType.count}
-                </Badge>
-              </label>
-            );
-          })}
-        </div>
-      </div>
-      
-      {/* Apply Filters Button for Mobile */}
-      {isDialog && (
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4 -mx-6 mt-6">
-          <div className="flex gap-3">
-            {getActiveFiltersCount() > 0 && (
-              <button
-                onClick={clearFilters}
-                className="flex-1 bg-gray-100 text-gray-900 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-colors shadow-sm border border-gray-200"
-              >
-                Цэвэрлэх
-              </button>
-            )}
-            <button
-              onClick={onClose}
-              className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-sm"
-            >
-              {getActiveFiltersCount() > 0 ? `${getActiveFiltersCount()} шүүлтүүр хэрэглэх` : 'Шүүлтүүр хэрэглэх'}
-            </button>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 
-  // For mobile: use sliding sidebar drawer, for desktop: use embedded sidebar
-  if (!embedded) {
-    return (
-      <>
-        {/* Black overlay */}
-        {isOpen && (
-          <div 
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            onClick={onClose}
-          />
-        )}
-        
-        {/* Sliding sidebar drawer */}
-        <div className={`
-          fixed top-0 left-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out lg:hidden
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        `}>
-          <div className="h-full overflow-y-auto">
-            {/* Header */}
-            <div className="p-6 pb-4 border-b border-gray-100">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-50 rounded-lg">
-                    <Filter className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <span className="text-lg font-bold text-gray-900">Шүүлтүүр</span>
-                    {getActiveFiltersCount() > 0 && (
-                      <Badge variant="outline" className="ml-2 text-xs text-blue-600 border-blue-200">
-                        {getActiveFiltersCount()} идэвхтэй
-                      </Badge>
-                    )}
-                  </div>
-                </div>
+  const StarRatingSection = () => (
+    <div className="space-y-3">
+      <FilterHeader title="Од үнэлгээ" count={filters.starRating.length} section="rating" />
+      <AnimatePresence>
+        {expandedSections.rating && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-2 p-3">
+              {[5, 4, 3, 2, 1].map((stars) => (
                 <button
-                  onClick={onClose}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  key={stars}
+                  onClick={() => toggleStarRating(stars)}
+                  className={`flex items-center gap-2 w-full p-2 rounded-lg border transition-all ${
+                    filters.starRating.includes(stars)
+                      ? 'bg-blue-50 border-blue-200'
+                      : 'bg-white border-gray-200 hover:border-blue-200'
+                  }`}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: stars }, (_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-700">{stars}+ од</span>
                 </button>
-              </div>
+              ))}
             </div>
-            
-            {/* Filter content */}
-            <div className="p-6">
-              {renderFilterContent(true)}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  const FacilitiesSection = () => (
+    <div className="space-y-3">
+      <FilterHeader title="Тохижилт" count={filters.facilities.length} section="facilities" />
+      <AnimatePresence>
+        {expandedSections.facilities && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-2 p-3 max-h-60 overflow-y-auto">
+              {FACILITIES.map((facility) => {
+                const Icon = facility.icon;
+                const isSelected = filters.facilities.includes(facility.id);
+                return (
+                  <button
+                    key={facility.id}
+                    onClick={() => toggleFacility(facility.id)}
+                    className={`flex items-center justify-between w-full p-2 rounded-lg border transition-all ${
+                      isSelected
+                        ? 'bg-blue-50 border-blue-200'
+                        : 'bg-white border-gray-200 hover:border-blue-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Icon className="w-4 h-4 text-gray-600" />
+                      <span className="text-sm text-gray-700">{facility.label}</span>
+                    </div>
+                    <span className="text-xs text-gray-500">{facility.count}</span>
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  const RoomTypesSection = () => (
+    <div className="space-y-3">
+      <FilterHeader title="Өрөөний төрөл" count={filters.roomTypes.length} section="rooms" />
+      <AnimatePresence>
+        {expandedSections.rooms && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="space-y-2 p-3">
+              {ROOM_TYPES.map((roomType) => (
+                <button
+                  key={roomType}
+                  onClick={() => toggleRoomType(roomType)}
+                  className={`flex items-center w-full p-2 rounded-lg border transition-all ${
+                    filters.roomTypes.includes(roomType)
+                      ? 'bg-blue-50 border-blue-200'
+                      : 'bg-white border-gray-200 hover:border-blue-200'
+                  }`}
+                >
+                  <span className="text-sm text-gray-700">{roomType}</span>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+
+  const FilterContent = () => (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="w-4 h-4 text-gray-600" />
+          <h2 className="font-semibold text-gray-900">Шүүлтүүр</h2>
         </div>
-      </>
+        {activeFilterCount > 0 && (
+          <button
+            onClick={clearAllFilters}
+            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Бүгдийг арилгах
+          </button>
+        )}
+      </div>
+      
+      <PriceRangeSection />
+      <StarRatingSection />
+      <FacilitiesSection />
+      <RoomTypesSection />
+    </div>
+  );
+
+  if (embedded) {
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <FilterContent />
+      </div>
     );
   }
 
-  // Desktop embedded version - Enhanced with Aceternity-style glass morphism
   return (
-    <div className="w-full bg-white/80 backdrop-blur-xl rounded-2xl border border-white/50 shadow-xl ring-1 ring-white/20 relative overflow-hidden">
-      {/* Glass morphism background effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/20 to-white/10 pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-50/30 via-purple-50/20 to-pink-50/10 pointer-events-none" />
-      
-      {/* Subtle animated border */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-200/20 to-transparent animate-pulse" />
-      </div>
-      
-      <div className="relative p-6 z-10">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
-              <Filter className="w-5 h-5 text-blue-600" />
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/25 z-40 lg:hidden"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ x: -320 }}
+            animate={{ x: 0 }}
+            exit={{ x: -320 }}
+            className="fixed top-0 left-0 h-full w-80 bg-white shadow-xl z-50 lg:hidden overflow-y-auto"
+          >
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-lg font-semibold text-gray-900">Шүүлтүүр</h2>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+              <FilterContent />
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">Шүүлтүүр</h3>
-              {getActiveFiltersCount() > 0 && (
-                <Badge variant="outline" className="text-xs mt-1">
-                  {getActiveFiltersCount()} идэвхтэй
-                </Badge>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {getActiveFiltersCount() > 0 && (
-              <button
-                onClick={clearFilters}
-                className="text-blue-600 text-sm hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
-              >
-                Цэвэрлэх
-              </button>
-            )}
-          </div>
-        </div>
-        {renderFilterContent()}
-      </div>
-      
-      {/* Custom Scrollbar and Slider Styles */}
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: #f1f5f9;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #cbd5e1;
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #94a3b8;
-        }
-        
-        .slider-thumb::-webkit-slider-thumb {
-          appearance: none;
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: #2563eb;
-          cursor: pointer;
-          border: 2px solid white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .slider-thumb::-moz-range-thumb {
-          height: 20px;
-          width: 20px;
-          border-radius: 50%;
-          background: #2563eb;
-          cursor: pointer;
-          border: 2px solid white;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-      `}</style>
-    </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 }
