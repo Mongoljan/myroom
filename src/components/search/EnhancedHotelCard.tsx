@@ -148,9 +148,6 @@ export default function EnhancedHotelCard({ hotel, searchParams, viewMode = 'lis
                         <MapPin className="w-3.5 h-3.5 text-gray-500" />
                         <span className="text-sm text-gray-600">{hotel.location.province_city}</span>
                       </div>
-                      {hotel.location.distance_from_center && (
-                        <span className="text-xs text-gray-500">• {hotel.location.distance_from_center} төвөөс</span>
-                      )}
                     </div>
                   </div>
                   
@@ -206,9 +203,6 @@ export default function EnhancedHotelCard({ hotel, searchParams, viewMode = 'lis
                             <User className="w-3 h-3" />
                             {adults + children} хүн
                           </span>
-                          {hotel.cheapest_room.bed_configurations && (
-                            <span>• {hotel.cheapest_room.bed_configurations}</span>
-                          )}
                         </div>
                       </div>
                       

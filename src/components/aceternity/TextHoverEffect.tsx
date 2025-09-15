@@ -22,8 +22,9 @@ export const TextHoverEffect: React.FC<TextHoverEffectProps> = ({
         background: "linear-gradient(90deg, #3b82f6, #1e40af, #3b82f6)",
         backgroundSize: "200% 100%",
         backgroundClip: "text",
-        WebkitBackgroundClip: "text",
         color: "transparent",
+        // @ts-expect-error - WebkitBackgroundClip is not in TargetAndTransition type
+        WebkitBackgroundClip: "text",
       }}
       transition={{
         duration,

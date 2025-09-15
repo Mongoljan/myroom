@@ -127,9 +127,6 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   <div className="flex items-center gap-1 text-xs text-gray-600 mb-1">
                     <MapPin className="w-3 h-3" />
                     <span>{hotel.location.province_city}</span>
-                    {hotel.location.distance_from_center && (
-                      <span className="text-gray-500">• {hotel.location.distance_from_center}</span>
-                    )}
                   </div>
                 </div>
               </div>
