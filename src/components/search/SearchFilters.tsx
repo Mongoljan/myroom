@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Star, Wifi, Car, Utensils, Users, Dumbbell, Waves, Building, Clock, X } from 'lucide-react';
 import FilterSummary from './FilterSummary';
 
@@ -29,18 +29,21 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
   });
 
   // Load filters from localStorage on mount
+  const onFilterChangeRef = useRef(onFilterChange);
+  onFilterChangeRef.current = onFilterChange;
+
   useEffect(() => {
     try {
       const savedFilters = localStorage.getItem(STORAGE_KEY);
       if (savedFilters) {
         const parsedFilters = JSON.parse(savedFilters);
         setFilters(parsedFilters);
-        onFilterChange(parsedFilters);
+        onFilterChangeRef.current(parsedFilters);
       }
     } catch (error) {
       console.warn('Failed to load saved filters:', error);
     }
-  }, []); // Remove onFilterChange from dependencies - this should only run once on mount
+  }, []); // Only run once on mount
 
   // Save filters to localStorage whenever they change
   const updateFilters = useCallback((newFilters: Partial<FilterState>) => {

@@ -9,7 +9,7 @@ interface BackgroundGradientAnimationProps {
   containerClassName?: string;
   colors?: string[];
   size?: string;
-  blendingValue?: string;
+  _blendingValue?: string;
 }
 
 export const BackgroundGradientAnimation: React.FC<BackgroundGradientAnimationProps> = ({
@@ -24,7 +24,7 @@ export const BackgroundGradientAnimation: React.FC<BackgroundGradientAnimationPr
     "#60a5fa10", // Blue 400 with transparency
   ],
   size = "60%",
-  blendingValue = "soft-light"
+  _blendingValue = "soft-light"
 }) => {
   const interactiveRef = React.useRef<HTMLDivElement>(null);
 

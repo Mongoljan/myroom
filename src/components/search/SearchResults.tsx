@@ -3,20 +3,33 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Filter, MapPin, Grid3X3, List } from 'lucide-react';
-import { TYPOGRAPHY } from '@/styles/containers';
 import BookingStyleHotelCard from './BookingStyleHotelCard';
 import SearchFilters from './SearchFilters';
 import HotelSearchForm from './HotelSearchForm';
 import { ApiService } from '@/services/api';
 import { SearchResponse, SearchHotelResult } from '@/types/api';
 import { Badge } from '@/components/ui/badge';
-import { Vortex } from "../ui/vortex";
 
 interface FilterState {
   priceRange: [number, number];
   starRating: number[];
   facilities: string[];
   roomTypes: string[];
+}
+
+interface SearchParams {
+  location?: string;
+  name?: string;
+  name_id?: number;
+  province_id?: number;
+  soum_id?: number;
+  district?: string;
+  check_in: string;
+  check_out: string;
+  adults: number;
+  children: number;
+  rooms: number;
+  acc_type: string;
 }
 
 
@@ -44,7 +57,7 @@ export default function SearchResults() {
         const today = new Date().toISOString().split('T')[0];
         const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         
-        const params: any = {
+        const params: SearchParams = {
           check_in: searchParams.get('check_in') || today,
           check_out: searchParams.get('check_out') || tomorrow,
           adults: parseInt(searchParams.get('adults') || '2'),
@@ -121,7 +134,16 @@ export default function SearchResults() {
           // Fallback to mock data
           console.log('Real API failed, using mock data. Error:', apiError);
           try {
-            const mockResults = await ApiService.searchHotelsMock(params) as SearchHotelResult[];
+            const mockParams = {
+              location: params.location,
+              check_in: params.check_in,
+              check_out: params.check_out,
+              adults: params.adults,
+              children: params.children,
+              rooms: params.rooms,
+              acc_type: params.acc_type
+            };
+            const mockResults = await ApiService.searchHotelsMock(mockParams) as SearchHotelResult[];
             console.log('Using mock data with', mockResults?.length || 0, 'hotels');
             
             // Validate mock data structure

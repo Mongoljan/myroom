@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
-import { TYPOGRAPHY } from '@/styles/containers';
 
 const partners = [
   { name: "Partner 1", logo: "/img/clients/1.svg" },

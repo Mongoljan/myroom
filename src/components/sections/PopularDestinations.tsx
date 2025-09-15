@@ -1,6 +1,5 @@
 "use client";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
-import { TYPOGRAPHY } from '@/styles/containers';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';

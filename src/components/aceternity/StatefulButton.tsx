@@ -36,7 +36,7 @@ export const StatefulButton: React.FC<StatefulButtonProps> = ({
         setState('success');
         setTimeout(() => setState('idle'), 2000);
       }
-    } catch (error) {
+    } catch (_error) {
       setState('error');
       setTimeout(() => setState('idle'), 2000);
     }

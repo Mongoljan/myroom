@@ -4,8 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Star, MapPin, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { TYPOGRAPHY } from '@/styles/containers';
+import { MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { SearchHotelResult } from '@/types/api';
 
@@ -126,7 +125,7 @@ export default function RecentlyViewed() {
   }, [recentHotels]);
 
 
-  const removeFromRecent = (hotelId: string) => {
+  const _removeFromRecent = (hotelId: string) => {
     removeRecentlyViewed(hotelId);
     setRecentHotels(prev => prev.filter(hotel => hotel.id !== hotelId));
   };
@@ -136,7 +135,7 @@ export default function RecentlyViewed() {
   };
 
   // Get current availability date range for display (Hotels.com style)
-  const getAvailabilityDateRange = () => {
+  const _getAvailabilityDateRange = () => {
     const today = new Date();
     const tomorrow = new Date(Date.now() + 24*60*60*1000);
     
