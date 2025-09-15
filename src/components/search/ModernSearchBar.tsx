@@ -108,9 +108,12 @@ export default function ModernSearchBar() {
     // Add location-specific parameters based on selected suggestion
     if (searchData.selectedLocationSuggestion) {
       const locationParams = locationService.formatLocationForSearchAPI(searchData.selectedLocationSuggestion);
-      
+      console.log('ModernSearchBar - Selected suggestion:', searchData.selectedLocationSuggestion);
+      console.log('ModernSearchBar - Location params:', locationParams);
+
       if (locationParams.name_id) {
         params.append('name_id', locationParams.name_id.toString());
+        console.log('ModernSearchBar - Adding name_id:', locationParams.name_id);
       } else if (locationParams.name) {
         params.append('name', locationParams.name);
       } else {
@@ -121,6 +124,7 @@ export default function ModernSearchBar() {
     } else if (searchData.location) {
       // Fallback to text search if no suggestion was selected
       params.append('location', searchData.location);
+      console.log('ModernSearchBar - No suggestion, using location text:', searchData.location);
     }
 
     window.location.href = `/search?${params.toString()}`;
@@ -147,23 +151,23 @@ export default function ModernSearchBar() {
 
   return (
     <div className="w-full max-w-5xl mx-auto">
-      {/* Main Search Bar */}
+      {/* Main Search Bar - Clean and Simple */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+        className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden hover:shadow-xl transition-shadow duration-300"
       >
         <div className="flex items-center divide-x divide-gray-200">
           
           {/* Location Input */}
           <div ref={locationRef} className="flex-1 relative">
             <div 
-              className="flex items-center p-4 cursor-text"
+              className="flex items-center p-4 cursor-text hover:bg-blue-50 transition-colors"
               onClick={() => setShowLocationSuggestions(true)}
             >
-              <MapPin className="w-5 h-5 text-gray-900 mr-3" />
+              <MapPin className="w-5 h-5 text-blue-600 mr-3" />
               <div className="flex-1">
-                <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>Location</div>
+                <div className={`${TYPOGRAPHY.form.label} text-gray-700 mb-1 font-medium`}>Location</div>
                 <input
                   type="text"
                   value={searchData.location}
@@ -176,7 +180,7 @@ export default function ModernSearchBar() {
               {searchData.location && (
                 <button
                   onClick={() => setSearchData(prev => ({ ...prev, location: '' }))}
-                  className="text-gray-900 hover:text-gray-800 ml-2"
+                  className="text-gray-400 hover:text-gray-600 ml-2 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -248,11 +252,11 @@ export default function ModernSearchBar() {
           <div ref={dateRef} className="relative">
             <button
               onClick={() => setShowDatePicker(true)}
-              className="flex items-center p-4 hover:bg-gray-50 transition-colors"
+              className="flex items-center p-4 hover:bg-blue-50 transition-colors"
             >
-              <Calendar className="w-5 h-5 text-gray-900 mr-3" />
+              <Calendar className="w-5 h-5 text-blue-600 mr-3" />
               <div>
-                <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>Check in - Check out</div>
+                <div className={`${TYPOGRAPHY.form.label} text-gray-700 mb-1 font-medium`}>Check in - Check out</div>
                 <div className={`${TYPOGRAPHY.body.standard} text-gray-900`}>
                   {searchData.checkIn && searchData.checkOut 
                     ? `${formatDate(searchData.checkIn)} - ${formatDate(searchData.checkOut)}`
@@ -338,7 +342,7 @@ export default function ModernSearchBar() {
               onClick={handleSearch}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl transition-colors"
+              className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl transition-colors shadow-md hover:shadow-lg"
             >
               <Search className="w-5 h-5" />
             </motion.button>

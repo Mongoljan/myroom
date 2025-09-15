@@ -10,7 +10,7 @@ import HotelSearchForm from './HotelSearchForm';
 import { ApiService } from '@/services/api';
 import { SearchResponse, SearchHotelResult } from '@/types/api';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Vortex } from "../ui/vortex";
 
 interface FilterState {
   priceRange: [number, number];
@@ -44,8 +44,7 @@ export default function SearchResults() {
         const today = new Date().toISOString().split('T')[0];
         const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
         
-        const params = {
-          location: searchParams.get('location') || '',
+        const params: any = {
           check_in: searchParams.get('check_in') || today,
           check_out: searchParams.get('check_out') || tomorrow,
           adults: parseInt(searchParams.get('adults') || '2'),
@@ -53,6 +52,35 @@ export default function SearchResults() {
           rooms: parseInt(searchParams.get('rooms') || '1'),
           acc_type: searchParams.get('acc_type') || 'hotel'
         };
+
+        // Add location parameters based on what's in the URL
+        const nameId = searchParams.get('name_id');
+        const name = searchParams.get('name');
+        const provinceId = searchParams.get('province_id');
+        const soumId = searchParams.get('soum_id');
+        const district = searchParams.get('district');
+        const location = searchParams.get('location');
+
+        console.log('SearchResults - URL params:', {
+          name_id: nameId,
+          name: name,
+          province_id: provinceId,
+          soum_id: soumId,
+          district: district,
+          location: location
+        });
+
+        if (nameId) {
+          params.name_id = parseInt(nameId);
+        } else if (name) {
+          params.name = name;
+        } else if (provinceId || soumId) {
+          if (provinceId) params.province_id = parseInt(provinceId);
+          if (soumId) params.soum_id = parseInt(soumId);
+          if (district) params.district = district;
+        } else if (location) {
+          params.location = location;
+        }
 
         // Validate and fix dates
         if (!params.check_in || !params.check_out || params.check_in === params.check_out) {
@@ -204,15 +232,34 @@ export default function SearchResults() {
   if (loading) {
     return (
       <div className="bg-white">
-        {/* Header Skeleton */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Header Skeleton - Material Texture */}
+        <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden">
+          {/* Noise texture overlay */}
+          <div className="absolute inset-0 opacity-[0.015]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' /%3E%3C/svg%3E")`,
+              backgroundSize: '100px 100px'
+            }}
+          />
+          
+          {/* Grid Pattern */}
+          <div className="absolute inset-0 opacity-5" 
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '40px 40px'
+            }} 
+          />
+          
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div className="animate-pulse">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="h-12 bg-blue-500 rounded-lg"></div>
-                <div className="h-12 bg-blue-500 rounded-lg"></div>
-                <div className="h-12 bg-blue-500 rounded-lg"></div>
-                <div className="h-12 bg-blue-500 rounded-lg"></div>
+                <div className="h-12 bg-white/10 rounded-lg"></div>
+                <div className="h-12 bg-white/10 rounded-lg"></div>
+                <div className="h-12 bg-white/10 rounded-lg"></div>
+                <div className="h-12 bg-white/10 rounded-lg"></div>
               </div>
             </div>
           </div>
@@ -223,15 +270,15 @@ export default function SearchResults() {
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             {/* Loading Filters Sidebar */}
             <div className="lg:w-80 flex-shrink-0">
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <Skeleton className="h-6 w-24 mb-4" />
-                <div className="space-y-4">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-8 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="h-4 bg-gray-200/80 rounded mb-3 w-20 animate-pulse" />
+                <div className="space-y-3">
+                  <div className="h-3 bg-gray-200/60 rounded w-full animate-pulse" />
+                  <div className="h-6 bg-gray-200/80 rounded w-full animate-pulse" />
+                  <div className="h-3 bg-gray-200/60 rounded w-3/4 animate-pulse" />
                   <div className="grid grid-cols-2 gap-2">
-                    <Skeleton className="h-8 w-full" />
-                    <Skeleton className="h-8 w-full" />
+                    <div className="h-6 bg-gray-200/80 rounded w-full animate-pulse" />
+                    <div className="h-6 bg-gray-200/80 rounded w-full animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -240,29 +287,29 @@ export default function SearchResults() {
             {/* Loading Main Content */}
             <div className="flex-1 min-w-0">
               {/* Loading Header */}
-              <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
-                <Skeleton className="h-8 w-64 mb-4" />
-                <div className="flex gap-4 mb-4">
-                  <Skeleton className="h-8 w-32" />
-                  <Skeleton className="h-8 w-24" />
+              <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+                <div className="h-6 bg-gray-200/80 rounded mb-3 w-48 animate-pulse" />
+                <div className="flex gap-3 mb-3">
+                  <div className="h-6 bg-gray-200/80 rounded w-28 animate-pulse" />
+                  <div className="h-6 bg-gray-200/80 rounded w-20 animate-pulse" />
                 </div>
-                <Skeleton className="h-4 w-48" />
+                <div className="h-3 bg-gray-200/60 rounded w-32 animate-pulse" />
               </div>
 
               {/* Loading Hotel Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3 sm:gap-4">
                 {[...Array(6)].map((_, index) => (
-                  <div key={index} className="bg-white rounded-xl border border-gray-200 p-4">
-                    <Skeleton className="h-48 w-full rounded-xl mb-4" />
-                    <Skeleton className="h-6 w-3/4 mb-2" />
-                    <Skeleton className="h-4 w-1/2 mb-3" />
-                    <div className="flex gap-2 mb-3">
-                      <Skeleton className="h-6 w-16" />
-                      <Skeleton className="h-6 w-20" />
+                  <div key={index} className="bg-white rounded-lg border border-gray-200 p-3">
+                    <div className="h-32 bg-gray-200/80 rounded mb-3 w-full animate-pulse" />
+                    <div className="h-4 bg-gray-200/80 rounded mb-2 w-3/4 animate-pulse" />
+                    <div className="h-3 bg-gray-200/60 rounded mb-2 w-1/2 animate-pulse" />
+                    <div className="flex gap-1.5 mb-2">
+                      <div className="h-4 bg-gray-200/60 rounded w-12 animate-pulse" />
+                      <div className="h-4 bg-gray-200/60 rounded w-16 animate-pulse" />
                     </div>
                     <div className="flex justify-between items-center">
-                      <Skeleton className="h-6 w-24" />
-                      <Skeleton className="h-10 w-20" />
+                      <div className="h-4 bg-gray-200/80 rounded w-20 animate-pulse" />
+                      <div className="h-6 bg-gray-200/80 rounded w-16 animate-pulse" />
                     </div>
                   </div>
                 ))}
@@ -276,9 +323,29 @@ export default function SearchResults() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Compact Search Form Header */}
-      <div className="bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      {/* Search Form Header with Material Texture */}
+      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden">
+        {/* Noise texture overlay */}
+        <div className="absolute inset-0 opacity-[0.015]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' /%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' /%3E%3C/svg%3E")`,
+            backgroundSize: '100px 100px'
+          }}
+        />
+        
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 opacity-5" 
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px'
+          }} 
+        />
+        
+        {/* Content */}
+        <div className="relative z-10 p-6">
           <HotelSearchForm />
         </div>
       </div>

@@ -6,7 +6,7 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface LocationInputProps {
   destination: string;
-  locationInputRef: RefObject<HTMLInputElement>;
+  locationInputRef: RefObject<HTMLInputElement | null>;
   onLocationChange: (value: string) => void;
   onLocationClear: () => void;
   onLocationFocus: () => void;

@@ -51,18 +51,22 @@ export default function HotelSearchForm() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    console.log('HotelSearchForm - handleSearch called');
+    console.log('HotelSearchForm - Current destination:', destination);
+    console.log('HotelSearchForm - Current selectedLocationSuggestion:', selectedLocationSuggestion);
+
     const today = new Date().toISOString().split('T')[0];
     const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    
+
     const finalCheckIn = checkIn || today;
     const finalCheckOut = checkOut || tomorrow;
-    
+
     if (new Date(finalCheckOut) <= new Date(finalCheckIn)) {
       alert('Check-out date must be after check-in date');
       return;
     }
-    
+
     const params = new URLSearchParams({
       check_in: finalCheckIn,
       check_out: finalCheckOut,
@@ -74,23 +78,41 @@ export default function HotelSearchForm() {
 
     if (selectedLocationSuggestion) {
       const locationParams = locationService.formatLocationForSearchAPI(selectedLocationSuggestion);
+      console.log('HotelSearchForm - Selected suggestion:', selectedLocationSuggestion);
+      console.log('HotelSearchForm - Location params to append:', locationParams);
+
       Object.entries(locationParams).forEach(([key, value]) => {
-        if (value !== undefined) {
+        if (value !== undefined && value !== null) {
           params.append(key, value.toString());
+          console.log(`HotelSearchForm - Appending ${key}=${value}`);
         }
       });
       saveSearch(selectedLocationSuggestion, finalCheckIn, finalCheckOut, adults, children, rooms);
-    } else {
+    } else if (destination) {
+      console.log('HotelSearchForm - No selectedLocationSuggestion, using destination text:', destination);
       params.append('location', destination);
     }
-    
-    router.push(`/search?${params.toString()}`);
+
+    const finalUrl = `/search?${params.toString()}`;
+    console.log('HotelSearchForm - Final URL:', finalUrl);
+    console.log('HotelSearchForm - URL params:', params.toString());
+    router.push(finalUrl);
   };
 
   const handleLocationSearch = async (value: string) => {
     setDestination(value);
-    setSelectedLocationSuggestion(null);
-    
+    // Only reset selectedLocationSuggestion if the value actually changed from what was selected
+    if (selectedLocationSuggestion) {
+      const displayName = selectedLocationSuggestion.type === 'property' ?
+        selectedLocationSuggestion.name : selectedLocationSuggestion.fullName;
+      if (value !== displayName) {
+        console.log('HotelSearchForm - Clearing selectedLocationSuggestion because value changed');
+        setSelectedLocationSuggestion(null);
+      } else {
+        console.log('HotelSearchForm - Keeping selectedLocationSuggestion, value matches');
+      }
+    }
+
     if (value.length < 2) {
       setShowLocationSuggestions(false);
       return;
@@ -98,7 +120,7 @@ export default function HotelSearchForm() {
 
     setShowLocationSuggestions(true);
     setIsLoadingSuggestions(true);
-    
+
     try {
       const suggestions = await locationService.searchLocations(value);
       setLocationSuggestions(suggestions);
@@ -111,8 +133,12 @@ export default function HotelSearchForm() {
   };
 
   const handleLocationSelect = (suggestion: LocationSuggestion) => {
-    setDestination(suggestion.name);
+    console.log('HotelSearchForm - handleLocationSelect called with:', suggestion);
+    // For properties/hotels, show the full name, for locations show formatted name
+    const displayName = suggestion.type === 'property' ? suggestion.name : suggestion.fullName;
+    setDestination(displayName);
     setSelectedLocationSuggestion(suggestion);
+    console.log('HotelSearchForm - selectedLocationSuggestion set to:', suggestion);
     setShowLocationSuggestions(false);
   };
 
@@ -147,8 +173,9 @@ export default function HotelSearchForm() {
   }, []);
 
   return (
-    <div className="w-full">
-      <div className="max-w-6xl mx-auto">
+    <div className="w-full ">
+      <div className="max-w-6xl mx-auto relative"> 
+        <div >
         <SearchFormContainer>
           <form onSubmit={handleSearch}>
             <div 
@@ -216,6 +243,7 @@ export default function HotelSearchForm() {
           locationSuggestions={locationSuggestions}
           onLocationSelect={handleLocationSelect}
         />
+        </div>
       </div>
     </div>
   );

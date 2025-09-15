@@ -23,7 +23,30 @@ import {
   PropertyDetails
 } from '@/types/api';
 
-const BASE_URL = 'https://dev.kacc.mn/api';
+// Allow overriding API base via env var; fallback to dev endpoint
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://dev.kacc.mn/api';
+
+// Lightweight in-memory cache & in-flight deduplication (per runtime instance)
+interface CacheEntry<T> { data: T; timestamp: number }
+class ApiCache {
+  private static store: Map<string, CacheEntry<unknown>> = new Map();
+  private static inFlight: Map<string, Promise<unknown>> = new Map();
+  static TTL = {
+    LONG: 30 * 60 * 1000, // reference data
+    MED: 5 * 60 * 1000,
+    SHORT: 60 * 1000
+  } as const;
+  static get<T>(key: string, ttl: number): T | null {
+    const entry = this.store.get(key);
+    if (!entry) return null;
+    if (Date.now() - entry.timestamp > ttl) { this.store.delete(key); return null; }
+    return entry.data as T;
+  }
+  static set<T>(key: string, data: T) { this.store.set(key, { data, timestamp: Date.now() }); }
+  static getInFlight<T>(key: string): Promise<T> | undefined { return this.inFlight.get(key) as Promise<T> | undefined; }
+  static setInFlight<T>(key: string, p: Promise<T>): void { this.inFlight.set(key, p); }
+  static clearInFlight(key: string) { this.inFlight.delete(key); }
+}
 
 export class ApiService {
   // Clean up invalid image URLs to prevent 404 errors
@@ -74,12 +97,20 @@ export class ApiService {
   }
 
   private static async request<T>(
-    endpoint: string, 
-    options: RequestInit = {}
+    endpoint: string,
+    options: RequestInit = {},
+    cacheOpts?: { key: string; ttl: number }
   ): Promise<T> {
     try {
       const fullUrl = `${BASE_URL}${endpoint}`;
-      console.log('Making API request to:', fullUrl);
+      const isGet = !options.method || options.method.toUpperCase() === 'GET';
+      if (cacheOpts && isGet) {
+        const cached = ApiCache.get<T>(cacheOpts.key, cacheOpts.ttl);
+        if (cached) return cached;
+        const inflight = ApiCache.getInFlight<T>(cacheOpts.key);
+        if (inflight) return inflight;
+      }
+      if (process.env.NODE_ENV !== 'production') console.log('[API] →', fullUrl);
       
       // Build headers object  
       const headers: Record<string, string> = {};
@@ -104,10 +135,9 @@ export class ApiService {
         headers['Content-Type'] = 'application/json';
       }
       
-      const response = await fetch(fullUrl, {
-        ...options,
-        headers,
-      });
+  const fetchPromise = fetch(fullUrl, { ...options, headers });
+  if (cacheOpts && isGet) ApiCache.setInFlight(cacheOpts.key, fetchPromise as unknown as Promise<T>);
+  const response = await fetchPromise;
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -116,12 +146,18 @@ export class ApiService {
       }
 
       const data = await response.json();
-      console.log('API Response success:', { 
-        url: fullUrl, 
-        status: response.status,
-        dataKeys: Object.keys(data),
-        count: data.count || data.length || 'unknown'
-      });
+      if (cacheOpts && isGet) { ApiCache.set(cacheOpts.key, data); ApiCache.clearInFlight(cacheOpts.key); }
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[API] ←', {
+          url: fullUrl,
+          status: response.status,
+          keys: typeof data === 'object' && data ? Object.keys(data).slice(0,6) : [],
+          count: (typeof data === 'object' && data && 'count' in data)
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (data as any).count
+            : (Array.isArray(data) ? data.length : undefined)
+        });
+      }
       
       // Clean up any invalid image URLs
       if (data && typeof data === 'object') {
@@ -155,34 +191,71 @@ export class ApiService {
     rooms: number;
     acc_type: string;
   }): Promise<SearchResponse> {
-    console.log('Enhanced search params:', params);
-    
+    // Enforce mutual exclusivity rules: only one of (name_id | name | province/soum/district | location)
+    // If name_id provided, ignore all other location/name fields.
+    // If name provided, ignore province/soum/location.
+    // If province/soum provided, ignore legacy location.
+    const sanitized = { ...params };
+    if (sanitized.name_id) {
+      if (sanitized.name || sanitized.province_id || sanitized.soum_id || sanitized.district || sanitized.location) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[searchHotels] name_id present -> ignoring other location/name fields');
+        }
+      }
+      delete sanitized.name;
+      delete sanitized.province_id;
+      delete sanitized.soum_id;
+      delete sanitized.district;
+      delete sanitized.location;
+    } else if (sanitized.name) {
+      if (sanitized.province_id || sanitized.soum_id || sanitized.district || sanitized.location) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[searchHotels] name present -> ignoring province/soum/district/location');
+        }
+      }
+      delete sanitized.province_id;
+      delete sanitized.soum_id;
+      delete sanitized.district;
+      delete sanitized.location;
+    } else if (sanitized.province_id || sanitized.soum_id || sanitized.district) {
+      if (sanitized.location) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[searchHotels] province/soum/district present -> ignoring legacy location');
+        }
+        delete sanitized.location;
+      }
+    }
+
+    console.log('Enhanced search params (sanitized):', sanitized);
+    console.log('name_id value:', sanitized.name_id, 'type:', typeof sanitized.name_id);
+
     const searchParams = new URLSearchParams();
-    
+
     // Handle different search modes
-    if (params.name_id) {
+    if (sanitized.name_id) {
       // Exact hotel ID search - only send name_id
-      searchParams.append('name_id', params.name_id.toString());
-    } else if (params.name) {
+      searchParams.append('name_id', sanitized.name_id.toString());
+      console.log('API Service - Added name_id to search params:', sanitized.name_id);
+    } else if (sanitized.name) {
       // Text search for hotel names
-      searchParams.append('name', params.name);
-    } else if (params.province_id || params.soum_id) {
+      searchParams.append('name', sanitized.name);
+    } else if (sanitized.province_id || sanitized.soum_id) {
       // Location-based search with IDs
-      if (params.province_id) searchParams.append('province_id', params.province_id.toString());
-      if (params.soum_id) searchParams.append('soum_id', params.soum_id.toString());
-      if (params.district) searchParams.append('district', params.district);
-    } else if (params.location) {
+      if (sanitized.province_id) searchParams.append('province_id', sanitized.province_id.toString());
+      if (sanitized.soum_id) searchParams.append('soum_id', sanitized.soum_id.toString());
+      if (sanitized.district) searchParams.append('district', sanitized.district);
+    } else if (sanitized.location) {
       // Legacy location string search (fallback)
-      searchParams.append('location', params.location);
+      searchParams.append('location', sanitized.location);
     }
     
     // Always append booking parameters
-    searchParams.append('check_in', params.check_in);
-    searchParams.append('check_out', params.check_out);
-    searchParams.append('adults', params.adults.toString());
-    searchParams.append('children', params.children.toString());
-    searchParams.append('rooms', params.rooms.toString());
-    searchParams.append('acc_type', params.acc_type);
+    searchParams.append('check_in', sanitized.check_in);
+    searchParams.append('check_out', sanitized.check_out);
+    searchParams.append('adults', sanitized.adults.toString());
+    searchParams.append('children', sanitized.children.toString());
+    searchParams.append('rooms', sanitized.rooms.toString());
+    searchParams.append('acc_type', sanitized.acc_type);
 
     console.log('Search URL params:', searchParams.toString());
     return this.request<SearchResponse>(`/search?${searchParams.toString()}`);
@@ -375,42 +448,46 @@ export class ApiService {
 
   // Get rooms for a specific hotel
   static async getRoomsInHotel(hotelId: number): Promise<Room[]> {
-    return this.request<Room[]>(`/roomsInHotels/?hotel=${hotelId}`);
+    const endpoint = `/roomsInHotels/?hotel=${hotelId}`;
+    return this.request<Room[]>(endpoint, {}, { key: endpoint, ttl: ApiCache.TTL.SHORT });
   }
 
   // Get all room data (types, bed types, categories, etc.)
   static async getAllRoomData(): Promise<AllRoomData> {
-    return this.request<AllRoomData>(`/all-room-data/`);
+    const endpoint = `/all-room-data/`;
+    return this.request<AllRoomData>(endpoint, {}, { key: endpoint, ttl: ApiCache.TTL.LONG });
   }
 
   // Get combined data (includes facilities, provinces, etc.)
   static async getCombinedData(): Promise<CombinedData> {
-    return this.request<CombinedData>(`/combined-data/`);
+    const endpoint = `/combined-data/`;
+    return this.request<CombinedData>(endpoint, {}, { key: endpoint, ttl: ApiCache.TTL.LONG });
   }
 
   // Get room features
-  static async getRoomFeatures(): Promise<RoomFeature[]> {
-    return this.request<RoomFeature[]>(`/features/`);
-  }
+  // Removed duplicate getRoomFeatures (use getFeatures instead)
 
   // Get room prices for a hotel
   static async getRoomPrices(hotelId: number): Promise<RoomPrice[]> {
-    return this.request<RoomPrice[]>(`/room-prices/?hotel=${hotelId}`);
+    const endpoint = `/room-prices/?hotel=${hotelId}`;
+    return this.request<RoomPrice[]>(endpoint, {}, { key: endpoint, ttl: ApiCache.TTL.SHORT });
   }
 
   // Get final price for a room
   static async getFinalPrice(roomPriceId: number): Promise<FinalPrice> {
-    return this.request<FinalPrice>(`/final-price/${roomPriceId}/`);
+    const endpoint = `/final-price/${roomPriceId}/`;
+    return this.request<FinalPrice>(endpoint, {}, { key: endpoint, ttl: ApiCache.TTL.SHORT });
   }
 
   // Get all room-related data (facilities, amenities, etc.)
   static async getAllData(): Promise<AllData> {
-    return this.request<AllData>('/all-data/');
+    const endpoint = '/all-data/';
+    return this.request<AllData>(endpoint, {}, { key: endpoint, ttl: ApiCache.TTL.LONG });
   }
 
-  // Get room features
   static async getFeatures(): Promise<RoomFeature[]> {
-    return this.request<RoomFeature[]>('/features/');
+    const endpoint = '/features/';
+    return this.request<RoomFeature[]>(endpoint, {}, { key: endpoint, ttl: ApiCache.TTL.LONG });
   }
 
   // Check room availability

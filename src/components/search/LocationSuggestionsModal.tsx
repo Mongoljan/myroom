@@ -10,8 +10,8 @@ import { RefObject } from 'react';
 interface LocationSuggestionsModalProps {
   isClient: boolean;
   showLocationSuggestions: boolean;
-  locationDropdownRef: RefObject<HTMLDivElement>;
-  locationRef: RefObject<HTMLDivElement>;
+  locationDropdownRef: RefObject<HTMLDivElement | null>;
+  locationRef: RefObject<HTMLDivElement | null>;
   destination: string;
   recentSearches: RecentSearch[];
   isLoadingSuggestions: boolean;

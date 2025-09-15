@@ -262,6 +262,8 @@ export class LocationService {
     soum_id?: number;
     district?: string;
   } {
+    console.log('formatLocationForSearchAPI called with:', suggestion);
+
     const searchParams: {
       location?: string;
       name?: string;
@@ -272,9 +274,11 @@ export class LocationService {
     } = {};
 
     if (suggestion.originalData) {
+      console.log('originalData exists:', suggestion.originalData);
       // Handle property (hotel) selection - use name_id for exact match
       if (suggestion.type === 'property' && suggestion.originalData.property_id) {
         searchParams.name_id = suggestion.originalData.property_id;
+        console.log('Setting name_id for property:', searchParams.name_id);
         return searchParams; // For properties, only send name_id
       }
       
