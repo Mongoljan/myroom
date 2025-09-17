@@ -290,7 +290,18 @@ const resources = {
         confirmBooking: "Confirm Booking",
         bookingConfirmed: "Booking Confirmed",
         bookingNumber: "Booking Number",
-        thankYou: "Thank you for your booking!"
+        thankYou: "Thank you for your booking!",
+        manage: {
+          title: "Manage Your Booking",
+          subtitle: "Enter your booking code and PIN to view and manage your reservation",
+          bookingCode: "Booking Code",
+          pinCode: "PIN Code",
+          enterBookingCode: "Enter booking code",
+          enterPinCode: "Enter PIN code",
+          findBooking: "Find Booking",
+          searching: "Searching...",
+          bookingSummary: "Booking Summary"
+        }
       },
       filters: {
         priceRange: "Price Range",
@@ -680,7 +691,18 @@ const resources = {
         confirmBooking: "Захиалга баталгаажуулах",
         bookingConfirmed: "Захиалга баталгаажлаа",
         bookingNumber: "Захиалгын дугаар",
-        thankYou: "Захиалга өгсөнд баярлалаа!"
+        thankYou: "Захиалга өгсөнд баярлалаа!",
+        manage: {
+          title: "Захиалгаа удирдах",
+          subtitle: "Захиалгын код болон PIN кодоо оруулж захиалгаа харах, удирдах",
+          bookingCode: "Захиалгын код",
+          pinCode: "PIN код",
+          enterBookingCode: "Захиалгын код оруулна уу",
+          enterPinCode: "PIN код оруулна уу",
+          findBooking: "Захиалга хайх",
+          searching: "Хайж байна...",
+          bookingSummary: "Захиалгын тойм"
+        }
       },
       filters: {
         priceRange: "Үнийн хязгаар",

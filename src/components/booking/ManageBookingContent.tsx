@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { CheckBookingResponse, BookingDetails } from '@/types/api';
 import { ApiService, formatCurrency, formatDate } from '@/services/api';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface DateChangeModalProps {
   booking: BookingDetails;
@@ -129,6 +130,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
 }
 
 export default function ManageBookingContent() {
+  const { t } = useHydratedTranslation();
   const searchParams = useSearchParams();
   const [bookingCode, setBookingCode] = useState(searchParams.get('code') || '');
   const [pinCode, setPinCode] = useState(searchParams.get('pin') || '');
@@ -216,10 +218,10 @@ export default function ManageBookingContent() {
           {/* Header */}
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Manage Your Booking
+              {t('booking.manage.title', 'Захиалгаа удирдах')}
             </h1>
             <p className="text-gray-800">
-              Enter your booking code and PIN to view and manage your reservation
+              {t('booking.manage.subtitle', 'Захиалгын код болон PIN кодоо оруулж захиалгаа харах, удирдах')}
             </p>
           </div>
 
@@ -229,27 +231,27 @@ export default function ManageBookingContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    Booking Code
+                    {t('booking.manage.bookingCode', 'Захиалгын код')}
                   </label>
                   <input
                     type="text"
                     value={bookingCode}
                     onChange={(e) => setBookingCode(e.target.value)}
-                    placeholder="Enter booking code"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder={t('booking.manage.enterBookingCode', 'Захиалгын код оруулна уу')}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     required
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-900 mb-2">
-                    PIN Code
+                    {t('booking.manage.pinCode', 'PIN код')}
                   </label>
                   <input
                     type="text"
                     value={pinCode}
                     onChange={(e) => setPinCode(e.target.value)}
-                    placeholder="Enter PIN code"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder={t('booking.manage.enterPinCode', 'PIN код оруулна уу')}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     required
                   />
                 </div>
@@ -258,10 +260,10 @@ export default function ManageBookingContent() {
               <button
                 type="submit"
                 disabled={loading || !bookingCode || !pinCode}
-                className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+                className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-400 transition-colors"
               >
                 <Search className="w-4 h-4" />
-                {loading ? 'Searching...' : 'Find Booking'}
+                {loading ? t('booking.manage.searching', 'Хайж байна...') : t('booking.manage.findBooking', 'Захиалга хайх')}
               </button>
             </form>
 
@@ -282,7 +284,7 @@ export default function ManageBookingContent() {
               {/* Summary */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">Booking Summary</h2>
+                  <h2 className="text-xl font-bold text-gray-900">{t('booking.manage.bookingSummary', 'Захиалгын тойм')}</h2>
                   <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(bookingData.status)}`}>
                     {getStatusIcon(bookingData.status)}
                     {bookingData.status.charAt(0).toUpperCase() + bookingData.status.slice(1)}

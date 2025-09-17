@@ -236,6 +236,16 @@ export interface CombinedData {
     id: number;
     rating: string;
   }>;
+  accessibility_features: Array<{
+    id: number;
+    name_en: string;
+    name_mn: string;
+  }>;
+  languages: Array<{
+    id: number;
+    name_en: string;
+    name_mn: string;
+  }>;
 }
 
 // Hotel search types

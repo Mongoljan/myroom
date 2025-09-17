@@ -16,13 +16,13 @@ export default function SearchButton({ onClick }: SearchButtonProps) {
       <motion.button
         type="submit"
         onClick={onClick}
-        whileHover={{ 
+        whileHover={{
           boxShadow: "0 4px 12px -2px rgba(59, 130, 246, 0.3)"
         }}
-        whileTap={{ 
+        whileTap={{
           boxShadow: "0 2px 4px -1px rgba(59, 130, 246, 0.2)"
         }}
-        className="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium text-sm"
+        className="px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium text-sm bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 text-white"
       >
         <Search className="w-5 h-5 text-xl" />
         <span className="hidden text-[18px] xl:inline font-semibold tracking-wide">

@@ -1,12 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { SearchHotelResult } from '@/types/api';
+import SectionHotelCard from '@/components/common/SectionHotelCard';
 
 interface RecentHotel {
   id: string;
@@ -21,7 +20,7 @@ interface RecentHotel {
 }
 
 export default function RecentlyViewed() {
-  const { recentlyViewed, removeRecentlyViewed } = useRecentlyViewed();
+  const { recentlyViewed } = useRecentlyViewed();
   const [recentHotels, setRecentHotels] = useState<RecentHotel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -125,32 +124,6 @@ export default function RecentlyViewed() {
   }, [recentHotels]);
 
 
-  const _removeFromRecent = (hotelId: string) => {
-    removeRecentlyViewed(hotelId);
-    setRecentHotels(prev => prev.filter(hotel => hotel.id !== hotelId));
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('mn-MN').format(price);
-  };
-
-  // Get current availability date range for display (Hotels.com style)
-  const _getAvailabilityDateRange = () => {
-    const today = new Date();
-    const tomorrow = new Date(Date.now() + 24*60*60*1000);
-    
-    const formatDate = (date: Date) => {
-      return {
-        day: date.getDate(),
-        month: date.toLocaleDateString('mn-MN', { month: 'short' })
-      };
-    };
-    
-    const startDate = formatDate(today);
-    const endDate = formatDate(tomorrow);
-    
-    return { startDate, endDate };
-  };
 
   if (recentHotels.length === 0 && !isLoading) {
     return null;
@@ -193,7 +166,7 @@ export default function RecentlyViewed() {
           </div>
         ) : (
           <div className="relative">
-            <div ref={scrollRef} className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide scroll-smooth"
+            <div ref={scrollRef} className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide scroll-smooth"
                  style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}
                  onScroll={() => {
                    const element = scrollRef.current;
@@ -228,72 +201,20 @@ export default function RecentlyViewed() {
                 </button>
               )}
             {recentHotels.map((hotel, index) => (
-              <motion.div
+              <SectionHotelCard
                 key={hotel.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group relative bg-white border border-gray-200 rounded-lg transition-all duration-200 overflow-hidden min-w-[280px] flex-shrink-0"
-              >
-              <Link href={`/hotel/${hotel.id}`}>
-                <div className="relative h-36 overflow-hidden">
-                  <Image
-                    src={hotel.image}
-                    alt={`${hotel.name} - Hotel image`}
-                    fill
-                    className="object-cover transition-transform duration-300"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    unoptimized
-                    onError={(e) => {
-                      // Fallback to a different image if the current one fails
-                      const target = e.currentTarget;
-                      const fallbackImages = [
-                        'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format',
-                        'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&auto=format',
-                        'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop&auto=format'
-                      ];
-                      const currentIndex = fallbackImages.findIndex(img => img === target.src);
-                      const nextIndex = (currentIndex + 1) % fallbackImages.length;
-                      target.src = fallbackImages[nextIndex];
-                    }}
-                  />
-                </div>
-
-                <div className="p-3">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
-                    {hotel.name}
-                  </h3>
-                  
-                  <div className="flex items-center text-gray-500 mb-2">
-                    <MapPin className="w-3 h-3 mr-1" />
-                    <span className="text-xs line-clamp-1">{hotel.location}</span>
-                  </div>
-
-                  {/* Rating */}
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center">
-                      <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-xs font-medium mr-1">
-                        {hotel.rating}
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {hotel.rating_label?.replace(/\d+\s*stars?/i, '').trim() || 'үнэлгээ'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-100 pt-2 mt-2">
-                    <div className="text-right">
-                      <div className="text-xs text-gray-500 mb-1">эхлэх үнэ</div>
-                      <div className="text-sm font-bold text-gray-900">
-                        ₮{formatPrice(hotel.price)}-с
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                id={hotel.id}
+                name={hotel.name}
+                location={hotel.location}
+                rating={hotel.rating}
+                ratingLabel={hotel.rating_label}
+                price={hotel.price}
+                image={hotel.image}
+                badge={hotel.badge}
+                badgeColor="blue"
+                index={index}
+              />
+            ))}
             </div>
           </div>
         )}

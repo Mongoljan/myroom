@@ -1,14 +1,13 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { SearchHotelResult } from '@/types/api';
-import TextHoverEffect from '@/components/aceternity/TextHoverEffect';
 import PointerHighlight from '@/components/aceternity/PointerHighlight';
+import SectionHotelCard from '@/components/common/SectionHotelCard';
 
 interface CategorizedHotel extends SearchHotelResult {
   category: 'popular' | 'discounted' | 'highly_rated' | 'cheapest' | 'newly_added';
@@ -96,12 +95,6 @@ export default function RecommendedHotels() {
     };
   };
 
-  // Format price for display
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('mn-MN').format(price);
-  };
-
-
   // Get hotel image with fallback
   const getHotelImage = (hotel: SearchHotelResult): string => {
     if (hotel.images?.cover) {
@@ -122,6 +115,17 @@ export default function RecommendedHotels() {
       'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop'
     ];
     return fallbacks[hotel.hotel_id % fallbacks.length];
+  };
+
+  // Get badge color for category
+  const getCategoryBadgeColor = (category: string): 'orange' | 'green' | 'blue' | 'purple' | 'gray' => {
+    switch (category) {
+      case 'popular': return 'orange';
+      case 'discounted': return 'green';
+      case 'highly_rated': return 'blue';
+      case 'cheapest': return 'purple';
+      default: return 'gray';
+    }
   };
 
   // Fetch and categorize hotels
@@ -305,83 +309,19 @@ export default function RecommendedHotels() {
               `}</style>
             
             {filteredHotels.slice(0, 8).map((hotel, index) => (
-              <motion.div
+              <SectionHotelCard
                 key={hotel.hotel_id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="min-w-[280px] flex-shrink-0"
-              >
-                <Link 
-                  href={`/hotel/${hotel.hotel_id}`}
-                  className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 hover:shadow-lg block"
-                >
-                {/* Hotel Image */}
-                <div className="relative h-36 overflow-hidden">
-                  <Image
-                    src={getHotelImage(hotel)}
-                    alt={`${hotel.property_name} - Hotel image`}
-                    fill
-                    className="object-cover transition-transform duration-300"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    unoptimized
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      target.src = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop';
-                    }}
-                  />
-                  
-                  {/* Category Badge - Top Left */}
-                  <div className="absolute top-2 left-2">
-                    <span className={`px-1.5 py-0.5 text-xs font-medium rounded-md text-white ${
-                      hotel.category === 'popular' ? 'bg-orange-500' :
-                      hotel.category === 'discounted' ? 'bg-green-500' :
-                      hotel.category === 'highly_rated' ? 'bg-blue-500' :
-                      hotel.category === 'cheapest' ? 'bg-purple-500' :
-                      'bg-gray-500'
-                    }`}>
-                      {hotel.categoryLabel}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Hotel Info */}
-                <div className="p-3">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
-                    {hotel.property_name}
-                  </h3>
-                  
-                  <div className="flex items-center text-gray-500 mb-2">
-                    <MapPin className="w-3 h-3 mr-1" />
-                    <span className="text-xs line-clamp-1">{hotel.location.province_city}</span>
-                  </div>
-
-                  {/* Rating */}
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center">
-                      <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-xs font-medium mr-1">
-                        {hotel.rating_stars.value}
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {hotel.rating_stars.label?.replace(/\d+\s*stars?/i, '').trim() || 'үнэлгээ'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-100 pt-2 mt-2">
-                    {hotel.cheapest_room && (
-                      <div className="text-right">
-                        <div className="text-xs text-gray-500 mb-1">эхлэх үнэ</div>
-                        <div className="text-sm font-bold text-gray-900">
-                          ₮{formatPrice(hotel.cheapest_room.price_per_night)}-с
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                </Link>
-              </motion.div>
+                id={hotel.hotel_id.toString()}
+                name={hotel.property_name}
+                location={hotel.location.province_city}
+                rating={parseFloat(hotel.rating_stars.value) || 0}
+                ratingLabel={hotel.rating_stars.label || 'үнэлгээ'}
+                price={hotel.cheapest_room?.price_per_night || 0}
+                image={getHotelImage(hotel)}
+                badge={hotel.categoryLabel}
+                badgeColor={getCategoryBadgeColor(hotel.category)}
+                index={index}
+              />
             ))}
             </div>
           </div>

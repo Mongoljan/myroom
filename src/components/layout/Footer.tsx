@@ -27,12 +27,16 @@ export default function Footer() {
               
               <div className="flex items-center space-x-3 text-gray-300">
                 <Phone className="w-5 h-5 text-blue-400" />
-                <span className={TYPOGRAPHY.body.standard}>+976-7777-7777</span>
+                <a href="tel:+97699972626" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors cursor-pointer`}>
+                  +976-9997-2626
+                </a>
               </div>
               
               <div className="flex items-center space-x-3 text-gray-300">
                 <Mail className="w-5 h-5 text-blue-400" />
-                <span className={TYPOGRAPHY.body.standard}>info@myroom.mn</span>
+                <a href="mailto:info@myroom.mn" className={`${TYPOGRAPHY.body.standard} hover:text-blue-400 transition-colors cursor-pointer`}>
+                  info@myroom.mn
+                </a>
               </div>
               
               <div className="flex items-start space-x-3 text-gray-300">

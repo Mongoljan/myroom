@@ -30,6 +30,8 @@ export default function HotelSearchForm() {
   const [selectedLocationSuggestion, setSelectedLocationSuggestion] = useState<LocationSuggestion | null>(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [showLocationError, setShowLocationError] = useState(false);
+  const hasLoadedFromUrl = useRef(false);
   
   const locationRef = useRef<HTMLDivElement>(null);
   const locationInputRef = useRef<HTMLInputElement>(null);
@@ -39,14 +41,39 @@ export default function HotelSearchForm() {
     setIsClient(true);
   }, []);
 
-  // Load current search params from URL
+  // Load search params from URL
   useEffect(() => {
-    setDestination(urlSearchParams.get('location') || '');
+    // Always update date/guest params
     setCheckIn(urlSearchParams.get('check_in') || '');
     setCheckOut(urlSearchParams.get('check_out') || '');
     setAdults(parseInt(urlSearchParams.get('adults') || '2'));
     setChildren(parseInt(urlSearchParams.get('children') || '0'));
     setRooms(parseInt(urlSearchParams.get('rooms') || '1'));
+
+    // Only load location from URL once to prevent interference with user typing
+    if (!hasLoadedFromUrl.current) {
+      const locationParam = urlSearchParams.get('location');
+      const nameParam = urlSearchParams.get('name');
+      const nameIdParam = urlSearchParams.get('name_id');
+      const provinceIdParam = urlSearchParams.get('province_id');
+      const soumIdParam = urlSearchParams.get('soum_id');
+      const districtParam = urlSearchParams.get('district');
+
+      // Set destination based on available URL parameters (match ModernHero logic)
+      if (nameParam) {
+        setDestination(nameParam);
+      } else if (locationParam) {
+        setDestination(locationParam);
+      } else if (districtParam) {
+        setDestination(districtParam);
+      } else if (nameIdParam || provinceIdParam || soumIdParam) {
+        // For these ID-based searches, we might need to fetch the display name
+        // For now, try to show something meaningful or keep empty for user to re-search
+        setDestination('');
+      }
+
+      hasLoadedFromUrl.current = true;
+    }
   }, [urlSearchParams]);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -55,6 +82,15 @@ export default function HotelSearchForm() {
     console.log('HotelSearchForm - handleSearch called');
     console.log('HotelSearchForm - Current destination:', destination);
     console.log('HotelSearchForm - Current selectedLocationSuggestion:', selectedLocationSuggestion);
+
+    // Validate location selection - block search if no location
+    if (!destination || !selectedLocationSuggestion) {
+      setShowLocationError(true);
+      locationInputRef.current?.focus();
+      // Hide error after 3 seconds
+      setTimeout(() => setShowLocationError(false), 3000);
+      return; // Block search
+    }
 
     const today = new Date().toISOString().split('T')[0];
     const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -101,16 +137,11 @@ export default function HotelSearchForm() {
 
   const handleLocationSearch = async (value: string) => {
     setDestination(value);
-    // Only reset selectedLocationSuggestion if the value actually changed from what was selected
+
+    // Always clear selectedLocationSuggestion when user types to allow free editing
     if (selectedLocationSuggestion) {
-      const displayName = selectedLocationSuggestion.type === 'property' ?
-        selectedLocationSuggestion.name : selectedLocationSuggestion.fullName;
-      if (value !== displayName) {
-        console.log('HotelSearchForm - Clearing selectedLocationSuggestion because value changed');
-        setSelectedLocationSuggestion(null);
-      } else {
-        console.log('HotelSearchForm - Keeping selectedLocationSuggestion, value matches');
-      }
+      console.log('HotelSearchForm - Clearing selectedLocationSuggestion because user is typing');
+      setSelectedLocationSuggestion(null);
     }
 
     if (value.length < 2) {
@@ -157,6 +188,7 @@ export default function HotelSearchForm() {
 
   const handleLocationFocus = () => {
     setShowLocationSuggestions(true);
+    setShowLocationError(false);
   };
 
   // Close suggestions when clicking outside
@@ -183,7 +215,7 @@ export default function HotelSearchForm() {
               style={{ overflow: 'visible' }}
             >
               {/* Location Input */}
-              <div ref={locationRef}>
+              <div ref={locationRef} className="relative">
                 <LocationInput
                   destination={destination}
                   locationInputRef={locationInputRef}
@@ -191,6 +223,15 @@ export default function HotelSearchForm() {
                   onLocationClear={clearLocationSearch}
                   onLocationFocus={handleLocationFocus}
                 />
+                {/* Location Error Tooltip */}
+                {showLocationError && (
+                  <div className="absolute top-full left-0 mt-2 z-50 animate-fade-in">
+                    <div className="bg-red-500 text-white text-sm px-3 py-2 rounded-lg shadow-lg relative">
+                      <div className="absolute -top-1 left-8 w-2 h-2 bg-red-500 transform rotate-45"></div>
+                      <span>{t('search.selectLocation', 'Очих газраа сонгоно уу')}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Date Range Picker */}
@@ -226,7 +267,7 @@ export default function HotelSearchForm() {
               </div>
 
               {/* Search Button */}
-              <SearchButton onClick={() => {}} />
+              <SearchButton onClick={handleSearch} />
             </div>
           </form>
         </SearchFormContainer>

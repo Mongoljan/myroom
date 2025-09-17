@@ -44,7 +44,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
     <div className="bg-gray-50">
       {/* Hero section with ID for sticky nav detection */}
       <div id="hotel-hero" className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div id="overview">
             <EnhancedHotelDetail hotel={hotel} />
           </div>
@@ -56,17 +56,16 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
         activeSection={activeSection} 
         onSectionChange={handleSectionChange}
         hotelName={hotel.property_name}
-        price={hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 200000}
+        price={hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 0}
       />
 
       {/* Content Sections */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="space-y-8">
           {/* Rooms Section */}
           <div id="rooms">
-            <ImprovedHotelRoomsSection 
+            <ImprovedHotelRoomsSection
               hotelId={hotel.hotel_id}
-              hotelName={hotel.property_name}
               checkIn={searchParams?.check_in}
               checkOut={searchParams?.check_out}
             />
@@ -80,7 +79,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
           {/* Reviews Section */}
           <div id="reviews">
             <Suspense fallback={<div>Loading reviews...</div>}>
-              <HotelReviews rating={4.2} reviewCount={89} />
+              <HotelReviews rating={parseFloat(hotel.rating_stars.value) || 0} reviewCount={0} />
             </Suspense>
           </div>
 

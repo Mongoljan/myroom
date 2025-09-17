@@ -19,12 +19,12 @@ const Header1 = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Link href="/" className="flex items-center mr-8">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-800 to-blue-900 rounded-lg flex items-center justify-center mr-2 shadow-md">
-                    <span className="text-white font-bold text-lg">G</span>
-                  </div>
-                  <span className={`text-blue-900 ${TYPOGRAPHY.heading.h1} font-bold tracking-tight`}>GoTrip</span>
-                </div>
+             <div className="flex items-center space-x-2 ">
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-lg">MR</span>
+              </div>
+              <span className={TYPOGRAPHY.heading.h2}>MyRoom</span>
+            </div>
               </Link>
               
               <div className="hidden xl:block">
@@ -39,7 +39,7 @@ const Header1 = () => {
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  7777-7777
+                  9997-2626
                 </div>
               </div>
 

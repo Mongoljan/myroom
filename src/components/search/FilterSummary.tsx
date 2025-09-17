@@ -1,12 +1,19 @@
 'use client';
 
-import { useState, useCallback } from 'react';
-import { X, Filter } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useCallback } from 'react';
+import { X, Filter, Trash2 } from 'lucide-react';
 
 interface FilterState {
+  propertyTypes: number[];
+  popularSearches: string[];
   priceRange: [number, number];
+  roomFeatures: number[];
+  generalServices: number[];
+  bedTypes: string[];
+  popularPlaces: string[];
+  discounted: boolean;
   starRating: number[];
+  outdoorAreas: number[];
   facilities: string[];
   roomTypes: string[];
 }
@@ -15,6 +22,10 @@ interface FilterSummaryProps {
   filters: FilterState;
   onRemoveFilter: (filterType: string, value?: string | number) => void;
   onClearAll: () => void;
+  apiData?: {
+    property_types?: { id: number; name_mn: string; }[];
+    facilities?: { id: number; name_mn: string; }[];
+  } | null;
 }
 
 const formatPrice = (price: number) => {
@@ -36,14 +47,36 @@ const FACILITY_LABELS: Record<string, string> = {
   '24h': '24h Front Desk'
 };
 
-export default function FilterSummary({ filters, onRemoveFilter, onClearAll }: FilterSummaryProps) {
-  const [isVisible, setIsVisible] = useState(true);
+export default function FilterSummary({ filters, onRemoveFilter, onClearAll, apiData }: FilterSummaryProps) {
 
   const getActiveFilters = useCallback(() => {
-    const active = [];
-    
-    // Price range filter
-    if (filters.priceRange[0] > 0 || filters.priceRange[1] < 1000000) {
+    const active: { type: string; label: string; value: string | number }[] = [];
+
+    // Property types
+    if (filters.propertyTypes && filters.propertyTypes.length > 0) {
+      filters.propertyTypes.forEach(typeId => {
+        const propertyType = apiData?.property_types?.find(pt => pt.id === typeId);
+        active.push({
+          type: 'propertyTypes',
+          label: propertyType?.name_mn || `Property Type ${typeId}`,
+          value: typeId
+        });
+      });
+    }
+
+    // Popular searches
+    if (filters.popularSearches && filters.popularSearches.length > 0) {
+      filters.popularSearches.forEach(search => {
+        active.push({
+          type: 'popularSearches',
+          label: search,
+          value: search
+        });
+      });
+    }
+
+    // Price range filter - only show if different from default range
+    if (filters.priceRange && (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 1000000)) {
       active.push({
         type: 'priceRange',
         label: `${formatPrice(filters.priceRange[0])} - ${formatPrice(filters.priceRange[1])}`,
@@ -51,44 +84,113 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll }: F
       });
     }
 
+    // Room features
+    if (filters.roomFeatures && filters.roomFeatures.length > 0) {
+      filters.roomFeatures.forEach(featureId => {
+        const facility = apiData?.facilities?.find(f => f.id === featureId);
+        active.push({
+          type: 'roomFeatures',
+          label: facility?.name_mn || `Room Feature ${featureId}`,
+          value: featureId
+        });
+      });
+    }
+
+    // General services
+    if (filters.generalServices && filters.generalServices.length > 0) {
+      filters.generalServices.forEach(serviceId => {
+        const facility = apiData?.facilities?.find(f => f.id === serviceId);
+        active.push({
+          type: 'generalServices',
+          label: facility?.name_mn || `Service ${serviceId}`,
+          value: serviceId
+        });
+      });
+    }
+
+    // Bed types
+    if (filters.bedTypes && filters.bedTypes.length > 0) {
+      filters.bedTypes.forEach(bedType => {
+        active.push({
+          type: 'bedTypes',
+          label: bedType,
+          value: bedType
+        });
+      });
+    }
+
+    // Popular places
+    if (filters.popularPlaces && filters.popularPlaces.length > 0) {
+      filters.popularPlaces.forEach(place => {
+        active.push({
+          type: 'popularPlaces',
+          label: place,
+          value: place
+        });
+      });
+    }
+
+    // Discounted
+    if (filters.discounted) {
+      active.push({
+        type: 'discounted',
+        label: 'Хямдралтай үнэ',
+        value: 'discounted'
+      });
+    }
+
     // Star rating filters
-    filters.starRating.forEach(rating => {
-      active.push({
-        type: 'starRating',
-        label: `${rating}+ од`,
-        value: rating
+    if (filters.starRating && filters.starRating.length > 0) {
+      filters.starRating.forEach(rating => {
+        active.push({
+          type: 'starRating',
+          label: `${rating}+ од`,
+          value: rating
+        });
       });
-    });
+    }
 
-    // Facility filters
-    filters.facilities.forEach(facility => {
-      active.push({
-        type: 'facilities',
-        label: FACILITY_LABELS[facility] || facility,
-        value: facility
+    // Outdoor areas
+    if (filters.outdoorAreas && filters.outdoorAreas.length > 0) {
+      filters.outdoorAreas.forEach(areaId => {
+        const facility = apiData?.facilities?.find(f => f.id === areaId);
+        active.push({
+          type: 'outdoorAreas',
+          label: facility?.name_mn || `Outdoor ${areaId}`,
+          value: areaId
+        });
       });
-    });
+    }
 
-    // Room type filters
-    filters.roomTypes.forEach(roomType => {
-      active.push({
-        type: 'roomTypes',
-        label: roomType,
-        value: roomType
+    // Facility filters (legacy support)
+    if (filters.facilities && filters.facilities.length > 0) {
+      filters.facilities.forEach(facility => {
+        active.push({
+          type: 'facilities',
+          label: FACILITY_LABELS[facility] || facility,
+          value: facility
+        });
       });
-    });
+    }
+
+    // Room type filters (legacy support)
+    if (filters.roomTypes && filters.roomTypes.length > 0) {
+      filters.roomTypes.forEach(roomType => {
+        active.push({
+          type: 'roomTypes',
+          label: roomType,
+          value: roomType
+        });
+      });
+    }
 
     return active;
-  }, [filters]);
+  }, [filters, apiData]);
 
   const activeFilters = getActiveFilters();
 
-  if (activeFilters.length === 0 || !isVisible) {
-    return null;
-  }
-
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-3 mb-3">
+    <div className="bg-white ">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5">
           <Filter className="w-3.5 h-3.5 text-gray-600" />
@@ -96,30 +198,38 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll }: F
             Идэвхтэй шүүлтүүр ({activeFilters.length})
           </h3>
         </div>
-        <button
-          onClick={onClearAll}
-          className="text-xs text-blue-600 hover:text-blue-700 transition-colors"
-        >
-          Арилгах
-        </button>
+        {activeFilters.length > 0 && (
+        <div className="flex flex-wrap  gap-1.5">
+          {activeFilters.map((filter) => (
+            <div
+              key={`${filter.type}-${filter.value}`}
+              className="inline-flex items-center gap-1 px-2 py-1 bg-gray-50 text-gray-700 text-xs rounded-md border border-gray-200"
+            >
+              <span>{filter.label}</span>
+              <button
+                onClick={() => onRemoveFilter(filter.type, filter.value)}
+                className="hover:text-gray-900 transition-colors"
+              >
+                <X className="w-2.5 h-2.5" />
+              </button>
+              
+            </div>
+          ))}
+           {activeFilters.length > 0 && (
+          <button
+            onClick={onClearAll}
+            className="flex cursor-pointer items-center gap-1 text-xs ml-2 text-blue-500 hover:text-blue-800 transition-colors"
+          >
+            <Trash2 className="w-3 h-3" />
+            Бүгдийг устгах
+          </button>
+        )}
+        </div>
+      )}
+       
       </div>
 
-      <div className="flex flex-wrap gap-1.5">
-        {activeFilters.map((filter) => (
-          <div
-            key={`${filter.type}-${filter.value}`}
-            className="inline-flex items-center gap-1 px-2 py-1 bg-gray-50 text-gray-700 text-xs rounded-md border border-gray-200"
-          >
-            <span>{filter.label}</span>
-            <button
-              onClick={() => onRemoveFilter(filter.type, filter.value)}
-              className="hover:text-gray-900 transition-colors"
-            >
-              <X className="w-2.5 h-2.5" />
-            </button>
-          </div>
-        ))}
-      </div>
+      
     </div>
   );
 }

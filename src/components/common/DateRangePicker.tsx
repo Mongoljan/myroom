@@ -94,6 +94,23 @@ export default function DateRangePicker({
     };
   }, [isOpen]);
 
+  // Close picker when scrolling
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleScroll = () => {
+      setIsOpen(false);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('scroll', handleScroll);
+    };
+  }, [isOpen]);
+
   const formatDisplayDate = () => {
     if (!checkIn && !checkOut) return placeholder;
     

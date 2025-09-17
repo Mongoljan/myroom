@@ -20,7 +20,7 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
     { id: 'house-rules', label: t('hotel.houseRules', 'Дотоод журам') },
     { id: 'reviews', label: t('hotel.reviews', 'Шүүмж, үнэлгээ') },
     { id: 'facilities', label: t('hotel.facilities', 'Үйлчилгээ') },
-    { id: 'faq', label: t('hotel.faq', 'Тугээмал асуулт') },
+    { id: 'faq', label: t('hotel.faq', 'Түгээмэл асуулт') },
   ], [t]);
 
   useEffect(() => {
@@ -106,18 +106,18 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
     `}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {isSticky && (
-          <div className="flex items-center justify-between py-2 border-b border-gray-200">
+          <div className="flex items-center justify-between py-1.5 border-b border-gray-200">
             <div className="flex items-center">
-              <h1 className="font-semibold text-gray-900 mr-4">{hotelName}</h1>
+              <h1 className="font-medium text-gray-900 mr-3 text-sm">{hotelName}</h1>
             </div>
             <div className="flex items-center">
-              <div className="text-right mr-4">
-                <div className="text-sm text-gray-800">{t('hotel.priceFrom', 'Эхлэх үнэ')}</div>
-                <div className="font-bold text-blue-600">{price.toLocaleString()}₮</div>
+              <div className="text-right mr-3">
+                <div className="text-xs text-gray-800">{t('hotel.priceFrom', 'Эхлэх үнэ')}</div>
+                <div className="font-bold text-blue-600 text-sm">{price.toLocaleString()}₮</div>
               </div>
-              <button 
+              <button
                 onClick={() => scrollToSection('rooms')}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-blue-700 transition-colors"
               >
                 {t('hotel.bookNow', 'Өрөө сонгох')}
               </button>
@@ -125,13 +125,13 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
           </div>
         )}
         
-        <div className="flex items-center space-x-8 overflow-x-auto scrollbar-hide">
+        <div className="flex items-center space-x-6 overflow-x-auto scrollbar-hide">
           {sections.map((section) => (
             <button
               key={section.id}
               onClick={() => scrollToSection(section.id)}
               className={`
-                py-4 px-2 text-sm font-medium border-b-2 whitespace-nowrap transition-colors duration-200
+                py-3 px-2 text-xs font-medium border-b-2 whitespace-nowrap transition-colors duration-200
                 ${activeSection === section.id
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-gray-800 hover:text-gray-900 hover:border-gray-300'

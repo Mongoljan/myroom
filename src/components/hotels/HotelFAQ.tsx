@@ -83,7 +83,7 @@ export default function HotelFAQ({ hotelName, hotelFacilities = [] }: HotelFAQPr
     <section id="faq" className="py-8">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          {t('faq.title', 'Тугээмал асуулт, хариулт')}
+          {t('faq.title', 'Түгээмэл асуулт, хариулт')}
         </h2>
       </div>
 

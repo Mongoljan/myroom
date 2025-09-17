@@ -11,13 +11,26 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { locationService, type LocationSuggestion } from '@/services/locationApi';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
 import { TYPOGRAPHY } from '@/styles/containers';
+import Tooltip from '@/components/common/Tooltip';
 
 export default function ModernHero() {
   const { t } = useHydratedTranslation();
   const { recentSearches, saveSearch } = useRecentSearches();
+
+  // Helper functions for default dates
+  const getDefaultCheckInDate = () => {
+    return new Date().toISOString().split('T')[0]; // Today
+  };
+
+  const getDefaultCheckOutDate = () => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0]; // Tomorrow
+  };
+
   const [destination, setDestination] = useState('');
-  const [checkIn, setCheckIn] = useState('');
-  const [checkOut, setCheckOut] = useState('');
+  const [checkIn, setCheckIn] = useState(getDefaultCheckInDate());
+  const [checkOut, setCheckOut] = useState(getDefaultCheckOutDate());
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
@@ -27,6 +40,8 @@ export default function ModernHero() {
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [locationModalPosition, setLocationModalPosition] = useState({ top: 0, left: 0 });
+  const [showLocationTooltip, setShowLocationTooltip] = useState(false);
+  const hasInitializedFromRecentSearches = useRef(false);
   const router = useRouter();
   const locationRef = useRef<HTMLDivElement>(null);
   const locationInputRef = useRef<HTMLInputElement>(null);
@@ -58,22 +73,23 @@ export default function ModernHero() {
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    
-    // Use default dates if none are provided
-    const getDefaultCheckInDate = () => {
-      return new Date().toISOString().split('T')[0]; // Today
-    };
 
-    const getDefaultCheckOutDate = () => {
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      return tomorrow.toISOString().split('T')[0]; // Tomorrow
-    };
+    // Validate location selection - block search if no location
+    if (!destination || !selectedLocationSuggestion) {
+      // Close location suggestions modal first, then show tooltip
+      setShowLocationSuggestions(false);
+      setShowLocationTooltip(true);
+      locationInputRef.current?.focus();
+      // Hide tooltip after 3 seconds
+      setTimeout(() => setShowLocationTooltip(false), 3000);
+      return;
+    }
 
-    const finalCheckIn = checkIn || getDefaultCheckInDate();
-    const finalCheckOut = checkOut || getDefaultCheckOutDate();
-    
-    // Validate final dates
+    // Use current state values (already have defaults)
+    const finalCheckIn = checkIn;
+    const finalCheckOut = checkOut;
+
+    // Validate dates
     if (new Date(finalCheckOut) <= new Date(finalCheckIn)) {
       alert(t('hero.invalidDates', 'Check-out date must be after check-in date'));
       return;
@@ -198,10 +214,37 @@ export default function ModernHero() {
     }
   }, [showLocationSuggestions]);
 
+  // Close all modals when scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowLocationSuggestions(false);
+      setShowLocationTooltip(false);
+      // This will also close date picker and guest selector modals via their own scroll handlers
+    };
+
+    if (showLocationSuggestions || showLocationTooltip) {
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      document.addEventListener('scroll', handleScroll, { passive: true });
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        document.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [showLocationSuggestions, showLocationTooltip]);
+
   const handleLocationSelect = (suggestion: LocationSuggestion) => {
     setDestination(suggestion.fullName);
     setSelectedLocationSuggestion(suggestion);
     setShowLocationSuggestions(false);
+    setShowLocationTooltip(false);
+  };
+
+  const clearLocationSearch = () => {
+    setDestination('');
+    setSelectedLocationSuggestion(null);
+    setShowLocationSuggestions(false);
+    setShowLocationTooltip(false);
+    locationInputRef.current?.focus();
   };
 
   const getLocationIcon = (type: LocationSuggestion['type']) => {
@@ -454,10 +497,12 @@ export default function ModernHero() {
                         onChange={(e) => {
                           setDestination(e.target.value);
                           setSelectedLocationSuggestion(null); // Clear selected suggestion when user types
+                          setShowLocationTooltip(false); // Hide tooltip when typing
                         }}
                         onFocus={() => {
                           calculateLocationPosition();
                           setShowLocationSuggestions(true);
+                          setShowLocationTooltip(false);
                         }}
                         placeholder={t('search.locationPlaceholder')}
                         className={`w-full text-gray-900 placeholder-gray-400 border-none outline-none ${TYPOGRAPHY.form.input}`}
@@ -466,13 +511,23 @@ export default function ModernHero() {
                     </div>
                     {destination && (
                       <button
-                        onClick={() => setDestination('')}
+                        onClick={clearLocationSearch}
                         className="text-gray-400 hover:text-gray-600 ml-2"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     )}
                   </div>
+
+                  {/* Location Error Tooltip */}
+                  {showLocationTooltip && (
+                    <div className="absolute top-full left-0 mt-2 z-50 animate-fade-in">
+                      <div className="bg-red-500 text-white text-xs px-3 py-2 rounded-lg shadow-lg relative">
+                        <div className="absolute -top-1 left-8 w-2 h-2 bg-red-500 transform rotate-45"></div>
+                        <span>{t('search.selectLocation', 'Очих газраа сонгоно уу')}</span>
+                      </div>
+                    </div>
+                  )}
 
                 </div>
 

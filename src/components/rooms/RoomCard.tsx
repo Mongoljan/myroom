@@ -13,7 +13,7 @@ import {
   Calendar,
   Clock
 } from 'lucide-react';
-import { Room, AvailabilityResponse, AllRoomData, CombinedData } from '@/types/api';
+import { Room, AvailabilityResponse, AllRoomData, CombinedData, RoomPrice } from '@/types/api';
 import { ApiService, formatCurrency } from '@/services/api';
 import { IconMappingService } from '@/services/iconMappingService';
 
@@ -32,19 +32,27 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
   const [imageError, setImageError] = useState(false);
   const [roomData, setRoomData] = useState<AllRoomData | null>(null);
   const [combinedData, setCombinedData] = useState<CombinedData | null>(null);
+  const [roomPrice, setRoomPrice] = useState<RoomPrice | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        // Fetch room data for labels and combined data for facilities
-        const [roomDataResult, combinedDataResult] = await Promise.all([
+        // Fetch room data for labels, combined data for facilities, and room prices
+        const [roomDataResult, combinedDataResult, roomPricesResult] = await Promise.all([
           ApiService.getAllRoomData(),
-          ApiService.getCombinedData()
+          ApiService.getCombinedData(),
+          ApiService.getRoomPrices(hotelId)
         ]);
         setRoomData(roomDataResult);
         setCombinedData(combinedDataResult);
+
+        // Find price for this specific room
+        const matchingPrice = roomPricesResult.find(
+          price => price.room_type === room.room_type && price.room_category === room.room_category
+        );
+        setRoomPrice(matchingPrice || null);
 
         // Check availability if dates are provided
         if (checkIn && checkOut) {
@@ -70,7 +78,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
 
   const isAvailable = availability && availability.available_rooms > 0;
   const roomImage = room.images?.[0]?.image;
-  const basePrice = 150000; // Base price - you might want to get this from API
+  const basePrice = roomPrice?.base_price || 0; // Use API price or 0 as fallback
 
   // Helper functions to get names from IDs
   const getRoomTypeName = (typeId: number) => {
@@ -230,7 +238,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
         <div className="border-t pt-4 flex items-center justify-between">
           <div>
             <div className="text-2xl font-bold text-gray-900">
-              {formatCurrency(basePrice)}
+              {basePrice > 0 ? formatCurrency(basePrice) : ''}
             </div>
             <div className="text-sm text-gray-800">per night</div>
           </div>
