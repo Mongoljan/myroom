@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import BookingStyleHotelCard from './BookingStyleHotelCard';
 import SearchFilters from './SearchFilters';
@@ -105,9 +105,14 @@ export default function SearchResults() {
     roomTypes: []
   });
 
+  // Ref to guard against double invocation in React StrictMode
+  const hasFetchedRef = useRef(false);
+
   // Load hotels from API or mock data
   useEffect(() => {
     const loadHotels = async () => {
+      if (hasFetchedRef.current) return; // prevent duplicate fetch in dev StrictMode
+      hasFetchedRef.current = true;
       setLoading(true);
 
       // Load API data for filters using proper ApiService
@@ -142,7 +147,7 @@ export default function SearchResults() {
         const provinceId = searchParams.get('province_id');
         const soumId = searchParams.get('soum_id');
         const district = searchParams.get('district');
-        const location = searchParams.get('location');
+  const location = searchParams.get('location');
 
         if (nameId) {
           params.name_id = parseInt(nameId);
@@ -152,7 +157,7 @@ export default function SearchResults() {
           if (provinceId) params.province_id = parseInt(provinceId);
           if (soumId) params.soum_id = parseInt(soumId);
           if (district) params.district = district;
-        } else if (location) {
+        } else if (location && location.trim()) {
           params.location = location;
         }
 
@@ -169,6 +174,8 @@ export default function SearchResults() {
           params.check_out = checkInDate.toISOString().split('T')[0];
         }
 
+        const isSpecificQuery = !!params.name_id || !!params.name; // single hotel expectation
+
         try {
           const response = await ApiService.searchHotels(params) as SearchResponse;
           const results = response?.results || [];
@@ -176,31 +183,25 @@ export default function SearchResults() {
             hotel && hotel.hotel_id && hotel.property_name && hotel.location && hotel.rating_stars
           );
 
-          setHotels(validResults);
-          setFilteredHotels(validResults);
+          // If specific query expected but API returned many, attempt client-side narrow
+          let finalResults = validResults;
+          if (isSpecificQuery && params.name_id) {
+            finalResults = validResults.filter(h => h.hotel_id === params.name_id);
+          } else if (isSpecificQuery && params.name) {
+            const needle = params.name.toLowerCase();
+            finalResults = validResults.filter(h => h.property_name.toLowerCase().includes(needle));
+          }
+
+          setHotels(finalResults);
+          setFilteredHotels(finalResults);
         } catch (apiError) {
-          console.log('Real API failed, using mock data. Error:', apiError);
-          try {
-            const mockParams = {
-              location: params.location,
-              check_in: params.check_in,
-              check_out: params.check_out,
-              adults: params.adults,
-              children: params.children,
-              rooms: params.rooms,
-              acc_type: params.acc_type
-            };
-            const searchResponse = await ApiService.searchHotels(mockParams);
-            const apiResults = searchResponse?.results || [] as SearchHotelResult[];
-
-            const validResults = (apiResults || []).filter((hotel: SearchHotelResult) =>
-              hotel && hotel.hotel_id && hotel.property_name
-            );
-
-            setHotels(validResults);
-            setFilteredHotels(validResults);
-          } catch (apiError) {
-            console.error('API search failed:', apiError);
+          console.error('Primary search API failed:', apiError);
+          if (isSpecificQuery) {
+            // For specific queries, do NOT fallback to mock - show empty to be accurate
+            setHotels([]);
+            setFilteredHotels([]);
+          } else {
+            // Optional: could implement a lightweight fallback here. For now keep empty.
             setHotels([]);
             setFilteredHotels([]);
           }

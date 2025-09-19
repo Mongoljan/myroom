@@ -1,57 +1,40 @@
 import React from 'react';
-import { 
-  Users, 
-  Maximize, 
-  Wifi, 
-  Coffee, 
+import {
+  Users,
+  Wifi,
   Bath,
   Bed,
-  CheckCircle,
-  AlertCircle,
-  Calendar,
   Clock,
   WashingMachine,
   Tv,
   Wind,
   Phone,
   Shield,
-  Microwave,
-  Refrigerator,
-  Heater,
-  Lamp,
-  Star,
+  Sparkles,
+  Volume2,
+  Shirt,
+  Droplets,
+  TreePine,
   Armchair,
   Monitor,
   Utensils,
-  Car,
-  Dumbbell,
   Waves,
-  TreePine,
   Baby,
-  PawPrint,
   Cigarette,
-  Wine,
-  ShoppingBag,
-  Briefcase,
-  Sofa,
+  Star,
   Home,
-  Sparkles,
+  Microwave,
+  Refrigerator,
+  Coffee,
+  Wine,
   UtensilsCrossed,
-  AirVent,
-  Volume2,
-  Shirt,
-  Glasses,
-  Scissors,
-  SprayCan,
-  Droplets,
-  Flower2,
-  Sun,
-  Crown,
+  Zap,
   Mountain,
   Building2,
-  MapPin,
-  Eye,
-  Zap
+  Flower2,
+  SprayCan,
+  Scissors,
+  Heater
 } from 'lucide-react';
 
 export class IconMappingService {
@@ -70,7 +53,7 @@ export class IconMappingService {
         8: <Heater className="w-3 h-3 text-green-600" />, // Heating
         9: <Bath className="w-3 h-3 text-green-600" />, // Towels
         10: <Volume2 className="w-3 h-3 text-green-600" />, // Soundproofing
-        11: <Sofa className="w-3 h-3 text-green-600" />, // Sofa
+  11: <Armchair className="w-3 h-3 text-green-600" />, // Sofa (replaced)
         12: <Armchair className="w-3 h-3 text-green-600" />, // Sitting area
         13: <Cigarette className="w-3 h-3 text-green-600" />, // Smoking room
         14: <Bed className="w-3 h-3 text-green-600" />, // Extra beds available
@@ -139,7 +122,7 @@ export class IconMappingService {
         7: <Shirt className="w-3 h-3 text-blue-600" />, // Slippers
         8: <Shirt className="w-3 h-3 text-blue-600" />, // Bathrobe
         9: <Waves className="w-3 h-3 text-blue-600" />, // Spa bath
-        14: <Sun className="w-3 h-3 text-blue-600" />, // Sauna
+  14: <Sparkles className="w-3 h-3 text-blue-600" />, // Sauna (generic)
         17: <Bath className="w-3 h-3 text-blue-600" />, // Toilet
         18: <Bath className="w-3 h-3 text-blue-600" />, // Private bathroom
         19: <Users className="w-3 h-3 text-blue-600" />, // Shared bathroom
@@ -247,10 +230,10 @@ export class IconMappingService {
       if (nameLower.includes('mountain') || nameLower.includes('уул')) return <Mountain className="w-3 h-3 text-emerald-600" />;
       if (nameLower.includes('city') || nameLower.includes('хот')) return <Building2 className="w-3 h-3 text-emerald-600" />;
       if (nameLower.includes('balcony') || nameLower.includes('тагт')) return <Home className="w-3 h-3 text-emerald-600" />;
-      if (nameLower.includes('view') || nameLower.includes('харсан')) return <Eye className="w-3 h-3 text-emerald-600" />;
+  if (nameLower.includes('view') || nameLower.includes('харсан')) return <Home className="w-3 h-3 text-emerald-600" />; // generic view icon
     }
     
-    return <Eye className="w-3 h-3 text-emerald-600" />;
+  return <Home className="w-3 h-3 text-emerald-600" />;
   }
 
   // Room types icons - all 8 types from /api/all-data/
@@ -264,7 +247,7 @@ export class IconMappingService {
         10: <Bed className="w-4 h-4 text-indigo-600" />, // Triple
         11: <Users className="w-4 h-4 text-indigo-600" />, // Family
         13: <Home className="w-4 h-4 text-indigo-600" />, // Apartment
-        15: <Crown className="w-4 h-4 text-indigo-600" />, // King
+  15: <Bed className="w-4 h-4 text-indigo-600" />, // King (generic bed)
       };
       
       if (iconMap[typeId]) {
@@ -281,13 +264,13 @@ export class IconMappingService {
       const iconMap: { [key: number]: React.ReactNode } = {
         12: <Bed className="w-4 h-4 text-slate-600" />, // 1 хүний ор
         13: <Bed className="w-4 h-4 text-slate-600" />, // 2 хүний ор
-        14: <Crown className="w-4 h-4 text-slate-600" />, // Том ор / King size
+  14: <Bed className="w-4 h-4 text-slate-600" />, // Том ор / King size
         15: <Bed className="w-4 h-4 text-slate-600" />, // Нэмэлт ор
-        16: <Sofa className="w-4 h-4 text-slate-600" />, // Буйдан
+  16: <Armchair className="w-4 h-4 text-slate-600" />, // Буйдан
         17: <Bed className="w-4 h-4 text-slate-600" />, // Single bed (90-130cm)
         18: <Bed className="w-4 h-4 text-slate-600" />, // Double bed (131-150cm)
-        19: <Crown className="w-4 h-4 text-slate-600" />, // King bed (151-180cm)
-        20: <Crown className="w-4 h-4 text-slate-600" />, // Super king (181-210cm)
+  19: <Bed className="w-4 h-4 text-slate-600" />, // King bed (151-180cm)
+  20: <Bed className="w-4 h-4 text-slate-600" />, // Super king (181-210cm)
       };
       
       if (iconMap[bedTypeId]) {
@@ -304,12 +287,12 @@ export class IconMappingService {
       const iconMap: { [key: number]: React.ReactNode } = {
         3: <Star className="w-4 h-4 text-yellow-600" />, // Standard Room
         5: <Star className="w-4 h-4 text-yellow-600" />, // Superior Room
-        6: <Crown className="w-4 h-4 text-yellow-600" />, // Deluxe Room
-        7: <Crown className="w-4 h-4 text-yellow-600" />, // Suite Room
-        8: <Crown className="w-4 h-4 text-yellow-600" />, // Junior Suite Room
-        9: <Briefcase className="w-4 h-4 text-yellow-600" />, // Executive Room
-        10: <Crown className="w-4 h-4 text-yellow-600" />, // Presidential Room
-        11: <Crown className="w-4 h-4 text-yellow-600" />, // Penthouse Suite
+  6: <Star className="w-4 h-4 text-yellow-600" />, // Deluxe Room
+  7: <Star className="w-4 h-4 text-yellow-600" />, // Suite Room
+  8: <Star className="w-4 h-4 text-yellow-600" />, // Junior Suite Room
+  9: <Home className="w-4 h-4 text-yellow-600" />, // Executive Room
+  10: <Star className="w-4 h-4 text-yellow-600" />, // Presidential Room
+  11: <Star className="w-4 h-4 text-yellow-600" />, // Penthouse Suite
         12: <Users className="w-4 h-4 text-yellow-600" />, // Family Room
         13: <Users className="w-4 h-4 text-yellow-600" />, // Connecting Rooms
         14: <Users className="w-4 h-4 text-yellow-600" />, // Accessible Room

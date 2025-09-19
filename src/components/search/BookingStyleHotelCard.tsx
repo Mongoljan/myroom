@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { Star, MapPin, CheckCircle, Heart, Bed, User, Wifi, Car, Utensils, Users, Dumbbell, Clock, Info, Baby, UserX } from 'lucide-react';
-import { SearchHotelResult, AdditionalInfo, PropertyDetails, RoomPrice, Room, RoomType, BedType, RoomCategory, AvailabilityResponse } from '@/types/api';
+import { Star, MapPin, CheckCircle, Heart, Wifi, Car, Utensils, Users, Dumbbell, Clock } from 'lucide-react';
+import { SearchHotelResult, AdditionalInfo, PropertyDetails, RoomPrice, Room } from '@/types/api';
 import { SEARCH_DESIGN_SYSTEM, getRoomCapacityIcon, getBedTypeIcon } from '@/styles/search-design-system';
 import { useState, useEffect } from 'react';
 import { ApiService } from '@/services/api';
@@ -30,7 +30,12 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
   const [roomPrices, setRoomPrices] = useState<RoomPrice[]>([]);
   const [cheapestRoom, setCheapestRoom] = useState<Room | null>(null);
   const [cheapestPrice, setCheapestPrice] = useState<RoomPrice | null>(null);
-  const [roomData, setRoomData] = useState<any>(null);
+  interface RoomReferenceData {
+    room_types?: { id: number; name: string }[];
+    room_rates?: { id: number; name: string }[];
+    bed_types?: { id: number; name: string }[];
+  }
+  const [roomData, setRoomData] = useState<RoomReferenceData | null>(null);
   const [roomAvailability, setRoomAvailability] = useState<number | null>(null);
   const [availableRoomsWithPrice, setAvailableRoomsWithPrice] = useState<number>(0);
   
@@ -53,11 +58,11 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
 
   // Helper functions to get names from IDs
   const getRoomTypeName = (id: number) => {
-    return roomData?.room_types?.find((rt: any) => rt.id === id)?.name || 'Room';
+    return roomData?.room_types?.find(rt => rt.id === id)?.name || 'Room';
   };
 
   const getRoomCategoryName = (id: number) => {
-    return roomData?.room_rates?.find((rr: any) => rr.id === id)?.name || 'Room';
+    return roomData?.room_rates?.find(rr => rr.id === id)?.name || 'Room';
   };
 
   // Helper to render capacity icon based on room capacity
@@ -72,7 +77,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
 
   // Helper to get bed icon based on bed type
   const renderBedIcon = (bedTypeId: number) => {
-    const bedType = roomData?.bed_types?.find((bt: any) => bt.id === bedTypeId);
+  const bedType = roomData?.bed_types?.find(bt => bt.id === bedTypeId);
     if (!bedType) return <span className="text-sm">🛏️</span>;
 
     const icon = getBedTypeIcon(bedType.name);
