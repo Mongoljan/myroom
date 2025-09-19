@@ -125,36 +125,36 @@ export default function RoomCard({
           {/* Facilities */}
           <div className="space-y-2">
             {/* Room Facilities */}
-            {room.facilitiesDetails && room.facilitiesDetails.length > 0 && (
+            {Array.isArray(room.facilitiesDetails) && room.facilitiesDetails.length > 0 && (
               <div className="flex items-start gap-2">
                 <Home className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-gray-700">
                   <span className="font-medium">Facilities:</span>{' '}
-                  {room.facilitiesDetails.slice(0, 4).map(f => f.name).join(', ')}
+                  {room.facilitiesDetails.slice(0, 4).map(f => f.name_mn || f.name_en).join(', ')}
                   {room.facilitiesDetails.length > 4 && ` (+${room.facilitiesDetails.length - 4} more)`}
                 </div>
               </div>
             )}
 
             {/* Bathroom */}
-            {room.bathroomItemsDetails && room.bathroomItemsDetails.length > 0 && (
+            {Array.isArray(room.bathroomItemsDetails) && room.bathroomItemsDetails.length > 0 && (
               <div className="flex items-start gap-2">
                 <Bath className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-gray-700">
                   <span className="font-medium">Bathroom:</span>{' '}
-                  {room.bathroomItemsDetails.slice(0, 3).map(b => b.name).join(', ')}
+                  {room.bathroomItemsDetails.slice(0, 3).map(b => b.name_mn || b.name_en).join(', ')}
                   {room.bathroomItemsDetails.length > 3 && ` (+${room.bathroomItemsDetails.length - 3} more)`}
                 </div>
               </div>
             )}
 
             {/* Food & Drink */}
-            {room.foodAndDrinkDetails && room.foodAndDrinkDetails.length > 0 && (
+            {Array.isArray(room.foodAndDrinkDetails) && room.foodAndDrinkDetails.length > 0 && (
               <div className="flex items-start gap-2">
                 <Coffee className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-gray-700">
                   <span className="font-medium">Food & Drink:</span>{' '}
-                  {room.foodAndDrinkDetails.slice(0, 3).map(f => f.name).join(', ')}
+                  {room.foodAndDrinkDetails.slice(0, 3).map(f => f.name_mn || f.name_en).join(', ')}
                   {room.foodAndDrinkDetails.length > 3 && ` (+${room.foodAndDrinkDetails.length - 3} more)`}
                 </div>
               </div>

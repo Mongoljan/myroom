@@ -5,7 +5,7 @@ import { Search } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface SearchButtonProps {
-  onClick: () => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export default function SearchButton({ onClick }: SearchButtonProps) {

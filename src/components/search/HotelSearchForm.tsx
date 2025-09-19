@@ -266,8 +266,8 @@ export default function HotelSearchForm() {
                 />
               </div>
 
-              {/* Search Button */}
-              <SearchButton onClick={handleSearch} />
+              {/* Search Button (submit triggers form onSubmit) */}
+              <SearchButton />
             </div>
           </form>
         </SearchFormContainer>
