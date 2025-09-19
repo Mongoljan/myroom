@@ -1,20 +1,12 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import {
-  ArrowLeft,
-  CheckCircle,
-  Clock,
-  Calendar,
-  Users,
-  Bed,
-  X
-} from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, Calendar, Users, Bed } from 'lucide-react';
 import { BookingService } from '@/services/bookingApi';
 import { CreateBookingRequest, CreateBookingResponse } from '@/types/api';
-import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface BookingRoom {
   room_category_id: number;
@@ -24,8 +16,7 @@ interface BookingRoom {
   price: number;
 }
 
-export default function BookingPage() {
-  const { t } = useHydratedTranslation();
+function BookingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -328,5 +319,14 @@ export default function BookingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrap the component that uses useSearchParams in a Suspense boundary to satisfy Next.js requirements
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-gray-600">Loading booking details...</div>}>
+      <BookingContent />
+    </Suspense>
   );
 }

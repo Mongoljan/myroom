@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { MapPin, Clock, X } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { locationService, type LocationSuggestion } from '@/services/locationApi';
@@ -15,52 +15,38 @@ interface LocationSuggestionsProps {
   locationModalPosition: { top: number; left: number };
   recentSearches: Array<{
     id: string;
-    location: {
-      name: string;
-    };
+    location: { name: string };
     checkIn: string;
     checkOut: string;
-    guests: {
-      adults: number;
-      children: number;
-      rooms: number;
-    };
+    guests: { adults: number; children: number; rooms: number };
   }>;
   onDestinationChange: (value: string) => void;
   onLocationSelect: (suggestion: LocationSuggestion) => void;
   onRecentSearchSelect: (search: {
     id: string;
-    location: {
-      name: string;
-    };
+    location: { name: string };
     checkIn: string;
     checkOut: string;
-    guests: {
-      adults: number;
-      children: number;
-      rooms: number;
-    };
+    guests: { adults: number; children: number; rooms: number };
   }) => void;
   onClose: () => void;
   locationInputRef: React.RefObject<HTMLInputElement | null>;
   locationDropdownRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export default function LocationSuggestions({
-  destination,
-  showLocationSuggestions,
-  locationSuggestions,
-  selectedLocationSuggestion,
-  isLoadingSuggestions,
-  locationModalPosition,
-  recentSearches,
-  onDestinationChange,
-  onLocationSelect,
-  onRecentSearchSelect,
-  onClose,
-  locationInputRef,
-  locationDropdownRef
-}: LocationSuggestionsProps) {
+export default function LocationSuggestions(props: LocationSuggestionsProps) {
+  const {
+    destination,
+    showLocationSuggestions,
+    locationSuggestions,
+    isLoadingSuggestions,
+    locationModalPosition,
+    recentSearches,
+    onLocationSelect,
+    onRecentSearchSelect,
+    onClose,
+    locationDropdownRef
+  } = props;
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {

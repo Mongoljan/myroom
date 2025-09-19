@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  Star, MapPin, Wifi, ChevronLeft, ChevronRight, Building, Users, Calendar,
+  Star, MapPin, Wifi, ChevronLeft, ChevronRight, Building, Users,
   Car, Coffee, Utensils, Dumbbell, Waves, Wind, Phone,
   Wine, Briefcase, PawPrint, Cigarette, Clock, 
   ShoppingBag, Palmtree, Bus, WashingMachine, Heater, Bell, Mountain

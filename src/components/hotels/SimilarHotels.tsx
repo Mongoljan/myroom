@@ -6,7 +6,7 @@ import { Star, MapPin } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import SafeImage from '@/components/common/SafeImage';
 import { ApiService } from '@/services/api';
-import { SearchHotelResult, RoomPrice } from '@/types/api';
+import { SearchHotelResult } from '@/types/api';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 
 interface HotelWithPrices extends SearchHotelResult {
