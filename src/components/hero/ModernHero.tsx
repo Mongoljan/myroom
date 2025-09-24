@@ -408,7 +408,7 @@ export default function ModernHero() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="block"
               >
-                {t('hero.findPerfect', 'Төгс хүссэн')}
+                {t('hero.findPerfect')}
               </motion.span>
               <motion.span 
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -417,7 +417,7 @@ export default function ModernHero() {
                 className="block relative"
               >
                 <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                  {t('hero.hotelStay', 'Зочид буудал')}
+                  {t('hero.hotelStay')}
                 </span>
               </motion.span>
             </motion.h1>
@@ -435,7 +435,7 @@ export default function ModernHero() {
                 transition={{ duration: 0.8, delay: 1.0 }}
                 className="text-gray-300"
               >
-                {t('hero.discoverHotels', 'Дэлхий даяар шилдэг зочид буудлуудыг олж, шууд захиалаарай')}
+                {t('hero.discoverHotels')}
               </motion.span>
             </motion.div>
           </motion.div>
@@ -524,7 +524,7 @@ export default function ModernHero() {
                     <div className="absolute top-full left-0 mt-2 z-50 animate-fade-in">
                       <div className="bg-red-500 text-white text-xs px-3 py-2 rounded-lg shadow-lg relative">
                         <div className="absolute -top-1 left-8 w-2 h-2 bg-red-500 transform rotate-45"></div>
-                        <span>{t('search.selectLocation', 'Очих газраа сонгоно уу')}</span>
+                        <span>{t('search.selectLocation')}</span>
                       </div>
                     </div>
                   )}
@@ -553,7 +553,7 @@ export default function ModernHero() {
                             <div className="mb-4">
                               <div className={`${TYPOGRAPHY.body.caption} text-gray-500 mb-2 flex items-center`}>
                                 <Clock className="w-3 h-3 mr-1" />
-                                Сүүлийн хайлтууд
+                                {t('search.recentSearches')}
                               </div>
                               <div className="space-y-1">
                                 {recentSearches.map((search) => (
@@ -570,7 +570,7 @@ export default function ModernHero() {
                                         {search.location.fullName}
                                       </div>
                                       <div className={`${TYPOGRAPHY.body.caption} text-gray-500`}>
-                                        {search.checkIn} - {search.checkOut} • {search.guests.adults} том хүн, {search.guests.children} хүүхэд • {search.guests.rooms} өрөө
+                                        {search.checkIn} - {search.checkOut} • {search.guests.adults} {t('search.adults').toLowerCase()}, {search.guests.children} {t('search.children').toLowerCase()} • {search.guests.rooms} {t('search.rooms').toLowerCase()}
                                       </div>
                                     </div>
                                   </button>
@@ -582,7 +582,7 @@ export default function ModernHero() {
 
                           {/* Popular Locations / Search Results Section */}
                           <div className={`${TYPOGRAPHY.body.caption} text-gray-500 mb-2`}>
-                            {destination.length < 2 ? 'Алдартай байршлууд' : 'Хайлтын үр дүн'}
+                            {destination.length < 2 ? t('search.popularLocations') : t('search.searchResults')}
                           </div>
                           
                           {isLoadingSuggestions ? (
@@ -605,14 +605,14 @@ export default function ModernHero() {
                                       {suggestion.fullName}
                                     </div>
                                     <div className={`${TYPOGRAPHY.body.caption} text-gray-500`}>
-                                      {suggestion.type === 'property' ? 'Зочид буудал' : `${suggestion.property_count} буудал`}
+                                      {suggestion.type === 'property' ? t('search.property') : t('search.hotelsCount', { count: suggestion.property_count })}
                                     </div>
                                   </div>
                                 </button>
                               ))}
                               {locationSuggestions.length === 0 && !isLoadingSuggestions && (
                                 <div className="text-sm text-gray-500 text-center py-3">
-                                  Хайлтын үр дүн олдсонгүй
+                                  {t('search.noResults')}
                                 </div>
                               )}
                             </div>

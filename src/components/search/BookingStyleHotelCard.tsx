@@ -6,6 +6,7 @@ import { SearchHotelResult, AdditionalInfo, PropertyDetails, RoomPrice, Room } f
 import { SEARCH_DESIGN_SYSTEM, getRoomCapacityIcon, getBedTypeIcon } from '@/styles/search-design-system';
 import { useState, useEffect } from 'react';
 import { ApiService } from '@/services/api';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface HotelCardProps {
   hotel: SearchHotelResult;
@@ -25,6 +26,7 @@ const facilityIcons: { [key: string]: React.ReactNode } = {
 };
 
 export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: HotelCardProps) {
+  const { t } = useHydratedTranslation();
   const [propertyDetails, setPropertyDetails] = useState<PropertyDetails | null>(null);
   const [additionalInfo, setAdditionalInfo] = useState<AdditionalInfo | null>(null);
   const [roomPrices, setRoomPrices] = useState<RoomPrice[]>([]);
@@ -69,7 +71,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
   const renderCapacityIcon = (adults: number, children: number = 0) => {
     const icon = getRoomCapacityIcon(adults, children);
     return (
-      <span className="text-sm" title={`${adults + children} guests`}>
+      <span className="text-sm" title={`${adults + children} ${t('search.guests')}`}>
         {icon}
       </span>
     );
@@ -303,7 +305,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                       </div>
                       {((roomAvailability !== null ? roomAvailability : availableRoomsWithPrice) > 0) && (
                         <div className={`${SEARCH_DESIGN_SYSTEM.COLORS.TEXT_GREEN} ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.BUTTON_TEXT_SMALL}`}>
-                          {roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} available
+                          {roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} {t('hotel.available')}
                         </div>
                       )}
                     </div>
@@ -331,7 +333,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
 
                       {cheapestRoom.is_Bathroom && (
                         <div className="text-blue-600">
-                          <span>Хувийн угаалгын өрөө</span>
+                          <span>{t('roomCard.bathroom')}</span>
                         </div>
                       )}
                     </div>
@@ -339,7 +341,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                     {/* Pricing - Clean */}
                     <div className="flex items-center justify-between pt-1.5 border-t border-blue-100">
                       <div className="text-xs text-gray-500">
-                        {nights} nights, {rooms} room{rooms > 1 ? 's' : ''}
+                        {nights} {nights > 1 ? t('hotel.nights') : t('hotel.night')}, {rooms} {t('hotel.rooms')}
                       </div>
                       <div className="text-right">
                         <div className={SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.PRICE_SECONDARY}>{formatPrice(cheapestPrice.base_price * nights * rooms)}₮</div>
@@ -351,7 +353,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   
                 </div>
                 <button className={`bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 ${SEARCH_DESIGN_SYSTEM.RADIUS.DEFAULT} ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.BUTTON_TEXT_SMALL} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT}`}>
-              Захиалах
+              {t('hotel.bookNow')}
                 </button>
               </div>
                   </div>
@@ -429,11 +431,11 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
               <div className="border-t border-gray-100 pt-1.5">
                 <div className="flex items-end justify-between">
                   <div>
-                    <div className="text-xs text-gray-500">эхлэх үнэ</div>
+                    <div className="text-xs text-gray-500">{t('hotel.cheapestRoom')}</div>
                     <div className={SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.PRICE_SMALL}>₮{formatPrice(roomPrice)}</div>
                   </div>
                   <button className={`bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 ${SEARCH_DESIGN_SYSTEM.RADIUS.DEFAULT} ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.BUTTON_TEXT_SMALL} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT}`}>
-                    үзэх
+                    {t('hotel.viewDetails')}
                   </button>
                 </div>
               </div>

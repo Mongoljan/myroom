@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import { LocationSuggestion } from '@/services/locationApi';
 import { RecentSearch } from '@/hooks/useRecentSearches';
 import { RefObject } from 'react';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface LocationSuggestionsModalProps {
   isClient: boolean;
@@ -30,6 +31,7 @@ export default function LocationSuggestionsModal({
   locationSuggestions,
   onLocationSelect
 }: LocationSuggestionsModalProps) {
+  const { t } = useHydratedTranslation();
   if (!isClient || !showLocationSuggestions || typeof document === 'undefined') {
     return null;
   }
@@ -55,7 +57,7 @@ export default function LocationSuggestionsModal({
             <div className="mb-4">
               <div className="text-xs text-gray-500 mb-2 flex items-center">
                 <Clock className="w-3 h-3 mr-1" />
-                Сүүлийн хайлтууд
+                {t('search.recentSearches')}
               </div>
               <div className="space-y-1">
                 {recentSearches.map((search) => (
@@ -72,7 +74,7 @@ export default function LocationSuggestionsModal({
                         {search.location.fullName}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {search.checkIn} - {search.checkOut} • {search.guests.adults} том хүн, {search.guests.children} хүүхэд • {search.guests.rooms} өрөө
+                        {search.checkIn} - {search.checkOut} • {search.guests.adults} {t('hotel.adults')}, {search.guests.children} {t('hotel.children')} • {search.guests.rooms} {t('hotel.rooms')}
                       </div>
                     </div>
                   </button>
@@ -84,7 +86,7 @@ export default function LocationSuggestionsModal({
 
           {/* Popular Locations / Search Results Section */}
           <div className="text-xs text-gray-500 mb-2">
-            {destination.length < 2 ? 'Алдартай байршлууд' : 'Хайлтын үр дүн'}
+            {destination.length < 2 ? t('search.popularLocations') : t('search.searchResults')}
           </div>
           
           {isLoadingSuggestions ? (
@@ -111,14 +113,14 @@ export default function LocationSuggestionsModal({
                       {suggestion.fullName}
                     </div>
                     <div className="text-xs text-gray-500">
-                      {suggestion.type === 'property' ? 'Зочид буудал' : `${suggestion.property_count} буудал`}
+                      {suggestion.type === 'property' ? t('search.property') : t('search.hotelsCount', { count: suggestion.property_count })}
                     </div>
                   </div>
                 </button>
               ))}
               {locationSuggestions.length === 0 && !isLoadingSuggestions && (
                 <div className="text-sm text-gray-500 text-center py-3">
-                  Хайлтын үр дүн олдсонгүй
+                  {t('search.noResults')}
                 </div>
               )}
             </div>

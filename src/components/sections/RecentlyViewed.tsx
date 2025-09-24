@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { SearchHotelResult } from '@/types/api';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface RecentHotel {
   id: string;
@@ -20,6 +21,7 @@ interface RecentHotel {
 }
 
 export default function RecentlyViewed() {
+  const { t } = useHydratedTranslation();
   const { recentlyViewed } = useRecentlyViewed();
   const [recentHotels, setRecentHotels] = useState<RecentHotel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -139,11 +141,9 @@ export default function RecentlyViewed() {
           className="mb-4"
         >
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">Сүүлд үзсэн</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">{t('hotel.recentlyViewed')}</h2>
             <p className="text-sm text-gray-600">
-              {recentHotels.length === 1 
-                ? 'Сүүлд үзсэн зочид буудал' 
-                : `Сүүлд үзсэн ${recentHotels.length} зочид буудал`}
+              {t('hotel.recentlyViewedCount', { count: recentHotels.length })}
             </p>
           </div>
         </motion.div>

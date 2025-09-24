@@ -228,7 +228,7 @@ export default function HotelSearchForm() {
                   <div className="absolute top-full left-0 mt-2 z-50 animate-fade-in">
                     <div className="bg-red-500 text-white text-sm px-3 py-2 rounded-lg shadow-lg relative">
                       <div className="absolute -top-1 left-8 w-2 h-2 bg-red-500 transform rotate-45"></div>
-                      <span>{t('search.selectLocation', 'Очих газраа сонгоно уу')}</span>
+                      <span>{t('search.selectLocation')}</span>
                     </div>
                   </div>
                 )}
@@ -247,7 +247,7 @@ export default function HotelSearchForm() {
                           setCheckIn(newCheckIn);
                           setCheckOut(newCheckOut);
                         }}
-                        placeholder={t('search.selectDates', 'Огноо сонгох')}
+                        placeholder={t('search.selectDates')}
                         minimal={true}
                       />
                     </div>

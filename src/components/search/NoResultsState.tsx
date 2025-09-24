@@ -1,12 +1,14 @@
 'use client';
 
 import { MapPin } from 'lucide-react';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface NoResultsStateProps {
   searchParams: URLSearchParams;
 }
 
 export default function NoResultsState({ searchParams }: NoResultsStateProps) {
+  const { t, i18n } = useHydratedTranslation();
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
       <div className="max-w-lg mx-auto">
@@ -18,15 +20,15 @@ export default function NoResultsState({ searchParams }: NoResultsStateProps) {
         </div>
 
         <h3 className="text-3xl font-bold text-gray-900 mb-4">
-          Зочид буудал олдсонгүй
+          {t('hotel.noResults')}
         </h3>
 
         <p className="text-gray-800 mb-2 text-lg leading-relaxed">
-          Таны хайлтын шалгуурт тохирох зочид буудал олдсонгүй.
+          {t('hotel.noResultsMessage')}
         </p>
 
         <p className="text-gray-900 mb-8">
-          Хайлтын нөхцөлөө өөрчилж эсвэл шүүлтүүрээ шинэчилж үзээрэй.
+          {t('search.tryAnotherKeyword')}
         </p>
 
         <div className="space-y-4">
@@ -37,7 +39,7 @@ export default function NoResultsState({ searchParams }: NoResultsStateProps) {
               }}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200"
             >
-              Шүүлтүүр тайлах
+              {t('filters.clearFilters')}
             </button>
             <button
               onClick={() => {
@@ -45,15 +47,19 @@ export default function NoResultsState({ searchParams }: NoResultsStateProps) {
               }}
               className="px-6 py-3 border border-gray-300 text-gray-900 rounded-lg font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
             >
-              Шинэ хайлт хийх
+              {t('common.search')}
             </button>
           </div>
 
           {/* Popular destinations suggestion */}
           <div className="pt-4 border-t border-gray-200">
-            <p className="text-sm text-gray-800 mb-3">Алдартай хотод хайлт хийээрэй:</p>
+            <p className="text-sm text-gray-800 mb-3">{t('home.popularDestinationsTitle')}</p>
             <div className="flex flex-wrap gap-2 justify-center">
-              {['Улаанбаатар', 'Мөрөн', 'Эрдэнэт'].map((city) => (
+              {[
+                t('destinations.ulaanbaatar'),
+                'Мөрөн',
+                t('destinations.erdenet')
+              ].map((city) => (
                 <button
                   key={city}
                   className="px-3 py-1.5 text-sm bg-gray-100 text-gray-900 rounded-full hover:bg-blue-100 hover:text-blue-700 transition-colors"

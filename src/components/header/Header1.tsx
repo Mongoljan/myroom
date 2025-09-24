@@ -49,7 +49,7 @@ const Header1 = () => {
                   href="/booking/manage"
                   className={`text-blue-900 hover:text-blue-800 transition-colors ${TYPOGRAPHY.nav.primary} font-medium`}
                 >
-                  {t('navigation.checkOrder', 'захиалга шалгах')}
+                  {t('navigation.manageBooking')}
                 </Link>
               </div>
 
@@ -64,13 +64,13 @@ const Header1 = () => {
                   href="/hotel-login"
                   className={`px-4 py-2.5 bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ${TYPOGRAPHY.button.standard} font-medium`}
                 >
-                  {t('navigation.hotelLogin', 'буудлаар нэвтрэх')}
+                  {t('navigation.hotelLogin')}
                 </Link>
                 <Link
                   href="/login"
                   className={`px-4 py-2.5 bg-white/80 border border-blue-200 text-blue-900 rounded-lg hover:bg-blue-50/50 hover:border-blue-300 transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
                 >
-                  {t('navigation.loginRegister', 'нэвтрэх/бүртгүүлэх')}
+                  {t('navigation.loginRegister')}
                 </Link>
               </div>
 

@@ -3,6 +3,7 @@
 import { MapPin, List, Grid3X3 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import FilterSummary from './FilterSummary';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface FilterState {
   propertyTypes: number[];
@@ -59,6 +60,7 @@ export default function SearchResultsHeader({
   onClearAllFilters,
   apiData
 }: SearchResultsHeaderProps) {
+  const { t } = useHydratedTranslation();
   return (
     <div className="space-y-4">
       {/* Filter Summary - Trip.com style */}
@@ -74,12 +76,8 @@ export default function SearchResultsHeader({
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ">
             <div className="flex-1">
               <h1 className="text-lg font-semibold text-gray-900 mb-1">
-                {searchLocation ? `${searchLocation} дэх зочид буудлууд` : 'Нийт:'} 
-              
-              <span className="text-lg font-semibold text-gray-900"> {filteredCount}</span>
-
-             
-   
+                {searchLocation ? `${searchLocation}` : t('hotel.title')}: 
+                <span className="text-lg font-semibold text-gray-900"> {filteredCount}</span>
               </h1>
 
             </div>
@@ -106,10 +104,10 @@ export default function SearchResultsHeader({
                   onChange={(e) => onSort(e.target.value)}
                   className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[190px]"
                 >
-                  <option value="price_low">Үнэ: бага → их</option>
-                  <option value="price_high">Үнэ: их → бага</option>
-                  <option value="rating">Үнэлгээгээр</option>
-                  <option value="name">Нэрээр А-Я</option>
+                  <option value="price_low">{t('search.sortBy')}: {t('hotel.pricePerNight')} ↑</option>
+                  <option value="price_high">{t('search.sortBy')}: {t('hotel.pricePerNight')} ↓</option>
+                  <option value="rating">{t('search.rating')}</option>
+                  <option value="name">{t('common.readMore')} A-Z</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none ">
                   <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,7 +130,7 @@ export default function SearchResultsHeader({
                   }`}
                 >
                   <List className="w-4 h-4" />
-                  <span>Жагсаалт</span>
+                  <span>List</span>
                 </button>
                 <button
                   onClick={() => onViewModeChange('grid')}
@@ -143,7 +141,7 @@ export default function SearchResultsHeader({
                   }`}
                 >
                   <Grid3X3 className="w-4 h-4" />
-                  <span>Грид</span>
+                  <span>Grid</span>
                 </button>
               </div>
             </div>

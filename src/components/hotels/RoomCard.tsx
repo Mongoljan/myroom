@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Bed, User, Clock, Home, Bath, Coffee, Baby } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
 import { EnrichedHotelRoom } from '@/services/hotelRoomsApi';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 export interface RoomPriceOptions {
   basePrice: number;
@@ -32,6 +33,7 @@ export default function RoomCard({
   bookingItems,
   onQuantityChange
 }: RoomCardProps) {
+  const { t } = useHydratedTranslation();
   const getRoomQuantity = (priceType: 'base' | 'halfDay' | 'singlePerson'): number => {
     const item = bookingItems.find(item => item.room.id === room.id && item.priceType === priceType);
     return item?.quantity || 0;
@@ -99,7 +101,7 @@ export default function RoomCard({
           <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-1">
               <Home className="w-4 h-4" />
-              <span>{room.room_size}m²</span>
+              <span>{t('roomCard.squareMeters', { count: Number(room.room_size) || 0 })}</span>
             </div>
             <div className="flex items-center gap-1">
               {/* Show individual icons for each person */}
@@ -112,13 +114,13 @@ export default function RoomCard({
                 ))}
               </div>
               <span>
-                {room.adultQty} adult{room.adultQty > 1 ? 's' : ''}
-                {room.childQty > 0 && `, ${room.childQty} child${room.childQty > 1 ? 'ren' : ''}`}
+                {room.adultQty} {room.adultQty > 1 ? t('roomCard.adults') : t('roomCard.adult')}
+                {room.childQty > 0 && `, ${room.childQty} ${room.childQty > 1 ? t('roomCard.children') : t('roomCard.child')}`}
               </span>
             </div>
             <div className="flex items-center gap-1">
               {getBedIcon()}
-              <span>{room.bedTypeName || 'Standard bed'}</span>
+              <span>{room.bedTypeName || t('roomCard.standardBed')}</span>
             </div>
           </div>
 
@@ -129,7 +131,7 @@ export default function RoomCard({
               <div className="flex items-start gap-2">
                 <Home className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-gray-700">
-                  <span className="font-medium">Facilities:</span>{' '}
+                  <span className="font-medium">{t('roomCard.facilities')}:</span>{' '}
                   {room.facilitiesDetails.slice(0, 4).map(f => f.name_mn || f.name_en).join(', ')}
                   {room.facilitiesDetails.length > 4 && ` (+${room.facilitiesDetails.length - 4} more)`}
                 </div>
@@ -141,9 +143,9 @@ export default function RoomCard({
               <div className="flex items-start gap-2">
                 <Bath className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-gray-700">
-                  <span className="font-medium">Bathroom:</span>{' '}
+                  <span className="font-medium">{t('roomCard.bathroom')}:</span>{' '}
                   {room.bathroomItemsDetails.slice(0, 3).map(b => b.name_mn || b.name_en).join(', ')}
-                  {room.bathroomItemsDetails.length > 3 && ` (+${room.bathroomItemsDetails.length - 3} more)`}
+                  {room.bathroomItemsDetails.length > 3 && ` (+${room.bathroomItemsDetails.length - 3} ...)`}
                 </div>
               </div>
             )}
@@ -153,9 +155,9 @@ export default function RoomCard({
               <div className="flex items-start gap-2">
                 <Coffee className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
                 <div className="text-sm text-gray-700">
-                  <span className="font-medium">Food & Drink:</span>{' '}
+                  <span className="font-medium">{t('roomCard.foodAndDrink')}:</span>{' '}
                   {room.foodAndDrinkDetails.slice(0, 3).map(f => f.name_mn || f.name_en).join(', ')}
-                  {room.foodAndDrinkDetails.length > 3 && ` (+${room.foodAndDrinkDetails.length - 3} more)`}
+                  {room.foodAndDrinkDetails.length > 3 && ` (+${room.foodAndDrinkDetails.length - 3} ...)`}
                 </div>
               </div>
             )}
@@ -170,7 +172,7 @@ export default function RoomCard({
               <div className="flex items-center gap-2">
                 <Home className="w-4 h-4 text-gray-600" />
                 <div>
-                  <div className="text-sm font-medium text-gray-900">Full Day</div>
+                  <div className="text-sm font-medium text-gray-900">{t('roomCard.fullDay')}</div>
                   <div className="text-xs text-gray-600">₮{priceOptions!.basePrice.toLocaleString()}</div>
                 </div>
               </div>
@@ -193,7 +195,7 @@ export default function RoomCard({
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-gray-600" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Half Day</div>
+                    <div className="text-sm font-medium text-gray-900">{t('roomCard.halfDay')}</div>
                     <div className="text-xs text-gray-600">₮{priceOptions.halfDayPrice.toLocaleString()}</div>
                   </div>
                 </div>
@@ -217,7 +219,7 @@ export default function RoomCard({
                 <div className="flex items-center gap-2">
                   <User className="w-4 h-4 text-gray-600" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">Single Guest</div>
+                    <div className="text-sm font-medium text-gray-900">{t('roomCard.singleGuest')}</div>
                     <div className="text-xs text-gray-600">₮{priceOptions.singlePersonPrice.toLocaleString()}</div>
                   </div>
                 </div>
@@ -240,7 +242,7 @@ export default function RoomCard({
           {remainingQuantity <= 3 && remainingQuantity > 0 && (
             <div className="mt-3 p-2 bg-orange-50 rounded-lg">
               <p className="text-xs text-orange-700 text-center">
-                Only {remainingQuantity} left!
+                {t('roomCard.onlyLeft', { count: remainingQuantity })}
               </p>
             </div>
           )}

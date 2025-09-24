@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle, Clock, Calendar, Users, Bed } from 'lucide-react';
 import { BookingService } from '@/services/bookingApi';
 import { CreateBookingRequest, CreateBookingResponse } from '@/types/api';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface BookingRoom {
   room_category_id: number;
@@ -17,6 +18,7 @@ interface BookingRoom {
 }
 
 function BookingContent() {
+  const { t } = useHydratedTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -75,8 +77,8 @@ function BookingContent() {
       const result = await BookingService.createBooking(bookingRequest);
       setBookingResult(result);
     } catch (error) {
-      console.error('Booking failed:', error);
-      setBookingError(error instanceof Error ? error.message : 'Захиалга үүсгэхэд алдаа гарлаа');
+  console.error('Booking failed:', error);
+  setBookingError(error instanceof Error ? error.message : t('errors.booking'));
     } finally {
       setBookingInProgress(false);
     }
@@ -98,23 +100,21 @@ function BookingContent() {
 
               <div>
                 <h1 className="text-2xl font-bold text-green-600 mb-2">
-                  Захиалга амжилттай үүслээ!
+                  {t('bookingExtra.successTitle')}
                 </h1>
-                <p className="text-gray-600">
-                  Таны захиалгыг амжилттай хүлээн авлаа. Дэлгэрэнгүй мэдээллийг и-мэйлээр илгээх болно.
-                </p>
+                <p className="text-gray-600">{t('bookingExtra.successDesc')}</p>
               </div>
 
               <div className="bg-gray-50 rounded-lg p-6 space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-600">Захиалгын код:</span>
+                    <span className="text-gray-600">{t('bookingExtra.bookingCode')}:</span>
                     <p className="font-mono font-bold text-lg text-blue-600">
                       {bookingResult.booking_code}
                     </p>
                   </div>
                   <div>
-                    <span className="text-gray-600">PIN код:</span>
+                    <span className="text-gray-600">{t('bookingExtra.pinCode')}:</span>
                     <p className="font-mono font-bold text-lg text-blue-600">
                       {bookingResult.pin_code}
                     </p>
@@ -122,9 +122,7 @@ function BookingContent() {
                 </div>
 
                 <div className="border-t pt-4">
-                  <p className="text-xs text-gray-500">
-                    Эдгээр кодуудыг хадгалж байгаарай. Захиалгаа шалгах, өөрчлөх, эсвэл цуцлахдаа ашиглана.
-                  </p>
+                  <p className="text-xs text-gray-500">{t('bookingExtra.keepCodesInfo')}</p>
                 </div>
               </div>
 
@@ -133,13 +131,13 @@ function BookingContent() {
                   onClick={() => router.push('/')}
                   className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 >
-                  Нүүр хуудас руу буцах
+                  {t('bookingExtra.goHome')}
                 </button>
                 <button
                   onClick={() => router.push('/booking/manage')}
                   className="flex-1 border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-50 transition-colors"
                 >
-                  Захиалга удирдах
+                  {t('bookingExtra.manageBooking')}
                 </button>
               </div>
             </div>
@@ -159,9 +157,9 @@ function BookingContent() {
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="w-5 h-5" />
-            Буцах
+            {t('common.back')}
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Захиалга баталгаажуулах</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('booking.confirmBooking')}</h1>
           <p className="text-gray-600 mt-1">{hotelName}</p>
         </div>
       </div>
@@ -175,7 +173,7 @@ function BookingContent() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
             >
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Хэрэглэгчийн мэдээлэл</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('booking.guestDetails')}</h2>
 
               {bookingError && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
@@ -186,9 +184,7 @@ function BookingContent() {
               <form onSubmit={handleBookingSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Овог нэр *
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('booking.firstName')} *</label>
                     <input
                       type="text"
                       value={customerName}
@@ -196,14 +192,12 @@ function BookingContent() {
                       required
                       disabled={bookingInProgress}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-                      placeholder="Жишээ нь: Б.Болд"
+                      placeholder="John Doe"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Утасны дугаар *
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('booking.phone')} *</label>
                     <input
                       type="tel"
                       value={customerPhone}
@@ -217,9 +211,7 @@ function BookingContent() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    И-мэйл хаяг *
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('booking.email')} *</label>
                   <input
                     type="email"
                     value={customerEmail}
@@ -240,10 +232,10 @@ function BookingContent() {
                     {bookingInProgress ? (
                       <div className="flex items-center justify-center gap-2">
                         <Clock className="w-5 h-5 animate-spin" />
-                        Захиалж байна...
+                        {t('bookingExtra.bookingInProgress')}
                       </div>
                     ) : (
-                      'Захиалга баталгаажуулах'
+                      t('bookingExtra.confirmCTA')
                     )}
                   </button>
                 </div>
@@ -259,14 +251,14 @@ function BookingContent() {
               transition={{ delay: 0.1 }}
               className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-8"
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Захиалгын дэлгэрэнгүй</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('bookingExtra.detailsTitle')}</h3>
 
               {/* Date Info */}
               {checkIn && checkOut && (
                 <div className="mb-6 p-4 bg-blue-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <Calendar className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm font-medium text-blue-900">Хугацаа</span>
+                    <span className="text-sm font-medium text-blue-900">{t('bookingExtra.stayDates')}</span>
                   </div>
                   <div className="text-sm text-blue-800">
                     {new Date(checkIn).toLocaleDateString('mn-MN')} - {new Date(checkOut).toLocaleDateString('mn-MN')}
@@ -276,7 +268,7 @@ function BookingContent() {
 
               {/* Rooms */}
               <div className="space-y-3 mb-6">
-                <h4 className="font-medium text-gray-900">Сонгосон өрөөнүүд:</h4>
+                <h4 className="font-medium text-gray-900">{t('bookingExtra.selectedRooms')}</h4>
                 {rooms.map((room, index) => (
                   <div key={index} className="border rounded-lg p-3 bg-gray-50">
                     <div className="flex justify-between items-start mb-2">
@@ -285,19 +277,17 @@ function BookingContent() {
                         <div className="text-sm font-medium text-gray-900">
                           ₮{room.price.toLocaleString()}
                         </div>
-                        <div className="text-xs text-gray-600">
-                          × {room.room_count} өрөө
-                        </div>
+                        <div className="text-xs text-gray-600">× {room.room_count}</div>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-gray-600">
                       <div className="flex items-center gap-1">
                         <Users className="w-3 h-3" />
-                        <span>2 зочин</span>
+                        <span>2</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Bed className="w-3 h-3" />
-                        <span>1 ор</span>
+                        <span>1</span>
                       </div>
                     </div>
                   </div>
@@ -307,12 +297,10 @@ function BookingContent() {
               {/* Total */}
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-gray-900">Нийт үнэ:</span>
+                  <span className="text-lg font-semibold text-gray-900">{t('bookingExtra.totalPrice')}</span>
                   <span className="text-xl font-bold text-blue-600">₮{totalPrice.toLocaleString()}</span>
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  Татвар болон үйлчилгээний хөлс багтсан
-                </div>
+                <div className="text-xs text-gray-500 mt-1">{t('bookingExtra.taxesIncluded')}</div>
               </div>
             </motion.div>
           </div>

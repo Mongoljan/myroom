@@ -1,25 +1,34 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TOptions } from 'i18next';
 
 export function useHydratedTranslation() {
-  const { t, i18n } = useTranslation();
+  const { t: rawT, i18n } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const safeT = (key: string, fallback?: string) => {
+  // Backward-compatible t: accepts either (key, fallback) or (key, options)
+  const safeT = (key: string, optionsOrFallback?: string | TOptions, maybeFallback?: string): string => {
     if (!mounted) {
-      return fallback || key.split('.').pop() || key;
+      // During SSR/hydration, return fallback if provided, otherwise last segment of key
+      const fallbackVal = typeof optionsOrFallback === 'string' ? optionsOrFallback : maybeFallback;
+      return (fallbackVal || key.split('.').pop() || key) as string;
     }
-    
-    const translation = t(key);
-    // If translation returns the same as the key, it means translation not found
-    if (translation === key && fallback) {
-      return fallback;
+
+    // If second argument is a string, treat as fallback. If it's an object, treat as i18n options
+    if (typeof optionsOrFallback === 'string') {
+      const res = rawT(key) as string;
+      return res === key ? (optionsOrFallback as string) : res;
     }
-    return translation;
+
+    const res = (optionsOrFallback ? rawT(key, optionsOrFallback) : rawT(key)) as string;
+    if (res === key && typeof maybeFallback === 'string') {
+      return maybeFallback;
+    }
+    return res as string;
   };
 
   return {

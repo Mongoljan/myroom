@@ -1,10 +1,13 @@
 'use client';
 
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+
 interface BreadcrumbNavigationProps {
   searchLocation?: string;
 }
 
 export default function BreadcrumbNavigation({ searchLocation }: BreadcrumbNavigationProps) {
+  const { t } = useHydratedTranslation();
   return (
     <div className="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 border-b border-blue-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
@@ -13,10 +16,10 @@ export default function BreadcrumbNavigation({ searchLocation }: BreadcrumbNavig
             onClick={() => window.location.href = '/'}
             className="hover:text-blue-600 transition-colors whitespace-nowrap"
           >
-            Нүүр хуудас
+            {t('breadcrumb.home')}
           </button>
           <span className="mx-1 text-gray-400">→</span>
-          <span className="whitespace-nowrap">Хайлт</span>
+          <span className="whitespace-nowrap">{t('search.searchResults')}</span>
           {searchLocation && (
             <>
               <span className="mx-1 text-gray-400">→</span>

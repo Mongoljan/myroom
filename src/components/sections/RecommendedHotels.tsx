@@ -16,7 +16,7 @@ interface CategorizedHotel extends SearchHotelResult {
 }
 
 export default function RecommendedHotels() {
-  const { } = useHydratedTranslation();
+  const { t } = useHydratedTranslation();
   const [hotels, setHotels] = useState<CategorizedHotel[]>([]);
   const [filteredHotels, setFilteredHotels] = useState<CategorizedHotel[]>([]);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -55,36 +55,36 @@ export default function RecommendedHotels() {
     const avgRating = allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
 
     // Smart categorization logic based on market behavior
-    let category: 'popular' | 'discounted' | 'highly_rated' | 'cheapest' | 'newly_added' = 'newly_added';
-    let categoryLabel = '';
+  let category: 'popular' | 'discounted' | 'highly_rated' | 'cheapest' | 'newly_added' = 'newly_added';
+  let categoryLabel = '';
 
     // Эрэлттэй (Popular): High stars + premium facilities + good price range
     if (stars >= 4 && priceCategory !== 'premium' && 
         (facilities.some(f => f.toLowerCase().includes('wifi')) || 
          facilities.some(f => f.toLowerCase().includes('restaurant')) ||
          facilities.some(f => f.toLowerCase().includes('parking')))) {
-      category = 'popular';
-      categoryLabel = 'Эрэлттэй';
+  category = 'popular';
+  categoryLabel = t('hotel.recommendedFilters.popular');
     }
     // Хямдралтай (Discounted): Good quality but lower than average price
     else if (stars >= 3.5 && price < avgPrice * 0.8 && price > minPrice * 1.2) {
-      category = 'discounted';
-      categoryLabel = 'Хямдралтай';
+  category = 'discounted';
+  categoryLabel = t('hotel.recommendedFilters.discounted');
     }
     // Өндөр үнэлгээтэй (Highly Rated): Above average rating
     else if (stars >= avgRating + 0.5 && stars >= 4.2) {
-      category = 'highly_rated';
-      categoryLabel = 'Өндөр үнэлгээтэй';
+  category = 'highly_rated';
+  categoryLabel = t('hotel.recommendedFilters.highlyRated');
     }
     // Хамгийн хямд (Cheapest): Lowest price category with decent quality
     else if (priceCategory === 'low' && stars >= 3) {
-      category = 'cheapest';
-      categoryLabel = 'Хамгийн хямд';
+  category = 'cheapest';
+  categoryLabel = t('hotel.recommendedFilters.cheapest');
     }
     // Шинээр нэмэгдсэн (Newly Added): Default category or newer properties
     else {
-      category = 'newly_added';
-      categoryLabel = 'Шинээр нэмэгдсэн';
+  category = 'newly_added';
+  categoryLabel = t('hotel.recommendedFilters.newlyAdded');
     }
 
     return {
@@ -207,14 +207,14 @@ export default function RecommendedHotels() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">Санал болгох</h2>
-            <p className="text-sm text-gray-600">Монголын орны томоохон хот, аялал жуулчлалын бүсүүд дэхь хамгийн хямдаас эхлээд тансаг зэрэглэлийн буудлуудаас та өөрийн хайж байгаа өрөөгөө хялбар олох боломжтой.</p>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">{t('hotel.recommended')}</h2>
+            <p className="text-sm text-gray-600">{t('features.wideSelectionDesc')}</p>
           </div>
           <Link 
             href="/search" 
             className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
           >
-            Бүгдийг харах
+            {t('common.viewAll')}
             <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -225,12 +225,12 @@ export default function RecommendedHotels() {
         <PointerHighlight className="mb-6" highlightColor="rgba(59, 130, 246, 0.08)">
           <div className="flex flex-wrap gap-3">
             {[
-              { key: 'all', label: 'Бүгд', count: hotels.length },
-              { key: 'popular', label: 'Эрэлттэй', count: hotels.filter(h => h.category === 'popular').length },
-              { key: 'discounted', label: 'Хямдралтай', count: hotels.filter(h => h.category === 'discounted').length },
-              { key: 'highly_rated', label: 'Өндөр үнэлгээтэй', count: hotels.filter(h => h.category === 'highly_rated').length },
-              { key: 'cheapest', label: 'Хамгийн хямд', count: hotels.filter(h => h.category === 'cheapest').length },
-              { key: 'newly_added', label: 'Шинээр нэмэгдсэн', count: hotels.filter(h => h.category === 'newly_added').length },
+              { key: 'all', label: t('hotel.filters.all'), count: hotels.length },
+              { key: 'popular', label: t('hotel.recommendedFilters.popular'), count: hotels.filter(h => h.category === 'popular').length },
+              { key: 'discounted', label: t('hotel.recommendedFilters.discounted'), count: hotels.filter(h => h.category === 'discounted').length },
+              { key: 'highly_rated', label: t('hotel.recommendedFilters.highlyRated'), count: hotels.filter(h => h.category === 'highly_rated').length },
+              { key: 'cheapest', label: t('hotel.recommendedFilters.cheapest'), count: hotels.filter(h => h.category === 'cheapest').length },
+              { key: 'newly_added', label: t('hotel.recommendedFilters.newlyAdded'), count: hotels.filter(h => h.category === 'newly_added').length },
             ].map((filter) => (
               <motion.button
                 key={filter.key}
@@ -315,7 +315,7 @@ export default function RecommendedHotels() {
                 name={hotel.property_name}
                 location={hotel.location.province_city}
                 rating={parseFloat(hotel.rating_stars.value) || 0}
-                ratingLabel={hotel.rating_stars.label || 'үнэлгээ'}
+                ratingLabel={hotel.rating_stars.label || t('hotel.rating')}
                 price={hotel.cheapest_room?.price_per_night || 0}
                 image={getHotelImage(hotel)}
                 badge={hotel.categoryLabel}
@@ -332,7 +332,7 @@ export default function RecommendedHotels() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4M9 7h6m-6 4h6m-6 4h6" />
               </svg>
             </div>
-            <p className="text-sm text-gray-600">Энэ ангиллд зочид буудал байхгүй байна</p>
+            <p className="text-sm text-gray-600">{t('hotel.noCategoryResults')}</p>
           </div>
         )}
       </div>
