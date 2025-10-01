@@ -33,7 +33,9 @@ const resources = {
         addToWishlist: "Add to Wishlist",
         removeFromWishlist: "Remove from Wishlist",
         selectCheckout: "Select check-out",
-        done: "Done"
+        done: "Done",
+        notAvailable: "Not available",
+        checking: "Checking..."
       },
       calendar: {
         sun: "Su",
@@ -168,6 +170,19 @@ const resources = {
         night: "night",
         nights: "nights"
       },
+      AuthLogin: {
+        signIn: "Sign in to your account",
+        subtitle: "Access your bookings, manage trips, and continue where you left off.",
+        emailLabel: "Email address",
+        emailPlaceholder: "you@example.com",
+        passwordLabel: "Password",
+        passwordPlaceholder: "Enter your password",
+        rememberMe: "Remember me",
+        forgotPassword: "Forgot password?",
+        signInButton: "Sign in",
+        noAccount: "Don't have an account?",
+        signUp: "Create one"
+      },
       hotel: {
         title: "Hotels",
         search: "Search Hotels",
@@ -281,7 +296,42 @@ const resources = {
         results: "Results",
         recentSearches: "Recent searches",
         noResults: "No results found",
-        tryAnotherKeyword: "Try another keyword"
+        tryAnotherKeyword: "Try another keyword",
+        viewMode: {
+          list: "List",
+          grid: "Grid"
+        },
+        sortOptions: {
+          recommended: "Recommended",
+          priceLowToHigh: "Price: Low to High",
+          priceHighToLow: "Price: High to Low",
+          ratingHighToLow: "Rating: High to Low"
+        },
+        pagination: {
+          resultsText: "{{start}}-{{end}} of {{total}} hotel results",
+          previous: "Previous",
+          next: "Next"
+        },
+        activeFilters: "Active filters",
+        clearAll: "Clear all",
+        discountedPrice: "Discounted price",
+        simpleSearch: "Simple search",
+        filtersSection: {
+          title: "Filters",
+          usedByYou: "Your filters",
+          loading: "Loading filters...",
+          hotelType: "Property Type",
+          popularSearches: "Popular searches",
+          priceRange: "Price Range",
+          roomFeatures: "Room features",
+          generalServices: "General services",
+          guestRating: "Guest rating",
+          outdoorArea: "Outdoor area",
+          bedType: "Bed type",
+          popularPlaces: "Popular places",
+          discounted: "Discounted",
+          starsPlus: "{{rating}}+ stars"
+        }
       },
       home: {
         popularDestinationsTitle: "Popular destinations",
@@ -293,7 +343,8 @@ const resources = {
         erdenet: "Erdenet",
         khuvsgul: "Khuvsgul",
         arkhangai: "Arkhangai",
-        khovd: "Khovd"
+        khovd: "Khovd",
+        murun: "Murun"
       },
       tabs: {
         hotels: "Hotels",
@@ -441,6 +492,7 @@ const resources = {
       roomCard: {
         facilities: "Facilities",
         bathroom: "Bathroom",
+        privateBathroom: "Private bathroom",
         foodAndDrink: "Food & Drink",
         fullDay: "Full Day",
         halfDay: "Half Day",
@@ -453,7 +505,40 @@ const resources = {
         squareMeters: "{{count}}m²",
         select: "Select",
         selected: "Selected",
-        standardBed: "Standard bed"
+        standardBed: "Standard bed",
+        roomFacilities: "Room Facilities",
+        smokingAllowed: "Smoking allowed",
+        nonSmoking: "Non-smoking",
+        selectedDates: "Selected Dates"
+      },
+      amenitiesLabels: {
+        premiumService: "Premium service",
+        safeSecure: "Safe & secure",
+        popularChoice: "Popular choice",
+        variedAmenities: "Varied amenities",
+        moreCount: "+{{count}} more"
+      },
+      similarHotels: {
+        title: "Similar hotels",
+        discount: "Discount",
+        noRating: "No rating",
+        priceUnknown: "Price unknown",
+        from: "from"
+      },
+      hotelDetails: {
+        starHotel: "{{count}} Star Hotel",
+        aboutProperty: "About the property",
+        videoTour: "Video Tour",
+        defaultDescription: "Enjoy a comfortable stay at {{hotelName}}. Located in the heart of {{city}}, this hotel offers modern amenities and high-quality service to make your stay memorable.",
+        hotelGroup: "Hotel Group:",
+        independent: "Independent",
+        yes: "Yes",
+        roomSales: "Room Sales:",
+        limitedAvailability: "Limited availability",
+        openBooking: "Open booking",
+        propertyId: "Property ID:",
+        floors: "floors",
+        loadingExtra: "Loading additional details..."
       },
       bookingExtra: {
         successTitle: "Booking created successfully!",
@@ -502,7 +587,9 @@ const resources = {
         addToWishlist: "Дуртай жагсаалтанд нэмэх",
         removeFromWishlist: "Дуртай жагсаалтаас хасах",
         selectCheckout: "Гарах өдөр сонгох",
-        done: "Болсон"
+        done: "Болсон",
+        notAvailable: "Боломжгүй",
+        checking: "Шалгаж байна..."
       },
       calendar: {
         sun: "Ня",
@@ -619,7 +706,8 @@ const resources = {
         erdenet: "Эрдэнэт",
         khuvsgul: "Хөвсгөл",
         arkhangai: "Архангай",
-        khovd: "Ховд"
+        khovd: "Ховд",
+        murun: "Мөрөн"
       },
       navigation: {
         home: "Нүүр",
@@ -660,6 +748,19 @@ const resources = {
         selectDates: "Орох - Гарах",
         night: "шөнө",
         nights: "шөнө"
+      },
+      AuthLogin: {
+        signIn: "Бүртгэлдээ нэвтрэх",
+        subtitle: "Захиалгаа удирдаж, аяллаа үргэлжлүүлэхийн тулд MyRoom бүртгэлээрээ нэвтэрнэ үү.",
+        emailLabel: "Имэйл хаяг",
+        emailPlaceholder: "you@example.com",
+        passwordLabel: "Нууц үг",
+        passwordPlaceholder: "Нууц үгээ оруулна уу",
+        rememberMe: "Сануулах",
+        forgotPassword: "Нууц үгээ мартсан уу?",
+        signInButton: "Нэвтрэх",
+        noAccount: "Данс байхгүй юу?",
+        signUp: "Шинэ бүртгэл үүсгэх"
       },
       hotel: {
         title: "Зочид буудал",
@@ -774,7 +875,42 @@ const resources = {
         results: "Хайлтын үр дүн",
         recentSearches: "Сүүлийн хайлтууд",
         noResults: "Илэрц олдсонгүй",
-        tryAnotherKeyword: "Өөр түлхүүр үг оруулж үзээрэй"
+        tryAnotherKeyword: "Өөр түлхүүр үг оруулж үзээрэй",
+        viewMode: {
+          list: "Жагсаалт",
+          grid: "Сетка"
+        },
+        sortOptions: {
+          recommended: "Санал болгосон",
+          priceLowToHigh: "Үнэ: багаас их",
+          priceHighToLow: "Үнэ: ихээс бага",
+          ratingHighToLow: "Үнэлгээ: өндөрөөс нам"
+        },
+        pagination: {
+          resultsText: "{{start}}-{{end}} нийт {{total}} буудлын үр дүн",
+          previous: "Өмнөх",
+          next: "Дараах"
+        },
+        activeFilters: "Идэвхтэй шүүлтүүр",
+        clearAll: "Бүгдийг арилгах",
+        discountedPrice: "Хямдралтай үнэ",
+        simpleSearch: "Энгийн хайлт",
+        filtersSection: {
+          title: "Шүүлтүүр",
+          usedByYou: "Таны ашигласан",
+          loading: "Шүүлтүүр ачааллаж байна...",
+          hotelType: "Зочид буудлын төрөл",
+          popularSearches: "Түгээмэл хайлтууд",
+          priceRange: "Үнийн хязгаар",
+          roomFeatures: "Өрөөний онцлог зүйлс",
+          generalServices: "Ерөнхий үйлчилгээ",
+          guestRating: "Зочдын үнэлгээ",
+          outdoorArea: "Гадаах талбай",
+          bedType: "Орны төрөл",
+          popularPlaces: "Алдартай газрууд",
+          discounted: "Хямдралтай",
+          starsPlus: "{{rating}}+ од"
+        }
       },
       tabs: {
         hotels: "Зочид буудал",
@@ -917,6 +1053,7 @@ const resources = {
       roomCard: {
         facilities: "Тохижилт",
         bathroom: "Угаалгын өрөө",
+        privateBathroom: "Дотроо ариун цэврийн өрөө",
         foodAndDrink: "Хоол & Ундаа",
         fullDay: "Бүтэн өдөр",
         halfDay: "Хагас өдөр",
@@ -929,7 +1066,40 @@ const resources = {
         squareMeters: "{{count}}м²",
         select: "Сонгох",
         selected: "Сонгосон",
-        standardBed: "Стандарт ор"
+        standardBed: "Стандарт ор",
+        roomFacilities: "Өрөөний тохижилт",
+        smokingAllowed: "Тамхи татах боломжтой",
+        nonSmoking: "Тамхи татахгүй",
+        selectedDates: "Сонгосон огноо"
+      },
+      amenitiesLabels: {
+        premiumService: "Дээд зэрэглэлийн үйлчилгээ",
+        safeSecure: "Аюулгүй, найдвартай",
+        popularChoice: "Алдартай сонголт",
+        variedAmenities: "Олон төрлийн тохижилт",
+        moreCount: "+{{count}} бусад"
+      },
+      similarHotels: {
+        title: "Ижил төстэй буудлууд",
+        discount: "Хямдрал",
+        noRating: "Үнэлгээгүй",
+        priceUnknown: "Үнэ тодорхойгүй",
+        from: "-с эхлэн"
+      },
+      hotelDetails: {
+        starHotel: "{{count}} одтой зочид буудал",
+        aboutProperty: "Зочид буудлын тухай",
+        videoTour: "Видео танилцуулга",
+        defaultDescription: "{{hotelName}} зочид буудалд тав тухтай амарч, {{city}} хотын төвд байрлах орчин үеийн тохижилт, чанартай үйлчилгээг мэдрээрэй.",
+        hotelGroup: "Буудлын сүлжээ:",
+        independent: "Бие даасан",
+        yes: "Тийм",
+        roomSales: "Өрөөний борлуулалт:",
+        limitedAvailability: "Хязгаарлагдмал",
+        openBooking: "Нээлттэй захиалга",
+        propertyId: "Үл хөдлөхийн ID:",
+        floors: "давхар",
+        loadingExtra: "Нэмэлт мэдээлэл ачааллаж байна..."
       },
       bookingExtra: {
         successTitle: "Захиалга амжилттай үүслээ!",

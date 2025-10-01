@@ -298,7 +298,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
           ))}
           <span className="ml-2 text-xs text-gray-800">
-            {basicInfo ? `${starRating} Star Hotel` : hotel.rating_stars.label}
+            {basicInfo ? t('hotelDetails.starHotel', { count: starRating }) : hotel.rating_stars.label}
           </span>
         </div>
 
@@ -315,14 +315,14 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
         </div>
         {address && (
           <div className="mt-1 text-xs text-gray-600">
-            {address.total_floor_number} floors • ID: {address.id}
+            {address.total_floor_number} {t('hotelDetails.floors')} • ID: {address.id}
           </div>
         )}
       </div>
 
       {/* Enhanced Description */}
       <div>
-        <h2 className="text-lg text-black font-semibold mb-2">{t('about_property', 'Зочид буудлын тухай')}</h2>
+  <h2 className="text-lg text-black font-semibold mb-2">{t('hotelDetails.aboutProperty')}</h2>
 
         {additionalInfo?.About ? (
           <div className="space-y-3">
@@ -331,7 +331,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             </p>
             {additionalInfo.YoutubeUrl && (
               <div>
-                <h3 className="text-base font-semibold mb-2 text-gray-900">Video Tour</h3>
+                {/* <h3 className="text-base font-semibold mb-2 text-gray-900">{t('hotelDetails.videoTour')}</h3>
                 <div className="aspect-video">
                   <iframe
                     src={additionalInfo.YoutubeUrl.replace('youtu.be/', 'www.youtube.com/embed/').replace('?si=', '?')}
@@ -340,33 +340,33 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
-                </div>
+                </div> */}
               </div>
             )}
           </div>
         ) : (
           <p className="text-gray-900 leading-relaxed text-sm">
-            {hotel.description || t('default_description', `${hotelName} зочид буудалд тав тухтай орчинд амрах боломжтай. ${hotel.location.province_city} хотын төвд байрлах энэхүү зочид буудал орчин үеийн тохижилт, өндөр чанарын үйлчилгээгээр таны амралтыг дурсамжтай болгоно.`)}
+            {hotel.description || t('hotelDetails.defaultDescription', { hotelName, city: hotel.location.province_city || '' })}
           </p>
         )}
 
         {basicInfo && (
           <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 p-3 bg-gray-50 rounded-lg">
             <div>
-              <span className="font-medium text-gray-900 text-xs">Hotel Group: </span>
+              <span className="font-medium text-gray-900 text-xs">{t('hotelDetails.hotelGroup')} </span>
               <span className="text-gray-700 text-xs">
-                {basicInfo.part_of_group ? (basicInfo.group_name || 'Yes') : 'Independent'}
+                {basicInfo.part_of_group ? (basicInfo.group_name || t('hotelDetails.yes')) : t('hotelDetails.independent')}
               </span>
             </div>
             <div>
-              <span className="font-medium text-gray-900 text-xs">Room Sales: </span>
+              <span className="font-medium text-gray-900 text-xs">{t('hotelDetails.roomSales')} </span>
               <span className="text-gray-700 text-xs">
-                {basicInfo.sales_room_limitation ? 'Limited availability' : 'Open booking'}
+                {basicInfo.sales_room_limitation ? t('hotelDetails.limitedAvailability') : t('hotelDetails.openBooking')}
               </span>
             </div>
             {propertyDetails && (
               <div className="col-span-2">
-                <span className="font-medium text-gray-900 text-xs">Property ID: </span>
+                <span className="font-medium text-gray-900 text-xs">{t('hotelDetails.propertyId')} </span>
                 <span className="text-gray-700 text-xs">{propertyDetails.property}</span>
               </div>
             )}
@@ -399,7 +399,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       {loading && (
         <div className="flex items-center justify-center py-4">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-          <span className="ml-2 text-gray-600 text-sm">Loading additional details...</span>
+          <span className="ml-2 text-gray-600 text-sm">{t('hotelDetails.loadingExtra')}</span>
         </div>
       )}
     </div>

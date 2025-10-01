@@ -16,6 +16,7 @@ import {
 import { Room, AvailabilityResponse, AllRoomData, CombinedData, RoomPrice } from '@/types/api';
 import { ApiService, formatCurrency } from '@/services/api';
 import { IconMappingService } from '@/services/iconMappingService';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface RoomCardProps {
   room: Room;
@@ -27,6 +28,7 @@ interface RoomCardProps {
 
 
 export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: RoomCardProps) {
+  const { t } = useHydratedTranslation();
   const [availability, setAvailability] = useState<AvailabilityResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
@@ -66,7 +68,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           setAvailability(availabilityResult);
         }
       } catch (error) {
-        console.error('Failed to fetch data:', error);
+  console.error('Failed to fetch data:', error);
         setAvailability({ available_rooms: 0 });
       } finally {
         setLoading(false);
@@ -82,20 +84,20 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
 
   // Helper functions to get names from IDs
   const getRoomTypeName = (typeId: number) => {
-    return roomData?.room_types.find(type => type.id === typeId)?.name || `Room Type ${typeId}`;
+  return roomData?.room_types.find(type => type.id === typeId)?.name || `Room Type ${typeId}`;
   };
 
   const getBedTypeName = (bedTypeId: number) => {
-    return roomData?.bed_types.find(type => type.id === bedTypeId)?.name || `Bed Type ${bedTypeId}`;
+  return roomData?.bed_types.find(type => type.id === bedTypeId)?.name || `Bed Type ${bedTypeId}`;
   };
 
   const getRoomCategoryName = (categoryId: number) => {
-    return roomData?.room_rates.find(rate => rate.id === categoryId)?.name || `Category ${categoryId}`;
+  return roomData?.room_rates.find(rate => rate.id === categoryId)?.name || `Category ${categoryId}`;
   };
 
   const getFacilityName = (facilityId: number) => {
     const facility = combinedData?.facilities.find(f => f.id === facilityId);
-    return facility?.name_en || `Facility ${facilityId}`;
+  return facility?.name_en || `Facility ${facilityId}`;
   };
 
   return (
@@ -127,7 +129,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
               <div className="flex items-center gap-2 text-sm text-gray-800">
                 <Clock className="w-4 h-4 animate-spin" />
-                Checking...
+                {t('common.checking', 'Checking...')}
               </div>
             </div>
           ) : (
@@ -140,12 +142,12 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
                 {isAvailable ? (
                   <>
                     <CheckCircle className="w-4 h-4" />
-                    {availability.available_rooms} available
+                    {availability.available_rooms} {t('hotel.roomsAvailable', 'rooms available')}
                   </>
                 ) : (
                   <>
                     <AlertCircle className="w-4 h-4" />
-                    Not available
+                    {t('common.notAvailable', 'Not available')}
                   </>
                 )}
               </div>
@@ -155,7 +157,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
 
         {/* Room Number */}
         <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
-          Room {room.room_number}
+          {t('roomCard.selected', 'Selected')} {room.room_number}
         </div>
       </div>
 
@@ -179,16 +181,16 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           <div className="flex items-center gap-4 text-sm text-gray-800 mb-2">
             <div className="flex items-center gap-1">
               <Maximize className="w-4 h-4" />
-              {room.room_size} m²
+              {t('roomCard.squareMeters', { count: Number(room.room_size) || 0 })}
             </div>
             <div className="flex items-center gap-1">
               <Users className="w-4 h-4" />
-              {room.adultQty + room.childQty} guests
+              {room.adultQty + room.childQty} {t('search.guests', 'Guests').toLowerCase()}
             </div>
             {room.is_Bathroom && (
               <div className="flex items-center gap-1">
                 <Bath className="w-4 h-4" />
-                Private bathroom
+                {t('roomCard.privateBathroom', 'Private bathroom')}
               </div>
             )}
           </div>
@@ -201,7 +203,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
         {/* Facilities */}
         {room.room_Facilities.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium text-gray-900 mb-2">Room Facilities</h4>
+            <h4 className="text-sm font-medium text-gray-900 mb-2">{t('roomCard.roomFacilities', 'Room Facilities')}</h4>
             <div className="flex flex-wrap gap-2">
               {room.room_Facilities.slice(0, 6).map((facilityId) => {
                 const facilityName = getFacilityName(facilityId);
@@ -217,7 +219,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
               })}
               {room.room_Facilities.length > 6 && (
                 <div className="text-xs text-gray-900 bg-gray-50 px-2 py-1 rounded-lg">
-                  +{room.room_Facilities.length - 6} more
+                  +{room.room_Facilities.length - 6} {t('amenitiesLabels.moreCount', { count: room.room_Facilities.length - 6 })}
                 </div>
               )}
             </div>
@@ -230,7 +232,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             room.smoking_allowed ? 'bg-orange-400' : 'bg-green-400'
           }`} />
           <span className="text-gray-800">
-            {room.smoking_allowed ? 'Smoking allowed' : 'Non-smoking'}
+            {room.smoking_allowed ? t('roomCard.smokingAllowed', 'Smoking allowed') : t('roomCard.nonSmoking', 'Non-smoking')}
           </span>
         </div>
 
@@ -240,7 +242,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             <div className="text-2xl font-bold text-gray-900">
               {basePrice > 0 ? formatCurrency(basePrice) : ''}
             </div>
-            <div className="text-sm text-gray-800">per night</div>
+            <div className="text-sm text-gray-800">{t('hotel.perNight', 'per night')}</div>
           </div>
           
           <button
@@ -255,12 +257,12 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             {loading ? (
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 animate-spin" />
-                Checking...
+                {t('common.checking', 'Checking...')}
               </div>
             ) : isAvailable ? (
-              'Book Now'
+              t('hotel.bookNow', 'Book Now')
             ) : (
-              'Not Available'
+              t('common.notAvailable', 'Not Available')
             )}
           </button>
         </div>
@@ -270,7 +272,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
             <div className="flex items-center gap-2 mb-1">
               <Calendar className="w-4 h-4" />
-              <span className="font-medium">Selected Dates</span>
+              <span className="font-medium">{t('roomCard.selectedDates', 'Selected Dates')}</span>
             </div>
             <div className="text-blue-700">
               {new Date(checkIn).toLocaleDateString()} - {new Date(checkOut).toLocaleDateString()}

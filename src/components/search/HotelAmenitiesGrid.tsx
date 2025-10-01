@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Wifi, Car, Utensils, Users, Dumbbell, Waves, Bath, Coffee, Shield, Star, Clock, MapPin } from 'lucide-react';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface HotelAmenitiesGridProps {
   amenities: string[];
@@ -40,6 +41,7 @@ export default function HotelAmenitiesGrid({
   viewMode,
   className = ""
 }: HotelAmenitiesGridProps) {
+  const { t } = useHydratedTranslation();
   const getAmenityIcon = (amenity: string) => {
     const IconComponent = amenityIcons[amenity] || MapPin;
     return IconComponent;
@@ -56,7 +58,7 @@ export default function HotelAmenitiesGrid({
     <div className={`${className}`}>
       {/* Title */}
       <div className="text-sm font-medium text-slate-700 mb-3">
-        Тохижилт
+        {t('hotel.amenities')}
       </div>
 
       {/* Amenities Grid */}
@@ -95,7 +97,7 @@ export default function HotelAmenitiesGrid({
             className="flex items-center justify-center p-2 bg-blue-50 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors cursor-pointer"
           >
             <span className="text-xs text-blue-700 font-medium">
-              +{remainingCount} бусад
+              {t('amenitiesLabels.moreCount', { count: remainingCount })}
             </span>
           </motion.div>
         )}
@@ -107,11 +109,11 @@ export default function HotelAmenitiesGrid({
           <div className="text-xs text-slate-600">
             <div className="flex items-center gap-1 mb-1">
               <Star className="w-3 h-3 text-yellow-500" />
-              <span>Дээд зэрэглэлийн үйлчилгээ</span>
+              <span>{t('amenitiesLabels.premiumService')}</span>
             </div>
             <div className="flex items-center gap-1">
               <Shield className="w-3 h-3 text-green-500" />
-              <span>Аюулгүй, найдвартай</span>
+              <span>{t('amenitiesLabels.safeSecure')}</span>
             </div>
           </div>
         </div>
@@ -123,10 +125,10 @@ export default function HotelAmenitiesGrid({
           {amenities.includes('Wi-Fi') && amenities.includes('Зогсоол') ? (
             <div className="flex items-center gap-1">
               <Star className="w-3 h-3 text-yellow-500" />
-              <span>Алдартай сонголт</span>
+              <span>{t('amenitiesLabels.popularChoice')}</span>
             </div>
           ) : (
-            <div>Олон төрлийн тохижилт</div>
+            <div>{t('amenitiesLabels.variedAmenities')}</div>
           )}
         </div>
       )}

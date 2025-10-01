@@ -92,7 +92,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
   if (loading) {
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">{t('similar_hotels', 'Ижил төстэй буудлууд')}</h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t('similarHotels.title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, index) => (
             <div key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden animate-pulse">
@@ -113,7 +113,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900">{t('similar_hotels', 'Ижил төстэй буудлууд')}</h2>
+      <h2 className="text-lg font-semibold text-gray-900">{t('similarHotels.title')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {hotels.map((hotel) => (
           <Link key={hotel.hotel_id} href={`/hotel/${hotel.hotel_id}`}>
@@ -130,7 +130,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                 />
                 {hotel.priceOptions?.hasDiscount && (
                   <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
-                    Хямдрал
+                    {t('similarHotels.discount')}
                   </div>
                 )}
               </div>
@@ -155,7 +155,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                     ))}
                   </div>
                   <span className="text-xs text-gray-600">
-                    {hotel.rating_stars?.label || 'Үнэлгээгүй'}
+                    {hotel.rating_stars?.label || t('similarHotels.noRating')}
                   </span>
                 </div>
 
@@ -172,10 +172,10 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                       const lowestPrice = validPrices.length > 0 ? Math.min(...validPrices) : hotel.priceOptions.basePrice;
                       return `₮${lowestPrice.toLocaleString()}`;
                     })() :
-                      `₮${hotel.cheapest_room?.price_per_night?.toLocaleString() || 'Үнэ тодорхойгүй'}`
+                      `₮${hotel.cheapest_room?.price_per_night?.toLocaleString() || t('similarHotels.priceUnknown')}`
                     }
                   </span>
-                  <span className="text-xs text-gray-600">-с эхлэн</span>
+                  <span className="text-xs text-gray-600">{t('similarHotels.from')}</span>
                 </div>
               </div>
             </div>

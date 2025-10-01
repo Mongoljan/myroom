@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import { X, Filter, Trash2 } from 'lucide-react';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface FilterState {
   propertyTypes: number[];
@@ -48,6 +49,7 @@ const FACILITY_LABELS: Record<string, string> = {
 };
 
 export default function FilterSummary({ filters, onRemoveFilter, onClearAll, apiData }: FilterSummaryProps) {
+  const { t } = useHydratedTranslation();
 
   const getActiveFilters = useCallback(() => {
     const active: { type: string; label: string; value: string | number }[] = [];
@@ -134,7 +136,7 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
     if (filters.discounted) {
       active.push({
         type: 'discounted',
-        label: 'Хямдралтай үнэ',
+        label: t('search.discountedPrice'),
         value: 'discounted'
       });
     }
@@ -195,7 +197,7 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
         <div className="flex items-center gap-1.5">
           <Filter className="w-3.5 h-3.5 text-gray-600" />
           <h3 className="text-xs font-medium text-gray-700">
-            Идэвхтэй шүүлтүүр ({activeFilters.length})
+            {t('search.activeFilters')} ({activeFilters.length})
           </h3>
         </div>
         {activeFilters.length > 0 && (
@@ -221,7 +223,7 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
             className="flex cursor-pointer items-center gap-1 text-xs ml-2 text-blue-500 hover:text-blue-800 transition-colors"
           >
             <Trash2 className="w-3 h-3" />
-            Бүгдийг устгах
+            {t('search.clearAll')}
           </button>
         )}
         </div>

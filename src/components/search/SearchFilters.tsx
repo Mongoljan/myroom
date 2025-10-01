@@ -8,6 +8,7 @@ import {
   Briefcase, Coffee as CafeIcon, Volume2, Soup, Bed, MapPin
 } from 'lucide-react';
 import { ApiService } from '@/services/api';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 // import FilterSummary from './FilterSummary';
 
 /**
@@ -124,6 +125,7 @@ interface RecentFilter {
 }
 
 export default function SearchFilters({ isOpen, onClose, onFilterChange, embedded = false, apiData, filters: externalFilters, filterCounts = {} }: SearchFiltersProps) {
+  const { t } = useHydratedTranslation();
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: [],
     popularSearches: [],
@@ -468,12 +470,12 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           onClearAll={handleClearAllFilters}
         /> */}
         <div className="bg-white rounded-lg border border-gray-200 p-3 space-y-4">
-          <h3 className="text-sm font-semibold text-gray-900">Шүүлтүүр</h3>
+          <h3 className="text-sm font-semibold text-gray-900">{t('search.filtersSection.title')}</h3>
 
           {/* Recent Filters Section */}
           {recentFilters.length > 0 && (
             <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">Таны ашигласан</h4>
+              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.usedByYou')}</h4>
               <div className="space-y-1">
                 {recentFilters.map((recentFilter) => (
                   <button
@@ -490,13 +492,13 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           )}
 
         {loadingApi ? (
-          <div className="text-xs text-gray-500">Шүүлтүүр ачааллаж байна...</div>
+          <div className="text-xs text-gray-500">{t('search.filtersSection.loading')}</div>
         ) : (
           <>
             {/* 1. Property Type */}
             {apiData?.property_types && apiData.property_types.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">Зочид буудлын төрөл</h4>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.hotelType')}</h4>
                 <div className="space-y-1">
                   {apiData.property_types.map((type) => {
                     const isSelected = filters.propertyTypes?.includes(type.id) || false;
@@ -528,14 +530,14 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">Зочид буудлын төрөл</h4>
-                <div className="text-xs text-gray-500">Ачааллаж байна...</div>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.hotelType')}</h4>
+                <div className="text-xs text-gray-500">{t('common.loading')}</div>
               </div>
             )}
 
             {/* 2. Popular Searches */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">Түгээмэл хайлтууд</h4>
+              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.popularSearches')}</h4>
               <div className="space-y-1">
                 {POPULAR_SEARCHES.map((search) => {
                   const isSelected = filters.popularSearches?.includes(search.id) || false;
@@ -564,7 +566,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {/* 3. Price Range */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-medium text-gray-700">Үнийн хязгаар</h4>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.priceRange')}</h4>
                 <span className="text-xs text-gray-500">
                   ₮{filters.priceRange[0].toLocaleString()}-{filters.priceRange[1].toLocaleString()}
                 </span>
@@ -612,7 +614,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {/* 4. Room Features */}
             {roomFeatureFacilities.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">Өрөөний онцлог зүйлс</h4>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.roomFeatures')}</h4>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {roomFeatureFacilities.map((facility) => {
                     const isSelected = filters.roomFeatures?.includes(facility.id) || false;
@@ -644,15 +646,15 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">Өрөөний онцлог зүйлс</h4>
-                <div className="text-xs text-gray-500">Ачааллаж байна...</div>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.roomFeatures')}</h4>
+                <div className="text-xs text-gray-500">{t('common.loading')}</div>
               </div>
             )}
 
             {/* 5. General Services */}
             {generalServiceFacilities.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">Ерөнхий үйлчилгээ</h4>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.generalServices')}</h4>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {generalServiceFacilities.map((facility) => {
                     const isSelected = filters.generalServices?.includes(facility.id) || false;
@@ -684,14 +686,14 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">Ерөнхий үйлчилгээ</h4>
-                <div className="text-xs text-gray-500">Ачааллаж байна...</div>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.generalServices')}</h4>
+                <div className="text-xs text-gray-500">{t('common.loading')}</div>
               </div>
             )}
 
             {/* 6. Bed Types */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">Орны төрөл</h4>
+              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.bedType')}</h4>
               <div className="space-y-1">
                 {BED_TYPES.map((bed) => {
                   const isSelected = filters.bedTypes?.includes(bed.id) || false;
@@ -724,7 +726,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
 
             {/* 7. Popular Places */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">Алдартай газрууд</h4>
+              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.popularPlaces')}</h4>
               <div className="space-y-1">
                 {POPULAR_PLACES.map((place) => {
                   const isSelected = filters.popularPlaces?.includes(place.id) || false;
@@ -752,7 +754,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
 
             {/* 8. Discounted */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">Хямдралтай</h4>
+              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.discounted')}</h4>
               <button
                 onClick={() => updateFilters({ discounted: !filters.discounted })}
                 className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
@@ -762,13 +764,13 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 }`}
               >
                 <Star className="w-3 h-3 mr-1.5" />
-                <span className="text-gray-700">Хямдралтай үнэ</span>
+                <span className="text-gray-700">{t('search.discountedPrice')}</span>
               </button>
             </div>
             {/* 9. Star Rating */}
             {apiData?.ratings && apiData.ratings.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">Зочдын үнэлгээ</h4>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.guestRating')}</h4>
                 <div className="space-y-1">
                   {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
                     const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
@@ -793,7 +795,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                             <Star key={i} className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
                           ))}
                         </div>
-                        <span className="text-gray-700 flex-1">{stars}+ од</span>
+                        <span className="text-gray-700 flex-1">{t('search.filtersSection.starsPlus', { rating: stars })}</span>
                         {filterCounts[`rating_${stars}`] !== undefined && (
                           <span className="text-xs text-gray-500 ml-1">
                             ({filterCounts[`rating_${stars}`]})
@@ -806,15 +808,15 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">Зочдын үнэлгээ</h4>
-                <div className="text-xs text-gray-500">Ачааллаж байна...</div>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.guestRating')}</h4>
+                <div className="text-xs text-gray-500">{t('common.loading')}</div>
               </div>
             )}
 
             {/* 10. Outdoor Areas */}
             {outdoorFacilities.length > 0 ? (
               <div className="space-y-2">
-                <h4 className="text-xs font-medium text-gray-700">Гадаах талбай</h4>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.outdoorArea')}</h4>
                 <div className="space-y-1">
                   {outdoorFacilities.map((facility) => {
                     const isSelected = filters.outdoorAreas?.includes(facility.id) || false;
@@ -846,8 +848,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2">
-                <h4 className="text-xs font-medium text-gray-700">Гадаах талбай</h4>
-                <div className="text-xs text-gray-500">Ачааллаж байна...</div>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.outdoorArea')}</h4>
+                <div className="text-xs text-gray-500">{t('common.loading')}</div>
               </div>
             )}
           </>
@@ -865,7 +867,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
         <div className="fixed top-0 left-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
           <div className="p-4">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Шүүлтүүр</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('search.filtersSection.title')}</h2>
               <button
                 onClick={onClose}
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -875,12 +877,12 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             </div>
             
             <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
-              <h3 className="font-semibold text-gray-900">Шүүлтүүр</h3>
+              <h3 className="font-semibold text-gray-900">{t('search.filtersSection.title')}</h3>
               
               {/* Same content as embedded version */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-gray-900 text-base">Budget Range</h4>
+                  <h4 className="font-semibold text-gray-900 text-base">{t('search.filtersSection.priceRange')}</h4>
                   <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
                     ₮{filters.priceRange[0].toLocaleString()} - ₮{filters.priceRange[1].toLocaleString()}
                   </span>
@@ -914,7 +916,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
 
               <div>
-                <h4 className="font-medium text-gray-900 text-sm mb-2">Од үнэлгээ</h4>
+                <h4 className="font-medium text-gray-900 text-sm mb-2">{t('search.filtersSection.starRating') || t('search.starRating')}</h4>
                 <div className="space-y-2">
                   {[5, 4, 3, 2, 1].map((stars) => (
                     <button
@@ -926,14 +928,14 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                           <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                         ))}
                       </div>
-                      <span className="text-sm text-gray-700">{stars}+ од</span>
+                      <span className="text-sm text-gray-700">{t('search.filtersSection.starsPlus', { rating: stars })}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <h4 className="font-medium text-gray-900 text-sm mb-2">Тохижилт</h4>
+                <h4 className="font-medium text-gray-900 text-sm mb-2">{t('search.amenities')}</h4>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {apiData?.facilities.map((facility) => (
                     <button

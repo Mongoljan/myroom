@@ -210,7 +210,7 @@ export default function RecommendedHotels() {
             <h2 className="text-xl font-bold text-gray-900 mb-1">{t('hotel.recommended')}</h2>
             <p className="text-sm text-gray-600">{t('features.wideSelectionDesc')}</p>
           </div>
-          <Link 
+          {/* <Link 
             href="/search" 
             className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
           >
@@ -218,7 +218,7 @@ export default function RecommendedHotels() {
             <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </Link>
+          </Link> */}
         </div>
 
         {/* Smart Filter tabs with counts */}

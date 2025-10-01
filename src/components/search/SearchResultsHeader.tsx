@@ -104,10 +104,10 @@ export default function SearchResultsHeader({
                   onChange={(e) => onSort(e.target.value)}
                   className="appearance-none bg-white border border-gray-300 rounded-md px-3 py-2 pr-8 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[190px]"
                 >
-                  <option value="price_low">{t('search.sortBy')}: {t('hotel.pricePerNight')} ↑</option>
-                  <option value="price_high">{t('search.sortBy')}: {t('hotel.pricePerNight')} ↓</option>
-                  <option value="rating">{t('search.rating')}</option>
-                  <option value="name">{t('common.readMore')} A-Z</option>
+                  <option value="price_low">{t('search.sortOptions.priceLowToHigh')}</option>
+                  <option value="price_high">{t('search.sortOptions.priceHighToLow')}</option>
+                  <option value="rating">{t('search.sortOptions.ratingHighToLow')}</option>
+                  <option value="recommended">{t('search.sortOptions.recommended')}</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none ">
                   <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,7 +130,7 @@ export default function SearchResultsHeader({
                   }`}
                 >
                   <List className="w-4 h-4" />
-                  <span>List</span>
+                  <span>{t('search.viewMode.list')}</span>
                 </button>
                 <button
                   onClick={() => onViewModeChange('grid')}
@@ -141,7 +141,7 @@ export default function SearchResultsHeader({
                   }`}
                 >
                   <Grid3X3 className="w-4 h-4" />
-                  <span>Grid</span>
+                  <span>{t('search.viewMode.grid')}</span>
                 </button>
               </div>
             </div>
