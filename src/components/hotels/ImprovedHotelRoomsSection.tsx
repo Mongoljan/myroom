@@ -8,6 +8,7 @@ import { ApiService } from '@/services/api';
 import { RoomPrice } from '@/types/api';
 import RoomCard, { RoomPriceOptions, BookingItem } from './RoomCard';
 import BookingSummary from './BookingSummary';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface ImprovedHotelRoomsSectionProps {
   hotelId: number;
@@ -22,6 +23,7 @@ export default function ImprovedHotelRoomsSection({
   checkIn,
   checkOut
 }: ImprovedHotelRoomsSectionProps) {
+  const { t } = useHydratedTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -242,7 +244,7 @@ export default function ImprovedHotelRoomsSection({
     return (
       <div className="py-8">
         <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Available Rooms</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('hotelRooms.availableRooms', 'Available Rooms')}</h2>
         </div>
         <div className="grid grid-cols-1 gap-6">
           {[...Array(3)].map((_, index) => (
@@ -282,11 +284,11 @@ export default function ImprovedHotelRoomsSection({
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="text-center">
             <Bed className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-600 text-lg mb-2">No rooms available</p>
+            <p className="text-gray-600 text-lg mb-2">{t('hotelRooms.noRoomsAvailable', 'No rooms available')}</p>
             <p className="text-gray-500">
-              Loaded {rooms.length} room{rooms.length !== 1 ? 's' : ''}, but none meet availability criteria.
+              {t('hotelRooms.loaded', 'Loaded')} {rooms.length} {t('hotelRooms.roomsLoaded', 'room(s), but none meet availability criteria.')}
             </p>
-            <p className="text-gray-500">Please try different dates or contact the hotel directly.</p>
+            <p className="text-gray-500">{t('hotelRooms.tryDifferentDates', 'Please try different dates or contact the hotel directly.')}</p>
           </div>
         </div>
         <div className="w-80">
@@ -311,7 +313,7 @@ export default function ImprovedHotelRoomsSection({
       {/* Header with Date Picker */}
       <div className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">Available Rooms</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('hotelRooms.availableRooms', 'Available Rooms')}</h2>
           
           {/* Date Display/Edit Toggle */}
           <button
@@ -328,7 +330,7 @@ export default function ImprovedHotelRoomsSection({
                 {new Date(effectiveCheckOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </span>
               <span className="text-gray-600 ml-2">
-                ({getNumberOfNights()} night{getNumberOfNights() !== 1 ? 's' : ''})
+                ({getNumberOfNights()} {getNumberOfNights() !== 1 ? t('roomCard.nights', 'nights') : t('roomCard.night', 'night')})
               </span>
             </div>
           </button>
@@ -340,7 +342,7 @@ export default function ImprovedHotelRoomsSection({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Check-in Date
+                  {t('hotelRooms.checkInDate', 'Check-in Date')}
                 </label>
                 <input
                   type="date"
@@ -352,7 +354,7 @@ export default function ImprovedHotelRoomsSection({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Check-out Date
+                  {t('hotelRooms.checkOutDate', 'Check-out Date')}
                 </label>
                 <input
                   type="date"
@@ -364,8 +366,8 @@ export default function ImprovedHotelRoomsSection({
               </div>
             </div>
             <div className="mt-3 text-sm text-blue-800">
-              <span className="font-medium">{getNumberOfNights()} night{getNumberOfNights() !== 1 ? 's' : ''}</span>
-              <span className="text-blue-600 ml-2">• Prices shown are per night</span>
+              <span className="font-medium">{getNumberOfNights()} {getNumberOfNights() !== 1 ? t('roomCard.nights', 'nights') : t('roomCard.night', 'night')}</span>
+              <span className="text-blue-600 ml-2">• {t('hotelRooms.pricesPerNight', 'Prices shown are per night')}</span>
             </div>
           </div>
         )}
@@ -383,6 +385,7 @@ export default function ImprovedHotelRoomsSection({
                 bookingItems={bookingItems.filter(item => item.room.id === room.id)}
                 onQuantityChange={(priceType, quantity) => updateRoomQuantity(room, priceType, quantity)}
                 nights={getNumberOfNights()}
+                showOnlyBasePrice={true}
               />
             ))}
           </div>

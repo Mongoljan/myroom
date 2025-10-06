@@ -26,6 +26,7 @@ interface RoomCardProps {
   bookingItems: BookingItem[];
   onQuantityChange: (priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => void;
   nights?: number;
+  showOnlyBasePrice?: boolean; // Only show full day price
 }
 
 export default function RoomCard({
@@ -33,7 +34,8 @@ export default function RoomCard({
   priceOptions,
   bookingItems,
   onQuantityChange,
-  nights = 1
+  nights = 1,
+  showOnlyBasePrice = false
 }: RoomCardProps) {
   const { t } = useHydratedTranslation();
   const getRoomQuantity = (priceType: 'base' | 'halfDay' | 'singlePerson'): number => {
@@ -135,7 +137,7 @@ export default function RoomCard({
                 <div className="text-sm text-gray-700">
                   <span className="font-medium">{t('roomCard.facilities')}:</span>{' '}
                   {room.facilitiesDetails.slice(0, 4).map(f => f.name_mn || f.name_en).join(', ')}
-                  {room.facilitiesDetails.length > 4 && ` (+${room.facilitiesDetails.length - 4} more)`}
+                  {room.facilitiesDetails.length > 4 && ` (+${room.facilitiesDetails.length - 4} ${t('roomCard.more', 'more')})`}
                 </div>
               </div>
             )}
@@ -147,7 +149,7 @@ export default function RoomCard({
                 <div className="text-sm text-gray-700">
                   <span className="font-medium">{t('roomCard.bathroom')}:</span>{' '}
                   {room.bathroomItemsDetails.slice(0, 3).map(b => b.name_mn || b.name_en).join(', ')}
-                  {room.bathroomItemsDetails.length > 3 && ` (+${room.bathroomItemsDetails.length - 3} ...)`}
+                  {room.bathroomItemsDetails.length > 3 && ` (+${room.bathroomItemsDetails.length - 3} ${t('roomCard.more', 'more')})`}
                 </div>
               </div>
             )}
@@ -159,7 +161,7 @@ export default function RoomCard({
                 <div className="text-sm text-gray-700">
                   <span className="font-medium">{t('roomCard.foodAndDrink')}:</span>{' '}
                   {room.foodAndDrinkDetails.slice(0, 3).map(f => f.name_mn || f.name_en).join(', ')}
-                  {room.foodAndDrinkDetails.length > 3 && ` (+${room.foodAndDrinkDetails.length - 3} ...)`}
+                  {room.foodAndDrinkDetails.length > 3 && ` (+${room.foodAndDrinkDetails.length - 3} ${t('roomCard.more', 'more')})`}
                 </div>
               </div>
             )}
@@ -204,8 +206,8 @@ export default function RoomCard({
               )}
             </div>
 
-            {/* Half Day Rate */}
-            {(priceOptions?.halfDayPrice && priceOptions.halfDayPrice > 0) && (
+            {/* Half Day Rate - Only show if not restricted to base price only */}
+            {!showOnlyBasePrice && (priceOptions?.halfDayPrice && priceOptions.halfDayPrice > 0) && (
               <div className="p-3 bg-gray-50 rounded-lg space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -241,8 +243,8 @@ export default function RoomCard({
               </div>
             )}
 
-            {/* Single Person Rate */}
-            {(priceOptions?.singlePersonPrice && priceOptions.singlePersonPrice > 0) && (
+            {/* Single Person Rate - Only show if not restricted to base price only */}
+            {!showOnlyBasePrice && (priceOptions?.singlePersonPrice && priceOptions.singlePersonPrice > 0) && (
               <div className="p-3 bg-gray-50 rounded-lg space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">

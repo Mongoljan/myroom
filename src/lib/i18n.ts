@@ -537,7 +537,18 @@ const resources = {
         roomFacilities: "Room Facilities",
         smokingAllowed: "Smoking allowed",
         nonSmoking: "Non-smoking",
-        selectedDates: "Selected Dates"
+        selectedDates: "Selected Dates",
+        more: "more"
+      },
+      hotelRooms: {
+        availableRooms: "Available Rooms",
+        checkInDate: "Check-in Date",
+        checkOutDate: "Check-out Date",
+        pricesPerNight: "Prices shown are per night",
+        noRoomsAvailable: "No rooms available",
+        loaded: "Loaded",
+        roomsLoaded: "room(s), but none meet availability criteria.",
+        tryDifferentDates: "Please try different dates or contact the hotel directly."
       },
       amenitiesLabels: {
         premiumService: "Premium service",
@@ -1126,7 +1137,18 @@ const resources = {
         roomFacilities: "Өрөөний тохижилт",
         smokingAllowed: "Тамхи татах боломжтой",
         nonSmoking: "Тамхи татахгүй",
-        selectedDates: "Сонгосон огноо"
+        selectedDates: "Сонгосон огноо",
+        more: "бусад"
+      },
+      hotelRooms: {
+        availableRooms: "Боломжтой өрөөнүүд",
+        checkInDate: "Буух огноо",
+        checkOutDate: "Гарах огноо",
+        pricesPerNight: "Үнэ нь нэг шөнөөр тооцогдоно",
+        noRoomsAvailable: "Боломжтой өрөө байхгүй байна",
+        loaded: "Ачааллагдсан",
+        roomsLoaded: "өрөө(нүүд), гэхдээ хэн нь боломжит шалгуурыг хангахгүй байна.",
+        tryDifferentDates: "Өөр огноо турших эсвэл зочид буудалтай шууд холбогдоно уу."
       },
       amenitiesLabels: {
         premiumService: "Дээд зэрэглэлийн үйлчилгээ",
