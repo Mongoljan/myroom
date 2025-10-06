@@ -11,12 +11,14 @@ import BookingSummary from './BookingSummary';
 
 interface ImprovedHotelRoomsSectionProps {
   hotelId: number;
+  hotelName?: string;
   checkIn?: string;
   checkOut?: string;
 }
 
 export default function ImprovedHotelRoomsSection({
   hotelId,
+  hotelName = 'Hotel',
   checkIn,
   checkOut
 }: ImprovedHotelRoomsSectionProps) {
@@ -145,10 +147,30 @@ export default function ImprovedHotelRoomsSection({
   // Calculate totals
   const getTotalRooms = () => bookingItems.reduce((sum, item) => sum + item.quantity, 0);
   const getTotalPrice = () => bookingItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
+  // Get number of nights for display
+  const getNumberOfNights = () => {
+    const checkInDate = new Date(effectiveCheckIn);
+    const checkOutDate = new Date(effectiveCheckOut);
+    const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays || 1;
+  };
+
+  // Calculate number of nights
+  const calculateNights = () => {
+    const checkInDate = new Date(effectiveCheckIn);
+    const checkOutDate = new Date(effectiveCheckOut);
+    const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays || 1; // At least 1 night
+  };
 
   // Handle booking
   const handleBookNow = () => {
     if (bookingItems.length === 0) return;
+
+    const nights = calculateNights();
 
     // Prepare rooms data for booking page
     const roomsData = bookingItems.map(item => ({
@@ -156,17 +178,23 @@ export default function ImprovedHotelRoomsSection({
       room_type_id: item.room.room_type,
       room_count: item.quantity,
       room_name: item.room.roomTypeName,
-      price: item.price * item.quantity
+      price_per_night: item.price,
+      total_price: item.price * item.quantity * nights
     }));
+
+    // Calculate total price including nights
+    const totalPriceWithNights = getTotalPrice() * nights;
 
     // Create URL params
     const params = new URLSearchParams({
-      hotel: hotelId.toString(),
-      checkin: effectiveCheckIn,
-      checkout: effectiveCheckOut,
+      hotelId: hotelId.toString(),
+      hotelName: hotelName,
+      checkIn: effectiveCheckIn,
+      checkOut: effectiveCheckOut,
       rooms: JSON.stringify(roomsData),
-      totalPrice: getTotalPrice().toString(),
-      totalRooms: getTotalRooms().toString()
+      totalPrice: totalPriceWithNights.toString(),
+      totalRooms: getTotalRooms().toString(),
+      nights: nights.toString()
     });
 
     router.push(`/booking?${params.toString()}`);
@@ -230,6 +258,7 @@ export default function ImprovedHotelRoomsSection({
             totalPrice={getTotalPrice()}
             checkIn={effectiveCheckIn}
             checkOut={effectiveCheckOut}
+            nights={getNumberOfNights()}
             onQuantityChange={handleQuantityChange}
             onRemoveRoom={handleRemoveRoom}
             onBookNow={handleBookNow}
@@ -272,6 +301,7 @@ export default function ImprovedHotelRoomsSection({
             totalPrice={getTotalPrice()}
             checkIn={effectiveCheckIn}
             checkOut={effectiveCheckOut}
+            nights={getNumberOfNights()}
             onQuantityChange={handleQuantityChange}
             onRemoveRoom={handleRemoveRoom}
             onBookNow={handleBookNow}

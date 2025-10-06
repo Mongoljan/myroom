@@ -9,6 +9,7 @@ interface BookingSummaryProps {
   totalPrice: number;
   checkIn: string;
   checkOut: string;
+  nights?: number;
   onQuantityChange: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => void;
   onRemoveRoom: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson') => void;
   onBookNow: () => void;
@@ -24,15 +25,43 @@ export default function BookingSummary({
   items,
   totalRooms,
   totalPrice,
+  checkIn,
+  checkOut,
+  nights = 1,
   onQuantityChange,
   onRemoveRoom,
   onBookNow
 }: BookingSummaryProps) {
+  const totalPriceWithNights = totalPrice * nights;
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 sticky top-4">
+      {/* Date Range Display */}
+      <div className="mb-4 pb-4 border-b border-gray-200">
+        <div className="text-xs text-gray-600 mb-2">Stay Dates</div>
+        <div className="flex items-center justify-between text-sm">
+          <div>
+            <div className="font-medium text-gray-900">{new Date(checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+            <div className="text-xs text-gray-600">Check-in</div>
+          </div>
+          <div className="flex-1 border-t border-gray-300 mx-3 relative">
+            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-white px-2 text-xs text-gray-600">
+              {nights} night{nights !== 1 ? 's' : ''}
+            </div>
+          </div>
+          <div>
+            <div className="font-medium text-gray-900">{new Date(checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+            <div className="text-xs text-gray-600">Check-out</div>
+          </div>
+        </div>
+      </div>
+
       <div className="text-center mb-4 pb-4 border-b border-gray-200">
         <div className="text-sm text-gray-600 mb-1">Total Price</div>
-        <div className="text-2xl font-bold text-gray-900">₮{totalPrice.toLocaleString()}</div>
+        <div className="text-2xl font-bold text-gray-900">₮{totalPriceWithNights.toLocaleString()}</div>
+        <div className="text-xs text-gray-500 mt-1">
+          ₮{totalPrice.toLocaleString()} × {nights} night{nights !== 1 ? 's' : ''}
+        </div>
       </div>
 
       <button

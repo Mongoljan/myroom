@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import Header1 from '@/components/header/Header1';
 import ManageBookingContent from '@/components/booking/ManageBookingContent';
 
 function LoadingFallback() {
@@ -37,11 +36,8 @@ function LoadingFallback() {
 
 export default function ManageBookingPage() {
   return (
-    <>
-      <Header1 />
-      <Suspense fallback={<LoadingFallback />}>
-        <ManageBookingContent />
-      </Suspense>
-    </>
+    <Suspense fallback={<LoadingFallback />}>
+      <ManageBookingContent />
+    </Suspense>
   );
 }

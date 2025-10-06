@@ -14,7 +14,8 @@ interface BookingRoom {
   room_type_id: number;
   room_count: number;
   room_name: string;
-  price: number;
+  price_per_night: number;
+  total_price: number;
 }
 
 function BookingContent() {
@@ -25,13 +26,20 @@ function BookingContent() {
   // Extract booking data from URL params
   const hotelId = parseInt(searchParams.get('hotelId') || '0');
   const hotelName = searchParams.get('hotelName') || '';
-  const checkIn = searchParams.get('checkIn') || '';
-  const checkOut = searchParams.get('checkOut') || '';
-  const totalPrice = parseInt(searchParams.get('totalPrice') || '0');
+  const urlCheckIn = searchParams.get('checkIn') || '';
+  const urlCheckOut = searchParams.get('checkOut') || '';
+  const urlTotalPrice = parseInt(searchParams.get('totalPrice') || '0');
+  const urlNights = parseInt(searchParams.get('nights') || '1');
 
   // Parse rooms data from URL
   const roomsData = searchParams.get('rooms');
   const [rooms, setRooms] = useState<BookingRoom[]>([]);
+
+  // Date state (editable)
+  const [checkIn, setCheckIn] = useState(urlCheckIn);
+  const [checkOut, setCheckOut] = useState(urlCheckOut);
+  const [nights, setNights] = useState(urlNights);
+  const [totalPrice, setTotalPrice] = useState(urlTotalPrice);
 
   // Form state
   const [customerName, setCustomerName] = useState('');
@@ -53,6 +61,37 @@ function BookingContent() {
       }
     }
   }, [roomsData]);
+
+  // Recalculate total when dates change
+  useEffect(() => {
+    const calculateNewTotal = () => {
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+      const diffTime = Math.abs(checkOutDate.getTime() - checkInDate.getTime());
+      const newNights = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+      
+      setNights(newNights);
+      
+      // Recalculate room totals and overall total
+      const updatedRooms = rooms.map(room => ({
+        ...room,
+        total_price: room.price_per_night * room.room_count * newNights
+      }));
+      
+      setRooms(updatedRooms);
+      
+      const newTotal = updatedRooms.reduce((sum, room) => {
+        return sum + room.total_price;
+      }, 0);
+      
+      setTotalPrice(newTotal);
+    };
+
+    if (checkIn && checkOut && rooms.length > 0) {
+      calculateNewTotal();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkIn, checkOut]);
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -253,18 +292,38 @@ function BookingContent() {
             >
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('bookingExtra.detailsTitle')}</h3>
 
-              {/* Date Info */}
-              {checkIn && checkOut && (
-                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Calendar className="w-4 h-4 text-blue-600" />
-                    <span className="text-sm font-medium text-blue-900">{t('bookingExtra.stayDates')}</span>
+              {/* Date Info - Editable */}
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                <div className="flex items-center gap-2 mb-3">
+                  <Calendar className="w-4 h-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-900">{t('bookingExtra.stayDates')}</span>
+                </div>
+                <div className="space-y-2">
+                  <div>
+                    <label className="text-xs text-blue-800 mb-1 block">Check-in</label>
+                    <input
+                      type="date"
+                      value={checkIn}
+                      onChange={(e) => setCheckIn(e.target.value)}
+                      className="w-full px-2 py-1 text-sm border border-blue-200 rounded bg-white"
+                      min={new Date().toISOString().split('T')[0]}
+                    />
                   </div>
-                  <div className="text-sm text-blue-800">
-                    {new Date(checkIn).toLocaleDateString('mn-MN')} - {new Date(checkOut).toLocaleDateString('mn-MN')}
+                  <div>
+                    <label className="text-xs text-blue-800 mb-1 block">Check-out</label>
+                    <input
+                      type="date"
+                      value={checkOut}
+                      onChange={(e) => setCheckOut(e.target.value)}
+                      className="w-full px-2 py-1 text-sm border border-blue-200 rounded bg-white"
+                      min={checkIn}
+                    />
+                  </div>
+                  <div className="text-xs text-blue-700 font-medium pt-1">
+                    {nights} night{nights !== 1 ? 's' : ''}
                   </div>
                 </div>
-              )}
+              </div>
 
               {/* Rooms */}
               <div className="space-y-3 mb-6">
@@ -275,20 +334,16 @@ function BookingContent() {
                       <h5 className="font-medium text-gray-900 text-sm">{room.room_name}</h5>
                       <div className="text-right">
                         <div className="text-sm font-medium text-gray-900">
-                          ₮{room.price.toLocaleString()}
+                          ₮{room.price_per_night.toLocaleString()}
                         </div>
-                        <div className="text-xs text-gray-600">× {room.room_count}</div>
+                        <div className="text-xs text-gray-600">per night × {room.room_count}</div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        <span>2</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Bed className="w-3 h-3" />
-                        <span>1</span>
-                      </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-gray-600">{nights} night{nights !== 1 ? 's' : ''}</span>
+                      <span className="font-medium text-gray-900">
+                        ₮{room.total_price.toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 ))}

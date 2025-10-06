@@ -66,6 +66,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
           <div id="rooms">
             <ImprovedHotelRoomsSection
               hotelId={hotel.hotel_id}
+              hotelName={hotel.property_name}
               checkIn={searchParams?.check_in}
               checkOut={searchParams?.check_out}
             />
