@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Bed } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Bed, Calendar } from 'lucide-react';
 import { hotelRoomsService, EnrichedHotelRoom } from '@/services/hotelRoomsApi';
 import { ApiService } from '@/services/api';
 import { RoomPrice } from '@/types/api';
@@ -23,20 +23,58 @@ export default function ImprovedHotelRoomsSection({
   checkOut
 }: ImprovedHotelRoomsSectionProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Provide fallback dates if not provided
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const effectiveCheckIn = checkIn || today.toISOString().split('T')[0];
-  const effectiveCheckOut = checkOut || tomorrow.toISOString().split('T')[0];
+  // Date state (editable)
+  const [selectedCheckIn, setSelectedCheckIn] = useState(checkIn || today.toISOString().split('T')[0]);
+  const [selectedCheckOut, setSelectedCheckOut] = useState(checkOut || tomorrow.toISOString().split('T')[0]);
+
+  const effectiveCheckIn = selectedCheckIn;
+  const effectiveCheckOut = selectedCheckOut;
 
   // State
   const [rooms, setRooms] = useState<EnrichedHotelRoom[]>([]);
   const [roomPrices, setRoomPrices] = useState<Record<string, RoomPriceOptions>>({});
   const [bookingItems, setBookingItems] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  // Update URL when dates change
+  const updateURLWithDates = (newCheckIn: string, newCheckOut: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('check_in', newCheckIn);
+    params.set('check_out', newCheckOut);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
+  // Handle date changes
+  const handleCheckInChange = (date: string) => {
+    setSelectedCheckIn(date);
+    // If check-out is before new check-in, update it
+    if (new Date(date) >= new Date(selectedCheckOut)) {
+      const newCheckOut = new Date(date);
+      newCheckOut.setDate(newCheckOut.getDate() + 1);
+      const newCheckOutStr = newCheckOut.toISOString().split('T')[0];
+      setSelectedCheckOut(newCheckOutStr);
+      updateURLWithDates(date, newCheckOutStr);
+    } else {
+      updateURLWithDates(date, selectedCheckOut);
+    }
+    // Clear booking items when dates change
+    setBookingItems([]);
+  };
+
+  const handleCheckOutChange = (date: string) => {
+    setSelectedCheckOut(date);
+    updateURLWithDates(selectedCheckIn, date);
+    // Clear booking items when dates change
+    setBookingItems([]);
+  };
 
   // Load rooms and prices
   useEffect(() => {
@@ -270,11 +308,67 @@ export default function ImprovedHotelRoomsSection({
 
   return (
     <div>
-      <div className="flex items-center gap-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Available Rooms</h2>
-        <div className="text-sm text-gray-600">
-          {new Date(effectiveCheckIn).toLocaleDateString()} - {new Date(effectiveCheckOut).toLocaleDateString()}
+      {/* Header with Date Picker */}
+      <div className="mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <h2 className="text-2xl font-bold text-gray-900">Available Rooms</h2>
+          
+          {/* Date Display/Edit Toggle */}
+          <button
+            onClick={() => setShowDatePicker(!showDatePicker)}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <Calendar className="w-4 h-4 text-gray-600" />
+            <div className="text-sm">
+              <span className="font-medium text-gray-900">
+                {new Date(effectiveCheckIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </span>
+              <span className="text-gray-600 mx-1">→</span>
+              <span className="font-medium text-gray-900">
+                {new Date(effectiveCheckOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              </span>
+              <span className="text-gray-600 ml-2">
+                ({getNumberOfNights()} night{getNumberOfNights() !== 1 ? 's' : ''})
+              </span>
+            </div>
+          </button>
         </div>
+
+        {/* Expandable Date Picker */}
+        {showDatePicker && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Check-in Date
+                </label>
+                <input
+                  type="date"
+                  value={selectedCheckIn}
+                  onChange={(e) => handleCheckInChange(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Check-out Date
+                </label>
+                <input
+                  type="date"
+                  value={selectedCheckOut}
+                  onChange={(e) => handleCheckOutChange(e.target.value)}
+                  min={selectedCheckIn}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+            <div className="mt-3 text-sm text-blue-800">
+              <span className="font-medium">{getNumberOfNights()} night{getNumberOfNights() !== 1 ? 's' : ''}</span>
+              <span className="text-blue-600 ml-2">• Prices shown are per night</span>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex gap-6">
