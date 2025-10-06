@@ -139,6 +139,7 @@ export default function ManageBookingContent() {
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [showDateModal, setShowDateModal] = useState<BookingDetails | null>(null);
+  const [autoSearched, setAutoSearched] = useState(false);
 
   const fetchBooking = useCallback(async () => {
     if (!bookingCode || !pinCode) return;
@@ -150,12 +151,12 @@ export default function ManageBookingContent() {
       const data = await ApiService.checkBooking(bookingCode, pinCode);
       setBookingData(data);
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to find booking');
+      setError(error instanceof Error ? error.message : t('booking.manage.errorFetch', 'Захиалга олдсонгүй'));
       setBookingData(null);
     } finally {
       setLoading(false);
     }
-  }, [bookingCode, pinCode]);
+  }, [bookingCode, pinCode, t]);
 
   const handleAction = async (action: 'confirm' | 'cancel') => {
     setActionLoading(action);
@@ -201,11 +202,21 @@ export default function ManageBookingContent() {
     }
   };
 
+  // Auto-search when code and pin are provided in URL
   useEffect(() => {
-    if (searchParams.get('code') && searchParams.get('pin')) {
-      fetchBooking();
+    const urlCode = searchParams.get('code');
+    const urlPin = searchParams.get('pin');
+    
+    if (urlCode && urlPin && !autoSearched) {
+      setBookingCode(urlCode);
+      setPinCode(urlPin);
+      setAutoSearched(true);
+      // Automatically fetch booking after setting codes
+      setTimeout(() => {
+        fetchBooking();
+      }, 100);
     }
-  }, [searchParams, fetchBooking]);
+  }, [searchParams, autoSearched, fetchBooking]);
 
   return (
     <div className="pt-24 pb-12">
@@ -227,6 +238,16 @@ export default function ManageBookingContent() {
 
           {/* Search Form */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            {/* Auto-filled notification */}
+            {autoSearched && bookingCode && pinCode && !bookingData && !error && (
+              <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-blue-600" />
+                <p className="text-sm text-blue-800">
+                  {t('booking.manage.autoFilled', 'Захиалгын мэдээлэл автоматаар бөглөгдлөө')}
+                </p>
+              </div>
+            )}
+
             <form onSubmit={(e) => { e.preventDefault(); fetchBooking(); }} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>

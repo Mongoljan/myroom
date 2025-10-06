@@ -389,7 +389,25 @@ const resources = {
           enterPinCode: "Enter PIN code",
           findBooking: "Find Booking",
           searching: "Searching...",
-          bookingSummary: "Booking Summary"
+          bookingSummary: "Booking Summary",
+          errorFetch: "Booking not found. Please check your codes.",
+          noBookingFound: "No booking found",
+          checkInDate: "Check-in",
+          checkOutDate: "Check-out",
+          status: "Status",
+          customerInfo: "Customer Information",
+          roomDetails: "Room Details",
+          totalAmount: "Total Amount",
+          confirm: "Confirm Booking",
+          cancel: "Cancel Booking",
+          changeDates: "Change Dates",
+          confirmQuestion: "Are you sure you want to confirm this booking?",
+          cancelQuestion: "Are you sure you want to cancel this booking?",
+          updating: "Updating...",
+          confirming: "Confirming...",
+          canceling: "Canceling...",
+          searchButton: "Search Booking",
+          autoFilled: "Booking information auto-filled from your recent booking"
         }
       },
       filters: {
@@ -955,7 +973,25 @@ const resources = {
           enterPinCode: "PIN код оруулна уу",
           findBooking: "Захиалга хайх",
           searching: "Хайж байна...",
-          bookingSummary: "Захиалгын тойм"
+          bookingSummary: "Захиалгын тойм",
+          searchButton: "Захиалга хайх",
+          errorFetch: "Захиалга олдсонгүй. Кодоо шалгана уу.",
+          noBookingFound: "Захиалга олдсонгүй",
+          checkInDate: "Буудалд ирэх",
+          checkOutDate: "Буудлаас гарах",
+          status: "Төлөв",
+          customerInfo: "Харилцагчийн мэдээлэл",
+          roomDetails: "Өрөөний дэлгэрэнгүй",
+          totalAmount: "Нийт дүн",
+          confirm: "Захиалга баталгаажуулах",
+          cancel: "Захиалга цуцлах",
+          changeDates: "Огноо өөрчлөх",
+          confirmQuestion: "Та энэ захиалгыг баталгаажуулахдаа итгэлтэй байна уу?",
+          cancelQuestion: "Та энэ захиалгыг цуцлахдаа итгэлтэй байна уу?",
+          updating: "Шинэчилж байна...",
+          confirming: "Баталгаажуулж байна...",
+          canceling: "Цуцалж байна...",
+          autoFilled: "Захиалгын мэдээлэл автоматаар бөглөгдлөө"
         }
       },
       filters: {

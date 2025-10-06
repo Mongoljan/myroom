@@ -173,7 +173,7 @@ function BookingContent() {
                   {t('bookingExtra.goHome')}
                 </button>
                 <button
-                  onClick={() => router.push('/booking/manage')}
+                  onClick={() => router.push(`/booking/manage?code=${bookingResult.booking_code}&pin=${bookingResult.pin_code}`)}
                   className="flex-1 border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-50 transition-colors"
                 >
                   {t('bookingExtra.manageBooking')}
