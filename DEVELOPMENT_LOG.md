@@ -4,6 +4,49 @@
 
 ## Current Session (Oct 6, 2025)
 
+### Search Page - Location Not Populated from URL Fix
+**Files Modified:**
+- `src/components/search/HotelSearchForm.tsx`
+- `src/services/locationApi.ts`
+
+**Issue:** When navigating to search page with URL params like `?province_id=1`, the location field remained empty even though dates and guests were populated correctly.
+
+**Root Cause:** The form only handled text-based location params (`name`, `location`, `district`) but didn't fetch and display names for ID-based params (`province_id`, `soum_id`, `name_id`).
+
+**Solution:**
+1. Added `getAllLocationData()` method to LocationService to fetch complete location dataset
+2. Added `getLocationById(type, id)` method to fetch specific province/soum by ID
+3. Updated HotelSearchForm to:
+   - Detect province_id/soum_id in URL
+   - Fetch the actual location name using new methods
+   - Reconstruct proper LocationSuggestion object
+   - Set both destination text and selectedLocationSuggestion
+
+**Key Code:**
+```typescript
+// LocationService - Get location by ID
+async getLocationById(type: 'province' | 'soum', id: number): Promise<LocationSuggestion | null> {
+  const data = await this.getAllLocationData();
+  if (type === 'province') {
+    const province = data.provinces.find(p => p.id === id);
+    return { /* full suggestion object with originalData */ };
+  }
+}
+
+// HotelSearchForm - Load from URL
+if (provinceIdParam) {
+  const provinceSuggestion = await locationService.getLocationById('province', parseInt(provinceIdParam));
+  if (provinceSuggestion) {
+    setDestination(provinceSuggestion.name);
+    setSelectedLocationSuggestion(provinceSuggestion);
+  }
+}
+```
+
+**Result:** Location field now properly displays "Ulaanbaatar" when URL contains `?province_id=1`, maintaining consistency with dates and guest parameters.
+
+---
+
 ### Hotel Room Page - Show Only Base Price & Full Translation
 **Files Modified:**
 - `src/components/hotels/RoomCard.tsx`

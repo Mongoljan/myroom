@@ -52,26 +52,51 @@ export default function HotelSearchForm() {
 
     // Only load location from URL once to prevent interference with user typing
     if (!hasLoadedFromUrl.current) {
-      const locationParam = urlSearchParams.get('location');
-      const nameParam = urlSearchParams.get('name');
-      const nameIdParam = urlSearchParams.get('name_id');
-      const provinceIdParam = urlSearchParams.get('province_id');
-      const soumIdParam = urlSearchParams.get('soum_id');
-      const districtParam = urlSearchParams.get('district');
+      const loadLocationFromUrl = async () => {
+        const locationParam = urlSearchParams.get('location');
+        const nameParam = urlSearchParams.get('name');
+        const nameIdParam = urlSearchParams.get('name_id');
+        const provinceIdParam = urlSearchParams.get('province_id');
+        const soumIdParam = urlSearchParams.get('soum_id');
+        const districtParam = urlSearchParams.get('district');
 
-      // Set destination based on available URL parameters (match ModernHero logic)
-      if (nameParam) {
-        setDestination(nameParam);
-      } else if (locationParam) {
-        setDestination(locationParam);
-      } else if (districtParam) {
-        setDestination(districtParam);
-      } else if (nameIdParam || provinceIdParam || soumIdParam) {
-        // For these ID-based searches, we might need to fetch the display name
-        // For now, try to show something meaningful or keep empty for user to re-search
-        setDestination('');
-      }
+        // Set destination based on available URL parameters
+        if (nameParam) {
+          setDestination(nameParam);
+        } else if (locationParam) {
+          setDestination(locationParam);
+        } else if (districtParam) {
+          setDestination(districtParam);
+        } else if (provinceIdParam || soumIdParam || nameIdParam) {
+          // For ID-based searches, fetch the actual location name
+          try {
+            if (provinceIdParam) {
+              const provinceId = parseInt(provinceIdParam);
+              const provinceSuggestion = await locationService.getLocationById('province', provinceId);
+              
+              if (provinceSuggestion) {
+                setDestination(provinceSuggestion.name);
+                setSelectedLocationSuggestion(provinceSuggestion);
+              }
+            } else if (soumIdParam) {
+              const soumId = parseInt(soumIdParam);
+              const soumSuggestion = await locationService.getLocationById('soum', soumId);
+              
+              if (soumSuggestion) {
+                setDestination(soumSuggestion.fullName);
+                setSelectedLocationSuggestion(soumSuggestion);
+              }
+            }
+            // For nameIdParam (property/hotel), we would need a different API
+            // Leave empty for now - user can re-search
+          } catch (error) {
+            console.error('Failed to load location from URL params:', error);
+            setDestination('');
+          }
+        }
+      };
 
+      loadLocationFromUrl();
       hasLoadedFromUrl.current = true;
     }
   }, [urlSearchParams]);

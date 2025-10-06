@@ -239,6 +239,62 @@ export class LocationService {
     }
   }
 
+  // Get all location data (provinces, soums, districts)
+  async getAllLocationData(): Promise<LocationResponse | null> {
+    try {
+      const response = await fetch('https://dev.kacc.mn/api/locations/suggest/');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching all location data:', error);
+      return null;
+    }
+  }
+
+  // Get location by ID
+  async getLocationById(type: 'province' | 'soum' | 'district', id: number): Promise<LocationSuggestion | null> {
+    try {
+      const data = await this.getAllLocationData();
+      if (!data) return null;
+
+      if (type === 'province') {
+        const province = data.provinces.find(p => p.id === id);
+        if (province) {
+          return {
+            id: `province-${province.id}`,
+            name: province.name,
+            fullName: province.name,
+            type: 'province',
+            property_count: province.property_count,
+            originalData: { province_id: province.id }
+          };
+        }
+      } else if (type === 'soum') {
+        const soum = data.soums.find(s => s.id === id);
+        if (soum) {
+          return {
+            id: `soum-${soum.id}`,
+            name: soum.name,
+            fullName: `${soum.name}, ${soum.province_name}`,
+            type: 'soum',
+            property_count: soum.property_count,
+            originalData: {
+              province_id: soum.province_id,
+              soum_id: soum.id
+            }
+          };
+        }
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error fetching location by ID:', error);
+      return null;
+    }
+  }
+
   // Parse location string for search API
   parseLocationForSearch(locationString: string): {
     location: string;
