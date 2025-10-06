@@ -281,7 +281,7 @@ export default function ManageBookingContent() {
               <button
                 type="submit"
                 disabled={loading || !bookingCode || !pinCode}
-                className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 disabled:bg-gray-400 transition-colors"
+                className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:text-white transition-colors"
               >
                 <Search className="w-4 h-4" />
                 {loading ? t('booking.manage.searching', 'Хайж байна...') : t('booking.manage.findBooking', 'Захиалга хайх')}

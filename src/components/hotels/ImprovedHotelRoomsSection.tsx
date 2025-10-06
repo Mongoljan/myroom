@@ -382,6 +382,7 @@ export default function ImprovedHotelRoomsSection({
                 priceOptions={roomPrices[`${room.room_type}-${room.room_category}`]}
                 bookingItems={bookingItems.filter(item => item.room.id === room.id)}
                 onQuantityChange={(priceType, quantity) => updateRoomQuantity(room, priceType, quantity)}
+                nights={getNumberOfNights()}
               />
             ))}
           </div>

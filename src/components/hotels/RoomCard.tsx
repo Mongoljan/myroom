@@ -25,13 +25,15 @@ interface RoomCardProps {
   priceOptions?: RoomPriceOptions;
   bookingItems: BookingItem[];
   onQuantityChange: (priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => void;
+  nights?: number;
 }
 
 export default function RoomCard({
   room,
   priceOptions,
   bookingItems,
-  onQuantityChange
+  onQuantityChange,
+  nights = 1
 }: RoomCardProps) {
   const { t } = useHydratedTranslation();
   const getRoomQuantity = (priceType: 'base' | 'halfDay' | 'singlePerson'): number => {
@@ -168,72 +170,111 @@ export default function RoomCard({
         <div className="w-80 flex-shrink-0">
           <div className="space-y-1">
             {/* Standard Rate */}
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center gap-2">
-                <Home className="w-4 h-4 text-gray-600" />
-                <div>
-                  <div className="text-sm font-medium text-gray-900">{t('roomCard.fullDay')}</div>
-                  <div className="text-xs text-gray-600">₮{priceOptions!.basePrice.toLocaleString()}</div>
-                </div>
-              </div>
-              <select
-                value={getRoomQuantity('base')}
-                onChange={(e) => onQuantityChange('base', parseInt(e.target.value))}
-                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-              >
-                {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('base') + 1, 6) }, (_, i) => (
-                  <option key={i} value={i}>
-                    {i === 0 ? '0' : `${i}`}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Half Day Rate */}
-            {(priceOptions?.halfDayPrice && priceOptions.halfDayPrice > 0) && (
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div className="p-3 bg-gray-50 rounded-lg space-y-2">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-gray-600" />
+                  <Home className="w-4 h-4 text-gray-600" />
                   <div>
-                    <div className="text-sm font-medium text-gray-900">{t('roomCard.halfDay')}</div>
-                    <div className="text-xs text-gray-600">₮{priceOptions.halfDayPrice.toLocaleString()}</div>
+                    <div className="text-sm font-medium text-gray-900">{t('roomCard.fullDayPrice', 'Full Day Price')}</div>
+                    <div className="text-xs text-gray-600">₮{priceOptions!.basePrice.toLocaleString()} / {t('roomCard.night', 'night')}</div>
                   </div>
                 </div>
                 <select
-                  value={getRoomQuantity('halfDay')}
-                  onChange={(e) => onQuantityChange('halfDay', parseInt(e.target.value))}
+                  value={getRoomQuantity('base')}
+                  onChange={(e) => onQuantityChange('base', parseInt(e.target.value))}
                   className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 >
-                  {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('halfDay') + 1, 6) }, (_, i) => (
+                  {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('base') + 1, 6) }, (_, i) => (
                     <option key={i} value={i}>
                       {i === 0 ? '0' : `${i}`}
                     </option>
                   ))}
                 </select>
+              </div>
+              {getRoomQuantity('base') > 0 && (
+                <div className="pt-2 border-t border-gray-200">
+                  <div className="flex justify-between text-xs text-gray-600">
+                    <span>₮{priceOptions!.basePrice.toLocaleString()} × {getRoomQuantity('base')} {getRoomQuantity('base') > 1 ? t('roomCard.rooms', 'rooms') : t('roomCard.room', 'room')} × {nights} {nights > 1 ? t('roomCard.nights', 'nights') : t('roomCard.night', 'night')}</span>
+                  </div>
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs font-medium text-gray-700">{t('roomCard.total', 'Total')}:</span>
+                    <span className="text-sm font-bold text-blue-600">₮{(priceOptions!.basePrice * getRoomQuantity('base') * nights).toLocaleString()}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Half Day Rate */}
+            {(priceOptions?.halfDayPrice && priceOptions.halfDayPrice > 0) && (
+              <div className="p-3 bg-gray-50 rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-gray-600" />
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{t('roomCard.halfDayPrice', 'Half Day Price')}</div>
+                      <div className="text-xs text-gray-600">₮{priceOptions.halfDayPrice.toLocaleString()} / {t('roomCard.day', 'day')}</div>
+                    </div>
+                  </div>
+                  <select
+                    value={getRoomQuantity('halfDay')}
+                    onChange={(e) => onQuantityChange('halfDay', parseInt(e.target.value))}
+                    className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('halfDay') + 1, 6) }, (_, i) => (
+                      <option key={i} value={i}>
+                        {i === 0 ? '0' : `${i}`}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {getRoomQuantity('halfDay') > 0 && (
+                  <div className="pt-2 border-t border-gray-200">
+                    <div className="flex justify-between text-xs text-gray-600">
+                      <span>₮{priceOptions.halfDayPrice.toLocaleString()} × {getRoomQuantity('halfDay')} × {nights} {nights > 1 ? t('roomCard.nights', 'nights') : t('roomCard.night', 'night')}</span>
+                    </div>
+                    <div className="flex justify-between items-center mt-1">
+                      <span className="text-xs font-medium text-gray-700">{t('roomCard.total', 'Total')}:</span>
+                      <span className="text-sm font-bold text-blue-600">₮{(priceOptions.halfDayPrice * getRoomQuantity('halfDay') * nights).toLocaleString()}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             {/* Single Person Rate */}
             {(priceOptions?.singlePersonPrice && priceOptions.singlePersonPrice > 0) && (
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-gray-600" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">{t('roomCard.singleGuest')}</div>
-                    <div className="text-xs text-gray-600">₮{priceOptions.singlePersonPrice.toLocaleString()}</div>
+              <div className="p-3 bg-gray-50 rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-gray-600" />
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{t('roomCard.singleGuestPrice', 'Single Guest Price')}</div>
+                      <div className="text-xs text-gray-600">₮{priceOptions.singlePersonPrice.toLocaleString()} / {t('roomCard.night', 'night')}</div>
+                    </div>
                   </div>
+                  <select
+                    value={getRoomQuantity('singlePerson')}
+                    onChange={(e) => onQuantityChange('singlePerson', parseInt(e.target.value))}
+                    className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('singlePerson') + 1, 6) }, (_, i) => (
+                      <option key={i} value={i}>
+                        {i === 0 ? '0' : `${i}`}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <select
-                  value={getRoomQuantity('singlePerson')}
-                  onChange={(e) => onQuantityChange('singlePerson', parseInt(e.target.value))}
-                  className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                >
-                  {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('singlePerson') + 1, 6) }, (_, i) => (
-                    <option key={i} value={i}>
-                      {i === 0 ? '0' : `${i}`}
-                    </option>
-                  ))}
-                </select>
+                {getRoomQuantity('singlePerson') > 0 && (
+                  <div className="pt-2 border-t border-gray-200">
+                    <div className="flex justify-between text-xs text-gray-600">
+                      <span>₮{priceOptions.singlePersonPrice.toLocaleString()} × {getRoomQuantity('singlePerson')} × {nights} {nights > 1 ? t('roomCard.nights', 'nights') : t('roomCard.night', 'night')}</span>
+                    </div>
+                    <div className="flex justify-between items-center mt-1">
+                      <span className="text-xs font-medium text-gray-700">{t('roomCard.total', 'Total')}:</span>
+                      <span className="text-sm font-bold text-blue-600">₮{(priceOptions.singlePersonPrice * getRoomQuantity('singlePerson') * nights).toLocaleString()}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
