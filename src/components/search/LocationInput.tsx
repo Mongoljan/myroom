@@ -10,6 +10,7 @@ interface LocationInputProps {
   onLocationChange: (value: string) => void;
   onLocationClear: () => void;
   onLocationFocus: () => void;
+  compact?: boolean;
 }
 
 export default function LocationInput({
@@ -17,12 +18,13 @@ export default function LocationInput({
   locationInputRef,
   onLocationChange,
   onLocationClear,
-  onLocationFocus
+  onLocationFocus,
+  compact = false
 }: LocationInputProps) {
   const { t } = useHydratedTranslation();
 
   return (
-    <div className="flex-1 p-4 w-full relative">
+    <div className={`flex-1 ${compact ? 'p-2' : 'p-4'} w-full relative`}>
       <div className="flex items-center">
         <MapPin className="w-6 h-6 text-gray-700 mr-4" />
         <div className="flex-1">

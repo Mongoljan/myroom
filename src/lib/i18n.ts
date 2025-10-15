@@ -548,7 +548,8 @@ const resources = {
         noRoomsAvailable: "No rooms available",
         loaded: "Loaded",
         roomsLoaded: "room(s), but none meet availability criteria.",
-        tryDifferentDates: "Please try different dates or contact the hotel directly."
+        tryDifferentDates: "Please try different dates or contact the hotel directly.",
+        totalPrice: "Total price"
       },
       amenitiesLabels: {
         premiumService: "Premium service",
@@ -1148,7 +1149,8 @@ const resources = {
         noRoomsAvailable: "Боломжтой өрөө байхгүй байна",
         loaded: "Ачааллагдсан",
         roomsLoaded: "өрөө(нүүд), гэхдээ хэн нь боломжит шалгуурыг хангахгүй байна.",
-        tryDifferentDates: "Өөр огноо турших эсвэл зочид буудалтай шууд холбогдоно уу."
+        tryDifferentDates: "Өөр огноо турших эсвэл зочид буудалтай шууд холбогдоно уу.",
+        totalPrice: "Нийт үнэ"
       },
       amenitiesLabels: {
         premiumService: "Дээд зэрэглэлийн үйлчилгээ",

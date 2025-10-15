@@ -255,18 +255,29 @@ export interface HotelLocation {
   district: string | null;
 }
 
+export interface PriceSetting {
+  value: number;
+  value_type: 'PERCENT' | 'FIXED';
+  adjustment_type: 'ADD' | 'SUB';
+}
+
 export interface CheapestRoom {
   room_type_id: number;
   room_category_id: number;
   room_type_label: string;
   room_category_label: string;
-  price_per_night: number;
+  price_per_night_raw?: number; // Original price before adjustment
+  price_per_night_adjusted?: number; // Price after adjustment
+  price_per_night: number; // Keep for backwards compatibility
   nights: number;
+  estimated_total_raw?: number;
+  estimated_total_adjusted?: number;
   available_in_this_type: number;
   capacity_per_room_adults: number;
   capacity_per_room_children: number;
   capacity_per_room_total: number;
   estimated_total_for_requested_rooms: number;
+  pricesetting?: PriceSetting | null;
 }
 
 export interface HotelImage {

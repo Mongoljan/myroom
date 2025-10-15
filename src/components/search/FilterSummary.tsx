@@ -193,7 +193,7 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
 
   return (
     <div className="bg-white ">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between ">
         <div className="flex items-center gap-1.5">
           <Filter className="w-3.5 h-3.5 text-gray-600" />
           <h3 className="text-xs font-medium text-gray-700">

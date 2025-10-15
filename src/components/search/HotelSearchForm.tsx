@@ -13,7 +13,11 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { locationService, type LocationSuggestion } from '@/services/locationApi';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
 
-export default function HotelSearchForm() {
+interface HotelSearchFormProps {
+  compact?: boolean;
+}
+
+export default function HotelSearchForm({ compact = false }: HotelSearchFormProps) {
   const { t } = useHydratedTranslation();
   const { recentSearches, saveSearch } = useRecentSearches();
   const urlSearchParams = useSearchParams();
@@ -230,13 +234,12 @@ export default function HotelSearchForm() {
   }, []);
 
   return (
-    <div className="w-full ">
-      <div className="max-w-6xl mx-auto relative"> 
-        <div >
-        <SearchFormContainer>
+    <div className="w-full">
+      <div className={compact ? 'w-full' : 'max-w-7xl mx-auto relative'}>
+        <SearchFormContainer compact={compact}>
           <form onSubmit={handleSearch}>
             <div 
-              className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200" 
+              className={`flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 ${compact ? '' : 'lg:divide-x divide-gray-200'}`}
               style={{ overflow: 'visible' }}
             >
               {/* Location Input */}
@@ -247,11 +250,12 @@ export default function HotelSearchForm() {
                   onLocationChange={handleLocationSearch}
                   onLocationClear={clearLocationSearch}
                   onLocationFocus={handleLocationFocus}
+                  compact={compact}
                 />
                 {/* Location Error Tooltip */}
                 {showLocationError && (
                   <div className="absolute top-full left-0 mt-2 z-50 animate-fade-in">
-                    <div className="bg-red-500 text-white text-sm px-3 py-2 rounded-lg shadow-lg relative">
+                    <div className="bg-red-500 text-white text-sm px-3 py-2 rounded-lg shadow-g relative">
                       <div className="absolute -top-1 left-8 w-2 h-2 bg-red-500 transform rotate-45"></div>
                       <span>{t('search.selectLocation')}</span>
                     </div>
@@ -260,7 +264,7 @@ export default function HotelSearchForm() {
               </div>
 
               {/* Date Range Picker */}
-              <div className="lg:flex-1 p-4 w-full">
+              <div className={`lg:flex-1 ${compact ? 'p-2' : 'p-4'} w-full`}>
                 <div className="flex items-center">
                   <Calendar className="w-6 h-6 text-gray-700 mr-4" />
                   <div className="flex-1">
@@ -288,6 +292,7 @@ export default function HotelSearchForm() {
                   rooms={rooms}
                   onGuestChange={handleGuestChange}
                   className="relative z-[1]"
+                  compact={compact}
                 />
               </div>
 
@@ -309,7 +314,6 @@ export default function HotelSearchForm() {
           locationSuggestions={locationSuggestions}
           onLocationSelect={handleLocationSelect}
         />
-        </div>
       </div>
     </div>
   );

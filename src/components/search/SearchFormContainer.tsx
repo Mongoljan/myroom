@@ -4,15 +4,24 @@ import { ReactNode } from 'react';
 
 interface SearchFormContainerProps {
   children: ReactNode;
+  compact?: boolean;
 }
 
-export default function SearchFormContainer({ children }: SearchFormContainerProps) {
+export default function SearchFormContainer({ children, compact = false }: SearchFormContainerProps) {
+  if (compact) {
+    // Compact mode - no border, no shadow, seamless with header
+    return (
+      <div className="bg-white">
+        {children}
+      </div>
+    );
+  }
+
+  // Normal mode - with border and shadow
   return (
     <div 
       className="bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 overflow-hidden"
-      style={{ 
-        boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
-      }}
+     
     >
       {children}
     </div>

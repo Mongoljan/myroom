@@ -13,6 +13,7 @@ interface CustomGuestSelectorProps {
   rooms: number;
   onGuestChange: (adults: number, children: number, rooms: number) => void;
   className?: string;
+  compact?: boolean;
 }
 
 export default function CustomGuestSelector({
@@ -20,7 +21,8 @@ export default function CustomGuestSelector({
   childrenCount,
   rooms,
   onGuestChange,
-  className = ''
+  className = '',
+  compact = false
 }: CustomGuestSelectorProps) {
   const { t } = useHydratedTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -130,7 +132,7 @@ export default function CustomGuestSelector({
             setIsOpen(false);
           }
         }}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        className={`w-full flex items-center justify-between ${compact ? 'p-2' : 'p-4'} hover:bg-gray-50 transition-colors`}
       >
         <div className="flex items-center">
           <Users className="w-6 h-6 text-gray-900 mr-4" />

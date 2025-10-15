@@ -90,6 +90,7 @@ export default function SearchResults() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [sortBy, setSortBy] = useState('price_low');
   const [apiData, setApiData] = useState<CombinedApiData | null>(null);
+  const [isHeaderSticky, setIsHeaderSticky] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: [],
     popularSearches: [],
@@ -108,11 +109,19 @@ export default function SearchResults() {
   // Ref to guard against double invocation in React StrictMode
   const hasFetchedRef = useRef(false);
 
+  // Track when header becomes sticky
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsHeaderSticky(window.scrollY > 80);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Load hotels from API or mock data
   useEffect(() => {
     const loadHotels = async () => {
-      if (hasFetchedRef.current) return; // prevent duplicate fetch in dev StrictMode
-      hasFetchedRef.current = true;
       setLoading(true);
 
       // Load API data for filters using proper ApiService
@@ -513,25 +522,28 @@ export default function SearchResults() {
     <div className="min-h-screen bg-white">
       <SearchHeader />
    
-      <BreadcrumbNavigation searchLocation={searchLocation} />
+      {/* <BreadcrumbNavigation searchLocation={searchLocation} /> */}
 
       {/* Main Results Container */}
       <div className="bg-gradient-to-b from-white/80 to-gray-50/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row gap-4">
-            {/* Compact Filters Sidebar */}
-            <div className="lg:w-72 flex-shrink-0">
-              <MobileFilterControls
-                filters={filters}
-                sortBy={sortBy}
-                viewMode={viewMode}
-                onShowFilters={() => setShowFilters(true)}
-                onSort={handleSort}
-                onViewModeChange={setViewMode}
-              />
+            {/* Filters Sidebar with Sticky Behavior */}
+            <aside className="w-full lg:w-72 flex-shrink-0">
+              {/* Mobile Filter Controls */}
+              <div className="lg:hidden">
+                <MobileFilterControls
+                  filters={filters}
+                  sortBy={sortBy}
+                  viewMode={viewMode}
+                  onShowFilters={() => setShowFilters(true)}
+                  onSort={handleSort}
+                  onViewModeChange={setViewMode}
+                />
+              </div>
 
-              {/* Desktop Filters - Show directly in sidebar */}
-              <div className="hidden lg:block">
+              {/* Desktop Filters - Sticky with Independent Scroll */}
+              <div className="hidden lg:block sticky top-[72px] max-h-[calc(100vh-88px)] overflow-y-auto custom-scrollbar">
                 <SearchFilters
                   isOpen={true}
                   onClose={() => {}}
@@ -542,7 +554,7 @@ export default function SearchResults() {
                   filterCounts={filterCounts}
                 />
               </div>
-            </div>
+            </aside>
 
             {/* Main Content */}
             <div className="flex-1 min-w-0 ">
