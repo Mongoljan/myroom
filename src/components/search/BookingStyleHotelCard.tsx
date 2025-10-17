@@ -318,114 +318,115 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
               {/* Hotel room capacity info (not search criteria) */}
              
 
-              {/* Enhanced Hotel Info */}
+              {/* Enhanced Hotel Info - Removed old amenities display */}
               <div className="mb-2">
-   
-             
-
-                {/* Hotel Amenities - Enhanced */}
-                {hotel.general_facilities && hotel.general_facilities.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {hotel.general_facilities.slice(0, 6).map((facility, index) => (
-                      <span key={index} className="inline-flex items-center gap-0.5 text-xs text-gray-600 bg-gray-50 rounded px-1.5 py-0.5 ">
-                        {facilityIcons[facility] || <CheckCircle className="w-2.5 h-2.5 text-gray-500" />}
-                        <span>{facility}</span>
-                      </span>
-                    ))}
-                    {hotel.general_facilities.length > 6 && (
-                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                        +{hotel.general_facilities.length - 6} more
-                      </span>
-                    )}
-                  </div>
-                )}
-
-               
+                {/* Amenities will be shown in room info section below */}
               </div>
 
-              {/* Room Info Section - Middle of Card */}
+              {/* Room Info Section - Figma Design Style */}
               {cheapestPrice && cheapestRoom && (
-                <div className="">
-                  <div className="bg-gray-50 rounded-lg ml-4 p-1  space-y-2 ">
-                    {/* Room Header - Trip.com Style */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-gray-900">
-                          {getRoomCategoryName(cheapestRoom.room_category)}
-                        </span>
-                        <span className="text-xs text-gray-400">•</span>
-                        <span className="text-xs text-gray-600">
-                          {getRoomTypeName(cheapestRoom.room_type)}
-                        </span>
-                      </div>
-                      {((roomAvailability !== null ? roomAvailability : availableRoomsWithPrice) > 0) && (
-                        <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">
-                          {roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} available
-                        </span>
-                      )}
-                    </div>
-                    {/* Room Details - Trip.com Style */}
-                    <div className={`flex items-center gap-3 ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.DESCRIPTION_SMALL}`}>
-                      {/* Guest capacity with person icons */}
-                      {renderPersonIcons(cheapestRoom.adultQty || 2, cheapestRoom.childQty || 0)}
-
-                      {/* Bed type with bed icons */}
-                      {cheapestRoom.bed_type && renderBedIcons(cheapestRoom.bed_type, 1)}
-
-                      {/* Room size */}
-                      {cheapestRoom.room_size && (
-                        <span className="text-gray-600 text-xs" title="Room size">
-                          {cheapestRoom.room_size}m²
-                        </span>
-                      )}
-
-                      {/* Private bathroom indicator */}
-                      {cheapestRoom.is_Bathroom && (
-                        <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded" title="Private bathroom">
-                          ✓ {t('roomCard.privateBathroom')}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Pricing - Trip.com Style with Discount */}
-                    <div className="flex items-center justify-between pt-2 border-t border-gray-200">
-                      <div className="text-xs text-gray-500">
-                        {nights} {nights > 1 ? t('hotel.nights') : t('hotel.night')} • {rooms} {rooms > 1 ? t('hotel.rooms') : t('hotel.room')}
-                      </div>
-                      <div className="text-right">
-                        {pricingInfo.hasDiscount ? (
+                <div className="mt-3 border-t border-gray-200 pt-3 flex ">
+                  <div className="flex-2">
+                  {/* Room Type Header with Icons */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-gray-900">
+                        {getRoomTypeName(cheapestRoom.room_type)}
+                      </h4>
+                      {/* Capacity Icons */}
+                      <div className="flex items-center gap-1">
+                        {renderPersonIcons(cheapestRoom.adultQty || 2, cheapestRoom.childQty || 0)}
+                        {cheapestRoom.bed_type && (
                           <>
-                            {/* Discount Badge */}
-                            <div className="inline-block bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded mb-1">
-                              {Math.round(pricingInfo.discountPercent)}% off
-                            </div>
-                            {/* Original Price - Strikethrough */}
-                            <div className="text-sm text-gray-400 line-through">
-                              ₮{formatPrice(pricingInfo.originalPrice)}
-                            </div>
-                            {/* Discounted Price */}
-                            <div className="text-lg font-bold text-gray-900">
-                              ₮{formatPrice(pricingInfo.discountedPrice)}
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            {/* Regular Price */}
-                            <div className="text-lg font-bold text-gray-900">₮{formatPrice(pricingInfo.discountedPrice)}</div>
+                            <span className="text-gray-300 mx-1">|</span>
+                            {renderBedIcons(cheapestRoom.bed_type, 1)}
                           </>
                         )}
-                        <div className="text-xs text-gray-500">{t('hotelRooms.totalPrice')}</div>
                       </div>
                     </div>
                     
-                    {/* Book Now Button */}
-                    <div className="pt-2 flex justify-end">
-                      <button className="w-1/4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
-                        {t('hotel.bookNow')}
-                      </button>
-                    </div>
+                    
                   </div>
+
+                  {/* Room Details */}
+                  <div className="space-y-1.5 mb-3">
+                    {/* Room Size and Category */}
+                    <p className="text-xs text-gray-600">
+                      {getRoomCategoryName(cheapestRoom.room_category)}
+                      {cheapestRoom.room_size && (
+                        <> ({cheapestRoom.room_size}м x {cheapestRoom.room_size}м) • 2ш</>
+                      )}
+                    </p>
+
+                    {/* Max Capacity Info */}
+                    <p className="text-xs text-gray-600">
+                      10/31-нээс өмнө цуцлах боломжтой. (Цуцлалтын хураамжгүй)
+                    </p>
+
+                    {/* Availability Warning */}
+                    {((roomAvailability !== null ? roomAvailability : availableRoomsWithPrice) > 0) && (
+                      <p className="text-xs font-medium text-orange-600">
+                        Сүүлийн {roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} өрөө үлдлээ.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Facility Tags */}
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {hotel.general_facilities.slice(0, 6).map((facility, index) => (
+                      <span key={index} className="inline-flex items-center text-xs text-gray-700 bg-gray-100 rounded px-2 py-1 border border-gray-200">
+                        {facility}
+                      </span>
+                    ))}
+                  </div>
+                  </div>
+
+                  {/* Pricing Section - Figma Style */}
+                  <div className=" pt-3 border-l pl-4   border-gray-200">
+                    <div>
+                      {/* Discount Badge - Top Right */}
+                     
                   
+                    
+                           {pricingInfo.hasDiscount ? (
+                        <div >
+                        <div className="flex justify-end gap-2 ">
+                          {/* Original Price - Strikethrough */}
+                          <div className="text-xl text-gray-500 line-through my-auto">
+                            {formatPrice(pricingInfo.originalPrice)} ₮
+                          </div>
+                             <div className="bg-red-500 w-auto text-xs text-white text-center content-center font-bold px-1 py-[1px] rounded">
+                        -{Math.round(pricingInfo.discountPercent)}%
+                      </div>
+                      </div>
+                          {/* Discounted Price - Bold */}
+                          <div className="text-2xl font-bold text-gray-900 text-end">
+                            {formatPrice(pricingInfo.discountedPrice)} ₮
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-2xl font-bold text-gray-900">
+                          {formatPrice(pricingInfo.discountedPrice)} ₮
+                        </div>
+                      )}
+                   
+               
+                    
+                 
+                 
+                      <div className="text-sm text-gray-500 text-end">
+                        Нийт үнэ: {formatPrice(pricingInfo.discountedPrice)} ₮
+                      </div>
+                      <div className="text-sm text-gray-500 text-end">
+                        {rooms} өрөө x {nights} шөнө
+                      </div>
+                    </div>
+
+                    {/* Green Button */}
+                    <button className="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 mt-4 ">
+                      Өрөө сонгох
+                    </button>
+                  </div>
                 </div>
               )}
 
