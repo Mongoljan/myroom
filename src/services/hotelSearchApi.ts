@@ -16,7 +16,7 @@ interface SearchParams {
 }
 
 export class HotelSearchService {
-  private static baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.example.com';
+  private static baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://dev.kacc.mn/api';
 
   private static async request<T>(
     endpoint: string,

@@ -205,6 +205,11 @@ export default function SearchResults() {
           setFilteredHotels(finalResults);
         } catch (apiError) {
           console.error('Primary search API failed:', apiError);
+          console.error('API Error details:', {
+            message: apiError instanceof Error ? apiError.message : 'Unknown error',
+            params,
+            baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://dev.kacc.mn/api'
+          });
           if (isSpecificQuery) {
             // For specific queries, do NOT fallback to mock - show empty to be accurate
             setHotels([]);
@@ -217,6 +222,7 @@ export default function SearchResults() {
         }
       } catch (error) {
         console.error('Error loading hotels:', error);
+        console.error('Full error stack:', error);
       } finally {
         setLoading(false);
       }
