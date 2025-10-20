@@ -2,18 +2,39 @@
 
 import { useEffect, useState } from 'react';
 
+interface ApiTestResult {
+  status: number;
+  ok: boolean;
+  count: number;
+  resultsLength: number;
+}
+
+interface ApiError {
+  message: string;
+  type: string;
+}
+
+interface DebugInfo {
+  baseUrl: string;
+  nodeEnv: string | undefined;
+  timestamp: string;
+  isClient: boolean;
+  apiTest: ApiTestResult | null;
+  error: ApiError | null;
+}
+
 export default function ApiDebug() {
-  const [debugInfo, setDebugInfo] = useState<any>(null);
+  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
 
   useEffect(() => {
     const checkApi = async () => {
-      const info = {
+      const info: DebugInfo = {
         baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://dev.kacc.mn/api',
         nodeEnv: process.env.NODE_ENV,
         timestamp: new Date().toISOString(),
         isClient: typeof window !== 'undefined',
-        apiTest: null as any,
-        error: null as any
+        apiTest: null,
+        error: null
       };
 
       try {
