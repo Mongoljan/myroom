@@ -194,9 +194,35 @@ export default function SearchResults() {
           });
           
           const results = response?.results || [];
-          const validResults = results.filter((hotel: SearchHotelResult) =>
-            hotel && hotel.hotel_id && hotel.property_name && hotel.location && hotel.rating_stars
-          );
+          console.log('[SearchResults] Raw results:', results);
+          
+          // Log each hotel's validation status
+          results.forEach((hotel: SearchHotelResult, index: number) => {
+            console.log(`[Hotel ${index}] Validation:`, {
+              hotel_id: hotel?.hotel_id,
+              property_name: hotel?.property_name,
+              has_location: !!hotel?.location,
+              has_rating_stars: !!hotel?.rating_stars,
+              rating_stars_value: hotel?.rating_stars
+            });
+          });
+          
+          const validResults = results.filter((hotel: SearchHotelResult) => {
+            const isValid = hotel && hotel.hotel_id && hotel.property_name && hotel.location && hotel.rating_stars;
+            if (!isValid) {
+              console.warn('[SearchResults] Invalid hotel filtered out:', {
+                hotel_id: hotel?.hotel_id,
+                property_name: hotel?.property_name,
+                missing: {
+                  hotel_id: !hotel?.hotel_id,
+                  property_name: !hotel?.property_name,
+                  location: !hotel?.location,
+                  rating_stars: !hotel?.rating_stars
+                }
+              });
+            }
+            return isValid;
+          });
 
           console.log('[SearchResults] Valid results:', {
             total: results.length,
