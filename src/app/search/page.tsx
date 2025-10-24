@@ -1,6 +1,10 @@
 import { Suspense } from "react";
 import SearchResultsPage from "@/components/search/SearchResultsPage";
 
+// Force dynamic rendering - don't cache search results
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 function SearchPageFallback() {
   return (
     <>
