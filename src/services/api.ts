@@ -258,7 +258,7 @@ export class ApiService {
     searchParams.append('acc_type', sanitized.acc_type);
 
     console.log('Search URL params:', searchParams.toString());
-    return this.request<SearchResponse>(`/search?${searchParams.toString()}`);
+    return this.request<SearchResponse>(`/search/?${searchParams.toString()}`);
   }
 
   // Removed hardcoded mock hotel data - using real API only

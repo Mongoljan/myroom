@@ -187,10 +187,22 @@ export default function SearchResults() {
 
         try {
           const response = await ApiService.searchHotels(params) as SearchResponse;
+          console.log('[SearchResults] API Response:', {
+            hasResults: !!response,
+            resultsCount: response?.results?.length || 0,
+            totalCount: response?.count || 0
+          });
+          
           const results = response?.results || [];
           const validResults = results.filter((hotel: SearchHotelResult) =>
             hotel && hotel.hotel_id && hotel.property_name && hotel.location && hotel.rating_stars
           );
+
+          console.log('[SearchResults] Valid results:', {
+            total: results.length,
+            valid: validResults.length,
+            filtered: results.length - validResults.length
+          });
 
           // If specific query expected but API returned many, attempt client-side narrow
           let finalResults = validResults;
@@ -201,6 +213,7 @@ export default function SearchResults() {
             finalResults = validResults.filter(h => h.property_name.toLowerCase().includes(needle));
           }
 
+          console.log('[SearchResults] Final results:', finalResults.length);
           setHotels(finalResults);
           setFilteredHotels(finalResults);
         } catch (apiError) {
@@ -208,7 +221,9 @@ export default function SearchResults() {
           console.error('API Error details:', {
             message: apiError instanceof Error ? apiError.message : 'Unknown error',
             params,
-            baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://dev.kacc.mn/api'
+            baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'https://dev.kacc.mn/api',
+            isDevelopment: process.env.NODE_ENV === 'development',
+            isProduction: process.env.NODE_ENV === 'production'
           });
           if (isSpecificQuery) {
             // For specific queries, do NOT fallback to mock - show empty to be accurate

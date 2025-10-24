@@ -33,15 +33,25 @@ export class HotelSearchService {
     };
 
     try {
+      console.log('[API Request]', { url, baseURL: this.baseURL, endpoint });
       const response = await fetch(url, defaultOptions);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('[API Error Response]', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+          url
+        });
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      console.log('[API Success]', { endpoint, dataLength: Array.isArray(data?.results) ? data.results.length : 'N/A' });
+      return data;
     } catch (error) {
-      console.error(`API request failed: ${endpoint}`, error);
+      console.error(`[API Request Failed]`, { endpoint, url, error });
       throw error;
     }
   }
@@ -70,8 +80,9 @@ export class HotelSearchService {
       }
     });
 
-    console.log('Search parameters:', params);
-    console.log('Query string:', queryParams.toString());
+    console.log('[Hotel Search] Parameters:', params);
+    console.log('[Hotel Search] Query string:', queryParams.toString());
+    console.log('[Hotel Search] Full URL:', `${this.baseURL}/search/hotels/?${queryParams.toString()}`);
 
     return this.request<SearchResponse>(`/search/hotels/?${queryParams.toString()}`);
   }
