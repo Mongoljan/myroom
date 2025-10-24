@@ -240,6 +240,7 @@ export default function SearchResults() {
           }
 
           console.log('[SearchResults] Final results:', finalResults.length);
+          console.log('[SearchResults] Sample hotel data:', finalResults[0]);
           setHotels(finalResults);
           setFilteredHotels(finalResults);
         } catch (apiError) {
@@ -365,18 +366,44 @@ export default function SearchResults() {
   const filterCounts = getFilterCounts();
 
   const handleFilterChange = (newFilters: FilterState) => {
+    console.log('[handleFilterChange] Called with filters:', newFilters);
+    console.log('[handleFilterChange] Current hotels count:', hotels.length);
+    
     // Update the filters state
     setFilters(newFilters);
 
     // Apply filters to hotels
     const filters = newFilters;
-    // First filter out hotels without available room prices
-    let filtered = hotels.filter(hotel => {
-      // Only include hotels that have room pricing information
-      return hotel.cheapest_room &&
-             hotel.cheapest_room.price_per_night &&
-             hotel.cheapest_room.price_per_night > 0;
-    });
+    // First filter out hotels without available room prices (but only if filters are actually applied)
+    // If no active filters, show all hotels
+    const hasActiveFilters = 
+      (filters.propertyTypes && filters.propertyTypes.length > 0) ||
+      (filters.popularSearches && filters.popularSearches.length > 0) ||
+      (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 1000000) ||
+      (filters.roomFeatures && filters.roomFeatures.length > 0) ||
+      (filters.generalServices && filters.generalServices.length > 0) ||
+      (filters.bedTypes && filters.bedTypes.length > 0) ||
+      (filters.popularPlaces && filters.popularPlaces.length > 0) ||
+      filters.discounted ||
+      (filters.starRating && filters.starRating.length > 0) ||
+      (filters.outdoorAreas && filters.outdoorAreas.length > 0) ||
+      (filters.facilities && filters.facilities.length > 0) ||
+      (filters.roomTypes && filters.roomTypes.length > 0);
+
+    console.log('[handleFilterChange] Has active filters:', hasActiveFilters);
+
+    let filtered = hotels;
+    
+    // Only apply room price filter if we're actually filtering by price or other room-related criteria
+    if (hasActiveFilters && (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 1000000 || filters.bedTypes.length > 0 || filters.roomTypes.length > 0)) {
+      filtered = hotels.filter(hotel => {
+        // Only include hotels that have room pricing information
+        return hotel.cheapest_room &&
+               hotel.cheapest_room.price_per_night &&
+               hotel.cheapest_room.price_per_night > 0;
+      });
+      console.log('[handleFilterChange] After room price filter:', filtered.length);
+    }
 
     // Filter by property types
     if (filters.propertyTypes && filters.propertyTypes.length > 0) {
@@ -511,6 +538,7 @@ export default function SearchResults() {
       });
     }
 
+    console.log('[handleFilterChange] Final filtered hotels:', filtered.length);
     setFilteredHotels(filtered);
   };
 
@@ -694,6 +722,11 @@ export default function SearchResults() {
               <div className="h-2"></div>
 
               {/* Results Layout */}
+              {(() => {
+                console.log('[Render] filteredHotels.length:', filteredHotels.length);
+                console.log('[Render] filteredHotels:', filteredHotels);
+                return null;
+              })()}
               {filteredHotels.length > 0 ? (
                 <>
                   <div className={`
