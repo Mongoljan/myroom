@@ -107,7 +107,7 @@ export default function SearchResults() {
   });
 
   // Helper function to get price from cheapest_room (handles different API response formats)
-  const getRoomPrice = (room: any): number => {
+  const getRoomPrice = (room: SearchHotelResult['cheapest_room']): number => {
     if (!room) return 0;
     return room.price_per_night || room.price_per_night_adjusted || room.price_per_night_raw || 0;
   };
