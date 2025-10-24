@@ -37,13 +37,13 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
 
   if (loading) {
     return (
-      <section id="house-rules" className="py-8">
+      <section id="house-rules" className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-xl font-semibold text-gray-900">
             {t('houseRules.title', 'Дотоод журам')}
           </h2>
         </div>
-        <div className="flex items-center justify-center py-8">
+        <div className="flex items-center justify-center py-12">
           <Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-2" />
           <span className="text-gray-600">{t('loading', 'Ачааллаж байна...')}</span>
         </div>
@@ -53,14 +53,14 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
 
   if (error || policies.length === 0) {
     return (
-      <section id="house-rules" className="py-8">
+      <section id="house-rules" className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-xl font-semibold text-gray-900">
             {t('houseRules.title', 'Дотоод журам')}
           </h2>
         </div>
-        <div className="text-center py-8">
-          <AlertCircle className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+        <div className="text-center py-12">
+          <AlertCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500">{t('houseRules.noData', 'Одоогоор мэдээлэл байхгүй байна')}</p>
         </div>
       </section>
@@ -141,36 +141,38 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
   ];
 
   return (
-    <section id="house-rules" className="py-8">
+    <section id="house-rules" className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-xl font-semibold text-gray-900">
           {t('houseRules.title', 'Дотоод журам')}
         </h2>
       </div>
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {rules.map((rule, index) => (
-          <div key={index} className="flex items-start space-x-4">
-            <div className="flex-shrink-0 mt-1">
-              <rule.icon className={`w-5 h-5 ${rule.iconColor}`} />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{rule.title}</h3>
-              
-              {rule.details && (
-                <div className="mb-3 space-y-2">
-                  {rule.details.map((detail, detailIndex) => (
-                    <div key={detailIndex} className="flex justify-between items-center py-1">
-                      <span className="text-gray-700 text-sm">{detail.label}</span>
-                      <span className="font-semibold text-gray-900">{detail.value}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+          <div key={index} className="p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+            <div className="flex items-start gap-3">
+              <div className={`flex-shrink-0 p-2 rounded-lg bg-gray-50`}>
+                <rule.icon className={`w-5 h-5 ${rule.iconColor}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-semibold text-gray-900 mb-2">{rule.title}</h3>
+                
+                {rule.details && (
+                  <div className="space-y-2 mb-2">
+                    {rule.details.map((detail, detailIndex) => (
+                      <div key={detailIndex} className="flex justify-between items-start gap-2">
+                        <span className="text-gray-600 text-sm flex-shrink-0">{detail.label}</span>
+                        <span className="font-medium text-gray-900 text-sm text-right">{detail.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
-              {rule.description && (
-                <p className="text-gray-600 text-sm leading-relaxed">{rule.description}</p>
-              )}
+                {rule.description && (
+                  <p className="text-gray-600 text-sm leading-relaxed">{rule.description}</p>
+                )}
+              </div>
             </div>
           </div>
         ))}

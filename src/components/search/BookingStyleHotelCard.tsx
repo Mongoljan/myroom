@@ -1,7 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { Star, MapPin, CheckCircle, Heart, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed } from 'lucide-react';
+import { Star, MapPin, CheckCircle, Heart, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed, BedDouble, BedSingle } from 'lucide-react';
+import { FaChild } from 'react-icons/fa';
 import { SearchHotelResult, AdditionalInfo, PropertyDetails, RoomPrice, Room } from '@/types/api';
 import { SEARCH_DESIGN_SYSTEM, getRoomCapacityIcon, getBedTypeIcon } from '@/styles/search-design-system';
 import { useState, useEffect } from 'react';
@@ -69,37 +70,47 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
 
   // Helper to render person icons based on capacity - Trip.com style
   const renderPersonIcons = (adults: number, children: number = 0) => {
-    const totalGuests = adults + children;
     return (
       <div className="flex items-center gap-0.5" title={`${adults} adults${children > 0 ? `, ${children} children` : ''}`}>
-        {Array.from({ length: totalGuests }).map((_, i) => (
-          <User key={i} className="w-3.5 h-3.5 text-gray-600" strokeWidth={2} />
+        {/* Adult icons - larger */}
+        {Array.from({ length: adults }).map((_, i) => (
+          <User key={`adult-${i}`} className="w-4 h-4 text-gray-700" strokeWidth={2.5} />
+        ))}
+        {/* Child icons - smaller with different style */}
+        {children > 0 && Array.from({ length: children }).map((_, i) => (
+          <FaChild key={`child-${i}`} className="w-3 h-3 text-gray-500" />
         ))}
       </div>
     );
   };
 
-  // Helper to render bed icons - Trip.com style (simple and clean)
+  // Helper to render bed icons - Trip.com style with appropriate bed types
   const renderBedIcons = (bedTypeId: number, bedCount: number = 1) => {
     const bedType = roomData?.bed_types?.find(bt => bt.id === bedTypeId);
     const bedName = bedType?.name || 'Bed';
-    
-    // Determine if it's a single or double bed based on name
-    const isDoubleBed = bedName.toLowerCase().includes('double') || 
-                        bedName.toLowerCase().includes('king') || 
+
+    // Determine bed type based on name - Trip.com uses visual cues
+    const isSingleBed = bedName.toLowerCase().includes('single') ||
+                        bedName.toLowerCase().includes('1 хүний') ||
+                        bedName.toLowerCase().includes('ганц');
+
+    const isDoubleBed = bedName.toLowerCase().includes('double') ||
+                        bedName.toLowerCase().includes('king') ||
                         bedName.toLowerCase().includes('queen') ||
-                        bedName.toLowerCase().includes('2 хүний');
-    
+                        bedName.toLowerCase().includes('2 хүний') ||
+                        bedName.toLowerCase().includes('давхар');
+
+    // Use appropriate icon: BedSingle for single beds, BedDouble for double/king/queen
+    const BedIcon = isSingleBed ? BedSingle : isDoubleBed ? BedDouble : Bed;
+
     return (
       <div className="flex items-center gap-1" title={bedName}>
         {Array.from({ length: bedCount }).map((_, i) => (
-          <div key={i} className="relative">
-            <Bed className="w-3.5 h-3.5 text-gray-600" strokeWidth={2} />
-            {isDoubleBed && (
-              <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-blue-500 rounded-full" 
-                   title="Double bed" />
-            )}
-          </div>
+          <BedIcon
+            key={i}
+            className={`${isDoubleBed ? 'w-5 h-5' : 'w-4 h-4'} text-gray-600`}
+            strokeWidth={2}
+          />
         ))}
       </div>
     );
@@ -110,31 +121,48 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
   // Calculate pricing with discount support
   const getPricingInfo = () => {
     const cheapest = hotel.cheapest_room;
-    if (!cheapest) return { hasDiscount: false, originalPrice: 0, discountedPrice: 0, discountPercent: 0 };
+    if (!cheapest) return {
+      hasDiscount: false,
+      originalPrice: 0,
+      discountedPrice: 0,
+      discountPercent: 0,
+      pricePerNight: 0,
+      originalPricePerNight: 0
+    };
 
     const pricesetting = cheapest.pricesetting;
     const hasDiscount = pricesetting && pricesetting.adjustment_type === 'SUB';
-    
+
     // Use the raw and adjusted prices from API if available
     const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night;
     const adjustedPrice = cheapest.price_per_night_adjusted || cheapest.price_per_night;
-    
+
     let discountPercent = 0;
-    if (hasDiscount && pricesetting) {
-      if (pricesetting.value_type === 'PERCENT') {
-        discountPercent = pricesetting.value;
-      } else if (pricesetting.value_type === 'FIXED' && rawPrice > 0) {
-        discountPercent = Math.round((pricesetting.value / rawPrice) * 100);
-      }
+
+    // Calculate discount percentage regardless of whether pricesetting exists
+    // This handles cases where API provides raw/adjusted prices but pricesetting might be missing
+    if (rawPrice > 0 && adjustedPrice < rawPrice) {
+      const actualDiscount = rawPrice - adjustedPrice;
+      const calculatedPercent = (actualDiscount / rawPrice) * 100;
+      // Use Math.ceil to ensure even small discounts show at least 1%
+      discountPercent = calculatedPercent > 0 ? Math.max(1, Math.round(calculatedPercent)) : 0;
     }
 
+    // If pricesetting exists and is PERCENT type, use the API value for accuracy
+    if (hasDiscount && pricesetting && pricesetting.value_type === 'PERCENT') {
+      discountPercent = Math.max(1, Math.round(pricesetting.value));
+    }
+
+    // Determine if there's an actual discount (either from pricesetting or price difference)
+    const hasActualDiscount = hasDiscount || (rawPrice > adjustedPrice && discountPercent > 0);
+
     return {
-      hasDiscount: hasDiscount || false,
+      hasDiscount: hasActualDiscount,
       originalPrice: rawPrice * nights * rooms,
       discountedPrice: adjustedPrice * nights * rooms,
       discountPercent,
-      pricePerNight: adjustedPrice,
-      originalPricePerNight: rawPrice
+      pricePerNight: adjustedPrice || 0,
+      originalPricePerNight: rawPrice || 0
     };
   };
 
@@ -358,15 +386,15 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                       )}
                     </p>
 
-                    {/* Max Capacity Info */}
+                    {/* Cancellation Policy */}
                     <p className="text-xs text-gray-600">
-                      10/31-нээс өмнө цуцлах боломжтой. (Цуцлалтын хураамжгүй)
+                      {t('hotel.freeCancellationUntil', { date: '10/31' }, '10/31-нээс өмнө цуцлах боломжтой. (Цуцлалтын хураамжгүй)')}
                     </p>
 
                     {/* Availability Warning */}
                     {((roomAvailability !== null ? roomAvailability : availableRoomsWithPrice) > 0) && (
                       <p className="text-xs font-medium text-orange-600">
-                        Сүүлийн {roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} өрөө үлдлээ.
+                        {t('hotel.onlyRoomsLeft', { count: roomAvailability !== null ? roomAvailability : availableRoomsWithPrice }, `Сүүлийн ${roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} өрөө үлдлээ.`)}
                       </p>
                     )}
                   </div>
@@ -382,49 +410,49 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   </div>
 
                   {/* Pricing Section - Figma Style */}
-                  <div className=" pt-3 border-l pl-4   border-gray-200">
+                  <div className="pt-3 border-l pl-4 border-gray-200 flex flex-col justify-between">
+                    {/* Price Info - Top Section */}
                     <div>
-                      {/* Discount Badge - Top Right */}
-                     
-                  
-                    
-                           {pricingInfo.hasDiscount ? (
-                        <div >
-                        <div className="flex justify-end gap-2 ">
-                          {/* Original Price - Strikethrough */}
-                          <div className="text-xl text-gray-500 line-through my-auto">
-                            {formatPrice(pricingInfo.originalPrice)} ₮
+                      {pricingInfo.hasDiscount ? (
+                        <div>
+                          <div className="flex justify-end gap-2">
+                            {/* Original Price Per Night - Strikethrough */}
+                            <div className="text-xl text-gray-500 line-through my-auto">
+                              {formatPrice(pricingInfo.originalPricePerNight)} ₮
+                            </div>
+                            <div className="bg-red-500 w-auto text-xs text-white text-center content-center font-bold px-1 py-[1px] rounded">
+                              -{Math.round(pricingInfo.discountPercent)}%
+                            </div>
                           </div>
-                             <div className="bg-red-500 w-auto text-xs text-white text-center content-center font-bold px-1 py-[1px] rounded">
-                        -{Math.round(pricingInfo.discountPercent)}%
-                      </div>
-                      </div>
-                          {/* Discounted Price - Bold */}
+                          {/* Discounted Price Per Night - Bold */}
                           <div className="text-2xl font-bold text-gray-900 text-end">
-                            {formatPrice(pricingInfo.discountedPrice)} ₮
+                            {formatPrice(pricingInfo.pricePerNight)} ₮
                           </div>
                         </div>
                       ) : (
-                        <div className="text-2xl font-bold text-gray-900">
-                          {formatPrice(pricingInfo.discountedPrice)} ₮
+                        <div className="text-2xl font-bold text-gray-900 text-end">
+                          {formatPrice(pricingInfo.pricePerNight)} ₮
                         </div>
                       )}
-                   
-               
-                    
-                 
-                 
-                      <div className="text-sm text-gray-500 text-end">
-                        Нийт үнэ: {formatPrice(pricingInfo.discountedPrice)} ₮
+
+                      {/* Price per night label */}
+                      <div className="text-xs text-gray-500 text-end mt-1">
+                        {t('hotel.pricePerNightShort', '1 шөнийн үнэ')}
                       </div>
+
+                      {/* Rooms x Nights */}
+                      <div className="text-sm text-gray-500 text-end mt-3">
+                        {rooms} {t('hotel.rooms', 'өрөө')} x {nights} {t('navigation.night', 'шөнө')}
+                      </div>
+                      {/* Total Price */}
                       <div className="text-sm text-gray-500 text-end">
-                        {rooms} өрөө x {nights} шөнө
+                        {t('hotel.totalPrice', 'Нийт үнэ')}: {formatPrice(pricingInfo.discountedPrice)} ₮
                       </div>
                     </div>
 
-                    {/* Green Button */}
-                    <button className="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 mt-4 ">
-                      Өрөө сонгох
+                    {/* Green Button - Bottom Section */}
+                    <button className="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 mt-4 w-full">
+                      {t('hotel.selectRoom', 'Өрөө сонгох')}
                     </button>
                   </div>
                 </div>

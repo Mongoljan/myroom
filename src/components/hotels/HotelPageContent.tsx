@@ -11,6 +11,7 @@ import HotelSubNav from '@/components/hotels/HotelSubNav';
 import HotelFAQ from '@/components/hotels/HotelFAQ';
 import HotelHouseRules from '@/components/hotels/HotelHouseRules';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 import { SearchHotelResult } from '@/types/api';
 
@@ -26,6 +27,7 @@ interface HotelPageContentProps {
 export default function HotelPageContent({ hotel, searchParams }: HotelPageContentProps) {
   const [activeSection, setActiveSection] = useState('overview');
   const { addRecentlyViewed } = useRecentlyViewed();
+  const { t } = useHydratedTranslation();
 
   const handleSectionChange = useCallback((section: string) => {
     setActiveSection(section);
@@ -41,10 +43,10 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
   }, [hotel]);
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 min-h-screen">
       {/* Hero section with ID for sticky nav detection */}
-      <div id="hotel-hero" className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div id="hotel-hero" className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div id="overview">
             <EnhancedHotelDetail hotel={hotel} />
           </div>
@@ -60,10 +62,11 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
       />
 
       {/* Content Sections */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           {/* Rooms Section */}
-          <div id="rooms">
+          <div id="rooms" className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.selectRoom', 'Өрөө сонгох')}</h2>
             <ImprovedHotelRoomsSection
               hotelId={hotel.hotel_id}
               hotelName={hotel.property_name}
@@ -77,20 +80,23 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
             <HotelHouseRules hotelId={hotel.hotel_id} hotelName={hotel.property_name} />
           </div>
 
+          {/* Facilities Section */}
+          <div id="facilities" className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.facilities', 'Тохижилт')}</h2>
+            <HotelAmenities facilities={hotel.general_facilities} />
+          </div>
+
           {/* Reviews Section */}
-          <div id="reviews">
-            <Suspense fallback={<div>Loading reviews...</div>}>
+          <div id="reviews" className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.reviews', 'Үнэлгээ')}</h2>
+            <Suspense fallback={<div>{t('loading', 'Ачааллаж байна...')}</div>}>
               <HotelReviews rating={parseFloat(hotel.rating_stars.value) || 0} reviewCount={0} />
             </Suspense>
           </div>
 
-          {/* Facilities Section */}
-          <div id="facilities">
-            <HotelAmenities facilities={hotel.general_facilities} />
-          </div>
-
           {/* FAQ Section */}
-          <div id="faq">
+          <div id="faq" className="bg-white rounded-lg border border-gray-200 p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.faq', 'Түгээмэл асуулт')}</h2>
             <HotelFAQ 
               hotelName={hotel.property_name} 
               hotelFacilities={hotel.general_facilities}
@@ -100,7 +106,8 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
         </div>
 
         {/* Similar Hotels */}
-        <div className="mt-16">
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('hotelDetails.similarHotels', 'Төстэй зочид буудлууд')}</h2>
           <SimilarHotels currentHotelId={hotel.hotel_id.toString()} />
         </div>
       </div>

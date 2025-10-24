@@ -29,6 +29,7 @@ interface DateChangeModalProps {
 }
 
 function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: DateChangeModalProps) {
+  const { t } = useHydratedTranslation();
   const [newCheckIn, setNewCheckIn] = useState(booking.check_in);
   const [newCheckOut, setNewCheckOut] = useState(booking.check_out);
   const [loading, setLoading] = useState(false);
@@ -46,10 +47,12 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
         check_in: newCheckIn,
         check_out: newCheckOut,
       });
+      alert(t('booking.manage.dateChangeSuccess', 'Өдөр амжилттай солигдлоо!'));
       onUpdate();
       onClose();
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to change dates');
+      const errorMsg = error instanceof Error ? error.message : t('booking.manage.dateChangeFailed', 'Өдөр солиход алдаа гарлаа');
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -63,7 +66,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
         className="bg-white rounded-2xl max-w-md w-full p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">Change Dates</h3>
+          <h3 className="text-xl font-bold text-gray-900">{t('booking.manage.changeDatesTitle', 'Өдөр солих')}</h3>
           <button
             onClick={onClose}
             className="text-gray-900 hover:text-gray-800 text-2xl"
@@ -75,7 +78,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
-              New Check-in Date
+              {t('booking.manage.newCheckIn', 'Шинэ орох өдөр')}
             </label>
             <input
               type="date"
@@ -89,7 +92,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
 
           <div>
             <label className="block text-sm font-medium text-gray-900 mb-2">
-              New Check-out Date
+              {t('booking.manage.newCheckOut', 'Шинэ гарах өдөр')}
             </label>
             <input
               type="date"
@@ -111,16 +114,16 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50"
+              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t('common.cancel', 'Цуцлах')}
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
+              className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Updating...' : 'Update Dates'}
+              {loading ? t('booking.manage.updating', 'Шинэчилж байна...') : t('booking.manage.updateDates', 'Өдөр шинэчлэх')}
             </button>
           </div>
         </form>
@@ -159,7 +162,15 @@ export default function ManageBookingContent() {
   }, [bookingCode, pinCode, t]);
 
   const handleAction = async (action: 'confirm' | 'cancel') => {
+    if (!confirm(action === 'confirm' 
+      ? t('booking.manage.confirmAction', 'Та захиалгаа баталгаажуулахдаа итгэлтэй байна уу?')
+      : t('booking.manage.cancelAction', 'Та захиалгаа цуцлахдаа итгэлтэй байна уу?')
+    )) {
+      return;
+    }
+
     setActionLoading(action);
+    setError('');
     try {
       if (action === 'confirm') {
         await ApiService.confirmBooking({ booking_code: bookingCode, pin_code: pinCode });
@@ -167,8 +178,15 @@ export default function ManageBookingContent() {
         await ApiService.cancelBooking({ booking_code: bookingCode, pin_code: pinCode });
       }
       await fetchBooking(); // Refresh data
+      // Show success message
+      alert(action === 'confirm' 
+        ? t('booking.manage.confirmSuccess', 'Захиалга амжилттай баталгаажлаа!')
+        : t('booking.manage.cancelSuccess', 'Захиалга амжилттай цуцлагдлаа!')
+      );
     } catch (error) {
-      setError(error instanceof Error ? error.message : `Failed to ${action} booking`);
+      const errorMessage = error instanceof Error ? error.message : `Failed to ${action} booking`;
+      setError(errorMessage);
+      alert(t('booking.manage.actionError', 'Алдаа гарлаа: ') + errorMessage);
     } finally {
       setActionLoading(null);
     }
@@ -207,16 +225,19 @@ export default function ManageBookingContent() {
     const urlCode = searchParams.get('code');
     const urlPin = searchParams.get('pin');
     
-    if (urlCode && urlPin && !autoSearched) {
+    if (urlCode && urlPin && !autoSearched && !loading) {
       setBookingCode(urlCode);
       setPinCode(urlPin);
       setAutoSearched(true);
-      // Automatically fetch booking after setting codes
-      setTimeout(() => {
-        fetchBooking();
-      }, 100);
     }
-  }, [searchParams, autoSearched, fetchBooking]);
+  }, [searchParams, autoSearched, loading]);
+
+  // Fetch booking when codes are set from URL
+  useEffect(() => {
+    if (autoSearched && bookingCode && pinCode && !bookingData && !error && !loading) {
+      fetchBooking();
+    }
+  }, [autoSearched, bookingCode, pinCode, bookingData, error, loading, fetchBooking]);
 
   return (
     <div className="pt-24 pb-12">
@@ -314,16 +335,16 @@ export default function ManageBookingContent() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
                   <div className="space-y-3">
-                    <h3 className="font-medium text-gray-900">Booking Info</h3>
+                    <h3 className="font-medium text-gray-900">{t('booking.manage.bookingInfo', 'Захиалгын мэдээлэл')}</h3>
                     <div className="space-y-1 text-gray-800">
-                      <p><span className="font-medium">Code:</span> {bookingCode}</p>
-                      <p><span className="font-medium">PIN:</span> {pinCode}</p>
-                      <p><span className="font-medium">Total:</span> {formatCurrency(bookingData.total_sum)}</p>
+                      <p><span className="font-medium">{t('booking.manage.code', 'Код')}:</span> {bookingCode}</p>
+                      <p><span className="font-medium">{t('booking.manage.pin', 'PIN')}:</span> {pinCode}</p>
+                      <p><span className="font-medium">{t('booking.manage.total', 'Нийт')}:</span> {formatCurrency(bookingData.total_sum)}</p>
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="font-medium text-gray-900">Guest Information</h3>
+                    <h3 className="font-medium text-gray-900">{t('booking.manage.guestInfo', 'Зочны мэдээлэл')}</h3>
                     <div className="space-y-1 text-gray-800">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4" />
@@ -341,27 +362,37 @@ export default function ManageBookingContent() {
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="font-medium text-gray-900">Actions</h3>
+                    <h3 className="font-medium text-gray-900">{t('booking.manage.actions', 'Үйлдлүүд')}</h3>
                     <div className="space-y-2">
                       {bookingData.status === 'pending' && (
                         <button
                           onClick={() => handleAction('confirm')}
-                          disabled={actionLoading === 'confirm'}
-                          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-400 text-sm"
+                          disabled={actionLoading !== null}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm transition-colors"
                         >
                           <CheckCircle className="w-4 h-4" />
-                          {actionLoading === 'confirm' ? 'Confirming...' : 'Confirm'}
+                          {actionLoading === 'confirm' ? t('booking.manage.confirming', 'Баталгаажуулж байна...') : t('booking.manage.confirmBtn', 'Баталгаажуулах')}
                         </button>
                       )}
                       {bookingData.status !== 'cancelled' && bookingData.status !== 'finished' && (
                         <button
                           onClick={() => handleAction('cancel')}
-                          disabled={actionLoading === 'cancel'}
-                          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:bg-gray-400 text-sm"
+                          disabled={actionLoading !== null}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-sm transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
-                          {actionLoading === 'cancel' ? 'Cancelling...' : 'Cancel'}
+                          {actionLoading === 'cancel' ? t('booking.manage.cancelling', 'Цуцлаж байна...') : t('booking.manage.cancelBtn', 'Захиалга цуцлах')}
                         </button>
+                      )}
+                      {bookingData.status === 'confirmed' && (
+                        <div className="text-xs text-gray-600 text-center p-2 bg-green-50 rounded-lg">
+                          {t('booking.manage.alreadyConfirmed', 'Захиалга баталгаажсан байна')}
+                        </div>
+                      )}
+                      {(bookingData.status === 'cancelled' || bookingData.status === 'finished') && (
+                        <div className="text-xs text-gray-600 text-center p-2 bg-gray-50 rounded-lg">
+                          {t('booking.manage.noActions', 'Үйлдэл хийх боломжгүй')}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -370,7 +401,7 @@ export default function ManageBookingContent() {
 
               {/* Individual Bookings */}
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900">Room Reservations</h2>
+                <h2 className="text-xl font-bold text-gray-900">{t('booking.manage.roomReservations', 'Өрөөний захиалга')}</h2>
                 {bookingData.bookings.map((booking, index) => (
                   <motion.div
                     key={booking.id}
@@ -386,17 +417,17 @@ export default function ManageBookingContent() {
                             {getStatusIcon(booking.status)}
                             {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                           </div>
-                          <span className="text-sm text-gray-800">Room {booking.room}</span>
+                          <span className="text-sm text-gray-800">{t('booking.manage.room', 'Өрөө')} {booking.room}</span>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                           <div className="flex items-center gap-2 text-gray-800">
                             <Calendar className="w-4 h-4" />
-                            <span>Check-in: {formatDate(booking.check_in)}</span>
+                            <span>{t('booking.manage.checkIn', 'Орох')}: {formatDate(booking.check_in)}</span>
                           </div>
                           <div className="flex items-center gap-2 text-gray-800">
                             <Calendar className="w-4 h-4" />
-                            <span>Check-out: {formatDate(booking.check_out)}</span>
+                            <span>{t('booking.manage.checkOut', 'Гарах')}: {formatDate(booking.check_out)}</span>
                           </div>
                         </div>
 
@@ -409,10 +440,10 @@ export default function ManageBookingContent() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setShowDateModal(booking)}
-                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 text-sm"
+                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 text-sm transition-colors"
                           >
                             <Edit3 className="w-4 h-4" />
-                            Change Dates
+                            {t('booking.manage.changeDates', 'Өдөр солих')}
                           </button>
                         </div>
                       )}

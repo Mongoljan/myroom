@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Bed, Calendar } from 'lucide-react';
+import { Bed } from 'lucide-react';
 import { hotelRoomsService, EnrichedHotelRoom } from '@/services/hotelRoomsApi';
 import { ApiService } from '@/services/api';
 import { RoomPrice } from '@/types/api';
-import RoomCard, { RoomPriceOptions, BookingItem } from './RoomCard';
+import { RoomPriceOptions, BookingItem } from './RoomCard';
+import TripComStyleRoomCard from './TripComStyleRoomCard';
 import BookingSummary from './BookingSummary';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
@@ -44,7 +45,6 @@ export default function ImprovedHotelRoomsSection({
   const [roomPrices, setRoomPrices] = useState<Record<string, RoomPriceOptions>>({});
   const [bookingItems, setBookingItems] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Update URL when dates change
   const updateURLWithDates = (newCheckIn: string, newCheckOut: string) => {
@@ -103,8 +103,13 @@ export default function ImprovedHotelRoomsSection({
             const key = `${price.room_type}-${price.room_category}`;
             pricesData[key] = {
               basePrice: price.base_price,
+              basePriceRaw: price.base_price_raw, // Original price before discount
               halfDayPrice: price.half_day_price && price.half_day_price > 0 ? price.half_day_price : undefined,
-              singlePersonPrice: price.single_person_price && price.single_person_price > 0 ? price.single_person_price : undefined
+              singlePersonPrice: price.single_person_price && price.single_person_price > 0 ? price.single_person_price : undefined,
+              discount: price.pricesetting ? {
+                type: price.pricesetting.value_type as 'PERCENT' | 'FIXED',
+                value: price.pricesetting.value
+              } : undefined
             };
             console.log(`Mapped price for room_type ${price.room_type}, room_category ${price.room_category}:`, pricesData[key]);
           });
@@ -243,9 +248,6 @@ export default function ImprovedHotelRoomsSection({
   if (loading) {
     return (
       <div className="py-8">
-        <div className="flex items-center gap-4 mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">{t('hotelRooms.availableRooms', 'Available Rooms')}</h2>
-        </div>
         <div className="grid grid-cols-1 gap-6">
           {[...Array(3)].map((_, index) => (
             <div key={index} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
@@ -310,82 +312,99 @@ export default function ImprovedHotelRoomsSection({
 
   return (
     <div>
-      {/* Header with Date Picker */}
-      <div className="mb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-          <h2 className="text-2xl font-bold text-gray-900">{t('hotelRooms.availableRooms', 'Available Rooms')}</h2>
-          
-          {/* Date Display/Edit Toggle */}
-          <button
-            onClick={() => setShowDatePicker(!showDatePicker)}
-            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <Calendar className="w-4 h-4 text-gray-600" />
-            <div className="text-sm">
-              <span className="font-medium text-gray-900">
-                {new Date(effectiveCheckIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </span>
-              <span className="text-gray-600 mx-1">→</span>
-              <span className="font-medium text-gray-900">
-                {new Date(effectiveCheckOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-              </span>
-              <span className="text-gray-600 ml-2">
-                ({getNumberOfNights()} {getNumberOfNights() !== 1 ? t('roomCard.nights', 'nights') : t('roomCard.night', 'night')})
-              </span>
-            </div>
-          </button>
-        </div>
+      {/* Mini Search Form - Matches main search style */}
+      <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+          {/* Check-in Date */}
+          <div className="flex-1">
+            <label className="block text-xs text-gray-500 mb-1">
+              {t('hotelRooms.checkInDate', 'Нэвтрэх огноо')}
+            </label>
+            <input
+              type="date"
+              value={selectedCheckIn}
+              onChange={(e) => handleCheckInChange(e.target.value)}
+              min={new Date().toISOString().split('T')[0]}
+              className="w-full px-3 py-2 border-0 focus:outline-none text-gray-900"
+            />
+          </div>
 
-        {/* Expandable Date Picker */}
-        {showDatePicker && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('hotelRooms.checkInDate', 'Check-in Date')}
-                </label>
+          <div className="hidden lg:block h-8 w-px bg-gray-200"></div>
+
+          {/* Check-out Date */}
+          <div className="flex-1">
+            <label className="block text-xs text-gray-500 mb-1">
+              {t('hotelRooms.checkOutDate', 'Гарах огноо')}
+            </label>
+            <input
+              type="date"
+              value={selectedCheckOut}
+              onChange={(e) => handleCheckOutChange(e.target.value)}
+              min={selectedCheckIn}
+              className="w-full px-3 py-2 border-0 focus:outline-none text-gray-900"
+            />
+          </div>
+
+          <div className="hidden lg:block h-8 w-px bg-gray-200"></div>
+
+          {/* Guests */}
+          <div className="flex-1">
+            <label className="block text-xs text-gray-500 mb-1">
+              {t('hotelRooms.guests', 'Зочид')}
+            </label>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{t('hotelRooms.adults', 'Том хүн')}:</span>
                 <input
-                  type="date"
-                  value={selectedCheckIn}
-                  onChange={(e) => handleCheckInChange(e.target.value)}
-                  min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={searchParams.get('adults') || 2}
+                  onChange={(e) => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set('adults', e.target.value);
+                    router.push(`?${params.toString()}`, { scroll: false });
+                  }}
+                  className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t('hotelRooms.checkOutDate', 'Check-out Date')}
-                </label>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">{t('hotelRooms.children', 'Хүүхэд')}:</span>
                 <input
-                  type="date"
-                  value={selectedCheckOut}
-                  onChange={(e) => handleCheckOutChange(e.target.value)}
-                  min={selectedCheckIn}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  type="number"
+                  min="0"
+                  max="10"
+                  value={searchParams.get('children') || 0}
+                  onChange={(e) => {
+                    const params = new URLSearchParams(searchParams.toString());
+                    params.set('children', e.target.value);
+                    router.push(`?${params.toString()}`, { scroll: false });
+                  }}
+                  className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
-            </div>
-            <div className="mt-3 text-sm text-blue-800">
-              <span className="font-medium">{getNumberOfNights()} {getNumberOfNights() !== 1 ? t('roomCard.nights', 'nights') : t('roomCard.night', 'night')}</span>
-              <span className="text-blue-600 ml-2">• {t('hotelRooms.pricesPerNight', 'Prices shown are per night')}</span>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Nights Info */}
+        <div className="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-600">
+          <span className="font-medium">{getNumberOfNights()} {getNumberOfNights() !== 1 ? t('roomCard.nights', 'шөнө') : t('roomCard.night', 'шөнө')}</span>
+        </div>
       </div>
 
       <div className="flex gap-6">
         {/* Rooms List */}
         <div className="flex-1">
-          <div className="space-y-6">
+          <div className="space-y-4">
             {availableRooms.map((room) => (
-              <RoomCard
+              <TripComStyleRoomCard
                 key={room.id}
                 room={room}
                 priceOptions={roomPrices[`${room.room_type}-${room.room_category}`]}
                 bookingItems={bookingItems.filter(item => item.room.id === room.id)}
                 onQuantityChange={(priceType, quantity) => updateRoomQuantity(room, priceType, quantity)}
                 nights={getNumberOfNights()}
-                showOnlyBasePrice={true}
               />
             ))}
           </div>

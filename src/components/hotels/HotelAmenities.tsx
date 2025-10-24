@@ -57,22 +57,23 @@ export default function HotelAmenities({ amenities, facilities }: HotelAmenities
   
   // If no amenities/facilities, don't render anything
   if (items.length === 0) {
-    return null;
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">{t('hotel.noAmenities', 'Мэдээлэл байхгүй байна')}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-semibold">{t('hotel.amenities', 'Amenities')}</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {items.map((item, index) => (
-          <div key={index} className="flex items-center gap-3 p-3 bg-gray-100 border border-gray-200 rounded-lg">
-            <div className="text-blue-600">
-              {amenityIcons[item] || <Shield className="w-5 h-5" />}
-            </div>
-            <span className="text-sm font-medium text-gray-900">{item}</span>
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {items.map((item, index) => (
+        <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <div className="text-blue-600 flex-shrink-0">
+            {amenityIcons[item] || <Shield className="w-5 h-5" />}
           </div>
-        ))}
-      </div>
+          <span className="text-sm font-medium text-gray-700">{item}</span>
+        </div>
+      ))}
     </div>
   );
 }

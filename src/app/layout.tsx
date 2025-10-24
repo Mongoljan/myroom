@@ -33,11 +33,15 @@ export default function RootLayout({
       >
         <ToastProvider>
           <I18nProvider>
-            <Header1 />
+            <div className="print:hidden">
+              <Header1 />
+            </div>
             <main className="">
               {children}
             </main>
-            <Footer />
+            <div className="print:hidden">
+              <Footer />
+            </div>
           </I18nProvider>
         </ToastProvider>
       </body>

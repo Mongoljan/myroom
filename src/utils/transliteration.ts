@@ -148,15 +148,16 @@ export function matchesWithTransliteration(searchText: string, targetText: strin
 
 /**
  * Score search relevance with transliteration support
+ * Enhanced to handle partial matches for hotel names
  */
 export function getSearchScore(searchText: string, targetText: string): number {
   const searchVariations = generateSearchVariations(searchText);
   const targetLower = targetText.toLowerCase();
   let bestScore = 0;
-  
+
   for (const variation of searchVariations) {
     const variationLower = variation.toLowerCase();
-    
+
     if (targetLower === variationLower) {
       bestScore = Math.max(bestScore, 100); // Exact match
     } else if (targetLower.startsWith(variationLower)) {
@@ -174,7 +175,31 @@ export function getSearchScore(searchText: string, targetText: string): number {
         }
       }
     }
+
+    // NEW: Also check if target (when transliterated) contains the search query
+    // This helps match Cyrillic hotel names when searching with Latin
+    if (hasCyrillic(targetText)) {
+      const targetTransliterated = cyrillicToLatinTransliteration(targetText).toLowerCase();
+
+      if (targetTransliterated === variationLower) {
+        bestScore = Math.max(bestScore, 100);
+      } else if (targetTransliterated.startsWith(variationLower)) {
+        bestScore = Math.max(bestScore, 90);
+      } else if (targetTransliterated.includes(variationLower)) {
+        bestScore = Math.max(bestScore, 70);
+      } else {
+        // Check word boundaries in transliterated target
+        const transliteratedWords = targetTransliterated.split(/\s+/);
+        for (const word of transliteratedWords) {
+          if (word.startsWith(variationLower)) {
+            bestScore = Math.max(bestScore, 60);
+          } else if (word.includes(variationLower)) {
+            bestScore = Math.max(bestScore, 40);
+          }
+        }
+      }
+    }
   }
-  
+
   return bestScore;
 }

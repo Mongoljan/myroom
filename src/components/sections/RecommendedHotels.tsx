@@ -28,7 +28,7 @@ export default function RecommendedHotels() {
   // Smart hotel categorization function based on market behavior
   const categorizeHotel = (hotel: SearchHotelResult, allHotels: SearchHotelResult[]): CategorizedHotel => {
     const price = hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 0;
-    const stars = parseFloat(hotel.rating_stars.value) || 3;
+    const stars = parseFloat(hotel.rating_stars?.value || '3') || 3;
     const facilities = hotel.general_facilities || [];
     
     // Define price ranges based on Mongolian hotel market (MNT)
@@ -48,7 +48,10 @@ export default function RecommendedHotels() {
 
     // Calculate statistics for intelligent categorization
     const allPrices = allHotels.map(h => h.cheapest_room?.price_per_night || h.min_estimated_total || 0).filter(p => p > 0);
-    const allRatings = allHotels.map(h => parseFloat(h.rating_stars.value) || 0).filter(r => r > 0);
+    const allRatings = allHotels.map(h => {
+      const ratingValue = h.rating_stars?.value;
+      return ratingValue ? parseFloat(ratingValue) : 0;
+    }).filter(r => r > 0);
     
     const avgPrice = allPrices.reduce((a, b) => a + b, 0) / allPrices.length;
     const minPrice = Math.min(...allPrices);
@@ -151,7 +154,7 @@ export default function RecommendedHotels() {
               const categoryOrder = { popular: 0, highly_rated: 1, discounted: 2, cheapest: 3, newly_added: 4 };
               const catDiff = categoryOrder[a.category] - categoryOrder[b.category];
               if (catDiff !== 0) return catDiff;
-              return parseFloat(b.rating_stars.value) - parseFloat(a.rating_stars.value);
+              return (parseFloat(b.rating_stars?.value || '0') || 0) - (parseFloat(a.rating_stars?.value || '0') || 0);
             });
 
           setHotels(categorized);
@@ -160,7 +163,7 @@ export default function RecommendedHotels() {
             name: h.property_name,
             category: h.category,
             price: h.cheapest_room?.price_per_night,
-            stars: h.rating_stars.value
+            stars: h.rating_stars?.value
           })));
         }
       } catch (error) {
@@ -314,8 +317,8 @@ export default function RecommendedHotels() {
                 id={hotel.hotel_id.toString()}
                 name={hotel.property_name}
                 location={hotel.location.province_city}
-                rating={parseFloat(hotel.rating_stars.value) || 0}
-                ratingLabel={hotel.rating_stars.label || t('hotel.rating')}
+                rating={parseFloat(hotel.rating_stars?.value || '0') || 0}
+                ratingLabel={hotel.rating_stars?.label || t('hotel.rating')}
                 price={hotel.cheapest_room?.price_per_night || 0}
                 image={getHotelImage(hotel)}
                 badge={hotel.categoryLabel}

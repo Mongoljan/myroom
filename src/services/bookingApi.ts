@@ -27,12 +27,15 @@ export class BookingService {
 
     try {
       const response = await fetch(url, defaultOptions);
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Extract error message from API response
+        const errorMessage = data.error || data.message || data.detail || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
 
-      return await response.json();
+      return data;
     } catch (error) {
       console.error(`API request failed: ${endpoint}`, error);
       throw error;

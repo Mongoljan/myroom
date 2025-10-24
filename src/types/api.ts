@@ -321,11 +321,17 @@ export interface SearchResponse {
 export interface RoomPrice {
   id: number;
   base_price: number;
+  base_price_raw?: number; // Original price before discount
   single_person_price: number | null;
   half_day_price: number | null;
   hotel: number;
   room_type: number;
   room_category: number;
+  pricesetting?: {
+    adjustment_type: 'ADD' | 'SUB';
+    value_type: 'PERCENT' | 'FIXED';
+    value: number;
+  };
 }
 
 export interface FinalPrice {
