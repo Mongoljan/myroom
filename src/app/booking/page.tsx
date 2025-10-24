@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, CheckCircle, Clock, Calendar, Users, Bed, User, Phone } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Phone } from 'lucide-react';
 import { BookingService } from '@/services/bookingApi';
 import { CreateBookingRequest, CreateBookingResponse } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -35,9 +35,9 @@ function BookingContent() {
   const roomsData = searchParams.get('rooms');
   const [rooms, setRooms] = useState<BookingRoom[]>([]);
 
-  // Date state (editable)
-  const [checkIn, setCheckIn] = useState(urlCheckIn);
-  const [checkOut, setCheckOut] = useState(urlCheckOut);
+  // Date state (read-only for display)
+  const [checkIn] = useState(urlCheckIn);
+  const [checkOut] = useState(urlCheckOut);
   const [nights, setNights] = useState(urlNights);
   const [totalPrice, setTotalPrice] = useState(urlTotalPrice);
 

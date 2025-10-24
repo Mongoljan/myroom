@@ -78,7 +78,7 @@ export default function TripComStyleRoomCard({
   };
 
   const discountPercent = getDiscountPercent();
-  const hasDiscount = discountPercent > 0 || (priceOptions.basePriceRaw && priceOptions.basePriceRaw > priceOptions.basePrice);
+  const hasDiscount = discountPercent > 0 || (priceOptions?.basePriceRaw && priceOptions?.basePriceRaw > priceOptions?.basePrice);
 
   // Get bed icon
   const getBedIcon = () => {
