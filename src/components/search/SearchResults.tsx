@@ -106,6 +106,12 @@ export default function SearchResults() {
     roomTypes: []
   });
 
+  // Helper function to get price from cheapest_room (handles different API response formats)
+  const getRoomPrice = (room: any): number => {
+    if (!room) return 0;
+    return room.price_per_night || room.price_per_night_adjusted || room.price_per_night_raw || 0;
+  };
+
   // Ref to guard against double invocation in React StrictMode
   const hasFetchedRef = useRef(false);
 
@@ -302,7 +308,7 @@ export default function SearchResults() {
 
     priceRanges.forEach(range => {
       counts[range.key] = hotels.filter(hotel => {
-        const price = hotel.cheapest_room?.price_per_night || 0;
+        const price = getRoomPrice(hotel.cheapest_room);
         return price >= range.min && price <= range.max;
       }).length;
     });
@@ -398,9 +404,13 @@ export default function SearchResults() {
     if (hasActiveFilters && (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 1000000 || filters.bedTypes.length > 0 || filters.roomTypes.length > 0)) {
       filtered = hotels.filter(hotel => {
         // Only include hotels that have room pricing information
-        return hotel.cheapest_room &&
-               hotel.cheapest_room.price_per_night &&
-               hotel.cheapest_room.price_per_night > 0;
+        if (!hotel.cheapest_room) return false;
+        const room = hotel.cheapest_room;
+        return (
+          (room.price_per_night && room.price_per_night > 0) ||
+          (room.price_per_night_adjusted && room.price_per_night_adjusted > 0) ||
+          (room.price_per_night_raw && room.price_per_night_raw > 0)
+        );
       });
       console.log('[handleFilterChange] After room price filter:', filtered.length);
     }
@@ -421,7 +431,7 @@ export default function SearchResults() {
     // Filter by price range
     filtered = filtered.filter(hotel => {
       if (!hotel.cheapest_room) return true;
-      const price = hotel.cheapest_room.price_per_night;
+      const price = getRoomPrice(hotel.cheapest_room);
       return price >= filters.priceRange[0] && price <= filters.priceRange[1];
     });
 
@@ -549,15 +559,15 @@ export default function SearchResults() {
     switch (sortValue) {
       case 'price_low':
         sorted.sort((a, b) => {
-          const priceA = a.cheapest_room?.price_per_night || 0;
-          const priceB = b.cheapest_room?.price_per_night || 0;
+          const priceA = getRoomPrice(a.cheapest_room);
+          const priceB = getRoomPrice(b.cheapest_room);
           return priceA - priceB;
         });
         break;
       case 'price_high':
         sorted.sort((a, b) => {
-          const priceA = a.cheapest_room?.price_per_night || 0;
-          const priceB = b.cheapest_room?.price_per_night || 0;
+          const priceA = getRoomPrice(a.cheapest_room);
+          const priceB = getRoomPrice(b.cheapest_room);
           return priceB - priceA;
         });
         break;
