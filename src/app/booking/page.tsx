@@ -48,7 +48,7 @@ function BookingContent() {
   const [customerEmail, setCustomerEmail] = useState('');
 
   // Hotel data state
-  const [hotelDetails, setHotelDetails] = useState<any | null>(null);
+  const [hotelDetails, setHotelDetails] = useState<SearchHotelResult | null>(null);
   const [hotelPolicy, setHotelPolicy] = useState<PropertyPolicy | null>(null);
   const [loadingHotelData, setLoadingHotelData] = useState(true);
 
