@@ -90,17 +90,17 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
           <div id="reviews" className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.reviews', 'Үнэлгээ')}</h2>
             <Suspense fallback={<div>{t('loading', 'Ачааллаж байна...')}</div>}>
-              <HotelReviews rating={parseFloat(hotel.rating_stars.value) || 0} reviewCount={0} />
+              <HotelReviews rating={parseFloat(hotel.rating_stars?.value || '0') || 0} reviewCount={0} />
             </Suspense>
           </div>
 
           {/* FAQ Section */}
           <div id="faq" className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.faq', 'Түгээмэл асуулт')}</h2>
-            <HotelFAQ 
-              hotelName={hotel.property_name} 
+            <HotelFAQ
+              hotelName={hotel.property_name}
               hotelFacilities={hotel.general_facilities}
-              hotelRating={parseFloat(hotel.rating_stars.value)}
+              hotelRating={parseFloat(hotel.rating_stars?.value || '0') || 0}
             />
           </div>
         </div>

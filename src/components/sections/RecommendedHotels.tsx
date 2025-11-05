@@ -8,6 +8,7 @@ import { ApiService } from '@/services/api';
 import { SearchHotelResult } from '@/types/api';
 import PointerHighlight from '@/components/aceternity/PointerHighlight';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
+import { text } from '@/styles/design-system';
 
 interface CategorizedHotel extends SearchHotelResult {
   category: 'popular' | 'discounted' | 'highly_rated' | 'cheapest' | 'newly_added';
@@ -206,27 +207,22 @@ export default function RecommendedHotels() {
   };
 
   return (
-    <section className="py-12">
+    <section className="py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900 mb-1">{t('hotel.recommended')}</h2>
-            <p className="text-sm text-gray-600">{t('features.wideSelectionDesc')}</p>
-          </div>
-          {/* <Link 
-            href="/search" 
-            className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
-          >
-            {t('common.viewAll')}
-            <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link> */}
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-4"
+        >
+          <h2 className={`${text.h2} text-gray-900 mb-1`}>{t('hotel.recommended')}</h2>
+          <p className={`${text.caption} text-gray-600`}>{t('features.wideSelectionDesc')}</p>
+        </motion.div>
 
         {/* Smart Filter tabs with counts */}
-        <PointerHighlight className="mb-6" highlightColor="rgba(59, 130, 246, 0.08)">
-          <div className="flex flex-wrap gap-3">
+        <PointerHighlight className="mb-5" highlightColor="rgba(59, 130, 246, 0.08)">
+          <div className="flex flex-wrap gap-2">
             {[
               { key: 'all', label: t('hotel.filters.all'), count: hotels.length },
               { key: 'popular', label: t('hotel.recommendedFilters.popular'), count: hotels.filter(h => h.category === 'popular').length },
@@ -238,15 +234,15 @@ export default function RecommendedHotels() {
               <motion.button
                 key={filter.key}
                 onClick={() => handleFilterChange(filter.key)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 shadow-sm ${
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeFilter === filter.key
-                    ? 'bg-blue-600 text-white shadow-blue-200'
+                    ? 'bg-blue-600 text-white shadow-sm'
                     : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-blue-300'
                 }`}
               >
-                {filter.label} {filter.count > 0 && <span className="ml-1 opacity-70">({filter.count})</span>}
+                {filter.label} {filter.count > 0 && <span className="ml-0.5 opacity-70">({filter.count})</span>}
               </motion.button>
             ))}
           </div>

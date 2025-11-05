@@ -121,36 +121,18 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="py-4">
+    <section className="py-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+        <motion.div
           className="text-center mb-4"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
           viewport={{ once: true }}
         >
-          
-          <motion.h2 
-            className={`${TYPOGRAPHY.heading.h1} mb-4`}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            viewport={{ once: true }}
-          >
-            <span className="text-gray-900">
-              {t('faq.title', 'Frequently Asked Questions')}
-            </span>
-          </motion.h2>
-          
-          <motion.p 
-            className={`${TYPOGRAPHY.body.standard} text-gray-600 max-w-3xl mx-auto`}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-          </motion.p>
+          <h2 className="text-lg font-bold text-gray-900 mb-1">
+            {t('faq.title', 'Frequently Asked Questions')}
+          </h2>
         </motion.div>
 
         <motion.div 

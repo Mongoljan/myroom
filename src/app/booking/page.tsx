@@ -6,7 +6,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Clock, Calendar, Phone } from 'lucide-react';
 import { BookingService } from '@/services/bookingApi';
-import { CreateBookingRequest, CreateBookingResponse } from '@/types/api';
+import { ApiService } from '@/services/api';
+import { CreateBookingRequest, CreateBookingResponse, SearchHotelResult, PropertyPolicy } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface BookingRoom {
@@ -46,6 +47,11 @@ function BookingContent() {
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
 
+  // Hotel data state
+  const [hotelDetails, setHotelDetails] = useState<any | null>(null);
+  const [hotelPolicy, setHotelPolicy] = useState<PropertyPolicy | null>(null);
+  const [loadingHotelData, setLoadingHotelData] = useState(true);
+
   // Booking state
   const [bookingInProgress, setBookingInProgress] = useState(false);
   const [bookingResult, setBookingResult] = useState<CreateBookingResponse | null>(null);
@@ -61,6 +67,30 @@ function BookingContent() {
       }
     }
   }, [roomsData]);
+
+  // Fetch hotel data
+  useEffect(() => {
+    const fetchHotelData = async () => {
+      if (!hotelId) return;
+      
+      try {
+        setLoadingHotelData(true);
+        const [hotelData, policyData] = await Promise.all([
+          ApiService.getHotelDetails(hotelId).catch(() => null),
+          ApiService.getPropertyPolicies(hotelId).catch(() => [])
+        ]);
+
+        setHotelDetails(hotelData);
+        setHotelPolicy(policyData[0] || null);
+      } catch (error) {
+        console.error('Failed to fetch hotel data:', error);
+      } finally {
+        setLoadingHotelData(false);
+      }
+    };
+
+    fetchHotelData();
+  }, [hotelId]);
 
   // Recalculate total when dates change
   useEffect(() => {
@@ -212,35 +242,28 @@ function BookingContent() {
               {/* Hotel Info */}
               <div className="mb-5">
                 <h3 className="text-xs font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-300">
-                  {t('bookingExtra.hotelInfo', 'Захиалгын хуудас')}
+                  {t('bookingExtra.hotelInfo', 'Зочид буудлын мэдээлэл')}
                 </h3>
                 <div className="text-xs space-y-1">
                   <div>
-                    <a href="#" className="text-blue-600 hover:underline font-medium">{hotelName}</a>
+                    <a href={`/hotel/${hotelId}`} className="text-blue-600 hover:underline font-medium">{hotelName}</a>
                   </div>
-                  <div className="text-gray-700 flex items-start gap-1">
-                    <svg className="w-3 h-3 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span>Хаяг: Ўвс аймаг, Улаангом сум, 3-р хороо, 6-р баг</span>
-                  </div>
-                  <div className="text-gray-700 flex items-center gap-1">
-                    <Phone className="w-3 h-3 text-gray-400 flex-shrink-0" />
-                    <span>+976 9995 4644</span>
-                  </div>
-                  <div className="text-gray-700 flex items-center gap-1">
-                    <svg className="w-3 h-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                    </svg>
-                    <span>www.shangrilahotel.mn</span>
-                  </div>
-                  <div className="text-gray-700 flex items-center gap-1">
-                    <svg className="w-3 h-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    <span>szzoe1105@gmail.com</span>
-                  </div>
+                  {hotelDetails?.location && (
+                    <div className="text-gray-700 flex items-start gap-1">
+                      <svg className="w-3 h-3 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span>
+                        {t('bookingExtra.addressLabel', 'Хаяг')}: {hotelDetails.location.province_city}, {hotelDetails.location.soum}, {hotelDetails.location.district}
+                      </span>
+                    </div>
+                  )}
+                  {!loadingHotelData && !hotelDetails?.location && (
+                    <div className="text-gray-500 text-xs italic">
+                      {t('bookingExtra.contactHotel', 'Холбоо барих мэдээллийг зочид буудалтай шалгана уу')}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -258,7 +281,7 @@ function BookingContent() {
                         month: 'short', 
                         day: 'numeric',
                         weekday: 'short'
-                      })}, Нам, 14:00 цагаас
+                      })}, {hotelPolicy ? `${hotelPolicy.check_in_from.substring(0, 5)} - ${hotelPolicy.check_in_until.substring(0, 5)}` : '14:00'} цагаас
                     </span>
                   </div>
                   <div className="flex">
@@ -269,7 +292,7 @@ function BookingContent() {
                         month: 'short', 
                         day: 'numeric',
                         weekday: 'short'
-                      })}, Нам, 14:00 цагаас
+                      })}, {hotelPolicy ? `${hotelPolicy.check_out_from.substring(0, 5)} - ${hotelPolicy.check_out_until.substring(0, 5)}` : '12:00'} цагаас
                     </span>
                   </div>
                   <div className="flex">
@@ -386,33 +409,29 @@ function BookingContent() {
                 <h3 className="text-xs font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-300">
                   {t('bookingExtra.cancellationPolicy', 'Цуцлах нөхцөл')}
                 </h3>
-                <div className="text-xs text-gray-700">
-                  <p className="mb-1.5">{t('bookingExtra.policyLine1', '1 өрөө түтмын цуцлалтаас авах хураамж:')}</p>
-                  <table className="border-collapse w-full text-xs">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="border border-gray-300 px-2 py-1.5 text-left font-normal text-gray-700">
-                          2/24-нээс өмнө
-                        </th>
-                        <th className="border border-gray-300 px-2 py-1.5 text-left font-normal text-gray-700">
-                          2/25-2/28-ны хооронд
-                        </th>
-                        <th className="border border-gray-300 px-2 py-1.5 text-left font-normal text-gray-700">
-                          2/28-наас хойш
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="border border-gray-300 px-2 py-1.5 text-gray-700">75,000 ₮</td>
-                        <td className="border border-gray-300 px-2 py-1.5 text-gray-700">375,000 ₮</td>
-                        <td className="border border-gray-300 px-2 py-1.5 text-gray-700">
-                          {t('bookingExtra.noCancellation', 'Цуцлах боломжгүй')}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                {hotelPolicy ? (
+                  <div className="text-xs text-gray-700 space-y-2">
+                    <div className="flex justify-between">
+                      <span>{t('bookingExtra.beforeCancelTime', 'Цуцлах хугацааны өмнө')}:</span>
+                      <span className="font-semibold">{hotelPolicy.cancellation_fee.before_fee}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{t('bookingExtra.afterCancelTime', 'Цуцлах хугацааны дараа')}:</span>
+                      <span className="font-semibold">{hotelPolicy.cancellation_fee.after_fee}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>{t('bookingExtra.cancelDeadline', 'Цуцлах хугацаа')}:</span>
+                      <span className="font-semibold">{hotelPolicy.cancellation_fee.cancel_time.substring(0, 5)}</span>
+                    </div>
+                    <p className="text-gray-600 mt-2 italic">
+                      {t('bookingExtra.cancellationNote', 'Цуцлах болон урьдчилгаа төлбөрийн бодлого нь захиалгын төрлөөс хамаарч өөр байна.')}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-xs text-gray-600">
+                    {t('bookingExtra.noPolicyInfo', 'Цуцлалтын нөхцөлийн талаар зочид буудалтай холбогдоно уу.')}
+                  </div>
+                )}
               </div>
 
               {/* Footer */}

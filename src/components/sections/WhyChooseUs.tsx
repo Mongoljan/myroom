@@ -1,181 +1,165 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import React from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useRef } from 'react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { text } from '@/styles/design-system';
 
-// Breathtaking Professional SVG Icons
-const InstantConfirmationIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 40 40" fill="none" className={className}>
-    <defs>
-      <linearGradient id="shield-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#10b981" />
-        <stop offset="50%" stopColor="#059669" />
-        <stop offset="100%" stopColor="#047857" />
-      </linearGradient>
-      <filter id="glow">
-        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-        <feMerge> 
-          <feMergeNode in="coloredBlur"/>
-          <feMergeNode in="SourceGraphic"/> 
-        </feMerge>
-      </filter>
-    </defs>
-    {/* Modern Shield Base */}
-    <path 
-      d="M20 4l12 4.5v9c0 7.5-5.2 14.5-12 16.5-6.8-2-12-9-12-16.5v-9L20 4z" 
-      fill="url(#shield-grad)" 
-      filter="url(#glow)"
-    />
-    {/* Lightning Fast Check */}
-    <path 
-      d="m14 20 4 4 8-8" 
-      stroke="#fff" 
-      strokeWidth="3" 
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    {/* Sparkle Effects */}
-    <circle cx="12" cy="12" r="1" fill="#fff" opacity="0.8" />
-    <circle cx="28" cy="14" r="1.5" fill="#fff" opacity="0.6" />
-    <circle cx="26" cy="26" r="1" fill="#fff" opacity="0.9" />
+// Modern minimalist icons
+const CheckCircleIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" />
+    <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-const CompetitivePriceIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 40 40" fill="none" className={className}>
-    <defs>
-      <linearGradient id="price-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#3b82f6" />
-        <stop offset="50%" stopColor="#2563eb" />
-        <stop offset="100%" stopColor="#1d4ed8" />
-      </linearGradient>
-      <linearGradient id="coin-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#fbbf24" />
-        <stop offset="50%" stopColor="#f59e0b" />
-        <stop offset="100%" stopColor="#d97706" />
-      </linearGradient>
-    </defs>
-    {/* Premium Wallet Base */}
-    <rect x="8" y="12" width="24" height="18" rx="3" fill="url(#price-grad)" />
-    <rect x="8" y="12" width="24" height="6" rx="3" fill="url(#price-grad)" opacity="0.8" />
-    
-    {/* Floating Coins */}
-    <circle cx="15" cy="8" r="4" fill="url(#coin-grad)" />
-    <path d="M13 8h4M15 6v4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-    
-    <circle cx="25" cy="6" r="3" fill="url(#coin-grad)" opacity="0.8" />
-    <path d="M23.5 6h3M25 4.5v3" stroke="#fff" strokeWidth="1" strokeLinecap="round" />
-    
-    <circle cx="30" cy="10" r="2.5" fill="url(#coin-grad)" opacity="0.6" />
-    <path d="M29 10h2M30 9v2" stroke="#fff" strokeWidth="0.8" strokeLinecap="round" />
-    
-    {/* Card Details */}
-    <rect x="12" y="20" width="8" height="2" rx="1" fill="#fff" opacity="0.3" />
-    <rect x="12" y="24" width="12" height="2" rx="1" fill="#fff" opacity="0.2" />
+const PriceTagIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+    <path d="M10.5 2.5L3 10v9a2 2 0 002 2h14a2 2 0 002-2v-9l-7.5-7.5a2 2 0 00-3 0z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M7 21v-7a2 2 0 012-2h6a2 2 0 012 2v7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
-const ProfessionalServiceIcon = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 40 40" fill="none" className={className}>
-    <defs>
-      <linearGradient id="service-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#8b5cf6" />
-        <stop offset="50%" stopColor="#7c3aed" />
-        <stop offset="100%" stopColor="#6d28d9" />
-      </linearGradient>
-      <linearGradient id="team-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#ec4899" />
-        <stop offset="100%" stopColor="#be185d" />
-      </linearGradient>
-    </defs>
-    {/* Professional Team Formation */}
-    <circle cx="20" cy="14" r="6" fill="url(#service-grad)" />
-    <circle cx="20" cy="14" r="3" fill="#fff" />
-    <circle cx="13" cy="18" r="4" fill="url(#team-grad)" opacity="0.8" />
-    <circle cx="27" cy="18" r="4" fill="url(#team-grad)" opacity="0.8" />
-    
-    {/* Excellence Crown */}
-    <path d="M14 10l2-4 4 2 4-2 2 4" stroke="url(#service-grad)" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-    
-    {/* Network Connection Lines */}
-    <path d="M17 16l-2 1M23 16l2 1" stroke="url(#service-grad)" strokeWidth="1.5" opacity="0.6" />
-    
-    {/* Premium Service Base */}
-    <rect x="8" y="26" width="24" height="8" rx="4" fill="url(#service-grad)" opacity="0.2" />
-    <rect x="10" y="28" width="6" height="2" rx="1" fill="url(#service-grad)" opacity="0.4" />
-    <rect x="18" y="28" width="8" height="2" rx="1" fill="url(#service-grad)" opacity="0.4" />
-    <rect x="28" y="28" width="2" height="2" rx="1" fill="url(#team-grad)" />
-    
-    {/* Quality Stars */}
-    <path d="M32 8l1 2h2l-1.5 1.5L34 14l-2-1-2 1 .5-2.5L29 10h2l1-2z" fill="url(#team-grad)" opacity="0.7" />
+const ServiceIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+    <path d="M12 2L2 7l10 5 10-5-10-5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 export default function WhyChooseUs() {
   const { t } = useHydratedTranslation();
-  
+  const containerRef = useRef<HTMLElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
+  const y = useTransform(scrollYProgress, [0, 0.2], [40, 0]);
+
   const features = [
     {
-      icon: InstantConfirmationIcon,
-      title: t('features.instantConfirmation', 'Манай сайтаар дамжуулан хийсэн захиалга бүр шууд баталгаажна'),
-      description: t('features.instantConfirmationDesc', 'Ингэснээр та захиалга давхардах, цуцлалттай холбоотой ямар нэг эрсдэлгүйгээр санаа амар аялаарай.'),
-      color: 'text-green-600',
-      bgColor: 'bg-gradient-to-br from-green-50 to-emerald-50',
-      borderColor: 'border-green-200'
+      icon: CheckCircleIcon,
+      title: t('features.instantConfirmation', 'Шууд баталгаажилт'),
+      description: t('features.instantConfirmationDesc', 'Захиалга бүр шууд баталгаажна. Санаа амар, эрсдэлгүй аялаарай.'),
+      gradient: 'from-blue-500/10 via-cyan-500/10 to-blue-500/10',
+      iconColor: 'text-blue-600',
+      delay: 0
     },
     {
-      icon: CompetitivePriceIcon,
+      icon: PriceTagIcon,
       title: t('features.fastService', 'Өрсөлдөхүйц үнэ'),
-      description: t('features.fastServiceDesc', 'Бид танд ямар нэг нэмэлт төлбөргүй, хамгийн боломжит хөнгөлөлттэй үнийг санал болгож байна.'),
-      color: 'text-blue-600',
-      bgColor: 'bg-gradient-to-br from-blue-50 to-indigo-50',
-      borderColor: 'border-blue-200'
+      description: t('features.fastServiceDesc', 'Нэмэлт төлбөргүй, хамгийн хөнгөлөлттэй үнэ.'),
+      gradient: 'from-violet-500/10 via-purple-500/10 to-violet-500/10',
+      iconColor: 'text-violet-600',
+      delay: 0.1
     },
     {
-      icon: ProfessionalServiceIcon,
-      title: t('features.wideSelection', 'Бидний мэргэжлийн багаар хурдан, найдвартай үйлчилгээг мэдэрээрэй'),
-      description: t('features.wideSelectionDesc', 'Монголын орны томоохон хот, аялал жуулчлалын бүсүүд дэхь хамгийн хямдаас эхлээд тансаг зэрэглэлийн буудлуудаас та өөрийн хайж байгаа өрөөгөө хялбар олох боломжтой.'),
-      color: 'text-purple-600',
-      bgColor: 'bg-gradient-to-br from-purple-50 to-pink-50',
-      borderColor: 'border-purple-200'
+      icon: ServiceIcon,
+      title: t('features.wideSelection', 'Мэргэжлийн үйлчилгээ'),
+      description: t('features.wideSelectionDesc', 'Хурдан, найдвартай үйлчилгээ. Монголын томоохон буудлуудаас сонгоорой.'),
+      gradient: 'from-pink-500/10 via-rose-500/10 to-pink-500/10',
+      iconColor: 'text-pink-600',
+      delay: 0.2
     }
   ];
 
   return (
-    <section className="py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            {t('features.whyChooseUs', 'Яагаад биднийг сонгох хэрэгтэй вэ?')}
-          </h2>
-         
-        </div>
+    <section
+      ref={containerRef}
+      className="relative py-6 overflow-hidden"
+    > 
+      {/* Background gradient blur effects */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-500/5 rounded-full blur-3xl" />
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <motion.div
+        style={{ opacity, y }}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      >
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-4"
+        >
+          <h2 className={`${text.h2} text-gray-900 mb-1`}>
+            {t('features.title', 'Таны аялалыг тав тухтай болгох')}
+          </h2>
+          <p className={`${text.caption} text-gray-600`}>{t('features.whyChooseUs', 'Яагаад бид вэ?')}</p>
+        </motion.div>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {features.map((feature, index) => (
-            <div
+            <motion.div
               key={index}
-              className="bg-white p-5 rounded-lg border border-gray-200 hover:shadow-md transition-shadow h-full flex flex-col"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{
+                duration: 0.5,
+                delay: feature.delay,
+                ease: [0.21, 0.47, 0.32, 0.98]
+              }}
+              whileHover={{
+                y: -4,
+                transition: { duration: 0.2, ease: "easeOut" }
+              }}
+              className="group relative"
             >
-              <div className="flex gap-x-2">
-              <div className={`w-12 h-12 ${feature.bgColor} rounded-lg flex items-center justify-center mb-4`}>
-                <feature.icon className="w-8 h-8" />
+              {/* Card */}
+              <div className="relative h-full bg-white/80 backdrop-blur-xl rounded-xl border border-gray-200/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50 hover:border-gray-300/50">
+
+                {/* Gradient background on hover */}
+                <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`} />
+
+                {/* Icon container */}
+                <motion.div
+                  whileHover={{ scale: 1.05, rotate: 3 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  className="relative inline-flex mb-3"
+                >
+                  <div className={`w-10 h-10 ${feature.iconColor} transition-all duration-300 group-hover:scale-110`}>
+                    <feature.icon />
+                  </div>
+
+                  {/* Animated ring on hover */}
+                  <motion.div
+                    className={`absolute inset-0 rounded-full ${feature.iconColor} opacity-0 group-hover:opacity-20`}
+                    initial={{ scale: 1 }}
+                    whileHover={{ scale: 1.3 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.div>
+
+                {/* Content */}
+                <h3 className={`${text.h4} text-gray-900 mb-2 transition-colors`}>
+                  {feature.title}
+                </h3>
+
+                <p className={`${text.bodySm} text-gray-600 leading-relaxed`}>
+                  {feature.description}
+                </p>
+
+                {/* Decorative element */}
+                <motion.div
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-gray-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  initial={{ scaleX: 0 }}
+                  whileHover={{ scaleX: 1 }}
+                  transition={{ duration: 0.4 }}
+                />
               </div>
-              
-              <h3 className={`text-[16px] font-semibold ${feature.color} mb-3`}>
-                {feature.title}
-              </h3>
-              </div>
-              
-              <p className="text-gray-600 text-sm flex-1">
-                {feature.description}
-              </p>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

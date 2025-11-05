@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
+import { text } from '@/styles/design-system';
 
 interface SectionHotelCardProps {
   id: string;
@@ -71,18 +72,29 @@ export default function SectionHotelCard({
       >
         {/* Hotel Image */}
         <div className="relative h-36 overflow-hidden">
-          <Image
-            src={image}
-            alt={`${name} - Hotel image`}
-            fill
-            className="object-cover transition-transform duration-300"
-            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            unoptimized
-            onError={(e) => {
-              const target = e.currentTarget;
-              target.src = getFallbackImage();
-            }}
-          />
+          {image ? (
+            <Image
+              src={image}
+              alt={`${name} - Hotel image`}
+              fill
+              className="object-cover transition-transform duration-300"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              unoptimized
+              onError={(e) => {
+                const target = e.currentTarget;
+                target.src = getFallbackImage();
+              }}
+            />
+          ) : (
+            <Image
+              src={getFallbackImage()}
+              alt={`${name} - Hotel image`}
+              fill
+              className="object-cover transition-transform duration-300"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              unoptimized
+            />
+          )}
 
           {/* Badge - Top Left */}
           {badge && (
@@ -95,29 +107,29 @@ export default function SectionHotelCard({
         </div>
 
         {/* Hotel Info */}
-        <div className="p-3">
-          <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
+        <div className="p-4">
+          <h3 className={`${text.h4} text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors`}>
             {name}
           </h3>
 
           <div className="flex items-center text-gray-500 mb-2">
-            <MapPin className="w-3 h-3 mr-1" />
-            <span className="text-xs line-clamp-1">{location || 'Байршил тодорхойгүй'}</span>
+            <MapPin className="w-4 h-4 mr-1" />
+            <span className={`${text.caption} line-clamp-1`}>{location || 'Байршил тодорхойгүй'}</span>
           </div>
 
           {/* Rating and Price */}
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="bg-blue-600 text-white px-1.5 py-0.5 rounded text-xs font-medium mr-1">
+              <div className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-medium mr-1">
                 {rating}
               </div>
-              <span className="text-xs text-gray-500">
+              <span className={`${text.caption} text-gray-500`}>
                 {ratingLabel?.replace(/\d+\s*stars?/i, '').trim() || 'үнэлгээ'}
               </span>
             </div>
             <div className="text-right">
-              <div className="text-xs text-gray-500 mb-1">эхлэх үнэ</div>
-              <div className="text-sm font-bold text-gray-900">
+              <div className={`${text.caption} text-gray-500`}>эхлэх үнэ</div>
+              <div className={`${text.bodySm} font-bold text-gray-900`}>
                 ₮{formatPrice(price)}-с
               </div>
             </div>

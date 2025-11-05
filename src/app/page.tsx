@@ -1,11 +1,11 @@
 import dynamic from "next/dynamic";
-import ModernHero from "@/components/hero/ModernHero";
 import WhyChooseUs from "@/components/sections/WhyChooseUs";
 import RecentlyViewed from "@/components/sections/RecentlyViewed";
 import RecommendedHotels from "@/components/sections/RecommendedHotels";
 import PopularDestinations from "@/components/sections/PopularDestinations";
 import FaqSection from "@/components/sections/FaqSection";
 import Partnerships from "@/components/sections/Partnerships";
+import ModernHero from "@/components/hero/ModernHero";
 
 export const metadata = {
   title: "MyRoom - Modern Hotel Booking Platform",
@@ -15,7 +15,7 @@ export const metadata = {
 const Home = () => {
   return (
     <>
-      <ModernHero />
+      <ModernHero/>
       <WhyChooseUs />
       <RecentlyViewed />
       <RecommendedHotels />

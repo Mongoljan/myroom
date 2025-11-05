@@ -258,7 +258,7 @@ export default function ModernHero() {
   };
 
   return (
-    <section className="relative min-h-[50vh] sm:min-h-[45vh] pt-5 lg:min-h-[35vh] bg-blue-50/30">
+    <section className="relative min-h-[50vh] sm:min-h-[45vh] py-6 lg:min-h-[35vh] bg-blue-50/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative min-h-[50vh]  sm:min-h-[45vh] lg:min-h-[35vh] bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-lg overflow-hidden">
       {/* Animated Gradient Background */}
@@ -402,21 +402,21 @@ export default function ModernHero() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className={`${TYPOGRAPHY.hero.title} text-white mb-3 leading-tight relative`}
             >
-              <motion.span
+              {/* <motion.span
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="block"
               >
                 {t('hero.findPerfect')}
-              </motion.span>
+              </motion.span> */}
               <motion.span 
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
                 className="block relative"
               >
-                <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                <span className=" ">
                   {t('hero.hotelStay')}
                 </span>
               </motion.span>
@@ -427,13 +427,13 @@ export default function ModernHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
-              className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-2"
+              className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-20"
             >
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.8, delay: 1.0 }}
-                className="text-gray-300"
+                className="text-gray-200 text-md"
               >
                 {t('hero.discoverHotels')}
               </motion.span>
