@@ -308,6 +308,7 @@ export interface SearchHotelResult {
   rating_stars: RatingStars;
   google_map: string;
   general_facilities: string[];
+  property_type?: string; // Optional: property type (hotel, apartment, guesthouse)
 }
 
 export interface SearchResponse {
