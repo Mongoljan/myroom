@@ -335,7 +335,11 @@ export default function DestinationPage({ destination, searchParams }: Destinati
                       rating={parseFloat(hotel.rating_stars?.value || '0') || 0}
                       ratingLabel={hotel.rating_stars?.label || ''}
                       price={hotel.cheapest_room?.price_per_night || 0}
-                      image={hotel.images?.cover?.url || hotel.images?.gallery?.[0]?.url || ''}
+                      image={
+                        typeof hotel.images?.cover === 'string'
+                          ? hotel.images.cover
+                          : hotel.images?.cover?.url || hotel.images?.gallery?.[0]?.url || ''
+                      }
                       index={index}
                     />
                   ))}
