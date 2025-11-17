@@ -54,7 +54,7 @@ export default function HotelImageGallery({
   const baseHeight = viewMode === 'list' ? 'h-64 md:h-56' : 'h-56';
 
   return (
-    <div className={`relative ${baseHeight} overflow-hidden bg-slate-100 ${className}`}>
+    <div className={`relative ${baseHeight} overflow-hidden bg-slate-100 ${className}`} style={{ aspectRatio: '4/3' }}>
       {!imageError ? (
         <Image
           src={getCurrentImageSrc()}

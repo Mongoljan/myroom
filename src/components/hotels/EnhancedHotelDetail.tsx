@@ -400,18 +400,18 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
         </div>
       </div>
 
-      {/* Image Gallery */}
+      {/* Image Gallery - Grid layout with 4:3 aspect ratio images (expecting at least 5 images) */}
       <div className="relative rounded-xl overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
-          {/* Main Image - Takes 2 columns */}
-          <div className="lg:col-span-2 relative h-80 lg:h-96 bg-gray-100">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          {/* Main Image - Takes 2x2 grid */}
+          <div className="col-span-2 row-span-2 relative bg-gray-100 overflow-hidden" style={{ aspectRatio: '4/3' }}>
             <SafeImage
               src={allImages[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover.url) || ''}
               alt={hotelName}
               fill
               className="object-cover"
             />
-            
+
             {allImages.length > 1 && (
               <>
                 <button
@@ -437,28 +437,27 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             )}
           </div>
 
-          {/* Thumbnail Grid - 1 column on desktop */}
-          <div className="hidden lg:grid grid-rows-2 gap-2">
-            {allImages.slice(1, 3).map((image, index) => (
-              <div
-                key={index}
-                className="relative h-full cursor-pointer bg-gray-100 overflow-hidden group"
-                onClick={() => setCurrentImageIndex(index + 1)}
-              >
-                <SafeImage
-                  src={image.url || ''}
-                  alt={`${hotelName} - ${index + 1}`}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                {index === 1 && allImages.length > 3 && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <span className="text-white font-semibold text-lg">+{allImages.length - 3} {t('hotelDetails.morePhotos', 'зураг')}</span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          {/* Thumbnail Grid - 4 thumbnails with 4:3 ratio (2x2 on the right) */}
+          {allImages.slice(1, 5).map((image, index) => (
+            <div
+              key={index}
+              className="relative cursor-pointer bg-gray-100 overflow-hidden group"
+              style={{ aspectRatio: '4/3' }}
+              onClick={() => setCurrentImageIndex(index + 1)}
+            >
+              <SafeImage
+                src={image.url || ''}
+                alt={`${hotelName} - ${index + 1}`}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+              {index === 3 && allImages.length > 5 && (
+                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                  <span className="text-white font-semibold text-lg">+{allImages.length - 5} {t('hotelDetails.morePhotos', 'зураг')}</span>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 

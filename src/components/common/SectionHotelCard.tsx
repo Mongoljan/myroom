@@ -71,7 +71,7 @@ export default function SectionHotelCard({
         className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 hover:shadow-lg block"
       >
         {/* Hotel Image */}
-        <div className="relative h-36 overflow-hidden">
+        <div className="relative w-full overflow-hidden" style={{ aspectRatio: '1/1' }}>
           {image ? (
             <Image
               src={image}

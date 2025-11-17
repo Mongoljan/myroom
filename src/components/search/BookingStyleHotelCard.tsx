@@ -282,16 +282,16 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
         >
           <div className="flex flex-col md:flex-row">
             {/* Hotel Image */}
-            <div className="relative  w-60 h-auto flex-shrink-0 overflow-hidden">
+            <div className="relative w-60 flex-shrink-0 overflow-hidden" style={{ aspectRatio: '4/3' }}>
               <Image
-                src={propertyDetails?.property_photos?.[0]?.image || 
-                     (typeof hotel.images?.cover === 'string' ? hotel.images.cover : 
-                      hotel.images?.cover?.url || 
+                src={propertyDetails?.property_photos?.[0]?.image ||
+                     (typeof hotel.images?.cover === 'string' ? hotel.images.cover :
+                      hotel.images?.cover?.url ||
                       'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop')}
                 alt={hotel.property_name}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
-                sizes="224px"
+                sizes="240px"
                 unoptimized
               />
          
@@ -473,11 +473,11 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
         onClick={() => window.location.href = buildHotelUrl()}
       >
         {/* Hotel Image */}
-        <div className="relative h-32 overflow-hidden flex-shrink-0">
+        <div className="relative w-full overflow-hidden flex-shrink-0" style={{ aspectRatio: '4/3' }}>
           <Image
-            src={propertyDetails?.property_photos?.[0]?.image || 
-                 (typeof hotel.images?.cover === 'string' ? hotel.images.cover : 
-                  hotel.images?.cover?.url || 
+            src={propertyDetails?.property_photos?.[0]?.image ||
+                 (typeof hotel.images?.cover === 'string' ? hotel.images.cover :
+                  hotel.images?.cover?.url ||
                   'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop')}
             alt={hotel.property_name}
             fill
