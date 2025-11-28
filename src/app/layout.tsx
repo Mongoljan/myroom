@@ -17,8 +17,67 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MyRoom - Hotel Booking Platform",
-  description: "Find and book amazing hotels at exclusive deals",
+  title: {
+    default: "MyRoom - Зочид буудал захиалгын платформ",
+    template: "%s | MyRoom"
+  },
+  description: "Дэлхийн өнцөг булан бүрээс зочид буудал олж, шууд захиалга хийгээрэй.",
+  keywords: ["hotel booking", "зочид буудал", "захиалга", "Mongolia", "Монгол", "accommodation", "байр"],
+  authors: [{ name: "MyRoom" }],
+  creator: "MyRoom",
+  publisher: "MyRoom",
+  formatDetection: {
+    email: false,
+    telephone: true,
+  },
+  metadataBase: new URL("https://myroom.mn"),
+  alternates: {
+    canonical: "/",
+    languages: {
+      "en": "/en",
+      "mn": "/",
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "mn_MN",
+    alternateLocale: "en_US",
+    url: "https://myroom.mn",
+    siteName: "MyRoom",
+    title: "MyRoom - Зочид буудал захиалгын платформ",
+    description: "Дэлхийн өнцөг булан бүрээс зочид буудал олж, шууд захиалга хийгээрэй.",
+    images: [
+      {
+        url: "/img/general/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "MyRoom - Hotel Booking Platform",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MyRoom - Зочид буудал захиалгын платформ",
+    description: "Дэлхийн өнцөг булан бүрээс зочид буудал олж, шууд захиалга хийгээрэй.",
+    images: ["/img/general/og-image.jpg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/img/general/apple-touch-icon.png",
+  },
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

@@ -108,10 +108,6 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('HotelSearchForm - handleSearch called');
-    console.log('HotelSearchForm - Current destination:', destination);
-    console.log('HotelSearchForm - Current selectedLocationSuggestion:', selectedLocationSuggestion);
-
     // Validate location selection - block search if no location
     if (!destination || !selectedLocationSuggestion) {
       setShowLocationError(true);
@@ -143,24 +139,18 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
 
     if (selectedLocationSuggestion) {
       const locationParams = locationService.formatLocationForSearchAPI(selectedLocationSuggestion);
-      console.log('HotelSearchForm - Selected suggestion:', selectedLocationSuggestion);
-      console.log('HotelSearchForm - Location params to append:', locationParams);
 
       Object.entries(locationParams).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           params.append(key, value.toString());
-          console.log(`HotelSearchForm - Appending ${key}=${value}`);
         }
       });
       saveSearch(selectedLocationSuggestion, finalCheckIn, finalCheckOut, adults, children, rooms);
     } else if (destination) {
-      console.log('HotelSearchForm - No selectedLocationSuggestion, using destination text:', destination);
       params.append('location', destination);
     }
 
     const finalUrl = `/search?${params.toString()}`;
-    console.log('HotelSearchForm - Final URL:', finalUrl);
-    console.log('HotelSearchForm - URL params:', params.toString());
     router.push(finalUrl);
   };
 
@@ -169,7 +159,6 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
 
     // Always clear selectedLocationSuggestion when user types to allow free editing
     if (selectedLocationSuggestion) {
-      console.log('HotelSearchForm - Clearing selectedLocationSuggestion because user is typing');
       setSelectedLocationSuggestion(null);
     }
 
@@ -193,12 +182,10 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
   };
 
   const handleLocationSelect = (suggestion: LocationSuggestion) => {
-    console.log('HotelSearchForm - handleLocationSelect called with:', suggestion);
     // For properties/hotels, show the full name, for locations show formatted name
     const displayName = suggestion.type === 'property' ? suggestion.name : suggestion.fullName;
     setDestination(displayName);
     setSelectedLocationSuggestion(suggestion);
-    console.log('HotelSearchForm - selectedLocationSuggestion set to:', suggestion);
     setShowLocationSuggestions(false);
   };
 

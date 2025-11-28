@@ -524,7 +524,7 @@ function BookingContent() {
                       required
                       disabled={bookingInProgress}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-                      placeholder="John Doe"
+                      placeholder={t('booking.namePlaceholder', 'Нэр')}
                     />
                   </div>
 
@@ -551,7 +551,7 @@ function BookingContent() {
                     required
                     disabled={bookingInProgress}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-                    placeholder="example@email.com"
+                    placeholder={t('booking.emailPlaceholder', 'email@example.com')}
                   />
                 </div>
 

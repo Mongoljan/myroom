@@ -74,14 +74,6 @@ export default function FaqSection() {
   const allFaqs = faqs.length > 0 ? faqs : defaultFaqs;
   const firstFiveFaqs = allFaqs.slice(0, 5);
   const remainingFaqs = allFaqs.slice(5);
-  
-  // Debug logging
-  console.log('FAQ Debug:', {
-    showAll,
-    allFaqsCount: allFaqs.length,
-    firstFiveCount: firstFiveFaqs.length,
-    remainingCount: remainingFaqs.length
-  });
 
   const toggleItem = (index: number) => {
     setOpenItems(prev => 

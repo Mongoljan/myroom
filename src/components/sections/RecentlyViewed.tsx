@@ -37,11 +37,9 @@ export default function RecentlyViewed() {
     if (hotel.images?.cover) {
       if (typeof hotel.images.cover === 'string') {
         imageUrl = hotel.images.cover;
-        console.log(`Using cover image (string) for hotel ${hotel.property_name}:`, imageUrl);
         return imageUrl;
       } else if (hotel.images.cover.url) {
         imageUrl = hotel.images.cover.url;
-        console.log(`Using cover image (object) for hotel ${hotel.property_name}:`, imageUrl);
         return imageUrl;
       }
     }
@@ -49,7 +47,6 @@ export default function RecentlyViewed() {
     // Try first gallery image as fallback
     if (hotel.images?.gallery && hotel.images.gallery.length > 0) {
       imageUrl = hotel.images.gallery[0].url;
-      console.log(`Using gallery image for hotel ${hotel.property_name}:`, imageUrl);
       return imageUrl;
     }
 
@@ -62,7 +59,6 @@ export default function RecentlyViewed() {
     ];
     
     imageUrl = fallbackImages[hotel.hotel_id % fallbackImages.length];
-    console.log(`Using fallback image for hotel ${hotel.property_name}:`, imageUrl);
     return imageUrl;
   };
 

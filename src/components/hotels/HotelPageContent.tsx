@@ -36,7 +36,6 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
   // Track this hotel as viewed when component mounts
   useEffect(() => {
     if (hotel) {
-      console.log('Adding hotel to recently viewed:', hotel.property_name);
       addRecentlyViewed(hotel);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

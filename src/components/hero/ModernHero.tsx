@@ -123,7 +123,6 @@ export default function ModernHero() {
   };
 
   const handleGuestChange = (newAdults: number, newChildren: number, newRooms: number) => {
-    console.log('Guest values updated:', { newAdults, newChildren, newRooms });
     setAdults(newAdults);
     setChildren(newChildren);
     setRooms(newRooms);

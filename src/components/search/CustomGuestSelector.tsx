@@ -105,7 +105,6 @@ export default function CustomGuestSelector({
       newRooms = increment ? rooms + 1 : Math.max(1, rooms - 1);
     }
 
-    console.log(`Updating ${type}:`, { newAdults, newChildren, newRooms });
     onGuestChange(newAdults, newChildren, newRooms);
   };
 

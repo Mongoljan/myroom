@@ -35,7 +35,7 @@ export default function NoResultsState({ searchParams }: NoResultsStateProps) {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={() => {
-                console.log('Clear filters');
+                // Clear filters functionality
               }}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200"
             >

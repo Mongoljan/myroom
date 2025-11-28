@@ -86,17 +86,14 @@ export default function ImprovedHotelRoomsSection({
 
         // Load enriched room data
         const roomsData = await hotelRoomsService.getEnrichedHotelRooms(hotelId);
-        console.log(`Loaded ${roomsData.length} rooms for hotel ${hotelId}:`, roomsData);
         setRooms(roomsData);
 
         // Load price data by hotel (not individual room)
         const pricesData: Record<string, RoomPriceOptions> = {};
 
         try {
-          console.log(`Fetching prices for hotel ${hotelId}...`);
           // Use hotel-level API instead of room-level
           const prices: RoomPrice[] = await ApiService.getRoomPrices(hotelId);
-          console.log(`Hotel ${hotelId} prices:`, prices);
 
           // Map prices by room_type + room_category
           prices.forEach(price => {
@@ -111,13 +108,10 @@ export default function ImprovedHotelRoomsSection({
                 value: price.pricesetting.value
               } : undefined
             };
-            console.log(`Mapped price for room_type ${price.room_type}, room_category ${price.room_category}:`, pricesData[key]);
           });
-        } catch (error) {
-          console.error(`Failed to fetch prices for hotel ${hotelId}:`, error);
+        } catch {
+          // Silent failure for price fetching
         }
-
-        console.log('Final price data:', pricesData);
 
         setRoomPrices(pricesData);
       } catch (error) {
@@ -272,9 +266,6 @@ export default function ImprovedHotelRoomsSection({
     const hasInventory = room.number_of_rooms_to_sell > 0;
     const priceKey = `${room.room_type}-${room.room_category}`;
     const hasPrice = roomPrices[priceKey]?.basePrice && roomPrices[priceKey].basePrice > 0;
-
-    // Debug logging
-    console.log(`Room ${room.id} (${room.roomTypeName}) [type:${room.room_type}, cat:${room.room_category}]: inventory=${room.number_of_rooms_to_sell}, hasPrice=${!!hasPrice}, priceKey=${priceKey}, price=${roomPrices[priceKey]?.basePrice}`);
 
     // MUST have BOTH inventory AND valid pricing
     return hasInventory && hasPrice;

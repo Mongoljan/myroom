@@ -109,8 +109,6 @@ export class ApiService {
         const inflight = ApiCache.getInFlight<T>(cacheOpts.key);
         if (inflight) return inflight;
       }
-      if (process.env.NODE_ENV !== 'production') console.log('[API] →', fullUrl);
-      
       // Build headers object  
       const headers: Record<string, string> = {};
       
@@ -146,17 +144,6 @@ export class ApiService {
 
       const data = await response.json();
       if (cacheOpts && isGet) { ApiCache.set(cacheOpts.key, data); ApiCache.clearInFlight(cacheOpts.key); }
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('[API] ←', {
-          url: fullUrl,
-          status: response.status,
-          keys: typeof data === 'object' && data ? Object.keys(data).slice(0,6) : [],
-          count: (typeof data === 'object' && data && 'count' in data)
-            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              (data as any).count
-            : (Array.isArray(data) ? data.length : undefined)
-        });
-      }
       
       // Clean up any invalid image URLs
       if (data && typeof data === 'object') {
@@ -225,16 +212,12 @@ export class ApiService {
       }
     }
 
-    console.log('Enhanced search params (sanitized):', sanitized);
-    console.log('name_id value:', sanitized.name_id, 'type:', typeof sanitized.name_id);
-
     const searchParams = new URLSearchParams();
 
     // Handle different search modes
     if (sanitized.name_id) {
       // Exact hotel ID search - only send name_id
       searchParams.append('name_id', sanitized.name_id.toString());
-      console.log('API Service - Added name_id to search params:', sanitized.name_id);
     } else if (sanitized.name) {
       // Text search for hotel names
       searchParams.append('name', sanitized.name);
@@ -256,7 +239,6 @@ export class ApiService {
     searchParams.append('rooms', sanitized.rooms.toString());
     searchParams.append('acc_type', sanitized.acc_type);
 
-    console.log('Search URL params:', searchParams.toString());
     return this.request<SearchResponse>(`/search/?${searchParams.toString()}`);
   }
 

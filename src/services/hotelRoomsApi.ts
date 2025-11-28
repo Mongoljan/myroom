@@ -121,7 +121,6 @@ class HotelRoomsService {
 
     for (const endpoint of possibleEndpoints) {
       try {
-        console.log(`Trying endpoint: ${endpoint}`);
         const response = await fetch(endpoint, {
           method: 'GET',
           headers: {
@@ -142,7 +141,6 @@ class HotelRoomsService {
         
         this.allRoomDataCache = await response.json();
         this.cacheTimestamp = now;
-        console.log(`Successfully fetched data from: ${endpoint}`);
         
         return this.allRoomDataCache!;
       } catch (error) {

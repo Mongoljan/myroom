@@ -2,6 +2,7 @@
 
 import { X, Plus, Minus } from 'lucide-react';
 import { BookingItem } from './RoomCard';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface BookingSummaryProps {
   items: BookingItem[];
@@ -15,12 +16,6 @@ interface BookingSummaryProps {
   onBookNow: () => void;
 }
 
-const priceTypeLabels = {
-  base: 'Standard Rate',
-  halfDay: 'Half Day Rate',
-  singlePerson: 'Single Guest Rate'
-};
-
 export default function BookingSummary({
   items,
   totalRooms,
@@ -32,7 +27,14 @@ export default function BookingSummary({
   onRemoveRoom,
   onBookNow
 }: BookingSummaryProps) {
+  const { t } = useHydratedTranslation();
   const totalPriceWithNights = totalPrice * nights;
+
+  const priceTypeLabels = {
+    base: t('hotelRooms.standardRate', 'Үндсэн үнэ'),
+    halfDay: t('hotelRooms.halfDayRate', 'Хагас хоногийн үнэ'),
+    singlePerson: t('hotelRooms.singleGuestRate', '1 хүний үнэ')
+  };
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-4 sticky top-4">
@@ -96,7 +98,7 @@ export default function BookingSummary({
                   <button
                     onClick={() => onRemoveRoom(item.room.id, item.priceType)}
                     className="p-1 hover:bg-red-100 rounded-full transition-colors text-red-600"
-                    title="Remove"
+                    title={t('common.delete', 'Устгах')}
                   >
                     <X className="w-4 h-4" />
                   </button>

@@ -190,47 +190,12 @@ export default function SearchResults() {
 
         try {
           const response = await ApiService.searchHotels(params) as SearchResponse;
-          console.log('[SearchResults] API Response:', {
-            hasResults: !!response,
-            resultsCount: response?.results?.length || 0,
-            totalCount: response?.count || 0
-          });
           
           const results = response?.results || [];
-          console.log('[SearchResults] Raw results:', results);
-          
-          // Log each hotel's validation status
-          results.forEach((hotel: SearchHotelResult, index: number) => {
-            console.log(`[Hotel ${index}] Validation:`, {
-              hotel_id: hotel?.hotel_id,
-              property_name: hotel?.property_name,
-              has_location: !!hotel?.location,
-              has_rating_stars: !!hotel?.rating_stars,
-              rating_stars_value: hotel?.rating_stars
-            });
-          });
           
           const validResults = results.filter((hotel: SearchHotelResult) => {
             const isValid = hotel && hotel.hotel_id && hotel.property_name && hotel.location && hotel.rating_stars;
-            if (!isValid) {
-              console.warn('[SearchResults] Invalid hotel filtered out:', {
-                hotel_id: hotel?.hotel_id,
-                property_name: hotel?.property_name,
-                missing: {
-                  hotel_id: !hotel?.hotel_id,
-                  property_name: !hotel?.property_name,
-                  location: !hotel?.location,
-                  rating_stars: !hotel?.rating_stars
-                }
-              });
-            }
             return isValid;
-          });
-
-          console.log('[SearchResults] Valid results:', {
-            total: results.length,
-            valid: validResults.length,
-            filtered: results.length - validResults.length
           });
 
           // If specific query expected but API returned many, attempt client-side narrow
@@ -242,8 +207,6 @@ export default function SearchResults() {
             finalResults = validResults.filter(h => h.property_name.toLowerCase().includes(needle));
           }
 
-          console.log('[SearchResults] Final results:', finalResults.length);
-          console.log('[SearchResults] Sample hotel data:', finalResults[0]);
           setHotels(finalResults);
           setFilteredHotels(finalResults);
         } catch (apiError) {
@@ -369,9 +332,6 @@ export default function SearchResults() {
   const filterCounts = getFilterCounts();
 
   const handleFilterChange = (newFilters: FilterState) => {
-    console.log('[handleFilterChange] Called with filters:', newFilters);
-    console.log('[handleFilterChange] Current hotels count:', hotels.length);
-    
     // Update the filters state
     setFilters(newFilters);
 
@@ -393,8 +353,6 @@ export default function SearchResults() {
       (filters.facilities && filters.facilities.length > 0) ||
       (filters.roomTypes && filters.roomTypes.length > 0);
 
-    console.log('[handleFilterChange] Has active filters:', hasActiveFilters);
-
     let filtered = hotels;
     
     // Only apply room price filter if we're actually filtering by price or other room-related criteria
@@ -409,20 +367,17 @@ export default function SearchResults() {
           (room.price_per_night_raw && room.price_per_night_raw > 0)
         );
       });
-      console.log('[handleFilterChange] After room price filter:', filtered.length);
     }
 
     // Filter by property types
     if (filters.propertyTypes && filters.propertyTypes.length > 0) {
       // Note: Property type filtering would need property_type_id field from API
       // For now, we'll skip this filter since the field is not available in current hotel data
-      console.log('Property type filtering - field not available in current API:', filters.propertyTypes);
     }
 
     // Filter by popular searches
     if (filters.popularSearches && filters.popularSearches.length > 0) {
       // Note: This would need to be implemented based on hotel features
-      console.log('Popular search filtering not yet implemented:', filters.popularSearches);
     }
 
     // Filter by price range
@@ -497,7 +452,6 @@ export default function SearchResults() {
     // Filter by discounted
     if (filters.discounted) {
       // Note: This would need to be implemented based on pricing/discount data
-      console.log('Discount filtering not yet implemented');
     }
 
     // Filter by star rating
@@ -545,7 +499,6 @@ export default function SearchResults() {
       });
     }
 
-    console.log('[handleFilterChange] Final filtered hotels:', filtered.length);
     setFilteredHotels(filtered);
   };
 
@@ -729,11 +682,6 @@ export default function SearchResults() {
               <div className="h-2"></div>
 
               {/* Results Layout */}
-              {(() => {
-                console.log('[Render] filteredHotels.length:', filteredHotels.length);
-                console.log('[Render] filteredHotels:', filteredHotels);
-                return null;
-              })()}
               {filteredHotels.length > 0 ? (
                 <>
                   <div className={`

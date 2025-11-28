@@ -9,6 +9,7 @@ import { Room } from '@/types/api';
 import { ApiService } from '@/services/api';
 import RoomCard from '@/components/rooms/RoomCard';
 import Header1 from '@/components/header/Header1';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface BookingModalProps {
   room: Room | null;
@@ -21,6 +22,7 @@ interface BookingModalProps {
 }
 
 function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hotelId }: BookingModalProps) {
+  const { t } = useHydratedTranslation();
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
@@ -74,10 +76,10 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
               <span className="text-2xl">✅</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">Booking Confirmed!</h3>
+            <h3 className="text-2xl font-bold text-gray-900">{t('booking.confirmed', 'Захиалга баталгаажлаа!')}</h3>
             <div className="space-y-2 text-sm">
-              <p><span className="font-medium">Booking Code:</span> {bookingResult.booking_code}</p>
-              <p><span className="font-medium">PIN Code:</span> {bookingResult.pin_code}</p>
+              <p><span className="font-medium">{t('booking.bookingCode', 'Захиалгын код')}:</span> {bookingResult.booking_code}</p>
+              <p><span className="font-medium">{t('booking.pinCode', 'PIN код')}:</span> {bookingResult.pin_code}</p>
               <p className="text-gray-600">{bookingResult.message}</p>
             </div>
             <div className="flex gap-3">
@@ -85,13 +87,13 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
                 href={`/booking/manage?code=${bookingResult.booking_code}&pin=${bookingResult.pin_code}`}
                 className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:bg-blue-700 transition-colors"
               >
-                Manage Booking
+                {t('booking.manageBooking', 'Захиалга удирдах')}
               </Link>
               <button
                 onClick={onClose}
                 className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-200 transition-colors"
               >
-                Close
+                {t('common.close', 'Хаах')}
               </button>
             </div>
           </div>
@@ -143,7 +145,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             >
               {Array.from({ length: Math.min(available, 5) }, (_, i) => i + 1).map(num => (
                 <option key={num} value={num}>
-                  {num} room{num > 1 ? 's' : ''} (of {available} available)
+                  {num} {t('hotel.rooms', 'өрөө')} ({available} {t('hotelRooms.available', 'боломжтой')})
                 </option>
               ))}
             </select>
@@ -151,7 +153,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name *
+              {t('booking.fullName', 'Бүтэн нэр')} *
             </label>
             <input
               type="text"
@@ -159,13 +161,13 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your full name"
+              placeholder={t('booking.namePlaceholder', 'Нэрээ оруулна уу')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number *
+              {t('booking.phone', 'Утасны дугаар')} *
             </label>
             <input
               type="tel"
@@ -173,13 +175,13 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your phone number"
+              placeholder={t('booking.phonePlaceholder', 'Утасны дугаараа оруулна уу')}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address *
+              {t('booking.email', 'Имэйл хаяг')} *
             </label>
             <input
               type="email"
@@ -187,7 +189,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               value={customerEmail}
               onChange={(e) => setCustomerEmail(e.target.value)}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your email address"
+              placeholder={t('booking.emailPlaceholder', 'email@example.com')}
             />
           </div>
 
@@ -197,14 +199,14 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               onClick={onClose}
               className="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t('common.cancel', 'Цуцлах')}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
             >
-              {loading ? 'Booking...' : 'Confirm Booking'}
+              {loading ? t('common.loading', 'Ачаалж байна...') : t('booking.confirmBooking', 'Захиалга баталгаажуулах')}
             </button>
           </div>
         </form>
@@ -214,6 +216,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
 }
 
 function HotelRoomsContent() {
+  const { t } = useHydratedTranslation();
   const params = useParams();
   const searchParams = useSearchParams();
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -301,13 +304,13 @@ function HotelRoomsContent() {
               className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to Hotel Details
+              {t('hotelRooms.backToHotel', 'Буцах')}
             </Link>
             
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Available Rooms
+                  {t('hotelRooms.availableRooms', 'Боломжтой өрөөнүүд')}
                 </h1>
                 {checkIn && checkOut && (
                   <div className="flex items-center gap-4 text-gray-600">
@@ -328,9 +331,9 @@ function HotelRoomsContent() {
                     onChange={(e) => setFilterBy(e.target.value as 'all' | 'available' | 'bathroom')}
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value="all">All Rooms</option>
-                    <option value="available">Available Only</option>
-                    <option value="bathroom">With Bathroom</option>
+                    <option value="all">{t('hotelRooms.allRooms', 'Бүх өрөө')}</option>
+                    <option value="available">{t('hotelRooms.availableOnly', 'Зөвхөн боломжтой')}</option>
+                    <option value="bathroom">{t('hotelRooms.withBathroom', 'Угаалгын өрөөтэй')}</option>
                   </select>
                 </div>
 
@@ -341,9 +344,9 @@ function HotelRoomsContent() {
                     onChange={(e) => setSortBy(e.target.value as 'price' | 'size' | 'capacity')}
                     className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value="price">Sort by Price</option>
-                    <option value="size">Sort by Size</option>
-                    <option value="capacity">Sort by Capacity</option>
+                    <option value="price">{t('hotelRooms.sortByPrice', 'Үнээр эрэмбэлэх')}</option>
+                    <option value="size">{t('hotelRooms.sortBySize', 'Хэмжээгээр')}</option>
+                    <option value="capacity">{t('hotelRooms.sortByCapacity', 'Багтаамжаар')}</option>
                   </select>
                 </div>
               </div>
@@ -379,8 +382,8 @@ function HotelRoomsContent() {
               <div className="text-gray-400 mb-4">
                 <Users className="w-16 h-16 mx-auto" />
               </div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">No rooms found</h3>
-              <p className="text-gray-600">Try adjusting your filters or dates.</p>
+              <h3 className="text-xl font-medium text-gray-900 mb-2">{t('hotelRooms.noRoomsFound', 'Өрөө олдсонгүй')}</h3>
+              <p className="text-gray-600">{t('hotelRooms.tryAdjustingFilters', 'Шүүлтүүр эсвэл огноог өөрчилж үзнэ үү.')}</p>
             </div>
           )}
         </div>

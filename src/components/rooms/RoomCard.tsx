@@ -68,7 +68,8 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           setAvailability(availabilityResult);
         }
       } catch (error) {
-  console.error('Failed to fetch data:', error);
+        // Silently handle availability check errors
+        void error;
         setAvailability({ available_rooms: 0 });
       } finally {
         setLoading(false);

@@ -516,12 +516,6 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             const isId = typeof facility === 'number' || !isNaN(Number(facility));
             const facilityId = isId ? Number(facility) : null;
 
-            // Debug
-            if (index === 0) {
-              console.log('First facility:', facility, 'Type:', typeof facility, 'isId:', isId, 'facilityId:', facilityId);
-              console.log('facilitiesMap has facility:', facilitiesMap.has(facilityId || 0));
-            }
-
             // Get facility name from map or use the string value
             let facilityName = facility;
             if (facilityId && facilitiesMap.has(facilityId)) {

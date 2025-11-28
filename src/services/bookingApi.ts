@@ -101,9 +101,8 @@ export class BookingService {
   }
 
   // Mock booking functionality for development
-  static async createBookingMock(data: CreateBookingRequest): Promise<CreateBookingResponse> {
-    console.log('Creating mock booking:', data);
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  static async createBookingMock(_data: CreateBookingRequest): Promise<CreateBookingResponse> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -120,14 +119,17 @@ export class BookingService {
   }
 
   static async checkAvailabilityMock(
-    hotelId: number,
-    roomCategoryId: number,
-    roomTypeId: number,
-    checkIn: string,
-    checkOut: string
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _hotelId: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _roomCategoryId: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _roomTypeId: number,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _checkIn: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _checkOut: string
   ): Promise<AvailabilityResponse> {
-    console.log('Checking mock availability:', { hotelId, roomCategoryId, roomTypeId, checkIn, checkOut });
-
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
 

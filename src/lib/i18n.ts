@@ -6,6 +6,46 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 const resources = {
   en: {
     translation: {
+      meta: {
+        siteName: "MyRoom",
+        home: {
+          title: "MyRoom - Modern Hotel Booking Platform",
+          description: "Discover exceptional hotels worldwide with instant booking, real-time availability, and unmatched experiences."
+        },
+        search: {
+          title: "Search Hotels | MyRoom",
+          description: "Find and compare the best hotel deals. Search by location, dates, and amenities."
+        },
+        hotel: {
+          title: "{{name}} | MyRoom",
+          description: "Book {{name}} in {{location}}. Best rates guaranteed with instant confirmation.",
+          notFound: "Hotel Not Found"
+        },
+        destinations: {
+          title: "{{name}} - Hotels & Accommodation | MyRoom",
+          description: "Find the best hotels and accommodation in {{name}}. Book now with instant confirmation."
+        },
+        booking: {
+          title: "Complete Your Booking | MyRoom",
+          description: "Secure your hotel reservation with instant confirmation."
+        },
+        manageBooking: {
+          title: "Manage Booking | MyRoom",
+          description: "View and manage your hotel reservation details."
+        },
+        login: {
+          title: "Sign In | MyRoom",
+          description: "Sign in to access your bookings and manage your account."
+        },
+        signup: {
+          title: "Create Account | MyRoom",
+          description: "Join MyRoom for exclusive deals and easy booking management."
+        },
+        terms: {
+          title: "Terms of Service | MyRoom",
+          description: "Read the terms and conditions for using MyRoom hotel booking platform."
+        }
+      },
       common: {
         loading: "Loading...",
         error: "Error",
@@ -182,6 +222,17 @@ const resources = {
         signInButton: "Sign in",
         noAccount: "Don't have an account?",
         signUp: "Create one"
+      },
+      AuthSignup: {
+        createAccount: "Create your account",
+        subtitle: "Join MyRoom for exclusive deals and easy booking.",
+        fullName: "Full name",
+        emailAddress: "Email address",
+        password: "Password",
+        confirmPassword: "Confirm password",
+        signUpButton: "Sign up",
+        hasAccount: "Already have an account?",
+        signIn: "Sign in"
       },
       hotel: {
         title: "Hotels",
@@ -1077,6 +1128,46 @@ const resources = {
   },
   mn: {
     translation: {
+      meta: {
+        siteName: "MyRoom",
+        home: {
+          title: "MyRoom - Зочид буудал захиалгын платформ",
+          description: "Дэлхийн өнцөг булан бүрээс зочид буудал олж, шууд захиалга хийгээрэй."
+        },
+        search: {
+          title: "Зочид буудал хайх | MyRoom",
+          description: "Хамгийн сайн зочид буудлын үнийг харьцуулж олоорой."
+        },
+        hotel: {
+          title: "{{name}} | MyRoom",
+          description: "{{location}}-д байрлах {{name}}-г захиалах. Хамгийн сайн үнийн баталгаа.",
+          notFound: "Зочид буудал олдсонгүй"
+        },
+        destinations: {
+          title: "{{name}} - Зочид буудал & Байр | MyRoom",
+          description: "{{name}} дахь хамгийн сайн зочид буудлуудыг олоорой. Одоо захиалаарай."
+        },
+        booking: {
+          title: "Захиалга баталгаажуулах | MyRoom",
+          description: "Зочид буудлын захиалгаа баталгаажуулаарай."
+        },
+        manageBooking: {
+          title: "Захиалга удирдах | MyRoom",
+          description: "Таны зочид буудлын захиалгын мэдээллийг харах, удирдах."
+        },
+        login: {
+          title: "Нэвтрэх | MyRoom",
+          description: "Захиалгуудаа харах, бүртгэлээ удирдахын тулд нэвтрэнэ үү."
+        },
+        signup: {
+          title: "Бүртгүүлэх | MyRoom",
+          description: "MyRoom-д нэгдэж онцгой урамшуулал, хялбар захиалгын үйлчилгээ аваарай."
+        },
+        terms: {
+          title: "Үйлчилгээний нөхцөл | MyRoom",
+          description: "MyRoom зочид буудал захиалгын платформын үйлчилгээний нөхцөлийг уншина уу."
+        }
+      },
       common: {
         loading: "Ачааллаж байна...",
         error: "Алдаа",
@@ -1278,6 +1369,17 @@ const resources = {
         signInButton: "Нэвтрэх",
         noAccount: "Данс байхгүй юу?",
         signUp: "Шинэ бүртгэл үүсгэх"
+      },
+      AuthSignup: {
+        createAccount: "Шинэ бүртгэл үүсгэх",
+        subtitle: "MyRoom-д нэгдэж онцгой урамшуулал аваарай.",
+        fullName: "Бүтэн нэр",
+        emailAddress: "Имэйл хаяг",
+        password: "Нууц үг",
+        confirmPassword: "Нууц үг баталгаажуулах",
+        signUpButton: "Бүртгүүлэх",
+        hasAccount: "Бүртгэлтэй юу?",
+        signIn: "Нэвтрэх"
       },
       hotel: {
         title: "Зочид буудал",

@@ -1,9 +1,19 @@
 import { Suspense } from "react";
+import { Metadata } from "next";
 import SearchResultsPage from "@/components/search/SearchResultsPage";
 
 // Force dynamic rendering - don't cache search results
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: "Зочид буудал хайх | MyRoom",
+  description: "Хамгийн сайн зочид буудлын үнийг харьцуулж олоорой. Байршил, огноо, тохиромжтой сонголтуудаар хайх.",
+  openGraph: {
+    title: "Зочид буудал хайх | MyRoom",
+    description: "Хамгийн сайн зочид буудлын үнийг харьцуулж олоорой.",
+  },
+};
 
 function SearchPageFallback() {
   return (

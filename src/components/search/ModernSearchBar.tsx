@@ -13,6 +13,7 @@ import { TYPOGRAPHY } from '@/styles/containers';
 import CustomGuestSelector from './CustomGuestSelector';
 import { locationService, LocationSuggestion } from '@/services/locationApi';
 import { hasCyrillic, hasLatin } from '@/utils/transliteration';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface SearchData {
   location: string;
@@ -38,6 +39,7 @@ const getDefaultCheckOutDate = () => {
 };
 
 export default function ModernSearchBar() {
+  const { t } = useHydratedTranslation();
   const [searchData, setSearchData] = useState<SearchData>({
     location: '',
     checkIn: '',
@@ -65,7 +67,8 @@ export default function ModernSearchBar() {
           setFilteredSuggestions(popularSuggestions);
         }
       } catch (error) {
-        console.error('Error fetching location suggestions:', error);
+        // Silently handle location suggestion errors
+        void error;
         setFilteredSuggestions([]);
       }
     };
@@ -108,12 +111,9 @@ export default function ModernSearchBar() {
     // Add location-specific parameters based on selected suggestion
     if (searchData.selectedLocationSuggestion) {
       const locationParams = locationService.formatLocationForSearchAPI(searchData.selectedLocationSuggestion);
-      console.log('ModernSearchBar - Selected suggestion:', searchData.selectedLocationSuggestion);
-      console.log('ModernSearchBar - Location params:', locationParams);
 
       if (locationParams.name_id) {
         params.append('name_id', locationParams.name_id.toString());
-        console.log('ModernSearchBar - Adding name_id:', locationParams.name_id);
       } else if (locationParams.name) {
         params.append('name', locationParams.name);
       } else {
@@ -124,7 +124,6 @@ export default function ModernSearchBar() {
     } else if (searchData.location) {
       // Fallback to text search if no suggestion was selected
       params.append('location', searchData.location);
-      console.log('ModernSearchBar - No suggestion, using location text:', searchData.location);
     }
 
     window.location.href = `/search?${params.toString()}`;
@@ -167,13 +166,13 @@ export default function ModernSearchBar() {
             >
               <MapPin className="w-5 h-5 text-blue-600 mr-3" />
               <div className="flex-1">
-                <div className={`${TYPOGRAPHY.form.label} text-gray-700 mb-1 font-medium`}>Location</div>
+                <div className={`${TYPOGRAPHY.form.label} text-gray-700 mb-1 font-medium`}>{t('hotel.destination', 'Байршил')}</div>
                 <input
                   type="text"
                   value={searchData.location}
                   onChange={(e) => setSearchData(prev => ({ ...prev, location: e.target.value }))}
                   onFocus={() => setShowLocationSuggestions(true)}
-                  placeholder="Where are you going?"
+                  placeholder={t('hero.whereAreYouGoing', 'Хаашаа явах вэ?')}
                   className={`w-full ${TYPOGRAPHY.form.input} text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent`}
                 />
               </div>
@@ -227,7 +226,7 @@ export default function ModernSearchBar() {
                                 {suggestion.name}
                               </span>
                               {suggestion.searchScore && suggestion.searchScore >= 90 && (
-                                <span className="w-2 h-2 bg-green-500 rounded-full" title="Exact match"></span>
+                                <span className="w-2 h-2 bg-green-500 rounded-full" title={t('search.exactMatch', 'Яг таарсан')}></span>
                               )}
                               {suggestion.property_count > 0 && (
                                 <span className={`${TYPOGRAPHY.body.caption} text-blue-600`}>
