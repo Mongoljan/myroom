@@ -1,210 +1,168 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
-import { SearchHotelResult } from '@/types/api';
 import PointerHighlight from '@/components/aceternity/PointerHighlight';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
 import { text } from '@/styles/design-system';
 
-interface CategorizedHotel extends SearchHotelResult {
-  category: 'popular' | 'discounted' | 'highly_rated' | 'cheapest' | 'newly_added';
-  categoryLabel: string;
-  priceCategory: 'low' | 'medium' | 'high' | 'premium';
+// Type for API response
+interface SuggestedHotel {
+  hotel: {
+    pk: number;
+    PropertyName: string;
+    location: string;
+    property_type: number;
+    created_at: string;
+  };
+  cheapest_room: {
+    id: number;
+    base_price: number;
+    final_price: number;
+    images: Array<{ id: number; image: string; description: string }>;
+    adultQty: number;
+    childQty: number;
+  } | null;
 }
+
+type TabKey = 'popular' | 'discount' | 'top_rated' | 'cheapest' | 'new';
 
 export default function RecommendedHotels() {
   const { t } = useHydratedTranslation();
-  const [hotels, setHotels] = useState<CategorizedHotel[]>([]);
-  const [filteredHotels, setFilteredHotels] = useState<CategorizedHotel[]>([]);
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [hotels, setHotels] = useState<SuggestedHotel[]>([]);
+  const [activeTab, setActiveTab] = useState<TabKey>('popular');
   const [isLoading, setIsLoading] = useState(true);
+  const [tabCounts, setTabCounts] = useState<Record<TabKey, number>>({
+    popular: 0,
+    discount: 0,
+    top_rated: 0,
+    cheapest: 0,
+    new: 0
+  });
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Smart hotel categorization function based on market behavior
-  const categorizeHotel = (hotel: SearchHotelResult, allHotels: SearchHotelResult[]): CategorizedHotel => {
-    const price = hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 0;
-    const stars = parseFloat(hotel.rating_stars?.value || '3') || 3;
-    const facilities = hotel.general_facilities || [];
-    
-    // Define price ranges based on Mongolian hotel market (MNT)
-    const priceRanges = {
-      budget: { min: 0, max: 150000 },      // Under 150k MNT
-      medium: { min: 150000, max: 300000 }, // 150k-300k MNT
-      high: { min: 300000, max: 500000 },   // 300k-500k MNT
-      premium: { min: 500000, max: Infinity } // Above 500k MNT
-    };
-
-    // Determine price category
-    let priceCategory: 'low' | 'medium' | 'high' | 'premium' = 'medium';
-    if (price <= priceRanges.budget.max) priceCategory = 'low';
-    else if (price <= priceRanges.medium.max) priceCategory = 'medium';
-    else if (price <= priceRanges.high.max) priceCategory = 'high';
-    else priceCategory = 'premium';
-
-    // Calculate statistics for intelligent categorization
-    const allPrices = allHotels.map(h => h.cheapest_room?.price_per_night || h.min_estimated_total || 0).filter(p => p > 0);
-    const allRatings = allHotels.map(h => {
-      const ratingValue = h.rating_stars?.value;
-      return ratingValue ? parseFloat(ratingValue) : 0;
-    }).filter(r => r > 0);
-    
-    const avgPrice = allPrices.reduce((a, b) => a + b, 0) / allPrices.length;
-    const minPrice = Math.min(...allPrices);
-    const avgRating = allRatings.reduce((a, b) => a + b, 0) / allRatings.length;
-
-    // Smart categorization logic based on market behavior
-  let category: 'popular' | 'discounted' | 'highly_rated' | 'cheapest' | 'newly_added' = 'newly_added';
-  let categoryLabel = '';
-
-    // Эрэлттэй (Popular): High stars + premium facilities + good price range
-    if (stars >= 4 && priceCategory !== 'premium' && 
-        (facilities.some(f => f.toLowerCase().includes('wifi')) || 
-         facilities.some(f => f.toLowerCase().includes('restaurant')) ||
-         facilities.some(f => f.toLowerCase().includes('parking')))) {
-  category = 'popular';
-  categoryLabel = t('hotel.recommendedFilters.popular');
-    }
-    // Хямдралтай (Discounted): Good quality but lower than average price
-    else if (stars >= 3.5 && price < avgPrice * 0.8 && price > minPrice * 1.2) {
-  category = 'discounted';
-  categoryLabel = t('hotel.recommendedFilters.discounted');
-    }
-    // Өндөр үнэлгээтэй (Highly Rated): Above average rating
-    else if (stars >= avgRating + 0.5 && stars >= 4.2) {
-  category = 'highly_rated';
-  categoryLabel = t('hotel.recommendedFilters.highlyRated');
-    }
-    // Хамгийн хямд (Cheapest): Lowest price category with decent quality
-    else if (priceCategory === 'low' && stars >= 3) {
-  category = 'cheapest';
-  categoryLabel = t('hotel.recommendedFilters.cheapest');
-    }
-    // Шинээр нэмэгдсэн (Newly Added): Default category or newer properties
-    else {
-  category = 'newly_added';
-  categoryLabel = t('hotel.recommendedFilters.newlyAdded');
-    }
-
-    return {
-      ...hotel,
-      category,
-      categoryLabel,
-      priceCategory
-    };
-  };
-
-  // Get hotel image with fallback
-  const getHotelImage = (hotel: SearchHotelResult): string => {
-    if (hotel.images?.cover) {
-      if (typeof hotel.images.cover === 'string') {
-        return hotel.images.cover;
-      } else if (hotel.images.cover.url) {
-        return hotel.images.cover.url;
-      }
-    }
-    if (hotel.images?.gallery && hotel.images.gallery.length > 0) {
-      return hotel.images.gallery[0].url;
+  // Get hotel image with fallback - optimized for card display
+  const getHotelImage = (hotel: SuggestedHotel): string => {
+    if (hotel.cheapest_room?.images && hotel.cheapest_room.images.length > 0) {
+      const imageUrl = hotel.cheapest_room.images[0].image;
+      // Return the image URL as-is - Next.js Image component will handle sizing
+      return imageUrl;
     }
     // Smart fallback based on hotel ID for variety
     const fallbacks = [
-      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop'
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop&auto=format'
     ];
-    return fallbacks[hotel.hotel_id % fallbacks.length];
+    return fallbacks[hotel.hotel.pk % fallbacks.length];
   };
 
-  // Get badge color for category
-  const getCategoryBadgeColor = (category: string): 'orange' | 'green' | 'blue' | 'purple' | 'gray' => {
-    switch (category) {
+  // Get badge color for tab
+  const getTabBadgeColor = (tab: TabKey): 'orange' | 'green' | 'blue' | 'purple' | 'gray' => {
+    switch (tab) {
       case 'popular': return 'orange';
-      case 'discounted': return 'green';
-      case 'highly_rated': return 'blue';
+      case 'discount': return 'green';
+      case 'top_rated': return 'blue';
       case 'cheapest': return 'purple';
+      case 'new': return 'gray';
       default: return 'gray';
     }
   };
 
-  // Fetch and categorize hotels
+  // Get badge label for tab
+  const getTabBadgeLabel = (tab: TabKey): string => {
+    switch (tab) {
+      case 'popular': return t('hotel.recommendedFilters.popular');
+      case 'discount': return t('hotel.recommendedFilters.discounted');
+      case 'top_rated': return t('hotel.recommendedFilters.highlyRated');
+      case 'cheapest': return t('hotel.recommendedFilters.cheapest');
+      case 'new': return t('hotel.recommendedFilters.newlyAdded');
+      default: return '';
+    }
+  };
+
+  // Fetch hotels for the active tab
   useEffect(() => {
     const loadHotels = async () => {
       setIsLoading(true);
       try {
-        const searchResult = await ApiService.searchHotels({
-          check_in: new Date().toISOString().split('T')[0],
-          check_out: new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0],
-          adults: 2,
-          children: 0,
-          rooms: 1,
-          acc_type: 'hotel'
-        });
-
-        if (searchResult.results) {
-          const hotelResults = searchResult.results.slice(0, 12); // Take first 12 hotels
-          const categorized = hotelResults
-            .map(hotel => categorizeHotel(hotel, hotelResults))
-            .sort((a, b) => {
-              // Sort by category importance, then by rating
-              const categoryOrder = { popular: 0, highly_rated: 1, discounted: 2, cheapest: 3, newly_added: 4 };
-              const catDiff = categoryOrder[a.category] - categoryOrder[b.category];
-              if (catDiff !== 0) return catDiff;
-              return (parseFloat(b.rating_stars?.value || '0') || 0) - (parseFloat(a.rating_stars?.value || '0') || 0);
-            });
-
-          setHotels(categorized);
-          setFilteredHotels(categorized);
-          console.log('Categorized hotels:', categorized.map(h => ({
-            name: h.property_name,
-            category: h.category,
-            price: h.cheapest_room?.price_per_night,
-            stars: h.rating_stars?.value
-          })));
-        }
+        const response = await ApiService.getSuggestedHotels(activeTab);
+        setHotels(response.results || []);
+        
+        // Update count for current tab
+        setTabCounts(prev => ({
+          ...prev,
+          [activeTab]: response.count || 0
+        }));
       } catch (error) {
-        console.error('Error loading recommended hotels:', error);
-        // Set empty array on error - component will show empty state
+        console.error('Error loading suggested hotels:', error);
         setHotels([]);
-        setFilteredHotels([]);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadHotels();
+  }, [activeTab]);
+
+  // Load counts for all tabs on initial mount
+  useEffect(() => {
+    const loadAllCounts = async () => {
+      const tabs: TabKey[] = ['popular', 'discount', 'top_rated', 'cheapest', 'new'];
+      const counts: Record<TabKey, number> = {
+        popular: 0,
+        discount: 0,
+        top_rated: 0,
+        cheapest: 0,
+        new: 0
+      };
+
+      await Promise.all(
+        tabs.map(async (tab) => {
+          try {
+            const response = await ApiService.getSuggestedHotels(tab);
+            counts[tab] = response.count || 0;
+          } catch {
+            counts[tab] = 0;
+          }
+        })
+      );
+
+      setTabCounts(counts);
+    };
+
+    loadAllCounts();
   }, []);
 
-  // Handle filter changes
-  useEffect(() => {
-    if (activeFilter === 'all') {
-      setFilteredHotels(hotels);
-    } else {
-      setFilteredHotels(hotels.filter(hotel => hotel.category === activeFilter));
-    }
-  }, [activeFilter, hotels]);
-
-  // Check scroll positions on load
+  // Check scroll positions
   useEffect(() => {
     const element = scrollRef.current;
-    if (element && filteredHotels.length > 0) {
+    if (element && hotels.length > 0) {
       const checkScroll = () => {
         setCanScrollLeft(element.scrollLeft > 0);
         setCanScrollRight(element.scrollLeft < element.scrollWidth - element.clientWidth - 10);
       };
       
-      setTimeout(checkScroll, 100); // Small delay to ensure rendering is complete
+      setTimeout(checkScroll, 100);
     }
-  }, [filteredHotels]);
+  }, [hotels]);
 
-  const handleFilterChange = (filter: string) => {
-    setActiveFilter(filter);
+  const handleTabChange = (tab: TabKey) => {
+    setActiveTab(tab);
   };
+
+  const tabs: Array<{ key: TabKey; label: string }> = [
+    { key: 'popular', label: t('hotel.recommendedFilters.popular') },
+    { key: 'discount', label: t('hotel.recommendedFilters.discounted') },
+    { key: 'top_rated', label: t('hotel.recommendedFilters.highlyRated') },
+    { key: 'cheapest', label: t('hotel.recommendedFilters.cheapest') },
+    { key: 'new', label: t('hotel.recommendedFilters.newlyAdded') },
+  ];
 
   return (
     <section className="py-6">
@@ -220,29 +178,22 @@ export default function RecommendedHotels() {
           <p className={`${text.caption} text-gray-600`}>{t('features.wideSelectionDesc')}</p>
         </motion.div>
 
-        {/* Smart Filter tabs with counts */}
+        {/* Tab filters */}
         <PointerHighlight className="mb-5" highlightColor="rgba(59, 130, 246, 0.08)">
           <div className="flex flex-wrap gap-2">
-            {[
-              { key: 'all', label: t('hotel.filters.all'), count: hotels.length },
-              { key: 'popular', label: t('hotel.recommendedFilters.popular'), count: hotels.filter(h => h.category === 'popular').length },
-              { key: 'discounted', label: t('hotel.recommendedFilters.discounted'), count: hotels.filter(h => h.category === 'discounted').length },
-              { key: 'highly_rated', label: t('hotel.recommendedFilters.highlyRated'), count: hotels.filter(h => h.category === 'highly_rated').length },
-              { key: 'cheapest', label: t('hotel.recommendedFilters.cheapest'), count: hotels.filter(h => h.category === 'cheapest').length },
-              { key: 'newly_added', label: t('hotel.recommendedFilters.newlyAdded'), count: hotels.filter(h => h.category === 'newly_added').length },
-            ].map((filter) => (
+            {tabs.map((tab) => (
               <motion.button
-                key={filter.key}
-                onClick={() => handleFilterChange(filter.key)}
+                key={tab.key}
+                onClick={() => handleTabChange(tab.key)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  activeFilter === filter.key
+                  activeTab === tab.key
                     ? 'bg-blue-600 text-white shadow-sm'
                     : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-blue-300'
                 }`}
               >
-                {filter.label} {filter.count > 0 && <span className="ml-0.5 opacity-70">({filter.count})</span>}
+                {tab.label} {tabCounts[tab.key] > 0 && <span className="ml-0.5 opacity-70">({tabCounts[tab.key]})</span>}
               </motion.button>
             ))}
           </div>
@@ -267,7 +218,7 @@ export default function RecommendedHotels() {
               ))}
             </div>
           </div>
-        ) : filteredHotels.length > 0 ? (
+        ) : hotels.length > 0 ? (
           <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
             {/* Left scroll button */}
             {canScrollLeft && (
@@ -307,18 +258,18 @@ export default function RecommendedHotels() {
                 }
               `}</style>
             
-            {filteredHotels.slice(0, 8).map((hotel, index) => (
+            {hotels.slice(0, 8).map((hotel, index) => (
               <SectionHotelCard
-                key={hotel.hotel_id}
-                id={hotel.hotel_id.toString()}
-                name={hotel.property_name}
-                location={hotel.location.province_city}
-                rating={parseFloat(hotel.rating_stars?.value || '0') || 0}
-                ratingLabel={hotel.rating_stars?.label || t('hotel.rating')}
-                price={hotel.cheapest_room?.price_per_night || 0}
+                key={hotel.hotel.pk}
+                id={hotel.hotel.pk.toString()}
+                name={hotel.hotel.PropertyName}
+                location={hotel.hotel.location}
+                rating={0}
+                ratingLabel={null}
+                price={hotel.cheapest_room?.final_price || hotel.cheapest_room?.base_price || 0}
                 image={getHotelImage(hotel)}
-                badge={hotel.categoryLabel}
-                badgeColor={getCategoryBadgeColor(hotel.category)}
+                badge={getTabBadgeLabel(activeTab)}
+                badgeColor={getTabBadgeColor(activeTab)}
                 index={index}
               />
             ))}

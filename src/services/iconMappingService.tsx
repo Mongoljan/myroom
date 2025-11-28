@@ -237,6 +237,7 @@ export class IconMappingService {
   }
 
   // Room types icons - all 8 types from /api/all-data/
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static getRoomTypeIcon(typeId?: number, typeName?: string): React.ReactNode {
     if (typeId) {
       const iconMap: { [key: number]: React.ReactNode } = {
@@ -259,6 +260,7 @@ export class IconMappingService {
   }
 
   // Bed types icons - all 9 types from /api/all-data/
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static getBedTypeIcon(bedTypeId?: number, bedTypeName?: string): React.ReactNode {
     if (bedTypeId) {
       const iconMap: { [key: number]: React.ReactNode } = {
@@ -282,6 +284,7 @@ export class IconMappingService {
   }
 
   // Room category icons - all 13 categories from /api/all-data/
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static getRoomCategoryIcon(categoryId?: number, categoryName?: string): React.ReactNode {
     if (categoryId) {
       const iconMap: { [key: number]: React.ReactNode } = {

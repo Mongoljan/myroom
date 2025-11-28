@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Search, X, Clock, Hotel, Sparkles } from 'lucide-react';
+import { Calendar, MapPin, Search, X, Clock, Hotel } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import CustomGuestSelector from '@/components/search/CustomGuestSelector';
 import DateRangePicker from '@/components/common/DateRangePicker';
@@ -55,7 +55,6 @@ export default function AceternityHero() {
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
   const [selectedLocationSuggestion, setSelectedLocationSuggestion] = useState<LocationSuggestion | null>(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const [locationModalPosition, setLocationModalPosition] = useState({ top: 0, left: 0 });
   const [showLocationTooltip, setShowLocationTooltip] = useState(false);
 
@@ -63,9 +62,7 @@ export default function AceternityHero() {
   const locationInputRef = useRef<HTMLInputElement>(null);
   const locationDropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();

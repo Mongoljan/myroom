@@ -9,7 +9,7 @@
  * - Use: className={`${ds.text.secondary} ${ds.typography.bodySm} ${ds.spacing.padding.md}`}
  */
 
-import { DESIGN_SYSTEM, text } from './design-system';
+import { text } from './design-system';
 
 /**
  * Design System Utilities

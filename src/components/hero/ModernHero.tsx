@@ -11,7 +11,6 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { locationService, type LocationSuggestion } from '@/services/locationApi';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
 import { TYPOGRAPHY } from '@/styles/containers';
-import Tooltip from '@/components/common/Tooltip';
 
 export default function ModernHero() {
   const { t } = useHydratedTranslation();
@@ -41,7 +40,6 @@ export default function ModernHero() {
   const [isClient, setIsClient] = useState(false);
   const [locationModalPosition, setLocationModalPosition] = useState({ top: 0, left: 0 });
   const [showLocationTooltip, setShowLocationTooltip] = useState(false);
-  const hasInitializedFromRecentSearches = useRef(false);
   const router = useRouter();
   const locationRef = useRef<HTMLDivElement>(null);
   const locationInputRef = useRef<HTMLInputElement>(null);

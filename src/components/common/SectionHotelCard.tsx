@@ -1,10 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { text } from '@/styles/design-system';
+import SafeImage from '@/components/common/SafeImage';
 
 interface SectionHotelCardProps {
   id: string;
@@ -50,13 +50,16 @@ export default function SectionHotelCard({
 
   const getFallbackImage = () => {
     const fallbackImages = [
-      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop',
-      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop'
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop&auto=format',
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop&auto=format'
     ];
     return fallbackImages[parseInt(id) % fallbackImages.length];
   };
+
+  // Use image or fallback
+  const imageUrl = image || getFallbackImage();
 
   return (
     <motion.div
@@ -64,41 +67,24 @@ export default function SectionHotelCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      className={`min-w-[280px] flex-shrink-0 ${className}`}
+      className={`w-[280px] flex-shrink-0 ${className}`}
     >
       <Link
         href={`/hotel/${id}`}
-        className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 hover:shadow-lg block"
+        className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 hover:shadow-lg block h-full"
       >
-        {/* Hotel Image */}
-        <div className="relative w-full overflow-hidden" style={{ aspectRatio: '1/1' }}>
-          {image ? (
-            <Image
-              src={image}
-              alt={`${name} - Hotel image`}
-              fill
-              className="object-cover transition-transform duration-300"
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              unoptimized
-              onError={(e) => {
-                const target = e.currentTarget;
-                target.src = getFallbackImage();
-              }}
-            />
-          ) : (
-            <Image
-              src={getFallbackImage()}
-              alt={`${name} - Hotel image`}
-              fill
-              className="object-cover transition-transform duration-300"
-              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              unoptimized
-            />
-          )}
+        {/* Hotel Image - Fixed dimensions for consistent sizing */}
+        <div className="relative w-full h-[180px] overflow-hidden bg-gray-100">
+          <SafeImage
+            src={imageUrl}
+            alt={`${name} - Hotel image`}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
 
           {/* Badge - Top Left */}
           {badge && (
-            <div className="absolute top-2 left-2">
+            <div className="absolute top-2 left-2 z-10">
               <span className={`px-1.5 py-0.5 text-xs font-medium rounded-md text-white ${getBadgeColor(badgeColor)}`}>
                 {badge}
               </span>

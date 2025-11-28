@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { MapPin, Filter, SlidersHorizontal, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { MapPin, Filter, SlidersHorizontal } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { SearchHotelResult } from '@/types/api';
@@ -25,10 +25,9 @@ const DESTINATION_MAP: Record<string, { name: string; province?: string; nameEn:
   'khovd': { name: 'Ховд', nameEn: 'Khovd', province: 'khovd' },
 };
 
-export default function DestinationPage({ destination, searchParams }: DestinationPageProps) {
+export default function DestinationPage({ destination }: DestinationPageProps) {
   const { t } = useHydratedTranslation();
   const router = useRouter();
-  const urlSearchParams = useSearchParams();
 
   const [hotels, setHotels] = useState<SearchHotelResult[]>([]);
   const [filteredHotels, setFilteredHotels] = useState<SearchHotelResult[]>([]);

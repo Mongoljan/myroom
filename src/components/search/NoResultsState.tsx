@@ -8,7 +8,7 @@ interface NoResultsStateProps {
 }
 
 export default function NoResultsState({ searchParams }: NoResultsStateProps) {
-  const { t, i18n } = useHydratedTranslation();
+  const { t } = useHydratedTranslation();
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-16 text-center">
       <div className="max-w-lg mx-auto">

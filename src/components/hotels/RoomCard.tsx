@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Bed, User, Clock, Home, Bath, Coffee, Baby } from 'lucide-react';
+import { Bed, User, Clock, Home } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
 import { EnrichedHotelRoom } from '@/services/hotelRoomsApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';

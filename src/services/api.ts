@@ -8,7 +8,6 @@ import {
   ChangeDateRequest,
   BookingActionResponse,
   SearchResponse,
-  SearchHotelResult,
   RoomPrice,
   FinalPrice,
   AllRoomData,
@@ -259,6 +258,35 @@ export class ApiService {
 
     console.log('Search URL params:', searchParams.toString());
     return this.request<SearchResponse>(`/search/?${searchParams.toString()}`);
+  }
+
+  // Get suggested hotels by tab/category
+  static async getSuggestedHotels(tab: 'popular' | 'discount' | 'top_rated' | 'cheapest' | 'new' = 'popular'): Promise<{
+    count: number;
+    results: Array<{
+      hotel: {
+        pk: number;
+        PropertyName: string;
+        location: string;
+        property_type: number;
+        created_at: string;
+      };
+      cheapest_room: {
+        id: number;
+        base_price: number;
+        final_price: number;
+        images: Array<{ id: number; image: string; description: string }>;
+        adultQty: number;
+        childQty: number;
+      } | null;
+    }>;
+  }> {
+    const cacheKey = `suggested_hotels_${tab}`;
+    return this.request(
+      `/suggestHotels/?tab=${tab}`,
+      {},
+      { key: cacheKey, ttl: ApiCache.TTL.MED }
+    );
   }
 
   // Removed hardcoded mock hotel data - using real API only

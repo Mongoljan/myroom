@@ -1,6 +1,6 @@
 'use client';
 
-import { Filter, List, Grid3X3 } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface FilterState {
@@ -21,10 +21,14 @@ interface MobileFilterControlsProps {
 
 export default function MobileFilterControls({
   filters,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   sortBy,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   viewMode,
   onShowFilters,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSort,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onViewModeChange
 }: MobileFilterControlsProps) {
   const filterCount = filters.starRating.length + filters.facilities.length + filters.roomTypes.length;

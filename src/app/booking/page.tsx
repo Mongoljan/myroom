@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Calendar, Phone } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar } from 'lucide-react';
 import { BookingService } from '@/services/bookingApi';
 import { ApiService } from '@/services/api';
-import { CreateBookingRequest, CreateBookingResponse, SearchHotelResult, PropertyPolicy } from '@/types/api';
+import { CreateBookingRequest, CreateBookingResponse, PropertyPolicy } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface BookingRoom {

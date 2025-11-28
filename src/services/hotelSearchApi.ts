@@ -1,4 +1,4 @@
-import { SearchResponse, SearchHotelResult } from '@/types/api';
+import { SearchResponse } from '@/types/api';
 
 interface SearchParams {
   location?: string;

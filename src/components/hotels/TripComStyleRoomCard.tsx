@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { BedDouble, BedSingle, User, Wifi, CheckCircle, X, Coffee } from 'lucide-react';
+import { BedDouble, BedSingle, User, CheckCircle } from 'lucide-react';
 import { FaChild } from 'react-icons/fa';
 import SafeImage from '@/components/common/SafeImage';
 import { EnrichedHotelRoom } from '@/services/hotelRoomsApi';
@@ -133,7 +133,7 @@ export default function TripComStyleRoomCard({
         <div className="flex gap-4">
           {/* Left: Images */}
           <div className="w-56 flex-shrink-0">
-            <div className="relative w-full h-40 rounded-lg overflow-hidden bg-gray-100 group">
+            <div className="relative w-full h-32 rounded-lg overflow-hidden bg-gray-100 group">
               {room.images && room.images.length > 0 ? (
                 <>
                   <SafeImage

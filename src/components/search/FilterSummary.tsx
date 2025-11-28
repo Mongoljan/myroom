@@ -187,7 +187,7 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
     }
 
     return active;
-  }, [filters, apiData]);
+  }, [filters, apiData, t]);
 
   const activeFilters = getActiveFilters();
 

@@ -59,8 +59,8 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
   const handleLocationSearch = async (query: string) => {
     if (query.length >= 2) {
       try {
-        const suggestions = await locationService.searchLocations(query);
-        // Handle suggestions here - this would be passed up via props
+        await locationService.searchLocations(query);
+        // Suggestions are passed via props from parent component
       } catch (error) {
         console.error('Location search failed:', error);
       }

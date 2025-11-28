@@ -694,6 +694,384 @@ const resources = {
         print: "Print",
         downloadPDF: "Download PDF",
         backHome: "Back to Home"
+      },
+      terms: {
+        title: "Terms of Service",
+        date: "Last Updated: 2025/10/31",
+        sections: [
+          {
+            id: 1,
+            title: "General Terms",
+            description: "“MyRoom” is a digital website and mobile application (hereinafter collectively referred to as “MyRoom”) that, on one hand, provides customers the ability to digitally purchase their desired rooms, and on the other hand, allows hotels, tourist camps, and resorts (hereinafter referred to as “Partner Properties”) to list, sell, and manage their rooms, acting as a bridge connecting these two parties. These Terms of Service are the governing document for the relationship between Customers and Partner Properties (hereinafter collectively referred to as “User”) regarding the use of MyRoom's services.",
+            clauses: [
+              {
+                id: "1.1",
+                content: "Before logging in, registering, or placing an order on the MyRoom platform, you must fully familiarize yourself with the 'Terms of Service' and the 'Privacy Policy'. By clicking the 'I accept' button, you are deemed to have accepted all the conditions stipulated in the terms and policy."
+              },
+              {
+                id: "1.2",
+                content: "In case of violation of the MyRoom Terms of Service, we reserve the right to temporarily restrict or terminate your access to and use of the platform."
+              },
+              {
+                id: "1.3",
+                content: "MyRoom is not responsible for verifying the accuracy and completeness of the information you provide, nor does it assume the obligation to correct or amend the information."
+              },
+              {
+                id: "1.4",
+                content: "MyRoom has the obligation to make amendments to the terms of service and to inform users of any changes in a timely manner."
+              }
+            ]
+          },
+          {
+            id: 2,
+            title: "Definitions",
+            description: "",
+            clauses: [
+              {
+                id: "2.1",
+                content: "“MyRoom” refers to the digital website and mobile application that offers rooms and services from partner properties to customers and digitally handles purchases and other related needs (hereinafter collectively referred to as “MyRoom”);"
+              },
+              {
+                id: "2.2",
+                content: "“Customer” refers to a legal entity with full legal capacity that has accepted the MyRoom Terms of Service;"
+              },
+              {
+                id: "2.3",
+                content: "“Partner Property” refers to a legally authorized legal entity, individual, or business organization that uses MyRoom to sell rooms and related services;"
+              },
+              {
+                id: "2.4",
+                content: "“User” refers to the collective term for both Customers and Partner Properties as users of MyRoom;"
+              },
+              {
+                id: "2.5",
+                content: "“Terms of Service” refers to the governing document for the relationship related to the use of the service;"
+              },
+              {
+                id: "2.6",
+                content: "“Database” refers to the data repository containing information from customers and partner properties;"
+              }
+            ]
+          },
+          {
+            id: 3,
+            title: "Customer's Rights and Responsibilities",
+            description: "",
+            clauses: [
+              {
+                id: "3.1",
+                content: "The Customer has the right to purchase a room through the ordering system and receive information about their order, in accordance with the service conditions offered by MyRoom."
+              },
+              {
+                id: "3.2",
+                content: "The Customer has the right to freely express related requests, suggestions, complaints, and feedback about the services offered by the MyRoom platform."
+              },
+              {
+                id: "3.3",
+                content: "The Customer has the right to benefit from any discounts or promotions associated with MyRoom."
+              },
+              {
+                id: "3.4",
+                content: "The Customer is responsible for carefully reading and accepting the Cancellation Policy and Terms of Service of each specific property before confirming their room order on the MyRoom platform."
+              },
+              {
+                id: "3.5",
+                content: "The Customer is 100% fully responsible for the accuracy and security of the personal information they have placed on MyRoom."
+              },
+              {
+                id: "3.6",
+                content: "The Customer is responsible for maintaining the security of their account, personal information, and password. You must not share your login information and password with others, and the Customer is 100% fully responsible for any issues arising from sharing it."
+              },
+              {
+                id: "3.7",
+                content: "The Customer assumes 100% full responsibility for the accuracy of the information they have provided on the order form. MyRoom assumes no responsibility for any incorrect, erroneous, or incomplete information provided by the Customer."
+              },
+              {
+                id: "3.8",
+                content: "Both parties are fully responsible for all types of confidentiality related to the Customer's account information, payments, and other personal data."
+              },
+              {
+                id: "3.9",
+                content: "If a Customer deletes their registered account of their own accord or if their account is terminated due to violation of the Terms of Service, all their data, including their account, order history, saved lists, promo codes, and any reviews or comments left, will be permanently deleted from the MyRoom database."
+              },
+              {
+                id: "3.10",
+                content: "The Customer undertakes not to distribute, publish, share, store, delete, or violate the 'Privacy Policy' regarding any content related to MyRoom."
+              }
+            ]
+          },
+          {
+            id: 4,
+            title: "Partner Property's Rights and Responsibilities",
+            description: "",
+            clauses: [
+              {
+                id: "4.1",
+                content: "The Partner Property is 100% fully responsible for the accuracy and security of all personal and organizational information and other documents they have placed on MyRoom."
+              },
+              {
+                id: "4.2",
+                content: "The Partner Property is responsible for maintaining the security of its account, personal information, and password. You must not share your login information and password with others, and the Partner Property is 100% fully responsible for any issues arising from sharing it."
+              },
+              {
+                id: "4.3",
+                content: "If an admin or other relevant person of the Partner Property deletes their registered account of their own accord or if their account is terminated due to violation of the Terms of Service, all information related to their personal account will be deleted from the MyRoom database."
+              },
+              {
+                id: "4.4",
+                content: "The Partner Property is responsible for protecting the Customer's personal information, payments, and all other confidential information."
+              },
+              {
+                id: "4.5",
+                content: "The Partner Property may enter and sell information about its organization and rooms on MyRoom, provided that this information does not contain the following: 4.5.1 Words, sentences, or text with meanings unrelated to the organization and rooms; 4.5.2 Using the name, logo, or trademark of a company unrelated to their own organization; 4.5.3 Using words with hidden meanings that are incomprehensible to customers; 4.5.4 Using false, erroneous, or incorrect information, or content that is immoral, fraudulent, threatening, discriminatory based on race, color, or ethnicity, or contains overt or covert insults;"
+              },
+              {
+                id: "4.6",
+                content: "The Partner Property is prohibited from using its organizational account for the following purposes: 4.6.1 Using it in a manner inconsistent with laws regarding the confidentiality of personal and business information and intellectual property; 4.6.2 Posting any information or content containing links or other content from competing organizations that conduct similar activities to MyRoom; 4.6.3 MyRoom reserves the right to remove any content from the platform that violates the above conditions or is deemed inconsistent with MyRoom's interests."
+              },
+              {
+                id: "4.7",
+                content: "If any issue arises during the customer's stay that requires changes, cancellations, or other actions related to the order, the Partner Property must inform and provide information to MyRoom each time. The Partner Property assumes full responsibility for any consequences arising from concealing or not informing MyRoom about issues that arise between the Partner Property and the customer."
+              }
+            ]
+          },
+          {
+            id: 5,
+            title: "MyRoom's Rights and Responsibilities",
+            description: "",
+            clauses: [
+              {
+                id: "5.1",
+                content: "MyRoom has the right to use Users' personal information for the purpose of resolving user requests and complaints, providing users with information about services, and contacting them."
+              },
+              {
+                id: "5.2",
+                content: "MyRoom reserves the right to cancel an order if the Customer fails to make the full payment or violates the Terms of Service or other related documents."
+              },
+              {
+                id: "5.3",
+                content: "MyRoom reserves the right to verify with the relevant Bank and Legal Authorities if any illegal activity is observed in the Customer's payment transactions."
+              },
+              {
+                id: "5.4",
+                content: "MyRoom is obligated to notify customers and partner properties of any amendments to the Terms of Service."
+              },
+              {
+                id: "5.5",
+                content: "MyRoom reserves the right to restrict or terminate a User's access without prior notice if the User violates the Terms of Service, uses fraudulent information, or engages in actions that cause harm to others."
+              },
+              {
+                id: "5.6",
+                content: "MyRoom is responsible for strictly storing the personal information, passwords, order history, and payment information of customers and partner properties."
+              }
+            ]
+          },
+          {
+            id: 6,
+            title: "Pricing and Payment Terms",
+            description: "",
+            clauses: [
+              {
+                id: "6.1",
+                content: "The price of rooms and services offered on MyRoom includes all types of taxes and other charges."
+              },
+              {
+                id: "6.2",
+                content: "The price of rooms and services listed on MyRoom is the lowest possible price, excluding any additional fees or booking commissions."
+              },
+              {
+                id: "6.3",
+                content: "The order amount does not include the price of other additional services (e.g., mini-bar, extra bed, cleaning service, etc.), and the Customer is fully responsible for these additional costs."
+              },
+              {
+                id: "6.4",
+                content: "The number of rooms available on the MyRoom platform and their prices are determined by the respective property, and therefore they are subject to change at any time."
+              },
+              {
+                id: "6.5",
+                content: "Order payments can be made by selecting from the payment methods offered by the MyRoom platform (e.g., bank transfer, Qpay, card payment)."
+              },
+              {
+                id: "6.6",
+                content: "If a Customer wishes to pay by bank transfer, they are responsible for correctly entering the payment amount and transaction description. The Customer is fully responsible for any consequences arising from incorrect or erroneous amounts or descriptions."
+              },
+              {
+                id: "6.7",
+                content: "If the order amount exceeds 5 million, it must be transferred in installments of 5 million. Upon completion of the transfer, you must immediately contact MyRoom at 99972626 to confirm your order. The Customer assumes full responsibility for any consequences, including order cancellation, if they fail to contact us."
+              },
+              {
+                id: "6.8",
+                content: "The Customer is fully responsible for any issues arising from paying to the wrong account, providing incorrect card information, delaying payment, or entering incorrect or discrepant amounts and descriptions for the transaction."
+              }
+            ]
+          },
+          {
+            id: 7,
+            title: "Placing and Confirming an Order",
+            description: "",
+            clauses: [
+              {
+                id: "7.1",
+                content: "If an order is confirmed, it is considered that the order was placed on the basis of having read and accepted the MyRoom Terms of Service and the cancellation policy of the specific property."
+              },
+              {
+                id: "7.2",
+                content: "An order is confirmed when the Customer pays the full amount in advance within the given timeframe."
+              },
+              {
+                id: "7.3",
+                content: "If the Customer fails to pay for the order within the specified timeframe, the order may be canceled, and MyRoom assumes no responsibility for any related issues."
+              },
+              {
+                id: "7.4",
+                content: "Once the order is confirmed, a confirmation email containing the order details will be sent to the Customer's email address."
+              },
+              {
+                id: "7.5",
+                content: "The order confirmation email will contain a unique Order Number and Password. It is the Customer's responsibility not to disclose this information. The Customer is fully responsible for any consequences arising from the loss of this information."
+              },
+              {
+                id: "7.6",
+                content: "For every order placement, confirmation, modification, fulfillment, and cancellation, MyRoom will send a notification to the Customer's registered email address and phone number."
+              },
+              {
+                id: "7.7",
+                content: "The electronic receipt for the order's digital payment will be automatically sent to the e-receipt code provided by the Customer during the ordering process after the service is fulfilled. The e-receipt will also be sent to the Customer's registered email."
+              },
+              {
+                id: "7.8",
+                content: "If the Customer plans to arrive earlier or later than the check-in time, they are responsible for informing the property in advance. The property's contact information can be found on the order details page."
+              },
+              {
+                id: "7.9",
+                content: "If, due to the Customer's negligence, they fail to provide prior notice as described in 7.8, and the property cancels the order, imposes a penalty, or any other issue arises, MyRoom assumes no responsibility."
+              }
+            ]
+          },
+          {
+            id: 8,
+            title: "Cancellation, Refund, and Modification",
+            description: "",
+            clauses: [
+              {
+                id: "8.1",
+                content: "By confirming an order on MyRoom, the Customer is deemed to have read and accepted the Cancellation Policy of the specific property."
+              },
+              {
+                id: "8.2",
+                content: "Regarding cancellation conditions, the time frame for cancellation, as well as cancellation fees and penalties, may vary depending on the internal rules and regulations of the specific property. The Customer is responsible for reading and familiarizing themselves with these before confirming the order."
+              },
+              {
+                id: "8.3",
+                content: "Detailed information about the cancellation conditions, the time frame for cancellation, and the applicable cancellation fees and penalties can be viewed in the 'Customer Information' section during the ordering process. The Cancellation Policy is also included on the order details page and in the confirmation email after the order is confirmed."
+              },
+              {
+                id: "8.4",
+                content: "If the property's internal policy allows for cancellation, it can be canceled within the timeframe specified in those conditions."
+              },
+              {
+                id: "8.5",
+                content: "If the cancellation occurs after the timeframe specified in the cancellation conditions or if the order was made under a non-cancellable condition, cancellation is not possible, or a strict no-refund policy applies."
+              },
+              {
+                id: "8.6",
+                content: "Any refund will be based on the electronic and/or paper contract agreed upon at the time of order confirmation and will also follow the refund policy of the third-party service provider."
+              },
+              {
+                id: "8.7",
+                content: "In accordance with the property's internal rules and cancellation policy, the entire payment or a specified percentage may be charged as a cancellation fee. If a refund is applicable, it will be issued to the customer."
+              },
+              {
+                id: "8.8",
+                content: "The cancellation fee and penalty will be charged as per the cancellation policy. If a refund is due, it will be processed to the bank account number used for the original payment within 3-5 business days."
+              },
+              {
+                id: "8.9",
+                content: "The cancellation policy and the applicable penalties and fees depend on the internal rules and policies of the specific property, so refunds may vary or may not be issued at all."
+              },
+              {
+                id: "8.10",
+                content: "A registered Customer on MyRoom can modify their order from the 'Order History' section, while a non-registered Customer can do so from the 'Check Order' section by entering their order number and password (as described in 7.4 and 7.5)."
+              },
+              {
+                id: "8.11",
+                content: "You can check if it is possible to extend, move up, or postpone the order dates, or to change the room type and level. Modifications can be made to the order as permitted and offered by MyRoom."
+              },
+              {
+                id: "8.12",
+                content: "An order can be modified in the following 2 cases: 8.11.1 Change of Date: You can extend, move up, or postpone the order date only once before the specified deadline. The modification is confirmed after any additional payment is made. If the deadline has passed, the date cannot be changed. 8.11.2 Change of Room: You can only change the room type or level to a higher one for the same room type once. The modification is confirmed after the additional price difference is fully paid. However, you cannot change the room to a lower level."
+              },
+              {
+                id: "8.13",
+                content: "In all other cases, modifications to the order are not possible."
+              },
+              {
+                id: "8.14",
+                content: "Any notification related to an order modification will be sent directly to the Customer's registered email address and phone number each time."
+              },
+              {
+                id: "8.15",
+                content: "If, after arriving at the property, the Customer wishes to change their room without changing the room type, they should contact the property's reception/check-in desk directly."
+              },
+              {
+                id: "8.16",
+                content: "If, after arriving at the property, the Customer wishes to change the room type, they must do so exclusively through MyRoom. A change is possible only if MyRoom offers an available alternative room, as per 8.11.2."
+              }
+            ]
+          },
+          {
+            id: 9,
+            title: "Intellectual Property Rights",
+            description: "",
+            clauses: [
+              {
+                id: "9.1",
+                content: "The MyRoom platform's logo, name, text, design, information, and any content (e.g., design, images, audio, graphics, video, etc.) are the property of MyRoom, protected by copyright, trademark, and other laws. It is prohibited to copy, multiply, imitate, distribute, or use them in any other form without official permission."
+              },
+              {
+                id: "9.2",
+                content: "In case of violation of MyRoom's intellectual property rights, the responsible parties will be held accountable under the Intellectual Property Law and other applicable laws."
+              }
+            ]
+          },
+          {
+            id: 10,
+            title: "Dispute Resolution",
+            description: "",
+            clauses: [
+              {
+                id: "10.1",
+                content: "Any disputes arising from the fulfillment of obligations under this agreement shall be resolved amicably through mutual negotiation. If the parties fail to reach an agreement, the dispute will be resolved in accordance with the laws of Mongolia."
+              }
+            ]
+          },
+          {
+            id: 11,
+            title: "Data Privacy",
+            description: "",
+            clauses: [
+              {
+                id: "11.1",
+                content: "The privacy of User information is governed by the 'Privacy Policy'."
+              }
+            ]
+          },
+          {
+            id: 12,
+            title: "Other",
+            description: "",
+            clauses: [
+              {
+                id: "12.1",
+                content: "MyRoom has the obligation to inform its users of any amendments to these Terms of Service."
+              },
+              {
+                id: "12.2",
+                content: "MyRoom prioritizes resolving any requests, complaints, issues, or disputes related to its services amicably between the parties. If a situation arises that cannot be resolved, the matter will be handed over to the relevant legal authorities in accordance with the laws and regulations of Mongolia."
+              }
+            ]
+          }
+        ]
       }
     }
   },
@@ -1394,6 +1772,385 @@ const resources = {
         print: "Хэвлэх",
         downloadPDF: "Татах",
         backHome: "Буцах"
+      },
+      terms:{
+        
+        title: "Үйлчилгээний нөхцөл",
+        date: "Өөрчлөлт оруулсан огноо: 2025/10/31",
+        sections: [
+          {
+            id: 1,
+            title: "Ерөнхий зүйл",
+            description: "“MyRoom” нь нэг талаас захиалагчдад өөрийн хүссэн өрөөгөө цахимаар худалдан авах боломжийг хангах, нөгөө талаас буудал, жуулчны бааз, амралтын газруудад /цаашид “Харилцагч газар” гэх/ өрөөгөө байршуулж, зарах, мөн хянах боломжийг бүрдүүлж, энэ 2 талын харилцааг холбох гүүр болж буй цахим вэбсайт болон мобайл аппликейшн /цаашид хамтад нь “MyRoom” гэх/ юм. Энэ Үйлчилгээний нөхцөл нь Захиалагч болон Харилцагч газар /цаашид хамтад нь Хэрэглэгч гэх/-ын “MyRoom”-ийн үйлчилгээг ашиглахтай холбоотой харилцааг зохицуулах баримт бичиг болно.",
+            clauses: [
+              {
+                id: "1.1",
+                content: "Та “MyRoom” платформ дээр нэвтэрч, бүртгүүлэх эсвэл захиалга хийхээс өмнө заавал “Үйлчилгээний нөхцөл” болон “Нууцлалын бодлого”-той бүрэн танилцах үүрэгтэй бөгөөд “Би хүлээн зөвшөөрч байна” гэсэн товчийг идэвхжүүлснээр, нөхцөл, бодлогод заасан бүхий л нөхцөлүүдийг хүлээн зөвшөөрсөнд тооцно."
+              },
+              {
+                id: "1.2",
+                content: "“MyRoom”-ийн Үйлчилгээний нөхцөлийг зөрчсөн тохиолдолд таны платфомд хандах, ашиглах эрхийг түр хязгаарлах эсвэл цуцлах эрхтэй байна."
+              },
+              {
+                id: "1.3",
+                content: "MyRoom нь таны оруулсан мэдээллийн үнэн зөв, бүрэн гүйцэд байдалд баталгаа өгөх эсвэл мэдээллийг засаж өөрчлөх, залруулах үүргийг хүлээхгүй болно."
+              },
+              {
+                id: "1.4",
+                content: "“MyRoom” нь үйлчилгээний нөхцөлд нэмэлт өөрчлөлт оруулах, оруулсан өөрчлөлтийг хэрэглэгчдэд цаг тухай бүрт нь мэдээллэх үүрэгтэй байна."
+              }
+            ]
+          },
+          {
+            id: 2,
+            title: "Нэр, үг хэллэгийн тайлбар",
+            description: "",
+            clauses: [
+              {
+                id: "2.1",
+                content: "“MyRoom” гэж харилцагч газруудын өрөө, үйлчилгээг захиалагчдад санал болгож, худалдан авалт болон түүнтэй холбоотой бусад хэрэгцээг цахимаар шийдэж буй цахим вэбсайт болон мобайл аппликейшн /цаашид хамтад нь “MyRoom” гэх/;"
+              },
+              {
+                id: "2.2",
+                content: "“Захиалагч” гэж “MyRoom”-ийн Үйлчилгээний нөхцөлийг хүлээн зөвшөөрсөн иргэний эрх зүйн бүрэн чадамжтай хуулийн этгээд;"
+              },
+              {
+                id: "2.3",
+                content: "“Харилцагч газар” гэж “MyRoom”-ээр дамжуулан өрөө борлуулах болон тэдгээртэй холбогдох үйлчилгээ үзүүлэх албан ёсны эрх бүхий хуулийн этгээд, хувь хүн, аж ахуйн нэгж байгууллага"
+              },
+              {
+                id: "2.4",
+                content: "“Хэрэглэгч” гэж Захиалагч болон Харилцагч газрыг хамтад нь “MyRoom”-ийн Хэрэглэгч гэж нэгтгэж тодорхойлно;"
+              },
+              {
+                id: "2.5",
+                content: "“Үйлчилгээний нөхцөл” гэж үйлчилгээг ашиглахтай холбоотой харилцааг зохицуулах баримт бичиг;"
+              },
+              {
+                id: "2.6",
+                content: "“Мэдээллийн сан” гэж захиалагч болон харилцагч газруудын мэдээллийг агуулсан дата сан;"
+              }
+            ]
+          },
+          {
+            id: 3,
+            title: "Захиалагчийн эрх, үүрэг",
+            description: "",
+            clauses: [
+              {
+                id: "3.1",
+                content: "Захиалагч нь “MyRoom”-ын санал болгож буй үйлчилгээний нөхцөлийн дагуу өрөө захиалгын системээр өрөөг худалдан авах, өөрийн захиалгын талаар мэдээллийг авах эрхтэй байна."
+              },
+              {
+                id: "3.2",
+                content: "Захиалагч нь “MyRoom” платформын санал болгож буй үйлчилгээний талаар холбогдох санал хүсэлт болон гомдол, шүүмжээ чөлөөтэй илэрхийлэх эрхтэй байна."
+              },
+              {
+                id: "3.3",
+                content: "Захиалагч нь “MyRoom”-той холбоотой ямарваа нэг хөнгөлөлт, урамшууллыг эдлэх эрхтэй байна."
+              },
+              {
+                id: "3.4",
+                content: "Захиалагч нь “MyRoom” платформоос өрөө захиалахдаа буудал тус бүрийн Цуцлах нөхцөл болон Үйлчилгээний нөхцөлтэй сайтар уншиж, танилцан зөвшөөрсний дараа захиалгаа баталгаажуулах үүрэгтэй."
+              },
+              {
+                id: "3.5",
+                content: "Захиалагч нь “MyRoom” дээр байршуулсан хувийн мэдээллийн үнэн зөв болон аюулгүй байдлыг Захиалагч өөрөө 100% бүрэн хариуцна."
+              },
+              {
+                id: "3.6",
+                content: "Захиалагч нь өөрийн бүртгэл, хувийн мэдээлэл болон нууц үгийн аюулгүй байдлыг хангах үүрэгтэй. Та өөрийн нэвтрэх мэдээлэл болон нууц үгийг бусадтай хуваалцахгүй байх үүрэгтэй бөгөөд хэрэв бусадтай хуваалцсаны улмаас гарсан асуудалд хариуцлагыг Захиалагч 100% бүрэн хариуцах үүрэгтэй."
+              },
+              {
+                id: "3.7",
+                content: "Захиалагч нь захиалгын мэдээлэл дээр өөрийн бөглөсөн мэдээллийн үнэн зөв байдалд өөрөө 100% бүрэн хариуцлага хүлээнэ. Захиалагчийн бөглөсөн буруу, алдаатай эсвэл дутуу мэдээлэлд “MyRoom”-ийн зүгээс ямар нэг хариуцлага хүлээхгүй болно."
+              },
+              {
+                id: "3.8",
+                content: "Захиалагчийн бүртгэлтэй холбоотой хувийн мэдээлэл, төлбөр төлөлт болон бусад бүх төрлийн нууцлалыг 2 тал бүрэн хариуцна."
+              },
+              {
+                id: "3.9",
+                content: "Хэрэв Захиалагч нь өөрийн бүртгэлтэй хаягаа өөрийн хүсэлтээр устгасан эсвэл Үйлчилгээний нөхцөлийг зөрчсөний улмаас таны бүртгэлийг цуцалсан тохиолдолд таны бүртгэл, захиалгын түүх, хадгалсан жагсаалт, промо код болон таны үлдээсэн шүүмж, сэтгэгдлүүд зэрэг бүх мэдээллүүд нь “MyRoom”-ийн мэдээллийн сангаас устгагдах болно."
+              },
+              {
+                id: "3.10",
+                content: "Захиалагч нь “MyRoom”-тэй холбоотой ямарваа нэг контентыг бусдад дамжуулах, нийтлэх түгээх, хадгалах, устгах, “Нууцлалын бодлого”-ыг зөрчих үйлдлийг гаргахгүй байх үүргийг хүлээнэ."
+              }
+            ]
+          },
+          {
+            id: 4,
+            title: "Харилцагч газрын эрх, үүрэг",
+            description: "",
+            clauses: [
+              {
+                id: "4.1",
+                content: "Харилцагч газар нь “MyRoom” дээр байршуулсан хувийн болон байгууллагын бүх мэдээлэл болон бусад бичиг баримтын үнэн зөв болон аюулгүй байдлыг Харилцагч газар өөрөө 100% бүрэн хариуцна."
+              },
+              {
+                id: "4.2",
+                content: "Харилцагч газар нь өөрийн бүртгэл, хувийн мэдээлэл болон нууц үгийн аюулгүй байдлыг хангах үүрэгтэй. Та өөрийн нэвтрэх мэдээлэл болон нууц үгийг бусадтай хуваалцахгүй байх үүрэгтэй бөгөөд хэрэв бусадтай хуваалцсанаас улмаас гарсан асуудалд хариуцлагыг Харилцагч газар 100% бүрэн хариуцах үүрэгтэй."
+              },
+              {
+                id: "4.3",
+                content: "Хэрэв Харилцагч газрын админ эсвэл бусад холбогдох хүмүүс байгууллага дээр бүртгэлтэй өөрийн хаягаа өөрийн хүсэлтээр устгасан эсвэл Үйлчилгээний нөхцөлийг зөрчсөний улмаас таны бүртгэлийг цуцалсан тохиолдолд таны хувийн бүртгэлтэй холбоотой бүх мэдээллүүд нь “MyRoom”-ийн мэдээллийн сангаас устгагдах болно."
+              },
+              {
+                id: "4.4",
+                content: "Харилцагч газар нь захиалагчийн хувийн мэдээлэл, төлбөр төлөлт болон бусад бүх төрлийн нууцлалтай холбоотой мэдээллийг хамгаалах үүрэгтэй."
+              },
+              {
+                id: "4.5",
+                content: "Харилцагч газар нь “MyRoom” дээр өөрийн байгууллага болон өрөөний талаарх мэдээллийг оруулж, борлуулах боломжтой бөгөөд эдгээрт дараах зүйлийг агуулаагүй байх ёстой. Үүнд: 4.5.1 Байгууллага болон өрөөтэй хамааралгүй утга санаа агуулсан үг өгүүлбэр, текст; 4.5.2 Өөрийн байгууллагатай хамааралгүй компанийн нэр, лого эсвэл худалдааны тэмдэг ашиглах; 4.5.3 Захиалагчдад ойлгомжгүй далд утга санаа бүхий үгс ашиглах; 4.5.4 Худал, алдаатай, буруу мэдээ мэдээлэл эсвэл ёс суртахуунгүй, гүтгэлэг, заналхийлийн шинжтэй, арьс өнгө яс үндэс угсаагаар ялгаварлан гадуурхсан агуулга бүхий эсвэл далд эсвэл илтэд доромжилсон үг өгүүлбэр ашиглах;"
+              },
+              {
+                id: "4.6",
+                content: "Харилцагч газар нь өөрийн байгууллагын хаягаа дараах зорилгоор ашиглахыг хориглоно. Үүнд: 4.6.1 Хувь хүний болон аж ахуйн нэгжийн мэдээллийн нууцлал, оюуны өмчтэй холбоотой хууль тогтоомжид нийцэхгүй байдлаар ашиглах; 4.6.2 “MyRoom”-тэй ижил төстэй үйл ажиллагаа явуулдаг өрсөлдөгч байгууллагын ямар нэг холбоос болон бусад контентыг агуулсан мэдээ, мэдээлэл оруулах; 4.6.3 Дээрх нөхцөлүүдийг дагаж мөрдөлгүй зөрчсөн эсвэл “MyRoom”-ийн ашиг сонирхолд нийцэхгүй гэж үзсэн аливаа контентыг платформ дээрээс устгах эрхтэй байна."
+              },
+              {
+                id: "4.7",
+                content: "Хэрэв захиалагч буудаллах явцад захиалгатай холбоотой өөрчлөх, цуцлах болон бусад ямар нэг гарсан асуудлыг Харилцагч газар нь “MyRoom” рүү тухай бүрт мэдээллэх, мэдээллээр хангах үүргийг хүлээнэ. Харилцагч газар, захиалагч хоёрын хооронд гарсан асуудлыг “MyRoom”-д мэдээлэлгүй, нуун дарагдуулснаас үүдэн гарах хариуцлагыг Харилцагч газар бүрэн хүлээнэ."
+              }
+            ]
+          },
+          {
+            id: 5,
+            title: "MyRoom эрх, үүрэг",
+            description: "",
+            clauses: [
+              {
+                id: "5.1",
+                content: "Хэрэглэгчийн хувийн мэдээллийг “MyRoom”-ийн зүгээс хэрэглэгчийн хүсэлт, гомдлыг шийдвэрлэх, хэрэглэгчдэд үйлчилгээний талаар мэдээлэл хүргэх болон холбогдох зорилгоор ашиглах эрхтэй байна."
+              },
+              {
+                id: "5.2",
+                content: "Захиалагч захиалгын төлбөрөө бүрэн төлөөгүй эсвэл Үйлчилгээний нөхцөл, бусад холбогдох баримт бичгийг зөрчсөн тохиолдолд захиалгыг цуцлах эрхтэй байна."
+              },
+              {
+                id: "5.3",
+                content: "‘MyRoom” нь захиалагчийн төлбөр төлөлт, гүйлгээнд ямар нэг хууль бус зүйл ажиглагдсан тохиолдолд холбогдох Банк болон Хуулийн байгууллагаар шалгуулах эрхтэй."
+              },
+              {
+                id: "5.4",
+                content: "“MyRoom” Үйлчилгээний нөхцөлд ямар нэгэн нэмэлт өөрчлөлт орох бүрт захиалагч болон харилцагч газруудад мэдэгдэх үүрэгтэй."
+              },
+              {
+                id: "5.5",
+                content: "Захиалагч болон Харилцагч газар нь “MyRoom”-ийн Үйлчилгээний нөхцөлийг зөрчсөн эсвэл ямар нэг хуурамч мэдээлэл ашигласан, бусад хохирол учруулах үйлдэл гаргасан тохиолдолд урьдчилан мэдэгдэх шаардлагагүйгээр нэвтрэх эрхийг нь хязгаарлах болон цуцлах эрхтэй."
+              },
+              {
+                id: "5.6",
+                content: "“MyRoom” захиалагч болон харилцагч газрын хувийн мэдээлэл, нууц үг, захиалгын түүх, төлбөр тооцооны мэдээллийг чандлан хадгалах үүрэгтэй."
+              }
+            ]
+          },
+          {
+            id: 6,
+            title: "Үнэ, төлбөрийн нөхцөл",
+            description: "",
+            clauses: [
+              {
+                id: "6.1",
+                content: "“MyRoom” дээр санал болгож буй өрөө үйлчилгээний үнэд татвар болон бусад бүх төрлийн татварууд багтсан үнэ байна."
+              },
+              {
+                id: "6.2",
+                content: "“MyRoom” дээр байршиж буй өрөө үйлчилгээний үнэ дээр ямар нэг нэмэлт төлбөр болон захиалгын шимтгэл багтаагүй хамгийн боломжит, хямд үнэ болно."
+              },
+              {
+                id: "6.3",
+                content: "Захиалгын дүнд бусад нэмэлт үйлчилгээ (мини бар, нэмэлт ор, тосох үйлчилгээ гэх мэт)-ний үнэ багтаагүй бөгөөд нэмэлт зардлыг Захиалагч өөрөө бүрэн хариуцна."
+              },
+              {
+                id: "6.4",
+                content: "“MyRoom” платформ дээр байрших өрөөний тоо болон өрөөний үнийг тухайн буудлаас тогтоодог учир эдгээр нь хэзээд өөрчлөгдөж, хэлбэлзэх боломжтой."
+              },
+              {
+                id: "6.5",
+                content: "Захиалгын төлбөрийг “MyRoom” платформын санал болгож буй төлбөрийн хэрэгсэл (дансаар, Qpay, картаар гэх мэт)-ийн төрлүүдээс сонгон төлөх боломжтой."
+              },
+              {
+                id: "6.6",
+                content: "Хэрэв захиалагч төлбөрөө дансаар төлөх гэж байгаа тохиолдолд үнийн дүн болон гүйлгээний утгыг үнэн зөв бөглөх үүрэгтэй бөгөөд үнийн дүн зөрүүтэй болон буруу, алдаатай утгаас үүдэн гарах үр дагаврыг Захиалагч өөрөө бүрэн хариуцна."
+              },
+              {
+                id: "6.7",
+                content: "Хэрэв захиалгын дүн 5 саяас дээш тохиолдолд захиалгын дүнг 5 сая тутамд хуваан шилжүүлэх шаардлагатай бөгөөд төлбөрийг шилжүүлж дуусмагц “MyRoom”-ийн 99972626 руу яаралтай холбогдож, захиалгаа баталгаажуулна. Хэрэв бидэнтэй холбогдож мэдэгдээгүйгээс үүдэн захиалга цуцлагдах, бусад гарах үр дагаврыг Захиалагч бүрэн хариуцлага хүлээнэ."
+              },
+              {
+                id: "6.8",
+                content: "Захиалгын төлбөрийг буруу дансанд хийх, картын мэдээллийг буруу өгсөн, төлбөрийг хоцроосон, гүйлгээний дүн болон утгыг буруу, зөрүүтэй оруулж шилжүүлсэн зэрэг асуудлын хариуцлагыг Захиалагч өөрөө бүрэн хариуцах үүрэгтэй."
+              }
+            ]
+          },
+          {
+            id: 7,
+            title: "Захиалга хийх, баталгаажих",
+            description: "",
+            clauses: [
+              {
+                id: "7.1",
+                content: "Хэрэв захиалга баталгаажсан тохиолдолд “MyRoom”-ийн Үйлчилгээний нөхцөл болон тухайн буудлын цуцлалтын нөхцөлтэй танилцаж, хүлээн зөвшөөрсний үндсэн дээр захиалга хийсэн гэж үзнэ."
+              },
+              {
+                id: "7.2",
+                content: "Захиалагч захиалгын төлбөрийг өгөгдсөн хугацаанд багтаан, төлбөрөө 100% урьдчилж төлснөөр захиалга баталгаажна."
+              },
+              {
+                id: "7.3",
+                content: "Хэрэв захиалагч захиалгын төлбөрөө заасан хугацаанд багтаан төлөөгүйгээс үүдэн захиалга цуцлагдах, үүнтэй холбоотой бусад асуудалд “MyRoom”-ийн зүгээс хариуцлага хүлээхгүй болно."
+              },
+              {
+                id: "7.4",
+                content: "Захиалга баталгаажмагц захиалагчийн и-мэйл хаяг рүү захиалгын хуудас бүхий баталгаажсан и-мэйл илгээнэ."
+              },
+              {
+                id: "7.5",
+                content: "Захиалгын хуудас бүхий и-мэйлээр дахин давтагдашгүй Захиалгын дугаар, Нууц үгийн хамт ирэх бөгөөд эдгээр мэдээллийг гадагш задруулахгүй байх нь Захиалагчийн үүрэг болно. Энэхүү мэдээллийг алдсанаас үүдэн гарах үр дагаврыг Захиалагч бүрэн хариуцна."
+              },
+              {
+                id: "7.6",
+                content: "Захиалга хийх, баталгаажих, өөрчлөх, биелэх болон цуцлах бүрт “MyRoom”-ээс захиалагчийн бүртгүүлсэн и-мэйл хаяг болон гар утас руу мэдэгдэл хүргүүлнэ."
+              },
+              {
+                id: "7.7",
+                content: "Захиалгын цахим төлбөрийн И-баримт нь захиалга биелж дууссаны дараа захиалга хийх явцад захиалагчийн өгсөн И-баримтын код руу автоматаар шивэгдэнэ. Мөн захиалагчийн бүртгэлтэй мэйл рүү давхар и-баримтыг илгээнэ."
+              },
+              {
+                id: "7.8",
+                content: "Захиалагч нь буудаллах хугацаанаасаа эрт эсвэл оройтож очих бол буудалтайгаа урьдчилж холбогдож мэдэгдэх үүрэгтэй. Буудлын холбогдох мэдээллийг захиалгын хуудаснаасаа харах боломжтой."
+              },
+              {
+                id: "7.9",
+                content: "Захиалагчийн хариуцлагагүй байдлаас үүдэн 7.8-д үүссэн нөхцөлийг урьдчилан мэдэгдээгүй тохиолдолд буудал талаас захиалгыг цуцлах болон торгууль төлбөр ногдуулах зэрэг ямар нэг асуудал гарсан тохиолдолд “MyRoom” хариуцлага хүлээхгүй болно."
+              }
+            ]
+          },
+          {
+            id: 8,
+            title: "Цуцлалт, буцаалт болон өөрчлөлт",
+            description: "",
+            clauses: [
+              {
+                id: "8.1",
+                content: "Захиалагч “MyRoom” дээр захиалгаа баталгаажуулсан тохиолдолд тухайн буудлын Цуцлалтын нөхцөлтэй таницлаж, хүлээн зөвшөөрсөн гэж үзнэ."
+              },
+              {
+                id: "8.2",
+                content: "Цуцлах нөхцөлийн хувьд захиалга цуцлах боломжтой хугацаа болон цуцлалтын хураамж, торгууль нь тухайн буудлын дотоод дүрэм, журмаас хамааран харилцан адилгүй байх бөгөөд Захиалагч нь үүнтэй захиалгаа баталгаажуулахаас өмнө уншиж, танилцсан байх үүрэгтэй."
+              },
+              {
+                id: "8.3",
+                content: "Цуцлалтын нөхцөл буюу захиалга цуцлах хугацаа болон ногдох цуцлалтын хураамж, торгуулийн талаарх дэлгэрэнгүй мэдээллийг захиалга хийх явцад “Захиалагчийн мэдээлэл” бөглөх хэсэг.дээрээс харах боломжтой. Мөн захиалга баталгаажсны дараа Цуцлалтын нөхцөлийг захиалгын хуудас болон баталгаажсан и-мэйл дээр давхар тусгасан байна."
+              },
+              {
+                id: "8.4",
+                content: "Тухайн буудлын дотоод журмын дагуу буудлаас цуцлах боломжтой нөхцөлийг санал болгосон тохиодолд тухайн нөхцөлийн дагуу заасан хугацаанд багтаан цуцлах боломжтой байна."
+              },
+              {
+                id: "8.5",
+                content: "Захиалга цуцлах нөхцөл дээр заасан хугацааанаас хэтэрсэн үед болон захиалга анхнаасаа цуцлах боломжгүй гэсэн нөхцөлтэйгээр хийгдсэн тохиолдолд цуцлах боломжгүй буюу төлбөрийн буцаан олголт хийгдэхгүй гэсэн хатуу нөхцөлтэй байна."
+              },
+              {
+                id: "8.6",
+                content: "Аливаа буцаалтыг захиалга баталгаажуулах үед харилцан тохиролцсон цахим болон цаасан гэрээн дээр үндэслэх бөгөөд үйлчилгээ үзүүлж буй гуравдагч байгууллагын буцаалтын журмыг давхар мөрдлөг болгоно."
+              },
+              {
+                id: "8.7",
+                content: "Тухайн буудлын дотоод журам, цуцлах нөхцөлийн дагуу нийт төлбөрийг бүтэн эсвэл тодорхой хувийг цуцлалтын хураамж болгон суутгах ба хэрэв төлбөрийн буцаан олголт үлдсэн тохиолдолд захиалагчид буцаан олгоно."
+              },
+              {
+                id: "8.8",
+                content: "Цуцлалтын нөхцөлийн дагуу торгууль, хураамжийг суутгах ба хэрэв буцаалт төлбөр үлдсэн тохиолдолд зөвхөн захиалагчийн төлбөр төлсөн дугаар данс руу ажлын 3-5 хоног дотор буцаан олгоно."
+              },
+              {
+                id: "8.9",
+                content: "Цуцлалтын нөхцөл болон ногдуулах торгууль, хураамж нь тухайн буудлын дотоод журам, бодлогоос хамааран харилцан адилгүй байх учир үүнээс хамааран буцаан олголт өөр өөр эсвэл огт буцаалтгүй байж болно."
+              },
+              {
+                id: "8.10",
+                content: "“MyRoom” дээр бүртгэлтэй захиалагч “Захиалгын түүх” цэснээс, харин бүртгэлгүй захиалагч “Захиалга шалгах” хэсэг дээр захиалгын дугаар, нууц үг (7.4 болон 7.5-т дурдсаны дагуу)-ээ оруулан, захиалгаа өөрчлөх боломжтой."
+              },
+              {
+                id: "8.11",
+                content: "Тухайн захиалгын өдрийг сунгах, урагшлуулах эсвэл хойшлуулах өдрийг шалгах болон өрөөний төрөл, зэрэглэлийг өөрчлөх боломжтой эсэхийг шалгахад “MyRoom” дээр санал болгож, зөвшөөрсний дагуу захиалгад өөрчлөлт оруулж болно."
+              },
+              {
+                id: "8.12",
+                content: "Захиалгыг дараах 2 тохиолдолд өөрчлөх боломжтой гэж үзнэ. 8.11.1 Өдөр солих: Заасан хугацаанаас өмнө зөвхөн 1 удаа захиалгын өдрийг сунгах, урагшлуулах эсвэл хойшлуулах боломжтой ба хэрэв нэмэлт зөрүү төлбөр гарсан тохиолдолд төлбөрийг төлсний дараа баталгаажна. Хэрэв заасан хугацаа хэтэрсэн бол өдөр солих боломжгүй болно. 8.11.2 Өрөө солих: Нэг төрлийн өрөөг зөвхөн 1 удаад төрөл, зэрэглэлийг нь дээшлүүлж солих боломжтой ба нэмэлт зөрүү төлбөр бүрэн төлөгдсөний дараа баталгаажна. Харин өрөөний зэрэглэлийг доошлуулж өөрчлөх боломжгүй."
+              },
+              {
+                id: "8.13",
+                content: "Дээрхээс бусад тохиолдолд захиалгад өөрчлөлт оруулах боломжгүй байна."
+              },
+              {
+                id: "8.14",
+                content: "Захиалгын өөрчлөлттэй холбоотой мэдэгдэл тухай бүр захиалагчийн бүртгэлтэй и-мэйл хаяг болон утасны дугаар луу шууд илгээгдэнэ."
+              },
+              {
+                id: "8.15",
+                content: "Хэрэв Захиалагч буудалдаа очсоны дараа өрөөний төрлийг солихгүйгээр өрөөгөө солиулах шаардлага гарсан тохиолдолд тухайн газрын ресешн/ хүлээн авахтай шууд холбогдоно."
+              },
+              {
+                id: "8.16",
+                content: "Хэрэв Захиалагч буудалдаа очсоны дараа өрөөний төрлийг солих шаардлага гарвал зөвхөн “MyRoom”-ээр заавал өрөөг солих шаардлагатай ба 8.11.2-т дурдсаны дагуу “MyRoom”-ээр боломжит сул өрөөг санал болгосон тохиолдолд өөрчлөх боломжтой."
+              }
+            ]
+          },
+          {
+            id: 9,
+            title: "Оюуны өмчийн эрхийн тухай",
+            description: "",
+            clauses: [
+              {
+                id: "9.1",
+                content: "“MyRoom” платформын лого, нэр, текст, загвар, мэдээлэл, аливаа контент (дизайн, зураг, аудио, график, видео гэх мэт бусад) зэрэг нь зохиогчийн эрх, барааны тэмдэг болон бусад хуулиар хамгаалагдсан “MyRoom”-ийн өмч учир албан ёсны зөвшөөрөлгүйгээр хуулбарлах, олшруулах, дуурайх, тараах, бусад хэлбэрээр ашиглахыг хориглоно."
+              },
+              {
+                id: "9.2",
+                content: "“MyRoom”-ийн оюуны өмчийн эрх зөрчигдсөн тохиолдолд холбогдох этгээдэд Оюуны өмчийн тухай хууль болон бусад холбогдох хуулийн дагуу хариуцлага хүлээлгэнэ."
+              }
+            ]
+          },
+          {
+            id: 10,
+            title: "Маргаан шийдвэрлэх",
+            description: "",
+            clauses: [
+              {
+                id: "10.1",
+                content: "Талууд уг гэрээний үүргийг биелүүлэхтэй холбоотой гарсан ямарваа нэг маргаантай асуудлыг эв зүйгээр харилцан зөвшилцөх замаар шийдвэрлэнэ. Хэрэв харилцан зөвшилцөж, тохиролцож чадаагүй тохиолдолд Монгол Улсын хууль тогтоомжийн дагуу шийдвэрлүүлнэ."
+              }
+            ]
+          },
+          {
+            id: 11,
+            title: "Мэдээллийн нууцлал",
+            description: "",
+            clauses: [
+              {
+                id: "11.1",
+                content: "Хэрэглэгчийн мэдээллийн нууцлалыг “Нууцлалын бодлого”-оор зохицуулна."
+              }
+            ]
+          },
+          {
+            id: 12,
+            title: "Бусад",
+            description: "",
+            clauses: [
+              {
+                id: "12.1",
+                content: "“MyRoom” нь энэхүү Үйлчилгээний нөхцөлд нэмэлт өөрчлөлт орох бүрт хэрэглэгчддээ мэдэгдэх үүргийг хүлээнэ."
+              },
+              {
+                id: "12.2",
+                content: "“MyRoom”-ийн үйлчилгээтэй холбоотой санал хүсэлт, гомдол, асуудал, маргааныг талууд эвийн журмаар шийдвэрлэхийг эрхэмлэнэ. Хэрэв шийдвэрлэж чадахгүй нөхцөл байдал үүссэн тохиолдолд бол Монгол Улсын хууль, тогтоомжиийн дагуу холбогдох хуулийн байгууллагад хандан шийдвэрлүүлнэ."
+              }
+            ]
+          }
+        ]
       }
     }
   }

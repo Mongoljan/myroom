@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import BookingStyleHotelCard from './BookingStyleHotelCard';
 import SearchFilters from './SearchFilters';
 import { ApiService } from '@/services/api';
 import { SearchResponse, SearchHotelResult } from '@/types/api';
 import SearchHeader from './SearchHeader';
-import BreadcrumbNavigation from './BreadcrumbNavigation';
 import SearchResultsHeader from './SearchResultsHeader';
 import MobileFilterControls from './MobileFilterControls';
 import NoResultsState from './NoResultsState';
@@ -90,6 +89,7 @@ export default function SearchResults() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [sortBy, setSortBy] = useState('price_low');
   const [apiData, setApiData] = useState<CombinedApiData | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isHeaderSticky, setIsHeaderSticky] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: [],
@@ -111,9 +111,6 @@ export default function SearchResults() {
     if (!room) return 0;
     return room.price_per_night || room.price_per_night_adjusted || room.price_per_night_raw || 0;
   };
-
-  // Ref to guard against double invocation in React StrictMode
-  const hasFetchedRef = useRef(false);
 
   // Track when header becomes sticky
   useEffect(() => {

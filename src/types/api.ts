@@ -424,3 +424,64 @@ export interface PropertyPolicy {
   allow_pets: boolean;
   property: number;
 }
+
+// Suggested Hotels API Types
+export interface SuggestedHotelInfo {
+  pk: number;
+  register: string;
+  CompanyName: string;
+  PropertyName: string;
+  location: string;
+  property_type: number;
+  phone: string;
+  mail: string;
+  is_approved: boolean;
+  created_at: string;
+}
+
+export interface SuggestedRoomImage {
+  id: number;
+  image: string;
+  description: string;
+}
+
+export interface SuggestedCheapestRoom {
+  id: number;
+  hotel: number;
+  room_number: number;
+  room_type: number;
+  room_category: number;
+  room_size: string;
+  bed_type: number;
+  is_Bathroom: boolean;
+  room_Facilities: number[];
+  bathroom_Items: number[];
+  free_Toiletries: number[];
+  food_And_Drink: number[];
+  adultQty: number;
+  childQty: number;
+  outdoor_And_View: number[];
+  number_of_rooms: number;
+  number_of_rooms_to_sell: number;
+  room_Description: string;
+  smoking_allowed: boolean;
+  images: SuggestedRoomImage[];
+  total_count: number;
+  base_price: number;
+  single_person_price: number | null;
+  half_day_price: number | null;
+  breakfast_include_price: number | null;
+  final_price: number;
+}
+
+export interface SuggestedHotel {
+  hotel: SuggestedHotelInfo;
+  cheapest_room: SuggestedCheapestRoom;
+}
+
+export interface SuggestedHotelsResponse {
+  count: number;
+  results: SuggestedHotel[];
+}
+
+export type SuggestedHotelsTab = 'popular' | 'discount' | 'top_rated' | 'cheapest' | 'new';

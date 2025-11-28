@@ -7,7 +7,6 @@ import {
   ShoppingBag, Phone, Wind, Baby, PawPrint, Accessibility,
   Briefcase, Coffee as CafeIcon, Volume2, Soup, Bed, MapPin
 } from 'lucide-react';
-import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 // import FilterSummary from './FilterSummary';
 
@@ -282,6 +281,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     loadSavedFilters();
     // Also load recent filters
     loadRecentFilters();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
   // Save filters to localStorage whenever they change
@@ -299,6 +299,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     }
   }, [filters, onFilterChange, saveToRecentFilters]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleRemoveFilter = useCallback((filterType: string, value?: string | number) => {
     switch (filterType) {
       case 'propertyTypes':
@@ -360,6 +361,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     }
   }, [filters, updateFilters]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleClearAllFilters = useCallback(() => {
     const defaultFilters = {
       propertyTypes: [],

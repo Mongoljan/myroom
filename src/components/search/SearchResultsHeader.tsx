@@ -1,7 +1,6 @@
 'use client';
 
-import { MapPin, List, Grid3X3 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { List, Grid3X3 } from 'lucide-react';
 import FilterSummary from './FilterSummary';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
@@ -44,12 +43,18 @@ interface SearchResultsHeaderProps {
 
 export default function SearchResultsHeader({
   searchLocation,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   checkIn,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   checkOut,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   adults,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   childrenCount,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   rooms,
   filteredCount,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   totalCount,
   sortBy,
   viewMode,

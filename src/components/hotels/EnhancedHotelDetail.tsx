@@ -27,6 +27,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const [address, setAddress] = useState<ConfirmAddress | null>(null);
   const [propertyImages, setPropertyImages] = useState<PropertyImage[]>([]);
   const [additionalInfo, setAdditionalInfo] = useState<AdditionalInfo | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [propertyDetails, setPropertyDetails] = useState<PropertyDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [facilitiesMap, setFacilitiesMap] = useState<Map<number, Facility>>(new Map());
