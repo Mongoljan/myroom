@@ -24,9 +24,9 @@ export default function LocationInput({
   const { t } = useHydratedTranslation();
 
   return (
-    <div className={`flex-1 ${compact ? 'p-2' : 'p-4'} w-full relative`}>
+    <div className={`flex-1 ${compact ? 'p-1.5' : 'p-4'} w-full relative`}>
       <div className="flex items-center">
-        <MapPin className="w-6 h-6 text-gray-700 mr-4" />
+        <MapPin className={`${compact ? 'w-5 h-5' : 'w-6 h-6'} text-gray-700 ${compact ? 'mr-2' : 'mr-4'}`} />
         <div className="flex-1">
           <input
             ref={locationInputRef}

@@ -131,10 +131,10 @@ export default function CustomGuestSelector({
             setIsOpen(false);
           }
         }}
-        className={`w-full flex items-center justify-between ${compact ? 'p-2' : 'p-4'} hover:bg-gray-50 transition-colors`}
+        className={`w-full flex items-center justify-between ${compact ? 'p-1.5' : 'p-4'} hover:bg-gray-50 transition-colors`}
       >
         <div className="flex items-center">
-          <Users className="w-6 h-6 text-gray-900 mr-4" />
+          <Users className={`${compact ? 'w-5 h-5' : 'w-6 h-6'} text-gray-900 ${compact ? 'mr-2' : 'mr-4'}`} />
           <div className="text-left">
             {/* <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>
               {t('search.guest', 'Guest')}

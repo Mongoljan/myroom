@@ -8,7 +8,7 @@ import {
   Wine, Briefcase, PawPrint, Cigarette, Clock,
   Palmtree, Bus, WashingMachine, Heater, Mountain,
   ArrowLeft, Bell as ConciergeBell, Zap, Hotel, DollarSign, Package,
-  MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby
+  MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart
 } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -344,22 +344,54 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
 
       {/* Hotel Header Section */}
       <div className="space-y-4">
-        {/* Star Rating */}
-        <div className="flex items-center gap-2">
-          {[...Array(starRating)].map((_, i) => (
-            <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-          ))}
-        </div>
-
-        {/* Hotel Name with Price and Book Button */}
+        {/* Hotel Name with Star Rating, Location, and View on Map */}
         <div className="flex items-start justify-between gap-6">
-          {/* Left: Hotel Name */}
+          {/* Left: Hotel Name with Star Rating and Location */}
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">{hotelName}</h1>
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-3xl font-bold text-gray-900">{hotelName}</h1>
+              {/* Star Rating next to name */}
+              <div className="flex items-center gap-1">
+                {[...Array(starRating)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                ))}
+              </div>
+            </div>
+
+            {/* City, Province and View on Map on same line */}
+            <div className="flex items-center gap-3">
+              <span className="text-gray-700">
+                {hotel.location.province_city}{hotel.location.soum && `, ${hotel.location.soum}`}
+              </span>
+              {hotel.google_map && (
+                <>
+                  <span className="text-gray-300">•</span>
+                  <a
+                    href={hotel.google_map}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    {t('hotelDetails.viewOnMap', 'Газрын зураг дээр харах')}
+                  </a>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Right: Price and Book Button on same line */}
           <div className="flex items-center gap-4 flex-shrink-0">
+            {/* Heart icon for saving */}
+            {priceInfo && (
+              <button
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Save hotel"
+              >
+                <Heart className="w-6 h-6 text-gray-400 hover:text-red-500 transition-colors" />
+              </button>
+            )}
+
             {/* Price Info */}
             {priceInfo && (
               <div className="flex items-center gap-2">
@@ -388,15 +420,6 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             >
               {t('hotelDetails.book', 'Захиалах')}
             </button>
-          </div>
-        </div>
-
-        {/* Location */}
-        <div className="flex items-start gap-2">
-          <MapPin className="w-5 h-5 text-gray-500 flex-shrink-0 mt-0.5" />
-          <div className="text-gray-700">
-            <p>{hotel.location.province_city}{hotel.location.soum && `, ${hotel.location.soum}`}</p>
-            {address?.district && <p className="text-sm text-gray-600">{address.district}</p>}
           </div>
         </div>
       </div>

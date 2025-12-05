@@ -56,7 +56,7 @@ interface FilterState {
   priceRange: [number, number];
   roomFeatures: number[];
   generalServices: number[];
-  bedTypes: string[];
+  bedTypes: string[] | Record<string, number>; // Support both old string[] and new Record<string, number>
   popularPlaces: string[];
   discounted: boolean;
   starRating: number[];
@@ -91,6 +91,7 @@ export default function SearchResults() {
   const [apiData, setApiData] = useState<CombinedApiData | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isHeaderSticky, setIsHeaderSticky] = useState(false);
+  const [nameSearchQuery, setNameSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: [],
     popularSearches: [],
@@ -331,6 +332,66 @@ export default function SearchResults() {
 
   const filterCounts = getFilterCounts();
 
+  // Latin to Cyrillic character mapping for Mongolian
+  const latinToCyrillic: Record<string, string> = {
+    'a': 'а', 'b': 'б', 'v': 'в', 'g': 'г', 'd': 'д', 'e': 'е', 'yo': 'ё',
+    'zh': 'ж', 'z': 'з', 'i': 'и', 'y': 'й', 'k': 'к', 'l': 'л', 'm': 'м',
+    'n': 'н', 'o': 'о', 'p': 'п', 'r': 'р', 's': 'с', 't': 'т', 'u': 'у',
+    'f': 'ф', 'h': 'х', 'ts': 'ц', 'ch': 'ч', 'sh': 'ш', 'shch': 'щ',
+    'yu': 'ю', 'ya': 'я', 'ö': 'ө', 'ü': 'ү'
+  };
+
+  const cyrillicToLatin: Record<string, string> = {
+    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo',
+    'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
+    'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+    'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'shch',
+    'ю': 'yu', 'я': 'ya', 'ө': 'ö', 'ү': 'ü'
+  };
+
+  const normalizeSearchText = (text: string): string[] => {
+    const lower = text.toLowerCase();
+    const variations: string[] = [lower];
+
+    // Create both Latin and Cyrillic variations
+    let latinVersion = '';
+    let cyrillicVersion = '';
+
+    for (const char of lower) {
+      if (latinToCyrillic[char]) {
+        cyrillicVersion += latinToCyrillic[char];
+        latinVersion += char;
+      } else if (cyrillicToLatin[char]) {
+        latinVersion += cyrillicToLatin[char];
+        cyrillicVersion += char;
+      } else {
+        latinVersion += char;
+        cyrillicVersion += char;
+      }
+    }
+
+    if (latinVersion !== lower) variations.push(latinVersion);
+    if (cyrillicVersion !== lower) variations.push(cyrillicVersion);
+
+    return [...new Set(variations)];
+  };
+
+  const applyNameSearch = (hotelsToFilter: SearchHotelResult[]) => {
+    if (!nameSearchQuery.trim()) {
+      return hotelsToFilter;
+    }
+
+    const searchVariations = normalizeSearchText(nameSearchQuery);
+
+    return hotelsToFilter.filter(hotel => {
+      const hotelName = hotel.property_name.toLowerCase();
+      // Check if hotel name starts with any of the search variations
+      return searchVariations.some(variation =>
+        hotelName.startsWith(variation) || hotelName.includes(variation)
+      );
+    });
+  };
+
   const handleFilterChange = (newFilters: FilterState) => {
     // Update the filters state
     setFilters(newFilters);
@@ -339,7 +400,7 @@ export default function SearchResults() {
     const filters = newFilters;
     // First filter out hotels without available room prices (but only if filters are actually applied)
     // If no active filters, show all hotels
-    const hasActiveFilters = 
+    const hasActiveFilters =
       (filters.propertyTypes && filters.propertyTypes.length > 0) ||
       (filters.popularSearches && filters.popularSearches.length > 0) ||
       (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 1000000) ||
@@ -424,17 +485,36 @@ export default function SearchResults() {
     }
 
     // Filter by bed types
-    if (filters.bedTypes && filters.bedTypes.length > 0) {
-      filtered = filtered.filter(hotel => {
-        if (!hotel.cheapest_room) return false;
-        // Check if hotel's room category matches selected bed types
-        const roomCategory = hotel.cheapest_room.room_category_label.toLowerCase();
-        return filters.bedTypes.some(bedType => {
-          const bedTypeLower = bedType.toLowerCase();
-          return roomCategory.includes(bedTypeLower) ||
-                 roomCategory.includes(bedTypeLower.replace(' ор', '').replace('ор', ''));
+    if (filters.bedTypes) {
+      if (Array.isArray(filters.bedTypes) && filters.bedTypes.length > 0) {
+        // Old format: array of bed type strings
+        filtered = filtered.filter(hotel => {
+          if (!hotel.cheapest_room) return false;
+          const roomCategory = hotel.cheapest_room.room_category_label.toLowerCase();
+          return filters.bedTypes.some((bedType: string) => {
+            const bedTypeLower = bedType.toLowerCase();
+            return roomCategory.includes(bedTypeLower) ||
+                   roomCategory.includes(bedTypeLower.replace(' ор', '').replace('ор', ''));
+          });
         });
-      });
+      } else if (typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)) {
+        // New format: object with counts - filter if any bed type has count > 0
+        const activeBedTypes = Object.entries(filters.bedTypes)
+          .filter(([_, count]) => count > 0)
+          .map(([bedType, _]) => bedType);
+
+        if (activeBedTypes.length > 0) {
+          filtered = filtered.filter(hotel => {
+            if (!hotel.cheapest_room) return false;
+            const roomCategory = hotel.cheapest_room.room_category_label.toLowerCase();
+            return activeBedTypes.some(bedType => {
+              const bedTypeLower = bedType.toLowerCase();
+              return roomCategory.includes(bedTypeLower) ||
+                     roomCategory.includes(bedTypeLower.replace(' ор', '').replace('ор', ''));
+            });
+          });
+        }
+      }
     }
 
     // Filter by popular places
@@ -499,6 +579,9 @@ export default function SearchResults() {
       });
     }
 
+    // Apply name search filter at the end
+    filtered = applyNameSearch(filtered);
+
     setFilteredHotels(filtered);
   };
 
@@ -538,6 +621,12 @@ export default function SearchResults() {
     setFilteredHotels(sorted);
   };
 
+  const handleSearchByName = (searchQuery: string) => {
+    setNameSearchQuery(searchQuery);
+    // Re-apply filters with the new search query
+    handleFilterChange(filters);
+  };
+
   const searchLocation = searchParams.get('location') || '';
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
@@ -554,13 +643,13 @@ export default function SearchResults() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <SearchHeader />
-   
+
       {/* <BreadcrumbNavigation searchLocation={searchLocation} /> */}
 
       {/* Main Results Container */}
-      <div className="bg-gradient-to-b from-white/80 to-gray-50/80 backdrop-blur-sm">
+      <div className="bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Filters Sidebar with Sticky Behavior */}
@@ -606,6 +695,7 @@ export default function SearchResults() {
                 viewMode={viewMode}
                 onSort={handleSort}
                 onViewModeChange={setViewMode}
+                onSearchByName={handleSearchByName}
                 filters={filters}
                 apiData={apiData}
                 onRemoveFilter={(filterType, value) => {
@@ -629,7 +719,17 @@ export default function SearchResults() {
                       newFilters.generalServices = (filters.generalServices || []).filter(id => id !== value);
                       break;
                     case 'bedTypes':
-                      newFilters.bedTypes = (filters.bedTypes || []).filter(bed => bed !== value);
+                      if (typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)) {
+                        // New format: reset the specific bed type counter to 0
+                        const updatedBedTypes = { ...filters.bedTypes };
+                        if (typeof value === 'string' && value in updatedBedTypes) {
+                          updatedBedTypes[value as keyof typeof updatedBedTypes] = 0;
+                        }
+                        newFilters.bedTypes = updatedBedTypes;
+                      } else if (Array.isArray(filters.bedTypes)) {
+                        // Old format: remove from array
+                        newFilters.bedTypes = filters.bedTypes.filter(bed => bed !== value);
+                      }
                       break;
                     case 'popularPlaces':
                       newFilters.popularPlaces = (filters.popularPlaces || []).filter(place => place !== value);
@@ -667,7 +767,7 @@ export default function SearchResults() {
                     priceRange: [0, 1000000] as [number, number],
                     roomFeatures: [],
                     generalServices: [],
-                    bedTypes: [],
+                    bedTypes: { single: 0, double: 0, queen: 0, king: 0 },
                     popularPlaces: [],
                     discounted: false,
                     starRating: [],

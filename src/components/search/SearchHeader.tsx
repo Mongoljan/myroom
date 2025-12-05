@@ -19,20 +19,20 @@ export default function SearchHeader() {
   return (
     <>
       <div className={`
-        ${isSticky 
-          ? 'fixed top-0 left-0 right-0 z-40 bg-white shadow-md' 
+        ${isSticky
+          ? 'fixed top-0 left-0 right-0 z-40 bg-white shadow-md'
           : 'relative bg-white'
         }
         transition-all duration-300
       `}>
         {/* Content */}
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isSticky ? '' : 'py-3'}`}>
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isSticky ? 'py-2' : 'py-3'}`}>
           <HotelSearchForm compact={isSticky} />
         </div>
       </div>
-      
+
       {/* Spacer to prevent content jump when header becomes fixed */}
-      {isSticky && <div className="h-[100px]"></div>}
+      {isSticky && <div className="h-[80px]"></div>}
     </>
   );
 }

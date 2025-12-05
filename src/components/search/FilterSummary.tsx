@@ -10,7 +10,7 @@ interface FilterState {
   priceRange: [number, number];
   roomFeatures: number[];
   generalServices: number[];
-  bedTypes: string[];
+  bedTypes: string[] | Record<string, number>; // Support both old string[] and new Record<string, number>
   popularPlaces: string[];
   discounted: boolean;
   starRating: number[];
@@ -111,14 +111,34 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
     }
 
     // Bed types
-    if (filters.bedTypes && filters.bedTypes.length > 0) {
-      filters.bedTypes.forEach(bedType => {
-        active.push({
-          type: 'bedTypes',
-          label: bedType,
-          value: bedType
+    if (filters.bedTypes) {
+      if (Array.isArray(filters.bedTypes) && filters.bedTypes.length > 0) {
+        // Old format: array of bed type strings
+        filters.bedTypes.forEach(bedType => {
+          active.push({
+            type: 'bedTypes',
+            label: bedType,
+            value: bedType
+          });
         });
-      });
+      } else if (typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)) {
+        // New format: object with counts
+        const bedTypeLabels: Record<string, string> = {
+          single: 'Ганц ор',
+          double: 'Давхар ор',
+          queen: 'Хатан ор',
+          king: 'Хаан ор'
+        };
+        Object.entries(filters.bedTypes).forEach(([bedType, count]) => {
+          if (count > 0) {
+            active.push({
+              type: 'bedTypes',
+              label: `${bedTypeLabels[bedType] || bedType}: ${count}`,
+              value: bedType
+            });
+          }
+        });
+      }
     }
 
     // Popular places
@@ -193,11 +213,11 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
 
   return (
     <div className="bg-white ">
-      <div className="flex items-center justify-between ">
-        <div className="flex items-center gap-1.5">
+      <div className="flex  ">
+        <div className="flex items-center gap-1.5 w-[160px] ">
           <Filter className="w-3.5 h-3.5 text-gray-600" />
           <h3 className="text-xs font-medium text-gray-700">
-            {t('search.activeFilters')} ({activeFilters.length})
+            {t('search.activeFilters')}:
           </h3>
         </div>
         {activeFilters.length > 0 && (

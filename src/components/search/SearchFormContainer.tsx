@@ -20,7 +20,7 @@ export default function SearchFormContainer({ children, compact = false }: Searc
   // Normal mode - with border and shadow
   return (
     <div 
-      className="bg-white border border-gray-200 rounded-xl hover:border-gray-300 transition-all duration-200 overflow-hidden"
+      className="bg-white border border-primary rounded-xl hover:border-gray-300 transition-all duration-200 overflow-hidden"
      
     >
       {children}

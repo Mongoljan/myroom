@@ -235,7 +235,7 @@ const resources = {
         signIn: "Sign in"
       },
       hotel: {
-        title: "Hotels",
+        title: "Total results",
         search: "Search Hotels",
         destination: "Destination",
         checkIn: "Check In",
@@ -319,7 +319,10 @@ const resources = {
         faq: "FAQ",
         priceFrom: "Price from",
         goldTierDeal: "Gold Tier Deal",
-        noAmenities: "No information available"
+        noAmenities: "No information available",
+        viewOnMap: "View on map",
+        others: "Others",
+        allFacilities: "All Facilities"
       },
       search: {
         location: "Location",
@@ -364,17 +367,20 @@ const resources = {
           grid: "Grid"
         },
         sortOptions: {
+          default:"Sort",
           recommended: "Recommended",
           priceLowToHigh: "Price: Low to High",
           priceHighToLow: "Price: High to Low",
           ratingHighToLow: "Rating: High to Low"
         },
+        searchByName: "Search by name",
+        searchByNamePlaceholder: "Enter hotel name...",
         pagination: {
           resultsText: "{{start}}-{{end}} of {{total}} hotel results",
           previous: "Previous",
           next: "Next"
         },
-        activeFilters: "Active filters",
+        activeFilters: "Selected Filters",
         clearAll: "Clear all",
         discountedPrice: "Discounted price",
         simpleSearch: "Simple search",
@@ -1382,7 +1388,7 @@ const resources = {
         signIn: "Нэвтрэх"
       },
       hotel: {
-        title: "Зочид буудал",
+        title: "Нийт илэрц",
         search: "Зочид буудал хайх",
         destination: "Очих газар",
         checkIn: "Ирэх өдөр",
@@ -1466,7 +1472,10 @@ const resources = {
         faq: "Түгээмэл асуулт",
         priceFrom: "Эхлэх үнэ",
         goldTierDeal: "Хямдарсан",
-        noAmenities: "Мэдээлэл байхгүй байна"
+        noAmenities: "Мэдээлэл байхгүй байна",
+        viewOnMap: "Газрын зураг дээр харах",
+        others: "Бусад",
+        allFacilities: "Бүх тохижилт"
       },
       search: {
         location: "Байршил",
@@ -1511,17 +1520,20 @@ const resources = {
           grid: "Сетка"
         },
         sortOptions: {
+          default:"Ангилах",
           recommended: "Санал болгосон",
           priceLowToHigh: "Үнэ: багаас их",
           priceHighToLow: "Үнэ: ихээс бага",
           ratingHighToLow: "Үнэлгээ: өндөрөөс нам"
         },
+        searchByName: "Нэрээр хайх",
+        searchByNamePlaceholder: "Зочид буудлын нэр оруулах...",
         pagination: {
           resultsText: "{{start}}-{{end}} нийт {{total}} буудлын үр дүн",
           previous: "Өмнөх",
           next: "Дараах"
         },
-        activeFilters: "Идэвхтэй шүүлтүүр",
+        activeFilters: "Сонгосон шүүлтүүр",
         clearAll: "Бүгдийг арилгах",
         discountedPrice: "Хямдралтай үнэ",
         simpleSearch: "Энгийн хайлт",
@@ -1529,9 +1541,18 @@ const resources = {
           title: "Шүүлтүүр",
           usedByYou: "Таны ашигласан",
           loading: "Шүүлтүүр ачааллаж байна...",
-          hotelType: "Зочид буудлын төрөл",
+          hotelType: "Үл хөдлөх хөрөнгийн төрөл",
+          propertyCategories: {
+            budget: "Хямд",
+            midRange: "Дунд зэрэглэл",
+            luxury: "Тансаг зэрэглэл",
+            familyFriendly: "Гэр бүлд зориулсан",
+            business: "Бизнес"
+          },
           popularSearches: "Түгээмэл хайлтууд",
           priceRange: "Үнийн хязгаар",
+          price: "Үнэ",
+          hotelStarRating: "Буудлын зэрэглэл",
           roomFeatures: "Өрөөний онцлог зүйлс",
           generalServices: "Ерөнхий үйлчилгээ",
           guestRating: "Зочдын үнэлгээ",

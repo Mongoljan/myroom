@@ -1,8 +1,9 @@
 'use client';
 
-import { List, Grid3X3 } from 'lucide-react';
+import { Search } from 'lucide-react';
 import FilterSummary from './FilterSummary';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { useState } from 'react';
 
 interface FilterState {
   propertyTypes: number[];
@@ -39,6 +40,7 @@ interface SearchResultsHeaderProps {
     property_types?: { id: number; name_mn: string; }[];
     facilities?: { id: number; name_mn: string; }[];
   } | null;
+  onSearchByName?: (value: string) => void;
 }
 
 export default function SearchResultsHeader({
@@ -63,16 +65,18 @@ export default function SearchResultsHeader({
   filters,
   onRemoveFilter,
   onClearAllFilters,
-  apiData
+  apiData,
+  onSearchByName
 }: SearchResultsHeaderProps) {
   const { t } = useHydratedTranslation();
+  const [searchQuery, setSearchQuery] = useState('');
   return (
     <div className="space-y-4">
       {/* Filter Summary - Trip.com style */}
 
 
       {/* Main Header */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-lg border border-gray-200  p-4 relative overflow-hidden">
+      <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 relative overflow-hidden">
         {/* Subtle gradient background */}
         <div className="relative flex justify-between items-center gap-x-4 border-b border-gray-100 mb-2 pb-2">
 
@@ -96,25 +100,22 @@ export default function SearchResultsHeader({
 
 </div>
           {/* Controls Row - Trip.com style */}
-          
-       
-
-            {/* Sort Dropdown */}
-            <div className="flex items-center gap-4">
-            <div  className="flex  ">
-              <div className="relative ">
-                {/* <label className="block text-xs font-medium text-gray-700 mb-1">Эрэмбэлэх</label> */}
+          <div className="flex flex-col gap-2">
+            {/* Sort Dropdown - Top Row */}
+            <div className="flex items-center">
+              <div className="relative">
                 <select
                   value={sortBy}
                   onChange={(e) => onSort(e.target.value)}
                   className="appearance-none bg-white border border-gray-300 rounded-md px-2 py-1 pr-8 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[190px]"
                 >
+                  <option value="default">{t('search.sortOptions.default')}</option>
                   <option value="price_low">{t('search.sortOptions.priceLowToHigh')}</option>
                   <option value="price_high">{t('search.sortOptions.priceHighToLow')}</option>
                   <option value="rating">{t('search.sortOptions.ratingHighToLow')}</option>
                   <option value="recommended">{t('search.sortOptions.recommended')}</option>
                 </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none ">
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                   <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -122,9 +123,28 @@ export default function SearchResultsHeader({
               </div>
             </div>
 
+            {/* Search by Name - Bottom Row */}
+            {onSearchByName && (
+              <div className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    onSearchByName(e.target.value);
+                  }}
+                  placeholder={t('search.searchByNamePlaceholder')}
+                  className="appearance-none bg-white border border-gray-300 rounded-md pl-9 pr-3 py-1 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[220px]"
+                />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <Search className="w-4 h-4 text-gray-400" />
+                </div>
+              </div>
+            )}
+          </div>
+
             {/* View Toggle */}
-            <div className="hidden sm:block">
-              {/* <label className="block text-xs font-medium text-gray-700 mb-1">Харагдах арга</label> */}
+            {/* <div className="hidden sm:block">
               <div className="flex bg-gray-100 p-0.5 rounded-md">
                 <button
                   onClick={() => onViewModeChange('list')}
@@ -149,8 +169,7 @@ export default function SearchResultsHeader({
                   <span>Grid</span>
                 </button>
               </div>
-            </div>
-          </div>
+            </div> */}
           </div>
 
                      {filters && onRemoveFilter && onClearAllFilters && (

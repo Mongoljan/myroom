@@ -226,7 +226,7 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
         <SearchFormContainer compact={compact}>
           <form onSubmit={handleSearch}>
             <div 
-              className={`flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 ${compact ? '' : 'lg:divide-x divide-gray-200'}`}
+              className={`flex font-bold flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 ${compact ? '' : 'lg:divide-x divide-gray-200'}`}
               style={{ overflow: 'visible' }}
             >
               {/* Location Input */}
@@ -251,9 +251,9 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
               </div>
 
               {/* Date Range Picker */}
-              <div className={`lg:flex-1 ${compact ? 'p-2' : 'p-4'} w-full`}>
+              <div className={`lg:flex-1 ${compact ? 'p-1.5' : 'p-4'} w-full`}>
                 <div className="flex items-center">
-                  <Calendar className="w-6 h-6 text-gray-700 mr-4" />
+                  <Calendar className={`${compact ? 'w-5 h-5' : 'w-6 h-6'} text-gray-700 ${compact ? 'mr-2' : 'mr-4'}`} />
                   <div className="flex-1">
                     <div className="relative z-[1]">
                       <DateRangePicker

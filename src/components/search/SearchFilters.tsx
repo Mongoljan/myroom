@@ -70,7 +70,7 @@ interface FilterState {
   priceRange: [number, number];
   roomFeatures: number[];
   generalServices: number[];
-  bedTypes: string[];
+  bedTypes: string[] | Record<string, number>; // Support both old string[] and new Record<string, number>
   popularPlaces: string[];
   discounted: boolean;
   starRating: number[];
@@ -93,12 +93,20 @@ const STORAGE_KEY = 'hotel_search_filters';
 const RECENT_FILTERS_KEY = 'hotel_recent_filters';
 
 // Static data for features not available in API yet
+const PROPERTY_CATEGORIES = [
+  { id: 'budget', label: 'Хямд' },
+  { id: 'midRange', label: 'Дунд зэрэглэл' },
+  { id: 'luxury', label: 'Тансаг зэрэглэл' },
+  { id: 'familyFriendly', label: 'Гэр бүлд зориулсан' },
+  { id: 'business', label: 'Бизнес' }
+];
+
 const POPULAR_SEARCHES = [
   { id: 'breakfast', label: 'Өглөөний хоол' },
   { id: 'romantic', label: 'Романтик' },
   { id: '5star', label: '5 од' },
-  { id: 'spa', label: 'Спа' },
-  { id: 'pool', label: 'Усан сан' }
+  { id: 'airportTransport', label: 'Онгоцны буудлын тээвэр' },
+  { id: 'wifiIncluded', label: 'Wi-Fi багтсан' }
 ];
 
 const BED_TYPES = [
@@ -131,7 +139,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     priceRange: [0, 1000000], // Dynamic range based on actual data
     roomFeatures: [],
     generalServices: [],
-    bedTypes: [],
+    bedTypes: { single: 0, double: 0, queen: 0, king: 0 }, // Counter-based bed types
     popularPlaces: [],
     discounted: false,
     starRating: [],
@@ -208,6 +216,10 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
   // Save a new filter combination to recent filters
   const saveToRecentFilters = useCallback((filterState: FilterState) => {
     // Don't save if it's the default/empty filter state
+    const bedTypesEmpty = typeof filterState.bedTypes === 'object' && !Array.isArray(filterState.bedTypes)
+      ? Object.values(filterState.bedTypes).every(v => v === 0)
+      : Array.isArray(filterState.bedTypes) ? filterState.bedTypes.length === 0 : true;
+
     const isDefault = (
       filterState.propertyTypes.length === 0 &&
       filterState.popularSearches.length === 0 &&
@@ -215,7 +227,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
       filterState.priceRange[1] === 1000000 &&
       filterState.roomFeatures.length === 0 &&
       filterState.generalServices.length === 0 &&
-      filterState.bedTypes.length === 0 &&
+      bedTypesEmpty &&
       filterState.popularPlaces.length === 0 &&
       !filterState.discounted &&
       filterState.starRating.length === 0 &&
@@ -369,7 +381,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
       priceRange: [0, 1000000] as [number, number],
       roomFeatures: [],
       generalServices: [],
-      bedTypes: [],
+      bedTypes: { single: 0, double: 0, queen: 0, king: 0 },
       popularPlaces: [],
       discounted: false,
       starRating: [],
@@ -497,60 +509,65 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           <div className="text-xs text-gray-500">{t('search.filtersSection.loading')}</div>
         ) : (
           <>
-            {/* 1. Property Type */}
-            {apiData?.property_types && apiData.property_types.length > 0 ? (
-              <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.hotelType')}</h4>
-                <div className="space-y-1">
-                  {apiData.property_types.map((type) => {
-                    const isSelected = filters.propertyTypes?.includes(type.id) || false;
-                    return (
-                      <button
-                        key={type.id}
-                        onClick={() => updateFilters({
-                          propertyTypes: isSelected
-                            ? (filters.propertyTypes || []).filter(id => id !== type.id)
-                            : [...(filters.propertyTypes || []), type.id]
-                        })}
-                        className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
-                          isSelected
-                            ? 'border-primary-300 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <Building2 className="w-3 h-3 mr-1.5" />
-                        <span className="text-gray-700 flex-1">{type.name_mn}</span>
-                        {filterCounts[`property_${type.id}`] !== undefined && (
-                          <span className="text-xs text-gray-500 ml-1">
-                            ({filterCounts[`property_${type.id}`]})
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
+            {/* 1. Property Categories */}
+            <div className="space-y-2 border-b border-gray-100 pb-3">
+              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.hotelType')}</h4>
+              <div className="space-y-1">
+                {PROPERTY_CATEGORIES.map((category) => {
+                  const isSelected = filters.popularSearches?.includes(category.id) || false;
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => updateFilters({
+                        popularSearches: isSelected
+                          ? (filters.popularSearches || []).filter(id => id !== category.id)
+                          : [...(filters.popularSearches || []), category.id]
+                      })}
+                      className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
+                        isSelected
+                          ? 'border-primary-300 bg-primary-50 text-primary-700'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <Building2 className="w-3 h-3 mr-1.5" />
+                      <span className="text-gray-700 flex-1">{category.label}</span>
+                    </button>
+                  );
+                })}
               </div>
-            ) : (
-              <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.hotelType')}</h4>
-                <div className="text-xs text-gray-500">{t('common.loading')}</div>
-              </div>
-            )}
+            </div>
 
             {/* 2. Popular Searches */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
               <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.popularSearches')}</h4>
               <div className="space-y-1">
                 {POPULAR_SEARCHES.map((search) => {
-                  const isSelected = filters.popularSearches?.includes(search.id) || false;
+                  // For 5star, check if starRating includes 5
+                  const isSelected = search.id === '5star'
+                    ? filters.starRating?.includes(5) || false
+                    : filters.popularSearches?.includes(search.id) || false;
+
                   return (
                     <button
                       key={search.id}
-                      onClick={() => updateFilters({
-                        popularSearches: isSelected
+                      onClick={() => {
+                        const newPopularSearches = isSelected
                           ? (filters.popularSearches || []).filter(id => id !== search.id)
-                          : [...(filters.popularSearches || []), search.id]
-                      })}
+                          : [...(filters.popularSearches || []), search.id];
+
+                        // If it's 5star, also update the starRating filter
+                        let newStarRating = filters.starRating || [];
+                        if (search.id === '5star') {
+                          newStarRating = isSelected
+                            ? (filters.starRating || []).filter(s => s !== 5)
+                            : [...(filters.starRating || []), 5];
+                        }
+
+                        updateFilters({
+                          popularSearches: newPopularSearches,
+                          starRating: newStarRating
+                        });
+                      }}
                       className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
                         isSelected
                           ? 'border-primary-300 bg-primary-50 text-primary-700'
@@ -568,13 +585,13 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {/* 3. Price Range */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.priceRange')}</h4>
+                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.price')}</h4>
                 <span className="text-xs text-gray-500">
                   ₮{filters.priceRange[0].toLocaleString()}-{filters.priceRange[1].toLocaleString()}
                 </span>
               </div>
 
-              <div className="space-y-1.5">
+              <div className="grid grid-cols-2 gap-1.5">
                 {[
                   { label: '< 50K', min: 0, max: 50000 },
                   { label: '50K - 100K', min: 50000, max: 100000 },
@@ -597,15 +614,15 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                     <button
                       key={range.label}
                       onClick={() => updateFilters({ priceRange: [range.min, range.max] })}
-                      className={`w-full p-2 rounded-md border text-xs transition-all flex items-center justify-between ${
+                      className={`w-full p-1.5 rounded-md border text-xs transition-all flex flex-col items-center justify-center ${
                         isSelected
                           ? 'border-primary-500 bg-primary-50 text-primary-700'
                           : 'border-gray-200 hover:border-gray-300 bg-white text-gray-600'
                       }`}
                     >
-                      <span>{range.label}</span>
+                      <span className="font-medium">{range.label}</span>
                       {count !== undefined && (
-                        <span className="text-xs text-gray-500">({count})</span>
+                        <span className="text-[10px] text-gray-500">({count})</span>
                       )}
                     </button>
                   );
@@ -613,7 +630,51 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             </div>
 
-            {/* 4. Room Features */}
+            {/* 4. Hotel Star Rating (буудлын зэрэглэл) */}
+            <div className="space-y-2 border-b border-gray-100 pb-3">
+              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.hotelStarRating')}</h4>
+              <div className="flex gap-1.5 justify-between">
+                {[1, 2, 3, 4, 5].map((stars) => {
+                  const isSelected = filters.starRating?.includes(stars) || false;
+                  return (
+                    <button
+                      key={stars}
+                      onClick={() => {
+                        const newStarRating = isSelected
+                          ? (filters.starRating || []).filter(s => s !== stars)
+                          : [...(filters.starRating || []), stars];
+
+                        // If it's 5 star, also sync with popular searches
+                        let newPopularSearches = filters.popularSearches || [];
+                        if (stars === 5) {
+                          newPopularSearches = isSelected
+                            ? (filters.popularSearches || []).filter(id => id !== '5star')
+                            : [...(filters.popularSearches || []), '5star'];
+                        }
+
+                        updateFilters({
+                          starRating: newStarRating,
+                          popularSearches: newPopularSearches
+                        });
+                      }}
+                      className={`flex-1 p-2 rounded-md border text-xs transition-all flex flex-col items-center justify-center ${
+                        isSelected
+                          ? 'border-primary-500 bg-primary-50 text-primary-700'
+                          : 'border-gray-200 hover:border-gray-300 bg-white text-gray-600'
+                      }`}
+                    >
+                      <Star className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
+                      <span className="font-medium">{stars}</span>
+                      {filterCounts[`rating_${stars}`] !== undefined && (
+                        <span className="text-[10px] text-gray-500">({filterCounts[`rating_${stars}`]})</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 5. Room Features */}
             {roomFeatureFacilities.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 pb-3">
                 <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.roomFeatures')}</h4>
@@ -653,7 +714,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             )}
 
-            {/* 5. General Services */}
+            {/* 6. General Services */}
             {generalServiceFacilities.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 pb-3">
                 <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.generalServices')}</h4>
@@ -693,40 +754,56 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             )}
 
-            {/* 6. Bed Types */}
+            {/* 7. Bed Types */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
               <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.bedType')}</h4>
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 {BED_TYPES.map((bed) => {
-                  const isSelected = filters.bedTypes?.includes(bed.id) || false;
+                  const bedTypesObj = typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)
+                    ? filters.bedTypes
+                    : { single: 0, double: 0, queen: 0, king: 0 };
+                  const count = bedTypesObj[bed.id as keyof typeof bedTypesObj] || 0;
+
                   return (
-                    <button
+                    <div
                       key={bed.id}
-                      onClick={() => updateFilters({
-                        bedTypes: isSelected
-                          ? (filters.bedTypes || []).filter(id => id !== bed.id)
-                          : [...(filters.bedTypes || []), bed.id]
-                      })}
-                      className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
-                        isSelected
-                          ? 'border-primary-300 bg-primary-50 text-primary-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className="flex items-center justify-between p-1.5 rounded-md border border-gray-200 bg-white"
                     >
-                      <Bed className="w-3 h-3 mr-1.5" />
-                      <span className="text-gray-700 flex-1">{bed.label}</span>
-                      {filterCounts[`bed_type_${bed.id}`] !== undefined && (
-                        <span className="text-xs text-gray-500 ml-1">
-                          ({filterCounts[`bed_type_${bed.id}`]})
-                        </span>
-                      )}
-                    </button>
+                      <div className="flex items-center gap-1.5">
+                        <Bed className="w-3 h-3 text-gray-600" />
+                        <span className="text-xs text-gray-700">{bed.label}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => {
+                            const newBedTypes = { ...bedTypesObj };
+                            newBedTypes[bed.id as keyof typeof newBedTypes] = Math.max(0, count - 1);
+                            updateFilters({ bedTypes: newBedTypes });
+                          }}
+                          className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={count === 0}
+                        >
+                          -
+                        </button>
+                        <span className="w-6 text-center text-xs font-medium">{count}</span>
+                        <button
+                          onClick={() => {
+                            const newBedTypes = { ...bedTypesObj };
+                            newBedTypes[bed.id as keyof typeof newBedTypes] = count + 1;
+                            updateFilters({ bedTypes: newBedTypes });
+                          }}
+                          className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50 text-gray-600"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                   );
                 })}
               </div>
             </div>
 
-            {/* 7. Popular Places */}
+            {/* 8. Popular Places */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
               <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.popularPlaces')}</h4>
               <div className="space-y-1">
@@ -754,7 +831,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             </div>
 
-            {/* 8. Discounted */}
+            {/* 9. Discounted */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
               <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.discounted')}</h4>
               <button
@@ -769,11 +846,11 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 <span className="text-gray-700">{t('search.discountedPrice')}</span>
               </button>
             </div>
-            {/* 9. Star Rating */}
+            {/* 10. Guest Rating (зочдын үнэлгээ) - Compact version */}
             {apiData?.ratings && apiData.ratings.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 pb-3">
                 <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.guestRating')}</h4>
-                <div className="space-y-1">
+                <div className="grid grid-cols-5 gap-1">
                   {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
                     const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
                     if (stars === 0) return null;
@@ -786,22 +863,16 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                             ? (filters.starRating || []).filter(s => s !== stars)
                             : [...(filters.starRating || []), stars]
                         })}
-                        className={`flex items-center gap-1.5 w-full p-1.5 rounded-md border text-xs transition-colors ${
+                        className={`p-1.5 rounded-md border text-xs transition-all flex flex-col items-center justify-center ${
                           isSelected
-                            ? 'border-primary-300 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? 'border-primary-500 bg-primary-50 text-primary-700'
+                            : 'border-gray-200 hover:border-gray-300 bg-white text-gray-600'
                         }`}
                       >
-                        <div className="flex gap-0.5">
-                          {Array.from({ length: stars }, (_, i) => (
-                            <Star key={i} className="w-2.5 h-2.5 fill-yellow-400 text-yellow-400" />
-                          ))}
-                        </div>
-                        <span className="text-gray-700 flex-1">{t('search.filtersSection.starsPlus', { rating: stars })}</span>
+                        <Star className={`w-3 h-3 mb-0.5 ${isSelected ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
+                        <span className="font-medium text-[10px]">{stars}+</span>
                         {filterCounts[`rating_${stars}`] !== undefined && (
-                          <span className="text-xs text-gray-500 ml-1">
-                            ({filterCounts[`rating_${stars}`]})
-                          </span>
+                          <span className="text-[9px] text-gray-500">({filterCounts[`rating_${stars}`]})</span>
                         )}
                       </button>
                     );
@@ -815,7 +886,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             )}
 
-            {/* 10. Outdoor Areas */}
+            {/* 11. Outdoor Areas */}
             {outdoorFacilities.length > 0 ? (
               <div className="space-y-2">
                 <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.outdoorArea')}</h4>

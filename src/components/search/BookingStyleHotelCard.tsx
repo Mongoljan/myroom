@@ -1,11 +1,12 @@
 'use client';
 
 import Image from 'next/image';
-import { Star, MapPin, Heart, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed, BedDouble, BedSingle } from 'lucide-react';
+import { Star, MapPin, Heart, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed, BedDouble, BedSingle, X } from 'lucide-react';
 import { FaChild } from 'react-icons/fa';
 import { SearchHotelResult, AdditionalInfo, PropertyDetails, RoomPrice, Room } from '@/types/api';
 import { SEARCH_DESIGN_SYSTEM } from '@/styles/search-design-system';
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
@@ -36,6 +37,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
   const [_roomPrices, setRoomPrices] = useState<RoomPrice[]>([]);
   const [cheapestRoom, setCheapestRoom] = useState<Room | null>(null);
   const [cheapestPrice, setCheapestPrice] = useState<RoomPrice | null>(null);
+  const [showAllFacilities, setShowAllFacilities] = useState(false);
   interface RoomReferenceData {
     room_types?: { id: number; name: string }[];
     room_rates?: { id: number; name: string }[];
@@ -279,12 +281,15 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
   if (viewMode === 'list') {
     return (
         <div
-          className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT} border ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group cursor-pointer`}
-          onClick={() => window.location.href = buildHotelUrl()}
+          className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT} border ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group cursor-pointer h-[280px]`}
+          onClick={(e) => {
+            e.preventDefault();
+            window.open(buildHotelUrl(), '_blank');
+          }}
         >
-          <div className="flex flex-col md:flex-row">
+          <div className="flex flex-col md:flex-row h-full">
             {/* Hotel Image */}
-            <div className="relative w-60 flex-shrink-0 overflow-hidden" style={{ aspectRatio: '4/3' }}>
+            <div className="relative w-60 flex-shrink-0 overflow-hidden h-full">
               <Image
                 src={propertyDetails?.property_photos?.[0]?.image ||
                      (typeof hotel.images?.cover === 'string' ? hotel.images.cover :
@@ -328,7 +333,11 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   
                   <div className={`flex items-center gap-1 ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.DESCRIPTION_SMALL} mb-1.5`}>
                     <MapPin className="w-3 h-3" />
-                    <span>{hotel.location.province_city}</span>
+                    <span>
+                      {[hotel.location.province_city, hotel.location.soum, hotel.location.district]
+                        .filter(Boolean)
+                        .join(', ')}
+                    </span>
                       {hotel.google_map && (
                     <a
                       href={hotel.google_map}
@@ -337,7 +346,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                       onClick={(e) => e.stopPropagation()}
                       className={`${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.LINK} whitespace-nowrap`}
                     >
-                      View on Map
+                      {t('hotel.viewOnMap', 'Газрын зураг дээр харах')}
                     </a>
                   )}
                   </div>
@@ -359,34 +368,34 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   <div className="flex-2">
                   {/* Room Type Header with Icons */}
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-semibold text-gray-900">
-                        {getRoomTypeName(cheapestRoom.room_type)}
-                      </h4>
-                      {/* Capacity Icons */}
-                      <div className="flex items-center gap-1">
-                        {renderPersonIcons(cheapestRoom.adultQty || 2, cheapestRoom.childQty || 0)}
-                        {cheapestRoom.bed_type && (
-                          <>
-                            <span className="text-gray-300 mx-1">|</span>
-                            {renderBedIcons(cheapestRoom.bed_type, 1)}
-                          </>
-                        )}
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-semibold text-gray-900">
+                          {getRoomTypeName(cheapestRoom.room_type)}
+                        </h4>
+                        {/* Capacity Icons */}
+                        <div className="flex items-center gap-1">
+                          {renderPersonIcons(cheapestRoom.adultQty || 2, cheapestRoom.childQty || 0)}
+                          {cheapestRoom.bed_type && (
+                            <>
+                              <span className="text-gray-300 mx-1">|</span>
+                              {renderBedIcons(cheapestRoom.bed_type, 1)}
+                            </>
+                          )}
+                        </div>
                       </div>
+                      {/* Room Category */}
+                      <p className="text-xs text-gray-600">
+                        {getRoomCategoryName(cheapestRoom.room_category)}
+                        {cheapestRoom.room_size && (
+                          <> • {cheapestRoom.room_size}м²</>
+                        )}
+                      </p>
                     </div>
-                    
-                    
                   </div>
 
                   {/* Room Details */}
                   <div className="space-y-1.5 mb-3">
-                    {/* Room Size and Category */}
-                    <p className="text-xs text-gray-600">
-                      {getRoomCategoryName(cheapestRoom.room_category)}
-                      {cheapestRoom.room_size && (
-                        <> ({cheapestRoom.room_size}м x {cheapestRoom.room_size}м) • 2ш</>
-                      )}
-                    </p>
 
                     {/* Cancellation Policy */}
                     <p className="text-xs text-gray-600">
@@ -402,12 +411,69 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   </div>
 
                   {/* Facility Tags */}
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {hotel.general_facilities.slice(0, 6).map((facility, index) => (
-                      <span key={index} className="inline-flex items-center text-xs text-gray-700 bg-gray-100 rounded px-2 py-1 border border-gray-200">
-                        {facility}
-                      </span>
-                    ))}
+                  <div className="mb-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      {hotel.general_facilities.slice(0, 4).map((facility, index) => (
+                        <span key={index} className="inline-flex items-center text-xs text-gray-700 bg-gray-100 rounded px-2 py-1 border border-gray-200">
+                          {facility}
+                        </span>
+                      ))}
+                      {hotel.general_facilities.length > 4 && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowAllFacilities(true);
+                          }}
+                          className="inline-flex items-center text-xs text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded px-2 py-1 border border-blue-200 transition-colors"
+                        >
+                          {t('hotel.others', 'Бусад')} +{hotel.general_facilities.length - 4}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Facilities Modal - Using Portal to render outside card */}
+                    {showAllFacilities && typeof window !== 'undefined' && createPortal(
+                      <div
+                        className="fixed inset-0 bg-black/50 z-[9999] flex items-center justify-center p-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowAllFacilities(false);
+                        }}
+                      >
+                        <div
+                          className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              {t('hotel.allFacilities', 'Бүх тохижилт')}
+                            </h3>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setShowAllFacilities(false);
+                              }}
+                              className="text-gray-400 hover:text-gray-600 transition-colors"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+                          <div className="p-4 overflow-y-auto max-h-[calc(80vh-80px)]">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                              {hotel.general_facilities.map((facility, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 border border-gray-200"
+                                >
+                                  {facility}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>,
+                      document.body
+                    )}
                   </div>
                   </div>
 
@@ -471,8 +537,11 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
   // Grid View - Compact
   return (
       <div
-        className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT} border ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group h-full flex flex-col cursor-pointer`}
-        onClick={() => window.location.href = buildHotelUrl()}
+        className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT} border ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group h-[420px] flex flex-col cursor-pointer`}
+        onClick={(e) => {
+          e.preventDefault();
+          window.open(buildHotelUrl(), '_blank');
+        }}
       >
         {/* Hotel Image */}
         <div className="relative w-full overflow-hidden flex-shrink-0" style={{ aspectRatio: '4/3' }}>
@@ -517,7 +586,11 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
           
           <div className={`flex items-center ${SEARCH_DESIGN_SYSTEM.COLORS.TEXT_SECONDARY} mb-1.5`}>
             <MapPin className="w-3 h-3 mr-1" />
-            <span className="text-xs line-clamp-1">{hotel.location.province_city}</span>
+            <span className="text-xs line-clamp-1">
+              {[hotel.location.province_city, hotel.location.soum, hotel.location.district]
+                .filter(Boolean)
+                .join(', ')}
+            </span>
           </div>
 
           {/* Key amenities */}
