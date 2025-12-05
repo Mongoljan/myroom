@@ -488,10 +488,11 @@ export default function SearchResults() {
     if (filters.bedTypes) {
       if (Array.isArray(filters.bedTypes) && filters.bedTypes.length > 0) {
         // Old format: array of bed type strings
+        const bedTypesArray = filters.bedTypes as string[];
         filtered = filtered.filter(hotel => {
           if (!hotel.cheapest_room) return false;
           const roomCategory = hotel.cheapest_room.room_category_label.toLowerCase();
-          return filters.bedTypes.some((bedType: string) => {
+          return bedTypesArray.some((bedType: string) => {
             const bedTypeLower = bedType.toLowerCase();
             return roomCategory.includes(bedTypeLower) ||
                    roomCategory.includes(bedTypeLower.replace(' ор', '').replace('ор', ''));

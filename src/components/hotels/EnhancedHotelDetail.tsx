@@ -24,6 +24,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [basicInfo, setBasicInfo] = useState<PropertyBasicInfo | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [address, setAddress] = useState<ConfirmAddress | null>(null);
   const [propertyImages, setPropertyImages] = useState<PropertyImage[]>([]);
   const [additionalInfo, setAdditionalInfo] = useState<AdditionalInfo | null>(null);

@@ -11,7 +11,7 @@ interface FilterState {
   priceRange: [number, number];
   roomFeatures: number[];
   generalServices: number[];
-  bedTypes: string[];
+  bedTypes: string[] | Record<string, number>;
   popularPlaces: string[];
   discounted: boolean;
   starRating: number[];

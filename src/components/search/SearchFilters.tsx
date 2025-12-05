@@ -338,9 +338,17 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
         });
         break;
       case 'bedTypes':
-        updateFilters({
-          bedTypes: (filters.bedTypes || []).filter(bed => bed !== value)
-        });
+        // Handle bedTypes as Record<string, number>
+        if (typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)) {
+          const newBedTypes = { ...filters.bedTypes };
+          newBedTypes[value as keyof typeof newBedTypes] = 0;
+          updateFilters({ bedTypes: newBedTypes });
+        } else {
+          // Fallback for old string[] format
+          updateFilters({
+            bedTypes: Array.isArray(filters.bedTypes) ? filters.bedTypes.filter(bed => bed !== value) : []
+          });
+        }
         break;
       case 'popularPlaces':
         updateFilters({
