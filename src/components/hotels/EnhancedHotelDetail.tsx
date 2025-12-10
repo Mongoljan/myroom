@@ -474,7 +474,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                 src={image.url || ''}
                 alt={`${hotelName} - ${index + 1}`}
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                className="object-cover "
               />
               {index === 3 && allImages.length > 5 && (
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

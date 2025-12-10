@@ -491,7 +491,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           onRemoveFilter={handleRemoveFilter}
           onClearAll={handleClearAllFilters}
         /> */}
-        <div className="bg-white rounded-lg border border-gray-200 p-3 space-y-4">
+        <div className="space-y-4">
           <h3 className="text-sm font-semibold text-gray-900">{t('search.filtersSection.title')}</h3>
 
           {/* Recent Filters Section */}
@@ -524,22 +524,22 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 {PROPERTY_CATEGORIES.map((category) => {
                   const isSelected = filters.popularSearches?.includes(category.id) || false;
                   return (
-                    <button
+                    <label
                       key={category.id}
-                      onClick={() => updateFilters({
-                        popularSearches: isSelected
-                          ? (filters.popularSearches || []).filter(id => id !== category.id)
-                          : [...(filters.popularSearches || []), category.id]
-                      })}
-                      className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
-                        isSelected
-                          ? 'border-primary-300 bg-primary-50 text-primary-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
                     >
-                      <Building2 className="w-3 h-3 mr-1.5" />
-                      <span className="text-gray-700 flex-1">{category.label}</span>
-                    </button>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => updateFilters({
+                          popularSearches: isSelected
+                            ? (filters.popularSearches || []).filter(id => id !== category.id)
+                            : [...(filters.popularSearches || []), category.id]
+                        })}
+                        className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">{category.label}</span>
+                    </label>
                   );
                 })}
               </div>
@@ -556,35 +556,35 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                     : filters.popularSearches?.includes(search.id) || false;
 
                   return (
-                    <button
+                    <label
                       key={search.id}
-                      onClick={() => {
-                        const newPopularSearches = isSelected
-                          ? (filters.popularSearches || []).filter(id => id !== search.id)
-                          : [...(filters.popularSearches || []), search.id];
-
-                        // If it's 5star, also update the starRating filter
-                        let newStarRating = filters.starRating || [];
-                        if (search.id === '5star') {
-                          newStarRating = isSelected
-                            ? (filters.starRating || []).filter(s => s !== 5)
-                            : [...(filters.starRating || []), 5];
-                        }
-
-                        updateFilters({
-                          popularSearches: newPopularSearches,
-                          starRating: newStarRating
-                        });
-                      }}
-                      className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
-                        isSelected
-                          ? 'border-primary-300 bg-primary-50 text-primary-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
                     >
-                      <Star className="w-3 h-3 mr-1.5" />
-                      <span className="text-gray-700">{search.label}</span>
-                    </button>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => {
+                          const newPopularSearches = isSelected
+                            ? (filters.popularSearches || []).filter(id => id !== search.id)
+                            : [...(filters.popularSearches || []), search.id];
+
+                          // If it's 5star, also update the starRating filter
+                          let newStarRating = filters.starRating || [];
+                          if (search.id === '5star') {
+                            newStarRating = isSelected
+                              ? (filters.starRating || []).filter(s => s !== 5)
+                              : [...(filters.starRating || []), 5];
+                          }
+
+                          updateFilters({
+                            popularSearches: newPopularSearches,
+                            starRating: newStarRating
+                          });
+                        }}
+                        className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">{search.label}</span>
+                    </label>
                   );
                 })}
               </div>
@@ -690,27 +690,27 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                   {roomFeatureFacilities.map((facility) => {
                     const isSelected = filters.roomFeatures?.includes(facility.id) || false;
                     return (
-                      <button
+                      <label
                         key={facility.id}
-                        onClick={() => updateFilters({
-                          roomFeatures: isSelected
-                            ? (filters.roomFeatures || []).filter(id => id !== facility.id)
-                            : [...(filters.roomFeatures || []), facility.id]
-                        })}
-                        className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
-                          isSelected
-                            ? 'border-primary-300 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                        className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
                       >
-                        {getFacilityIcon(facility.name_en)}
-                        <span className="text-gray-700 ml-1.5 flex-1">{facility.name_mn}</span>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => updateFilters({
+                            roomFeatures: isSelected
+                              ? (filters.roomFeatures || []).filter(id => id !== facility.id)
+                              : [...(filters.roomFeatures || []), facility.id]
+                          })}
+                          className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                        />
+                        <span className="text-sm text-gray-700 flex-1">{facility.name_mn}</span>
                         {filterCounts[`facility_${facility.id}`] !== undefined && (
-                          <span className="text-xs text-gray-500 ml-1">
+                          <span className="text-xs text-gray-500">
                             ({filterCounts[`facility_${facility.id}`]})
                           </span>
                         )}
-                      </button>
+                      </label>
                     );
                   })}
                 </div>
@@ -730,27 +730,27 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                   {generalServiceFacilities.map((facility) => {
                     const isSelected = filters.generalServices?.includes(facility.id) || false;
                     return (
-                      <button
+                      <label
                         key={facility.id}
-                        onClick={() => updateFilters({
-                          generalServices: isSelected
-                            ? (filters.generalServices || []).filter(id => id !== facility.id)
-                            : [...(filters.generalServices || []), facility.id]
-                        })}
-                        className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
-                          isSelected
-                            ? 'border-primary-300 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                        className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
                       >
-                        {getFacilityIcon(facility.name_en)}
-                        <span className="text-gray-700 ml-1.5 flex-1">{facility.name_mn}</span>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => updateFilters({
+                            generalServices: isSelected
+                              ? (filters.generalServices || []).filter(id => id !== facility.id)
+                              : [...(filters.generalServices || []), facility.id]
+                          })}
+                          className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                        />
+                        <span className="text-sm text-gray-700 flex-1">{facility.name_mn}</span>
                         {filterCounts[`facility_${facility.id}`] !== undefined && (
-                          <span className="text-xs text-gray-500 ml-1">
+                          <span className="text-xs text-gray-500">
                             ({filterCounts[`facility_${facility.id}`]})
                           </span>
                         )}
-                      </button>
+                      </label>
                     );
                   })}
                 </div>
@@ -818,22 +818,22 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 {POPULAR_PLACES.map((place) => {
                   const isSelected = filters.popularPlaces?.includes(place.id) || false;
                   return (
-                    <button
+                    <label
                       key={place.id}
-                      onClick={() => updateFilters({
-                        popularPlaces: isSelected
-                          ? (filters.popularPlaces || []).filter(id => id !== place.id)
-                          : [...(filters.popularPlaces || []), place.id]
-                      })}
-                      className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
-                        isSelected
-                          ? 'border-primary-300 bg-primary-50 text-primary-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
                     >
-                      <MapPin className="w-3 h-3 mr-1.5" />
-                      <span className="text-gray-700">{place.label}</span>
-                    </button>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => updateFilters({
+                          popularPlaces: isSelected
+                            ? (filters.popularPlaces || []).filter(id => id !== place.id)
+                            : [...(filters.popularPlaces || []), place.id]
+                        })}
+                        className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                      />
+                      <span className="text-sm text-gray-700">{place.label}</span>
+                    </label>
                   );
                 })}
               </div>
@@ -842,17 +842,15 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {/* 9. Discounted */}
             <div className="space-y-2 border-b border-gray-100 pb-3">
               <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.discounted')}</h4>
-              <button
-                onClick={() => updateFilters({ discounted: !filters.discounted })}
-                className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
-                  filters.discounted
-                    ? 'border-primary-300 bg-primary-50 text-primary-700'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <Star className="w-3 h-3 mr-1.5" />
-                <span className="text-gray-700">{t('search.discountedPrice')}</span>
-              </button>
+              <label className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                <input
+                  type="checkbox"
+                  checked={filters.discounted}
+                  onChange={() => updateFilters({ discounted: !filters.discounted })}
+                  className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                />
+                <span className="text-sm text-gray-700">{t('search.discountedPrice')}</span>
+              </label>
             </div>
             {/* 10. Guest Rating (зочдын үнэлгээ) - Compact version */}
             {apiData?.ratings && apiData.ratings.length > 0 ? (
@@ -902,27 +900,27 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                   {outdoorFacilities.map((facility) => {
                     const isSelected = filters.outdoorAreas?.includes(facility.id) || false;
                     return (
-                      <button
+                      <label
                         key={facility.id}
-                        onClick={() => updateFilters({
-                          outdoorAreas: isSelected
-                            ? (filters.outdoorAreas || []).filter(id => id !== facility.id)
-                            : [...(filters.outdoorAreas || []), facility.id]
-                        })}
-                        className={`flex items-center w-full p-1.5 rounded-md border text-xs transition-colors ${
-                          isSelected
-                            ? 'border-primary-300 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                        className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
                       >
-                        {getFacilityIcon(facility.name_en)}
-                        <span className="text-gray-700 ml-1.5 flex-1">{facility.name_mn}</span>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => updateFilters({
+                            outdoorAreas: isSelected
+                              ? (filters.outdoorAreas || []).filter(id => id !== facility.id)
+                              : [...(filters.outdoorAreas || []), facility.id]
+                          })}
+                          className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                        />
+                        <span className="text-sm text-gray-700 flex-1">{facility.name_mn}</span>
                         {filterCounts[`facility_${facility.id}`] !== undefined && (
-                          <span className="text-xs text-gray-500 ml-1">
+                          <span className="text-xs text-gray-500">
                             ({filterCounts[`facility_${facility.id}`]})
                           </span>
                         )}
-                      </button>
+                      </label>
                     );
                   })}
                 </div>

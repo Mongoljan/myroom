@@ -212,7 +212,7 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
   const activeFilters = getActiveFilters();
 
   return (
-    <div className="bg-white ">
+    <div className="">
       <div className="flex  ">
         <div className="flex items-center gap-1.5 w-[160px] ">
           <Filter className="w-3.5 h-3.5 text-gray-600" />

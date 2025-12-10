@@ -644,13 +644,13 @@ export default function SearchResults() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen ">
       <SearchHeader />
 
       {/* <BreadcrumbNavigation searchLocation={searchLocation} /> */}
 
       {/* Main Results Container */}
-      <div className="bg-gray-50">
+      <div className="">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row gap-4">
             {/* Filters Sidebar with Sticky Behavior */}

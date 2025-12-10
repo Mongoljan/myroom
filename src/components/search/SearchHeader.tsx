@@ -8,31 +8,32 @@ export default function SearchHeader() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Make sticky after scrolling 80px (after the main header)
+      // Make sticky after scrolling 80px
       setIsSticky(window.scrollY > 80);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <>
-      <div className={`
-        ${isSticky
-          ? 'fixed top-0 left-0 right-0 z-40 bg-white shadow-md'
-          : 'relative bg-white'
-        }
-        transition-all duration-300
-      `}>
-        {/* Content */}
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${isSticky ? 'py-2' : 'py-3'}`}>
-          <HotelSearchForm compact={isSticky} />
+      <div
+        className={`
+          ${isSticky ? 'fixed top-0 left-0 right-0 z-40 shadow-md' : 'relative'}
+          bg-white
+          transition-all duration-300 ease-out
+        `}
+      >
+        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ease-out ${isSticky ? 'py-2' : 'py-3'}`}>
+          <div className="bg-white border border-primary rounded-xl overflow-hidden transition-all duration-300 ease-out">
+            <HotelSearchForm compact={isSticky} />
+          </div>
         </div>
       </div>
 
       {/* Spacer to prevent content jump when header becomes fixed */}
-      {isSticky && <div className="h-[80px]"></div>}
+      {isSticky && <div className="h-[72px]" />}
     </>
   );
 }

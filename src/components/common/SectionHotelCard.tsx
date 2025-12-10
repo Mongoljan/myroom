@@ -79,7 +79,7 @@ export default function SectionHotelCard({
             src={imageUrl}
             alt={`${name} - Hotel image`}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover"
           />
 
           {/* Badge - Top Left */}

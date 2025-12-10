@@ -281,7 +281,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
   if (viewMode === 'list') {
     return (
         <div
-          className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT} border ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group cursor-pointer h-[280px]`}
+          className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} border ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT}  ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group cursor-pointer h-[280px]`}
           onClick={(e) => {
             e.preventDefault();
             window.open(buildHotelUrl(), '_blank');
@@ -297,7 +297,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                       'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop')}
                 alt={hotel.property_name}
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                className="object-cover"
                 sizes="240px"
                 unoptimized
               />
@@ -552,7 +552,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop')}
             alt={hotel.property_name}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover"
             sizes="280px"
             unoptimized
           />

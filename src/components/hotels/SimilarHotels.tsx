@@ -126,7 +126,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                   }
                   alt={hotel.property_name}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover "
                 />
                 {hotel.priceOptions?.hasDiscount && (
                   <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">

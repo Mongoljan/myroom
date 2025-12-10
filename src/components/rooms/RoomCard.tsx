@@ -115,7 +115,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             src={`https://dev.kacc.mn${roomImage}`}
             alt={room.room_Description}
             fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-cover "
             onError={() => setImageError(true)}
           />
         ) : (

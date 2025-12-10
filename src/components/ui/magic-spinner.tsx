@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 // Magic UI inspired spinner
 interface MagicSpinnerProps {
@@ -87,6 +88,8 @@ export function SpinningProgress() {
 
 // Hotel search specific loading animation
 export function HotelSearchSpinner() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col items-center justify-center py-12">
       <div className="relative mb-6">
@@ -140,9 +143,9 @@ export function HotelSearchSpinner() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
       >
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Finding perfect hotels</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('common.findingHotels')}</h3>
         <div className="flex items-center justify-center gap-1">
-          <span className="text-gray-600">Searching</span>
+          <span className="text-gray-600">{t('common.searching')}</span>
           {[0, 1, 2].map((i) => (
             <motion.span
               key={i}

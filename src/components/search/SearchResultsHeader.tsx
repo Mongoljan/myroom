@@ -76,7 +76,7 @@ export default function SearchResultsHeader({
 
 
       {/* Main Header */}
-      <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 relative overflow-hidden">
+      <div className=" backdrop-blur-sm rounded-lg p-2 relative overflow-hidden">
         {/* Subtle gradient background */}
         <div className="relative flex justify-between items-center gap-x-4 border-b border-gray-100 mb-2 pb-2">
 
@@ -107,7 +107,7 @@ export default function SearchResultsHeader({
                 <select
                   value={sortBy}
                   onChange={(e) => onSort(e.target.value)}
-                  className="appearance-none bg-white border border-gray-300 rounded-md px-2 py-1 pr-8 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[190px]"
+                  className="appearance-none bg-white shadow-[0_0_4px_rgba(0,0,0,0.15)] rounded-md px-2 py-1 pr-8 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[190px]"
                 >
                   <option value="default">{t('search.sortOptions.default')}</option>
                   <option value="price_low">{t('search.sortOptions.priceLowToHigh')}</option>
@@ -134,7 +134,7 @@ export default function SearchResultsHeader({
                     onSearchByName(e.target.value);
                   }}
                   placeholder={t('search.searchByNamePlaceholder')}
-                  className="appearance-none bg-white border border-gray-300 rounded-md pl-9 pr-3 py-1 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[220px]"
+                  className="appearance-none bg-white shadow-[0_0_4px_rgba(0,0,0,0.15)] rounded-md pl-9 pr-3 py-1 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[220px]"
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <Search className="w-4 h-4 text-gray-400" />
