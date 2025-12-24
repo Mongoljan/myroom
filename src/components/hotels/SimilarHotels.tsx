@@ -47,11 +47,33 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
             const suggestedData = await ApiService.getSuggestedHotels('popular');
             const results = suggestedData?.results || [];
             if (Array.isArray(results)) {
-              const additionalHotels = results
-                .filter(hotel => hotel?.hotel_id && hotel.hotel_id !== currentId)
-                .slice(0, 4 - similarHotels.length);
+              // Transform suggested hotels to match SearchHotelResult structure
+              const transformedHotels = results
+                .filter(item => item?.hotel?.pk && item.hotel.pk !== currentId)
+                .slice(0, 4 - similarHotels.length)
+                .map(item => ({
+                  hotel_id: item.hotel.pk,
+                  property_name: item.hotel.PropertyName,
+                  location: {
+                    province_city: item.hotel.location || '',
+                    soum: ''
+                  },
+                  images: {
+                    cover: item.cheapest_room?.images?.[0]?.image || '/placeholder-hotel.jpg',
+                    gallery: item.cheapest_room?.images?.map(img => ({ url: img.image, description: img.description })) || []
+                  },
+                  rating_stars: { value: '0', label: '' },
+                  cheapest_room: item.cheapest_room ? {
+                    price_per_night: item.cheapest_room.final_price || item.cheapest_room.base_price,
+                    price_per_night_raw: item.cheapest_room.base_price,
+                    pricesetting: null
+                  } : null,
+                  general_facilities: [],
+                  min_estimated_total: item.cheapest_room?.final_price || 0,
+                  google_map: ''
+                } as unknown as SearchHotelResult));
 
-              similarHotels = [...similarHotels, ...additionalHotels];
+              similarHotels = [...similarHotels, ...transformedHotels];
             }
           } catch (error) {
             console.error('Failed to fetch suggested hotels:', error);

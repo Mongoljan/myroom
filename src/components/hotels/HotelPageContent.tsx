@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Suspense } from 'react';
+
 import EnhancedHotelDetail from '@/components/hotels/EnhancedHotelDetail';
 import HotelAmenities from '@/components/hotels/HotelAmenities';
-import HotelReviews from '@/components/hotels/HotelReviews';
+// import HotelReviews from '@/components/hotels/HotelReviews'; // TODO: Enable when reviews API is ready
 import SimilarHotels from '@/components/hotels/SimilarHotels';
 import ImprovedHotelRoomsSection from '@/components/hotels/ImprovedHotelRoomsSection';
 import HotelSubNav from '@/components/hotels/HotelSubNav';
-import HotelFAQ from '@/components/hotels/HotelFAQ';
+// import HotelFAQ from '@/components/hotels/HotelFAQ'; // TODO: Enable when FAQ API is ready
 import HotelHouseRules from '@/components/hotels/HotelHouseRules';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
