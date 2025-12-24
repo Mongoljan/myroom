@@ -8,7 +8,7 @@ import {
   Wine, Briefcase, PawPrint, Cigarette, Clock,
   Palmtree, Bus, WashingMachine, Heater, Mountain,
   ArrowLeft, Bell as ConciergeBell, Zap, Hotel, DollarSign, Package,
-  MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart
+  MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart, Layers3 as Layers
 } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -24,7 +24,6 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [basicInfo, setBasicInfo] = useState<PropertyBasicInfo | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [address, setAddress] = useState<ConfirmAddress | null>(null);
   const [propertyImages, setPropertyImages] = useState<PropertyImage[]>([]);
   const [additionalInfo, setAdditionalInfo] = useState<AdditionalInfo | null>(null);
@@ -32,6 +31,8 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const [propertyDetails, setPropertyDetails] = useState<PropertyDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [facilitiesMap, setFacilitiesMap] = useState<Map<number, Facility>>(new Map());
+  const [provinceMap, setProvinceMap] = useState<Map<number, string>>(new Map());
+  const [soumMap, setSoumMap] = useState<Map<number, string>>(new Map());
 
   useEffect(() => {
     const fetchHotelDetails = async () => {
@@ -65,6 +66,19 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
           facMap.set(fac.id, fac);
         });
         setFacilitiesMap(facMap);
+
+        // Create province and soum maps for quick lookup
+        const provMap = new Map<number, string>();
+        combinedData.province.forEach(prov => {
+          provMap.set(prov.id, prov.name);
+        });
+        setProvinceMap(provMap);
+
+        const soumMapTemp = new Map<number, string>();
+        combinedData.soum.forEach(soumItem => {
+          soumMapTemp.set(soumItem.id, soumItem.name);
+        });
+        setSoumMap(soumMapTemp);
 
         // Fetch additional info if available
         if (propertyDetailsData[0]?.Additional_Information) {
@@ -425,77 +439,224 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
         </div>
       </div>
 
-      {/* Image Gallery - Grid layout with 4:3 aspect ratio images (expecting at least 5 images) */}
-      <div className="relative rounded-xl overflow-hidden">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-          {/* Main Image - Takes 2x2 grid */}
-          <div className="col-span-2 row-span-2 relative bg-gray-100 overflow-hidden" style={{ aspectRatio: '4/3' }}>
-            <SafeImage
-              src={allImages[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover.url) || ''}
-              alt={hotelName}
-              fill
-              className="object-cover"
-            />
+      {/* Image Gallery and Info Sidebar - Figma Design Layout */}
+      <div className="flex gap-4">
+        {/* Left: Images Section */}
+        <div className="flex-1">
+          <div className="flex gap-1 h-[400px]">
+            {/* Main Large Image - Left side */}
+            <div className="w-[55%] relative">
+              <div className="relative bg-gray-100 overflow-hidden rounded-l-xl h-full">
+                <SafeImage
+                  src={allImages[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url) || '/placeholder-hotel.jpg'}
+                  alt={hotelName || 'Hotel'}
+                  fill
+                  className="object-cover"
+                />
 
-            {allImages.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                  aria-label="Previous image"
-                >
-                  <ChevronLeft className="w-5 h-5 text-gray-700" />
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2.5 shadow-lg transition-all hover:scale-110"
-                  aria-label="Next image"
-                >
-                  <ChevronRight className="w-5 h-5 text-gray-700" />
-                </button>
+                {allImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="w-5 h-5 text-gray-700" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="w-5 h-5 text-gray-700" />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
 
-                {/* Image counter */}
-                <div className="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1.5 rounded-lg text-sm font-medium">
-                  {currentImageIndex + 1} / {allImages.length}
+            {/* Right side images - 2x2 Grid */}
+            <div className="w-[45%] grid grid-cols-2 grid-rows-2 gap-1">
+              {allImages.filter(img => img.url).slice(1, 5).map((image, index) => (
+                <div
+                  key={index}
+                  className={`relative cursor-pointer bg-gray-100 overflow-hidden group ${
+                    index === 1 ? 'rounded-tr-xl' : 
+                    index === 3 ? 'rounded-br-xl' : ''
+                  }`}
+                  onClick={() => setCurrentImageIndex(index + 1)}
+                >
+                  <SafeImage
+                    src={image.url}
+                    alt={`${hotelName || 'Hotel'} - ${index + 2}`}
+                    fill
+                    className="object-cover transition-transform group-hover:scale-105"
+                  />
+                  {/* Show +X photos overlay on last image if more images available */}
+                  {index === 3 && allImages.filter(img => img.url).length > 5 && (
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <span className="text-white font-semibold text-lg">+{allImages.filter(img => img.url).length - 5} {t('hotelDetails.photos', 'зураг')}</span>
+                    </div>
+                  )}
                 </div>
-              </>
-            )}
+              ))}
+              {/* Fill empty slots if less than 4 side images */}
+              {allImages.filter(img => img.url).length < 5 && 
+                [...Array(Math.max(0, 4 - (allImages.filter(img => img.url).length - 1)))].map((_, index) => (
+                  <div 
+                    key={`empty-${index}`} 
+                    className={`relative bg-gray-100 ${
+                      (allImages.filter(img => img.url).length - 1 + index) === 1 ? 'rounded-tr-xl' : 
+                      (allImages.filter(img => img.url).length - 1 + index) === 3 ? 'rounded-br-xl' : ''
+                    }`}
+                  />
+                ))
+              }
+            </div>
           </div>
 
-          {/* Thumbnail Grid - 4 thumbnails with 4:3 ratio (2x2 on the right) */}
-          {allImages.slice(1, 5).map((image, index) => (
-            <div
-              key={index}
-              className="relative cursor-pointer bg-gray-100 overflow-hidden group"
-              style={{ aspectRatio: '4/3' }}
-              onClick={() => setCurrentImageIndex(index + 1)}
-            >
-              <SafeImage
-                src={image.url || ''}
-                alt={`${hotelName} - ${index + 1}`}
-                fill
-                className="object-cover "
-              />
-              {index === 3 && allImages.length > 5 && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                  <span className="text-white font-semibold text-lg">+{allImages.length - 5} {t('hotelDetails.morePhotos', 'зураг')}</span>
+          {/* Thumbnail Row */}
+          {allImages.filter(img => img.url).length > 5 && (
+            <div className="flex gap-1 mt-2">
+              {allImages.filter(img => img.url).slice(0, 7).map((image, index) => (
+                <div
+                  key={index}
+                  className={`relative h-16 flex-1 cursor-pointer bg-gray-100 overflow-hidden rounded-lg group ${currentImageIndex === index ? 'ring-2 ring-blue-600' : ''}`}
+                  onClick={() => setCurrentImageIndex(index)}
+                >
+                  <SafeImage
+                    src={image.url}
+                    alt={`${hotelName || 'Hotel'} - ${index + 1}`}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right: Info Sidebar */}
+        <div className="w-[300px] flex-shrink-0">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            {/* Rating Section */}
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-600 text-white px-3 py-2 rounded-lg">
+                  <span className="text-xl font-bold">4.7</span>
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-gray-900">{t('hotelDetails.exceptional', 'Exceptional')}</div>
+                  <div className="text-xs text-gray-500">3014 {t('hotelDetails.reviews', 'reviews')}</div>
+                </div>
+              </div>
+              <div className="mt-3 flex items-center gap-1 text-xs text-gray-600">
+                <span className="text-green-600">✓</span>
+                <span>{t('hotelDetails.highlyRated', 'Highly rated by guests')} — 86% {t('hotelDetails.wouldRecommend', 'would recommend')}</span>
+              </div>
+            </div>
+
+            {/* Tags Section */}
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-700 text-xs rounded-full border border-gray-200">
+                  <Coffee className="w-3.5 h-3.5" />
+                  {t('hotelDetails.breakfast', 'Breakfast')} 25
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-700 text-xs rounded-full border border-gray-200">
+                  <Wifi className="w-3.5 h-3.5" />
+                  WiFi 14
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-700 text-xs rounded-full border border-gray-200">
+                  <Utensils className="w-3.5 h-3.5" />
+                  {t('hotelDetails.foodDining', 'Food & Dining')} 67
+                </span>
+              </div>
+            </div>
+
+            {/* Location / Surroundings Section */}
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex items-center gap-2 mb-3">
+                <MapPin className="w-5 h-5 text-blue-600" />
+                <h3 className="text-sm font-semibold text-gray-900">
+                  {t('hotelDetails.locationInfo', 'Байршлын мэдээлэл')}
+                </h3>
+              </div>
+              
+              <div className="space-y-2.5">
+                {/* Province/City */}
+                {address?.province_city && provinceMap.get(address.province_city) && (
+                  <div className="flex items-start gap-2">
+                    <Building className="w-4 h-4 text-gray-400 mt-0.5" />
+                    <div className="flex-1">
+                      <div className="text-xs text-gray-500">{t('hotelDetails.provinceCity', 'Хот/Аймаг')}</div>
+                      <div className="text-sm text-gray-900">{provinceMap.get(address.province_city)}</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Soum/District */}
+                {(address?.soum ? soumMap.get(address.soum) : address?.district) && (
+                  <div className="flex items-start gap-2">
+                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
+                    <div className="flex-1">
+                      <div className="text-xs text-gray-500">{t('hotelDetails.soumDistrict', 'Дүүрэг/Сум')}</div>
+                      <div className="text-sm text-gray-900">
+                        {address?.soum ? soumMap.get(address.soum) : address?.district}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Total Floors */}
+                {address?.total_floor_number && (
+                  <div className="flex items-start gap-2">
+                    <Layers className="w-4 h-4 text-gray-400 mt-0.5" />
+                    <div className="flex-1">
+                      <div className="text-xs text-gray-500">{t('hotelDetails.totalFloors', 'Давхрын тоо')}</div>
+                      <div className="text-sm text-gray-900">
+                        {address.total_floor_number} {t('hotelDetails.floors', 'давхар')}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* View on map link */}
+              {hotel.google_map && (
+                <a
+                  href={hotel.google_map}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium inline-block"
+                >
+                  {t('hotelDetails.viewOnMap', 'View on map')}
+                </a>
               )}
             </div>
-          ))}
+
+            {/* Property Highlights */}
+            <div className="p-4">
+              <h4 className="text-sm font-semibold text-gray-900 mb-2">{t('hotelDetails.propertyHighlights', 'Property highlights')}</h4>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <MapPin className="w-4 h-4 text-gray-400" />
+                <span>{t('hotelDetails.inCityCenter', 'In')} {hotel.location.province_city || 'City'} {t('hotelDetails.center', 'Centre')}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Description Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('hotelDetails.aboutProperty', 'Зочид буудлын тухай')}</h2>
+      <div className="bg-white rounded-lg border border-gray-200 p-5 mt-4">
+        <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('hotelDetails.aboutProperty', 'Зочид буудлын тухай')}</h2>
 
-        <p className="text-gray-700 leading-relaxed">
+        <p className="text-sm text-gray-700 leading-relaxed">
           {additionalInfo?.About || t('hotelDetails.defaultDescription', { hotelName, city: hotel.location.province_city || '' })}
         </p>
 
         {basicInfo && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className="mt-4 pt-4 border-t border-gray-200">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
               {/* Total Rooms */}
               <div className="flex items-start gap-2">
@@ -531,10 +692,10 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       </div>
 
       {/* Facilities Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('popular_amenities', 'Үндсэн тохижилт')}</h3>
+      <div className="bg-white rounded-lg border border-gray-200 p-5">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('popular_amenities', 'Үндсэн тохижилт')}</h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {hotel.general_facilities.map((facility, index) => {
             // Check if facility is a number (ID) or string (name)
             const isId = typeof facility === 'number' || !isNaN(Number(facility));
@@ -548,11 +709,11 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             }
 
             return (
-              <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+              <div key={index} className="flex items-center gap-2.5 p-2 rounded-md hover:bg-gray-50 transition-colors">
                 <div className="flex-shrink-0">
                   {facilityId ? getFacilityIconById(facilityId) : getFacilityIcon(String(facility))}
                 </div>
-                <span className="text-gray-700 text-sm font-medium">{facilityName}</span>
+                <span className="text-gray-700 text-sm">{facilityName}</span>
               </div>
             );
           })}

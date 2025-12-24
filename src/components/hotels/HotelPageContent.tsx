@@ -42,7 +42,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
   }, [hotel]);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-white min-h-screen">
       {/* Hero section with ID for sticky nav detection */}
       <div id="hotel-hero" className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -53,8 +53,8 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
       </div>
 
       {/* Sticky Navigation */}
-      <HotelSubNav 
-        activeSection={activeSection} 
+      <HotelSubNav
+        activeSection={activeSection}
         onSectionChange={handleSectionChange}
         hotelName={hotel.property_name}
         price={hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 0}
@@ -62,10 +62,10 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
 
       {/* Content Sections */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
+        <div className="space-y-12">
           {/* Rooms Section */}
-          <div id="rooms" className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.selectRoom', 'Өрөө сонгох')}</h2>
+          <div id="rooms" className="">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('hotelDetails.selectRoom', 'Өрөө сонгох')}</h2>
             <ImprovedHotelRoomsSection
               hotelId={hotel.hotel_id}
               hotelName={hotel.property_name}
@@ -80,28 +80,28 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
           </div>
 
           {/* Facilities Section */}
-          <div id="facilities" className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.facilities', 'Тохижилт')}</h2>
+          <div id="facilities" className="">
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('hotelDetails.facilities', 'Үйлчилгээ')}</h2>
             <HotelAmenities facilities={hotel.general_facilities} />
           </div>
 
           {/* Reviews Section */}
-          <div id="reviews" className="bg-white rounded-lg border border-gray-200 p-6">
+          {/* <div id="reviews" className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.reviews', 'Үнэлгээ')}</h2>
             <Suspense fallback={<div>{t('loading', 'Ачааллаж байна...')}</div>}>
               <HotelReviews rating={parseFloat(hotel.rating_stars?.value || '0') || 0} reviewCount={0} />
             </Suspense>
-          </div>
+          </div> */}
 
           {/* FAQ Section */}
-          <div id="faq" className="bg-white rounded-lg border border-gray-200 p-6">
+          {/* <div id="faq" className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('hotelDetails.faq', 'Түгээмэл асуулт')}</h2>
             <HotelFAQ
               hotelName={hotel.property_name}
               hotelFacilities={hotel.general_facilities}
               hotelRating={parseFloat(hotel.rating_stars?.value || '0') || 0}
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Similar Hotels */}

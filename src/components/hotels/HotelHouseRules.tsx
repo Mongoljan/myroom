@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Clock, XCircle, Baby, PawPrint, Coffee, Car, Loader2, AlertCircle } from 'lucide-react';
+import { Calendar, Info, Loader2, AlertCircle, Car, Coffee, PawPrint, Baby } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { PropertyPolicy } from '@/types/api';
@@ -37,9 +37,9 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
 
   if (loading) {
     return (
-      <section id="house-rules" className="bg-white rounded-lg border border-gray-200 p-6">
+      <section id="house-rules" className="">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-gray-900">
             {t('houseRules.title', 'Дотоод журам')}
           </h2>
         </div>
@@ -53,9 +53,9 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
 
   if (error || policies.length === 0) {
     return (
-      <section id="house-rules" className="bg-white rounded-lg border border-gray-200 p-6">
+      <section id="house-rules" className="">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-semibold text-gray-900">
             {t('houseRules.title', 'Дотоод журам')}
           </h2>
         </div>
@@ -74,108 +74,156 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
     return timeString.substring(0, 5);
   };
 
-  const rules = [
-    {
-      icon: Clock,
-      iconColor: "text-slate-900",
-      title: t('houseRules.checkInOut', 'Орох цаг / Гарах цаг'),
-      details: [
-        { 
-          label: t('houseRules.checkIn', 'Орох цаг:'), 
-          value: `${formatTime(policy.check_in_from)} - ${formatTime(policy.check_in_until)}` 
-        },
-        { 
-          label: t('houseRules.checkOut', 'Гарах цаг:'), 
-          value: `${formatTime(policy.check_out_from)} - ${formatTime(policy.check_out_until)}` 
-        },
-      ]
-    },
-    {
-      icon: XCircle,
-      iconColor: "text-red-600",
-      title: t('houseRules.cancellation', 'Цуцлах бодлого'),
-      details: [
-        { 
-          label: t('houseRules.beforeCancelTime', 'Цуцлах хугацааны өмнө:'), 
-          value: `${policy.cancellation_fee.before_fee}%` 
-        },
-        { 
-          label: t('houseRules.afterCancelTime', 'Цуцлах хугацааны дараа:'), 
-          value: `${policy.cancellation_fee.after_fee}%` 
-        },
-        { 
-          label: t('houseRules.cancelTime', 'Цуцлах хугацаа:'), 
-          value: formatTime(policy.cancellation_fee.cancel_time)
-        },
-      ],
-      description: t('houseRules.cancellationDesc', 'Цуцлах болон урьдчилгаа төлбөрийн бодлого нь захиалгын төрлөөс хамаарч өөр байна.'),
-    },
-    {
-      icon: Baby,
-      iconColor: policy.allow_children ? "text-green-600" : "text-red-600",
-      title: t('houseRules.children', 'Хүүхэд'),
-      description: policy.allow_children 
-        ? t('houseRules.childrenAllowed', 'Хүүхэдтэй зочдыг хүлээн авдаг')
-        : t('houseRules.childrenNotAllowed', 'Хүүхэдтэй зочдыг хүлээн авдаггүй')
-    },
-    {
-      icon: PawPrint,
-      iconColor: policy.allow_pets ? "text-green-600" : "text-red-600",
-      title: t('houseRules.pets', 'Тэжээвэр амьтан'),
-      description: policy.allow_pets
-        ? t('houseRules.petsAllowed', 'Тэжээвэр амьтантай зочдыг хүлээн авдаг')
-        : t('houseRules.petsNotAllowed', 'Тэжээвэр амьтан авчрахыг зөвшөөрдөггүй'),
-    },
-    {
-      icon: Coffee,
-      iconColor: policy.breakfast_policy === "no" ? "text-red-600" : "text-green-600",
-      title: t('houseRules.breakfast', 'Өглөөний цай'),
-      description: `${t('houseRules.breakfastPolicy', 'Өглөөний цайны бодлого')}: ${policy.breakfast_policy}`
-    },
-    {
-      icon: Car,
-      iconColor: policy.parking_situation === "free" ? "text-green-600" : "text-orange-600",
-      title: t('houseRules.parking', 'Зогсоол'),
-      description: `${t('houseRules.parkingSituation', 'Зогсоолын нөхцөл')}: ${policy.parking_situation}`
-    }
-  ];
-
   return (
-    <section id="house-rules" className="bg-white rounded-lg border border-gray-200 p-6">
+    <section id="house-rules" className="">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-2xl font-semibold text-gray-900">
           {t('houseRules.title', 'Дотоод журам')}
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {rules.map((rule, index) => (
-          <div key={index} className="p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
-            <div className="flex items-start gap-3">
-              <div className={`flex-shrink-0 p-2 rounded-lg bg-gray-50`}>
-                <rule.icon className={`w-5 h-5 ${rule.iconColor}`} />
+      <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200">
+        {/* Check-in / Check-out */}
+        <div className="px-6 py-5">
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 mt-0.5">
+              <Calendar className="w-5 h-5 text-gray-900" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-[15px] font-semibold text-gray-900 mb-3">
+                {t('houseRules.checkInOut', 'Орох цаг / Гарах цаг')}
+              </h3>
+              <div className="space-y-1.5">
+                <div className="text-[15px] text-gray-700">
+                  <span>{t('houseRules.checkIn', 'Орох цаг:')}</span>{' '}
+                  <span className="text-gray-900">{formatTime(policy.check_in_from)}</span>
+                </div>
+                <div className="text-[15px] text-gray-700">
+                  <span>{t('houseRules.checkOut', 'Гарах цаг:')}</span>{' '}
+                  <span className="text-gray-900">{formatTime(policy.check_out_from)}</span>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-base font-semibold text-gray-900 mb-2">{rule.title}</h3>
-                
-                {rule.details && (
-                  <div className="space-y-2 mb-2">
-                    {rule.details.map((detail, detailIndex) => (
-                      <div key={detailIndex} className="flex justify-between items-start gap-2">
-                        <span className="text-gray-600 text-sm flex-shrink-0">{detail.label}</span>
-                        <span className="font-medium text-gray-900 text-sm text-right">{detail.value}</span>
-                      </div>
-                    ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Parking/Deposit */}
+        {policy.parking_situation && (
+          <div className="px-6 py-5">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 mt-0.5">
+                <Car className="w-5 h-5 text-gray-900" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-[15px] font-semibold text-gray-900 mb-3">
+                  {t('houseRules.parking', 'Зогсоол')}
+                </h3>
+                <div className="text-[15px] text-gray-700">
+                  {policy.parking_situation}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Cancellation Policy */}
+        <div className="px-6 py-5">
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 mt-0.5">
+              <Info className="w-5 h-5 text-gray-900" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-[15px] font-semibold text-gray-900 mb-3">
+                {t('houseRules.cancellation', 'Цуцлалтын нөхцөл')}
+              </h3>
+              <div className="space-y-2">
+                <div className="text-[15px] text-gray-700">
+                  <span className="font-medium">{t('houseRules.cancelTime', 'Цуцлах хугацаа:')}</span>{' '}
+                  {formatTime(policy.cancellation_fee.cancel_time)}
+                </div>
+                <div className="text-[15px] text-gray-700">
+                  <span className="font-medium">{t('houseRules.beforeCancelTime', 'Цуцлах хугацааны өмнө:')}</span>{' '}
+                  {policy.cancellation_fee.before_fee}%
+                </div>
+                <div className="text-[15px] text-gray-700">
+                  <span className="font-medium">{t('houseRules.afterCancelTime', 'Цуцлах хугацааны дараа:')}</span>{' '}
+                  {policy.cancellation_fee.after_fee}%
+                </div>
+                {policy.cancellation_fee.beforeManyRoom_fee && (
+                  <div className="text-[15px] text-gray-700">
+                    <span className="font-medium">{t('houseRules.beforeManyRooms', 'Олон өрөө цуцлах (өмнө):')}</span>{' '}
+                    {policy.cancellation_fee.beforeManyRoom_fee}%
                   </div>
                 )}
-
-                {rule.description && (
-                  <p className="text-gray-600 text-sm leading-relaxed">{rule.description}</p>
+                {policy.cancellation_fee.afterManyRoom_fee && (
+                  <div className="text-[15px] text-gray-700">
+                    <span className="font-medium">{t('houseRules.afterManyRooms', 'Олон өрөө цуцлах (дараа):')}</span>{' '}
+                    {policy.cancellation_fee.afterManyRoom_fee}%
+                  </div>
                 )}
               </div>
             </div>
           </div>
-        ))}
+        </div>
+
+        {/* Children Policy */}
+        <div className="px-6 py-5">
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 mt-0.5">
+              <Baby className="w-5 h-5 text-gray-900" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-[15px] font-semibold text-gray-900 mb-3">
+                {t('houseRules.children', 'Хүүхэд')}
+              </h3>
+              <div className="text-[15px] text-gray-700">
+                {policy.allow_children
+                  ? t('houseRules.childrenAllowed', 'Хүүхэдтэй зочдыг хүлээн авдаг')
+                  : t('houseRules.childrenNotAllowed', 'Хүүхэдтэй зочдыг хүлээн авдаггүй')
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Pets Policy */}
+        <div className="px-6 py-5">
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 mt-0.5">
+              <PawPrint className="w-5 h-5 text-gray-900" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-[15px] font-semibold text-gray-900 mb-3">
+                {t('houseRules.pets', 'Тэжээвэр амьтан')}
+              </h3>
+              <div className="text-[15px] text-gray-700">
+                {policy.allow_pets
+                  ? t('houseRules.petsAllowed', 'Тэжээвэр амьтантай зочдыг хүлээн авдаг')
+                  : t('houseRules.petsNotAllowed', 'Тэжээвэр амьтан авчрахыг зөвшөөрдөггүй')
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Breakfast Policy */}
+        {policy.breakfast_policy && (
+          <div className="px-6 py-5">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 mt-0.5">
+                <Coffee className="w-5 h-5 text-gray-900" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-[15px] font-semibold text-gray-900 mb-3">
+                  {t('houseRules.breakfast', 'Өглөөний цай')}
+                </h3>
+                <div className="text-[15px] text-gray-700">
+                  {policy.breakfast_policy}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

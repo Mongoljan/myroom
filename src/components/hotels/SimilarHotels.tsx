@@ -36,12 +36,29 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
 
         // Get recently viewed hotels as similar hotels
         const currentId = typeof currentHotelId === 'string' ? parseInt(currentHotelId) : currentHotelId;
-        const similarHotels = recentlyViewed
+        let similarHotels = recentlyViewed
           .filter(item => item.hotel.hotel_id !== currentId)
           .slice(0, 4)
           .map(item => item.hotel);
 
-        // If not enough recently viewed, fallback to mock data or leave empty
+        // If not enough recently viewed, fetch suggested hotels as fallback
+        if (similarHotels.length < 4) {
+          try {
+            const suggestedData = await ApiService.getSuggestedHotels('popular');
+            const results = suggestedData?.results || [];
+            if (Array.isArray(results)) {
+              const additionalHotels = results
+                .filter(hotel => hotel?.hotel_id && hotel.hotel_id !== currentId)
+                .slice(0, 4 - similarHotels.length);
+
+              similarHotels = [...similarHotels, ...additionalHotels];
+            }
+          } catch (error) {
+            console.error('Failed to fetch suggested hotels:', error);
+          }
+        }
+
+        // If still no hotels, just return empty
         if (similarHotels.length === 0) {
           setHotels([]);
           return;
@@ -51,7 +68,17 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
         const hotelsWithPrices = await Promise.all(
           similarHotels.map(async (hotel) => {
             try {
+              // Skip if hotel_id is invalid
+              if (!hotel?.hotel_id) {
+                return hotel;
+              }
+              
               const roomPrices = await ApiService.getRoomPrices(hotel.hotel_id);
+
+              // Ensure roomPrices is a valid array before processing
+              if (!Array.isArray(roomPrices) || roomPrices.length === 0) {
+                return hotel;
+              }
 
               // Get the cheapest room's price options
               const cheapestRoom = roomPrices.reduce((min, current) =>
@@ -115,8 +142,8 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-gray-900">{t('similarHotels.title')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {hotels.map((hotel) => (
-          <Link key={hotel.hotel_id} href={`/hotel/${hotel.hotel_id}`}>
+        {hotels.filter(hotel => hotel?.hotel_id).map((hotel, index) => (
+          <Link key={hotel.hotel_id || `hotel-${index}`} href={`/hotel/${hotel.hotel_id}`}>
             <div className="group cursor-pointer bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200">
               <div className="relative h-32 overflow-hidden">
                 <SafeImage
@@ -124,9 +151,9 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                     (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover.url) :
                     '/placeholder-hotel.jpg'
                   }
-                  alt={hotel.property_name}
+                  alt={hotel.property_name || 'Hotel'}
                   fill
-                  className="object-cover "
+                  className="object-cover"
                 />
                 {hotel.priceOptions?.hasDiscount && (
                   <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
