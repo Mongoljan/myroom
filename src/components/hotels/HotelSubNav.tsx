@@ -113,11 +113,11 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
             <div className="flex items-center">
               <div className="text-right mr-3">
                 <div className="text-xs text-gray-800">{t('hotel.priceFrom', 'Эхлэх үнэ')}</div>
-                <div className="font-bold text-blue-600 text-sm">{price.toLocaleString()}₮</div>
+                <div className="font-bold text-slate-900 text-sm">{price.toLocaleString()}₮</div>
               </div>
               <button
                 onClick={() => scrollToSection('rooms')}
-                className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-blue-700 transition-colors"
+                className="bg-slate-900 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-slate-800 transition-colors"
               >
                 {t('hotel.bookNow', 'Өрөө сонгох')}
               </button>
@@ -133,7 +133,7 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
               className={`
                 py-3 px-2 text-xs font-medium border-b-2 whitespace-nowrap transition-colors duration-200
                 ${activeSection === section.id
-                  ? 'border-blue-600 text-blue-600'
+                  ? 'border-slate-900 text-slate-900'
                   : 'border-transparent text-gray-800 hover:text-gray-900 hover:border-gray-300'
                 }
               `}

@@ -246,7 +246,7 @@ export default function ModernHero() {
 
   const getLocationIcon = (type: LocationSuggestion['type']) => {
     switch (type) {
-      case 'property': return <Hotel className="w-4 h-4 text-blue-900" />; // Hotel/Property
+      case 'property': return <Hotel className="w-4 h-4 text-slate-900" />; // Hotel/Property
       case 'province': 
       case 'soum': 
       case 'district': 
@@ -255,9 +255,9 @@ export default function ModernHero() {
   };
 
   return (
-    <section className="relative min-h-[50vh] sm:min-h-[45vh] py-6 lg:min-h-[35vh] bg-blue-50/30">
+    <section className="relative  pt-6 lg:min-h-[35vh] bg-slate-50/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative min-h-[50vh]  sm:min-h-[45vh] lg:min-h-[35vh] bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-lg overflow-hidden">
+        <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl overflow-hidden shadow-2xl shadow-blue-900/20">
       {/* Animated Gradient Background */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -269,9 +269,9 @@ export default function ModernHero() {
             repeat: Infinity,
             ease: "linear"
           }}
-          className="absolute inset-0 opacity-40"
+          className="absolute inset-0 opacity-50"
           style={{
-            background: "linear-gradient(45deg, #1e293b, #0f172a, #1e40af, #312e81, #1e293b)",
+            background: "linear-gradient(45deg, #3b82f6, #2563eb, #1e40af, #1d4ed8, #3b82f6)",
             backgroundSize: "400% 400%"
           }}
         />
@@ -282,7 +282,7 @@ export default function ModernHero() {
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
-            className="absolute w-1 h-1 bg-blue-400 rounded-full opacity-40"
+            className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-30"
             style={{
               left: `${particle.left}%`,
               top: `${particle.top}%`,
@@ -290,7 +290,7 @@ export default function ModernHero() {
             animate={{
               y: [0, -100, 0],
               x: [0, particle.xOffset, 0],
-              opacity: [0, 1, 0],
+              opacity: [0, 0.6, 0],
             }}
             transition={{
               duration: particle.duration,
@@ -337,7 +337,7 @@ export default function ModernHero() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-3xl"
+          className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-blue-400/25 to-blue-500/25 rounded-full blur-3xl"
         />
         <motion.div
           animate={{
@@ -350,7 +350,7 @@ export default function ModernHero() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute bottom-1/3 right-1/3 w-96 h-96 bg-gradient-to-l from-purple-500/20 to-blue-500/20 rounded-full blur-3xl"
+          className="absolute bottom-1/3 right-1/3 w-96 h-96 bg-gradient-to-l from-blue-500/25 to-cyan-500/20 rounded-full blur-3xl"
         />
         <motion.div
           animate={{
@@ -363,14 +363,14 @@ export default function ModernHero() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute top-1/2 right-1/4 w-48 h-48 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl"
+          className="absolute top-1/2 right-1/4 w-48 h-48 bg-gradient-to-br from-blue-400/20 to-blue-600/25 rounded-full blur-3xl"
         />
       </div>
 
       {/* Spotlight Effect */}
       <motion.div
         animate={{
-          opacity: [0.1, 0.3, 0.1],
+          opacity: [0.2, 0.4, 0.2],
           scale: [1, 1.1, 1],
         }}
         transition={{
@@ -378,9 +378,9 @@ export default function ModernHero() {
           repeat: Infinity,
           ease: "easeInOut"
         }}
-        className="absolute inset-0 bg-gradient-radial from-blue-400/10 via-transparent to-transparent"
+        className="absolute inset-0"
         style={{
-          background: "radial-gradient(circle at 50% 30%, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 35%, transparent 70%)"
+          background: "radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 35%, transparent 70%)"
         }}
       />
 
@@ -391,13 +391,13 @@ export default function ModernHero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-3"
+            className="text-center mb-1"
           >
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className={`${TYPOGRAPHY.hero.title} text-white mb-3 leading-tight relative`}
+              className={`${TYPOGRAPHY.hero.title} text-white mb-6 leading-tight relative`}
             >
               {/* <motion.span
                 initial={{ opacity: 0, x: -20 }}
@@ -413,14 +413,14 @@ export default function ModernHero() {
                 transition={{ duration: 0.8, delay: 0.6 }}
                 className="block relative"
               >
-                <span className=" ">
+                <span className="">
                   {t('hero.hotelStay')}
                 </span>
               </motion.span>
             </motion.h1>
             
             {/* Subtitle with typewriter effect */}
-            <motion.div
+            {/* <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.8 }}
@@ -434,7 +434,7 @@ export default function ModernHero() {
               >
                 {t('hero.discoverHotels')}
               </motion.span>
-            </motion.div>
+            </motion.div> */}
           </motion.div>
 
           {/* CSS for typewriter effect */}
@@ -457,28 +457,29 @@ export default function ModernHero() {
             className="max-w-6xl mx-auto"
             style={{ overflow: 'visible' }}
           >
-            <motion.div 
-              className="backdrop-blur-md bg-white/90 rounded-xl border border-gray-200 relative"
-              style={{ 
+            <motion.div
+              className="backdrop-blur-md bg-white/95 rounded-2xl border border-gray-200/50 relative"
+              style={{
                 overflow: 'visible',
-                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
+                boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)"
               }}
-              whileHover={{ 
-                borderColor: "rgba(59, 130, 246, 0.3)",
+              whileHover={{
+                borderColor: "rgba(59, 130, 246, 0.5)",
+                boxShadow: "0 20px 25px -5px rgba(59, 130, 246, 0.15), 0 10px 10px -5px rgba(59, 130, 246, 0.1)"
               }}
               transition={{ duration: 0.3, ease: "easeOut" }}
             >
               {/* Animated border glow */}
               <motion.div
-                className="absolute inset-0 rounded-xl opacity-0"
+                className="absolute inset-0 rounded-2xl opacity-0"
                 whileHover={{ opacity: 1 }}
                 style={{
-                  background: "linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.3), transparent)",
+                  background: "linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3), transparent)",
                   padding: "1px",
                 }}
                 transition={{ duration: 0.3 }}
               />
-              <div className="relative bg-white/95 rounded-xl" style={{ overflow: 'visible' }}>
+              <div className="relative bg-white/95 rounded-2xl" style={{ overflow: 'visible' }}>
                 <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200" style={{ overflow: 'visible' }}>
                 
                 {/* Location */}
@@ -557,13 +558,13 @@ export default function ModernHero() {
                                   <button
                                     key={search.id}
                                     onClick={() => handleLocationSelect(search.location)}
-                                    className="w-full flex items-center p-2 text-left hover:bg-blue-50/50 rounded-md transition-colors group border border-transparent hover:border-blue-200"
+                                    className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 rounded-md transition-colors group border border-transparent hover:border-slate-200"
                                   >
-                                    <div className="text-blue-900 mr-3">
+                                    <div className="text-slate-900 mr-3">
                                       <Clock className="w-4 h-4" />
                                     </div>
                                     <div className="flex-1">
-                                      <div className={`${TYPOGRAPHY.modal.content} text-gray-900 group-hover:text-blue-900`}>
+                                      <div className={`${TYPOGRAPHY.modal.content} text-gray-900 group-hover:text-slate-900`}>
                                         {search.location.fullName}
                                       </div>
                                       <div className={`${TYPOGRAPHY.body.caption} text-gray-500`}>
@@ -584,7 +585,7 @@ export default function ModernHero() {
                           
                           {isLoadingSuggestions ? (
                             <div className="flex items-center justify-center py-4">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-900"></div>
                             </div>
                           ) : (
                             <div className="space-y-1">
@@ -592,7 +593,7 @@ export default function ModernHero() {
                                 <button
                                   key={suggestion.id}
                                   onClick={() => handleLocationSelect(suggestion)}
-                                  className="w-full flex items-center p-2 text-left hover:bg-blue-50/50 rounded-md transition-colors"
+                                  className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 rounded-md transition-colors"
                                 >
                                   <div className="mr-3">
                                     {getLocationIcon(suggestion.type)}
@@ -657,16 +658,18 @@ export default function ModernHero() {
                 <div className="p-4">
                   <motion.button
                     onClick={handleSearch}
-                    whileHover={{ 
-                      boxShadow: "0 4px 12px -2px rgba(59, 130, 246, 0.3)"
+                    whileHover={{
+                      scale: 1.05,
+                      boxShadow: "0 8px 16px -4px rgba(59, 130, 246, 0.4)"
                     }}
-                    whileTap={{ 
+                    whileTap={{
+                      scale: 0.98,
                       boxShadow: "0 2px 4px -1px rgba(59, 130, 246, 0.2)"
                     }}
-                    className="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 text-white px-4 py-2.5 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 font-medium text-sm"
+                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-sm shadow-lg shadow-blue-600/30"
                   >
-                    <Search className="w-5 h-5 text-xl" />
-                    <span className="hidden text-[18px] xl:inline font-semibold tracking-wide">{t('search.searchButton')}</span>
+                    <Search className="w-5 h-5" />
+                    <span className="hidden text-base xl:inline tracking-wide">{t('search.searchButton')}</span>
                   </motion.button>
                 </div>
                 </div>

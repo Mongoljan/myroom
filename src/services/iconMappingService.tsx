@@ -115,20 +115,20 @@ export class IconMappingService {
   static getBathroomItemIcon(itemId?: number, itemName?: string): React.ReactNode {
     if (itemId) {
       const iconMap: { [key: number]: React.ReactNode } = {
-        1: <Sparkles className="w-3 h-3 text-blue-600" />, // Toilet paper
-        2: <Droplets className="w-3 h-3 text-blue-600" />, // Shower
-        4: <Wind className="w-3 h-3 text-blue-600" />, // Hairdryer
-        5: <Bath className="w-3 h-3 text-blue-600" />, // Bath
-        7: <Shirt className="w-3 h-3 text-blue-600" />, // Slippers
-        8: <Shirt className="w-3 h-3 text-blue-600" />, // Bathrobe
-        9: <Waves className="w-3 h-3 text-blue-600" />, // Spa bath
-  14: <Sparkles className="w-3 h-3 text-blue-600" />, // Sauna (generic)
-        17: <Bath className="w-3 h-3 text-blue-600" />, // Toilet
-        18: <Bath className="w-3 h-3 text-blue-600" />, // Private bathroom
-        19: <Users className="w-3 h-3 text-blue-600" />, // Shared bathroom
-        20: <Bath className="w-3 h-3 text-blue-600" />, // Additional toilet
-        21: <Users className="w-3 h-3 text-blue-600" />, // Shared toilet
-        22: <Bath className="w-3 h-3 text-blue-600" />, // Additional bathroom
+        1: <Sparkles className="w-3 h-3 text-slate-900" />, // Toilet paper
+        2: <Droplets className="w-3 h-3 text-slate-900" />, // Shower
+        4: <Wind className="w-3 h-3 text-slate-900" />, // Hairdryer
+        5: <Bath className="w-3 h-3 text-slate-900" />, // Bath
+        7: <Shirt className="w-3 h-3 text-slate-900" />, // Slippers
+        8: <Shirt className="w-3 h-3 text-slate-900" />, // Bathrobe
+        9: <Waves className="w-3 h-3 text-slate-900" />, // Spa bath
+  14: <Sparkles className="w-3 h-3 text-slate-900" />, // Sauna (generic)
+        17: <Bath className="w-3 h-3 text-slate-900" />, // Toilet
+        18: <Bath className="w-3 h-3 text-slate-900" />, // Private bathroom
+        19: <Users className="w-3 h-3 text-slate-900" />, // Shared bathroom
+        20: <Bath className="w-3 h-3 text-slate-900" />, // Additional toilet
+        21: <Users className="w-3 h-3 text-slate-900" />, // Shared toilet
+        22: <Bath className="w-3 h-3 text-slate-900" />, // Additional bathroom
       };
       
       if (iconMap[itemId]) {
@@ -138,12 +138,12 @@ export class IconMappingService {
     
     if (itemName) {
       const nameLower = itemName.toLowerCase();
-      if (nameLower.includes('shower') || nameLower.includes('шүршүүр')) return <Droplets className="w-3 h-3 text-blue-600" />;
-      if (nameLower.includes('bath') || nameLower.includes('ванн')) return <Bath className="w-3 h-3 text-blue-600" />;
-      if (nameLower.includes('hairdryer') || nameLower.includes('сэнс')) return <Wind className="w-3 h-3 text-blue-600" />;
+      if (nameLower.includes('shower') || nameLower.includes('шүршүүр')) return <Droplets className="w-3 h-3 text-slate-900" />;
+      if (nameLower.includes('bath') || nameLower.includes('ванн')) return <Bath className="w-3 h-3 text-slate-900" />;
+      if (nameLower.includes('hairdryer') || nameLower.includes('сэнс')) return <Wind className="w-3 h-3 text-slate-900" />;
     }
     
-    return <Bath className="w-3 h-3 text-blue-600" />;
+    return <Bath className="w-3 h-3 text-slate-900" />;
   }
 
   // Free toiletries icons - all 12 items from /api/all-data/

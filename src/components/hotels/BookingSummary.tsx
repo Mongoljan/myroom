@@ -69,7 +69,7 @@ export default function BookingSummary({
       <button
         onClick={onBookNow}
         disabled={items.length === 0}
-        className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-slate-900 text-white py-3 px-4 rounded-lg font-medium hover:bg-slate-800 transition-colors mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Book Now ({totalRooms} room{totalRooms !== 1 ? 's' : ''})
       </button>
@@ -88,7 +88,7 @@ export default function BookingSummary({
                     <h4 className="font-medium text-gray-900 text-sm mb-1">
                       {item.room.roomTypeName}
                     </h4>
-                    <div className="text-xs text-blue-600 mb-1">
+                    <div className="text-xs text-slate-900 mb-1">
                       {priceTypeLabels[item.priceType]}
                     </div>
                     <div className="text-xs text-gray-600">

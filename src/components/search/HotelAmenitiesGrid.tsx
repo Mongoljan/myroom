@@ -80,7 +80,7 @@ export default function HotelAmenitiesGrid({
               transition={{ duration: 0.3, delay: index * 0.1 }}
               className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
             >
-              <IconComponent className="w-3 h-3 text-blue-600 flex-shrink-0" />
+              <IconComponent className="w-3 h-3 text-slate-900 flex-shrink-0" />
               <span className="text-xs text-slate-700 truncate">
                 {amenity}
               </span>
@@ -94,9 +94,9 @@ export default function HotelAmenitiesGrid({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: displayAmenities.length * 0.1 }}
-            className="flex items-center justify-center p-2 bg-blue-50 rounded-lg border border-blue-100 hover:bg-blue-100 transition-colors cursor-pointer"
+            className="flex items-center justify-center p-2 bg-slate-50 rounded-lg border border-slate-100 hover:bg-slate-100 transition-colors cursor-pointer"
           >
-            <span className="text-xs text-blue-700 font-medium">
+            <span className="text-xs text-slate-800 font-medium">
               {t('amenitiesLabels.moreCount', { count: remainingCount })}
             </span>
           </motion.div>

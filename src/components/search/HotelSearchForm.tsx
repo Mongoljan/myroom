@@ -251,9 +251,9 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
               </div>
 
               {/* Date Range Picker */}
-              <div className={`lg:flex-1 ${compact ? 'p-1.5' : 'p-4'} w-full`}>
+              <div className={`lg:flex-1 ${compact ? 'p-1.5' : 'p-2.5'} w-full`}>
                 <div className="flex items-center">
-                  <Calendar className={`${compact ? 'w-5 h-5' : 'w-6 h-6'} text-gray-700 ${compact ? 'mr-2' : 'mr-4'}`} />
+                  <Calendar className={`${compact ? 'w-4 h-4' : 'w-4.5 h-4.5'} text-gray-700 ${compact ? 'mr-2' : 'mr-2.5'}`} />
                   <div className="flex-1">
                     <div className="relative z-[1]">
                       <DateRangePicker

@@ -41,7 +41,7 @@ export const SPACING = {
 export const TYPOGRAPHY = {
   // Hero sections
   hero: {
-    title: "text-3xl md:text-4xl lg:text-5xl font-bold",
+    title: "text-2xl md:text-3xl lg:text-4xl font-bold",
     subtitle: "text-lg md:text-xl font-medium",
     description: "text-base font-normal"
   },

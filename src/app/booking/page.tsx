@@ -247,7 +247,7 @@ function BookingContent() {
                 </h3>
                 <div className="text-xs space-y-1">
                   <div>
-                    <a href={`/hotel/${hotelId}`} className="text-blue-600 hover:underline font-medium">{hotelName}</a>
+                    <a href={`/hotel/${hotelId}`} className="text-slate-900 hover:underline font-medium">{hotelName}</a>
                   </div>
                   {hotelDetails?.location && (
                     <div className="text-gray-700 flex items-start gap-1">
@@ -523,7 +523,7 @@ function BookingContent() {
                       onChange={(e) => setCustomerName(e.target.value)}
                       required
                       disabled={bookingInProgress}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
                       placeholder={t('booking.namePlaceholder', 'Нэр')}
                     />
                   </div>
@@ -536,7 +536,7 @@ function BookingContent() {
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       required
                       disabled={bookingInProgress}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
                       placeholder="99001122"
                     />
                   </div>
@@ -550,7 +550,7 @@ function BookingContent() {
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     required
                     disabled={bookingInProgress}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
                     placeholder={t('booking.emailPlaceholder', 'email@example.com')}
                   />
                 </div>
@@ -559,7 +559,7 @@ function BookingContent() {
                   <button
                     type="submit"
                     disabled={bookingInProgress || !customerName || !customerPhone || !customerEmail}
-                    className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-primary text-white py-4 px-6 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {bookingInProgress ? (
                       <div className="flex items-center justify-center gap-2">
@@ -586,15 +586,15 @@ function BookingContent() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('bookingExtra.detailsTitle')}</h3>
 
               {/* Date Info - Display Only */}
-              <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+              <div className="mb-6 p-4 bg-slate-50 rounded-lg">
                 <div className="flex items-center gap-2 mb-3">
-                  <Calendar className="w-4 h-4 text-blue-600" />
-                  <span className="text-sm font-medium text-blue-900">{t('bookingExtra.stayDates')}</span>
+                  <Calendar className="w-4 h-4 text-slate-900" />
+                  <span className="text-sm font-medium text-slate-900">{t('bookingExtra.stayDates')}</span>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-blue-800">Check-in</span>
-                    <span className="text-sm font-medium text-blue-900">
+                    <span className="text-xs text-slate-800">Check-in</span>
+                    <span className="text-sm font-medium text-slate-900">
                       {new Date(checkIn).toLocaleDateString('en-US', { 
                         weekday: 'short', 
                         year: 'numeric', 
@@ -604,8 +604,8 @@ function BookingContent() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-blue-800">Check-out</span>
-                    <span className="text-sm font-medium text-blue-900">
+                    <span className="text-xs text-slate-800">Check-out</span>
+                    <span className="text-sm font-medium text-slate-900">
                       {new Date(checkOut).toLocaleDateString('en-US', { 
                         weekday: 'short', 
                         year: 'numeric', 
@@ -614,9 +614,9 @@ function BookingContent() {
                       })}
                     </span>
                   </div>
-                  <div className="pt-2 border-t border-blue-200 flex justify-between items-center">
-                    <span className="text-xs text-blue-800">{t('bookingExtra.duration', 'Duration')}</span>
-                    <span className="text-sm font-semibold text-blue-900">
+                  <div className="pt-2 border-t border-slate-200 flex justify-between items-center">
+                    <span className="text-xs text-slate-800">{t('bookingExtra.duration', 'Duration')}</span>
+                    <span className="text-sm font-semibold text-slate-900">
                       {nights} {nights !== 1 ? t('bookingExtra.nights', 'nights') : t('bookingExtra.night', 'night')}
                     </span>
                   </div>
@@ -651,7 +651,7 @@ function BookingContent() {
               <div className="border-t pt-4">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-semibold text-gray-900">{t('bookingExtra.totalPrice')}</span>
-                  <span className="text-xl font-bold text-blue-600">₮{totalPrice.toLocaleString()}</span>
+                  <span className="text-xl font-bold text-slate-900">₮{totalPrice.toLocaleString()}</span>
                 </div>
                 <div className="text-xs text-gray-500 mt-1">{t('bookingExtra.taxesIncluded')}</div>
               </div>

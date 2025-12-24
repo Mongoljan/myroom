@@ -248,7 +248,7 @@ export default function TripComStyleRoomCard({
               <select
                 value={getRoomQuantity('base')}
                 onChange={(e) => onQuantityChange('base', parseInt(e.target.value))}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white"
               >
                 <option value={0}>0</option>
                 {Array.from({ length: Math.min(remainingQuantity, 5) }, (_, i) => i + 1).map((num) => (

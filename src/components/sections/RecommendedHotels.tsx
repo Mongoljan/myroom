@@ -189,8 +189,8 @@ export default function RecommendedHotels() {
                 whileTap={{ scale: 0.98 }}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeTab === tab.key
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-blue-300'
+                    ? 'bg-slate-900 text-white shadow-sm'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-slate-300'
                 }`}
               >
                 {tab.label} {tabCounts[tab.key] > 0 && <span className="ml-0.5 opacity-70">({tabCounts[tab.key]})</span>}

@@ -44,7 +44,7 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
           </h2>
         </div>
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-2" />
+          <Loader2 className="w-6 h-6 animate-spin text-slate-900 mr-2" />
           <span className="text-gray-600">{t('loading', 'Ачааллаж байна...')}</span>
         </div>
       </section>
@@ -77,7 +77,7 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
   const rules = [
     {
       icon: Clock,
-      iconColor: "text-blue-600",
+      iconColor: "text-slate-900",
       title: t('houseRules.checkInOut', 'Орох цаг / Гарах цаг'),
       details: [
         { 

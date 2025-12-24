@@ -28,7 +28,7 @@ export default function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-lg">MR</span>
             </div>
             <span className={`${TYPOGRAPHY.heading.h1} text-gray-900`}>MyRoom</span>
@@ -40,7 +40,7 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`${TYPOGRAPHY.nav.primary} text-gray-900 hover:text-blue-600 transition-colors`}
+                className={`${TYPOGRAPHY.nav.primary} text-gray-900 hover:text-primary transition-colors`}
               >
                 {t(item.name)}
               </Link>
@@ -52,7 +52,7 @@ export default function Header() {
             {/* Language */}
             <button
               onClick={toggleLanguage}
-              className={`flex items-center space-x-1 ${TYPOGRAPHY.nav.secondary} text-gray-800 hover:text-blue-600`}
+              className={`flex items-center space-x-1 ${TYPOGRAPHY.nav.secondary} text-gray-800 hover:text-primary`}
             >
               <Globe className="w-4 h-4" />
               <span>{i18n.language?.toUpperCase() || 'MN'}</span>
@@ -61,7 +61,7 @@ export default function Header() {
             {/* User Actions */}
             <Link
               href="/login"
-              className={`bg-blue-600 text-white px-4 py-2 rounded-lg ${TYPOGRAPHY.button.standard} hover:bg-blue-700 transition-colors`}
+              className={`bg-primary text-white px-4 py-2 rounded-lg ${TYPOGRAPHY.button.standard} hover:bg-primary/90 transition-colors`}
             >
               {t('navigation.login')}
             </Link>
@@ -95,7 +95,7 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`block px-3 py-2 ${TYPOGRAPHY.nav.primary} text-gray-900 hover:text-blue-600 hover:bg-blue-50 rounded-md`}
+                  className={`block px-3 py-2 ${TYPOGRAPHY.nav.primary} text-gray-900 hover:text-primary hover:bg-gray-50 rounded-md`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t(item.name)}

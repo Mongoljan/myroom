@@ -651,8 +651,8 @@ export default function SearchResults() {
 
       {/* Main Results Container */}
       <div className="">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col lg:flex-row gap-4">
+        <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-3">
+          <div className="flex flex-col lg:flex-row gap-3">
             {/* Filters Sidebar with Sticky Behavior */}
             <aside className="w-full lg:w-72 flex-shrink-0">
               {/* Mobile Filter Controls */}

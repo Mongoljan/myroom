@@ -23,7 +23,7 @@ const LanguageMegaMenu: React.FC<LanguageMegaMenuProps> = ({ textClass = "" }) =
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center space-x-2 ${textClass} hover:text-blue-400 transition-colors`}
+        className={`flex items-center space-x-2 ${textClass} hover:text-slate-400 transition-colors`}
       >
         <span>{currentLang.flag}</span>
         <span>{currentLang.code.toUpperCase()}</span>

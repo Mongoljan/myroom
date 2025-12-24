@@ -159,7 +159,7 @@ export default function FaqSection() {
                     layout
                   >
                     <motion.button
-                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-slate-500"
                       onClick={() => toggleItem(idx)}
                       whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.02)" }}
                       transition={{ duration: 0.2 }}
@@ -167,7 +167,7 @@ export default function FaqSection() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center flex-1 min-w-0">
                           <motion.div 
-                            className="flex-shrink-0 w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-3"
+                            className="flex-shrink-0 w-7 h-7 bg-slate-900 text-white rounded-lg flex items-center justify-center mr-3"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                           >
@@ -275,7 +275,7 @@ export default function FaqSection() {
                     layout
                   >
                     <motion.button
-                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-slate-500"
                       onClick={() => toggleItem(actualIndex)}
                       whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.02)" }}
                       transition={{ duration: 0.2 }}
@@ -283,7 +283,7 @@ export default function FaqSection() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center flex-1 min-w-0">
                           <motion.div 
-                            className="flex-shrink-0 w-7 h-7 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-3"
+                            className="flex-shrink-0 w-7 h-7 bg-slate-900 text-white rounded-lg flex items-center justify-center mr-3"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                           >
@@ -374,7 +374,7 @@ export default function FaqSection() {
             >
               <motion.button
                 onClick={handleShowMoreToggle}
-                className="inline-flex items-center px-6 py-3 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-200 text-gray-700 hover:text-blue-600 rounded-xl transition-all duration-200 font-medium"
+                className="inline-flex items-center px-6 py-3 bg-gray-50 hover:bg-slate-50 border border-gray-200 hover:border-slate-200 text-gray-700 hover:text-slate-900 rounded-xl transition-all duration-200 font-medium"
                 whileHover={{ y: -1, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

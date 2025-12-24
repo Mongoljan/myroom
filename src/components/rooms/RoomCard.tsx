@@ -169,7 +169,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           <h3 className="text-xl font-semibold text-gray-900 mb-1">
             {room.room_Description}
           </h3>
-          <div className="flex items-center gap-4 text-sm text-blue-600 mb-2 font-medium">
+          <div className="flex items-center gap-4 text-sm text-slate-900 mb-2 font-medium">
             <div className="flex items-center gap-1">
               {IconMappingService.getRoomCategoryIcon(room.room_category)}
               <span>{getRoomCategoryName(room.room_category)}</span>
@@ -251,7 +251,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             disabled={!isAvailable || loading}
             className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
               isAvailable && !loading
-                ? 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5'
+                ? 'bg-primary text-white hover:bg-primary/90 hover:shadow-lg transform hover:-translate-y-0.5'
                 : 'bg-gray-100 text-gray-900 cursor-not-allowed'
             }`}
           >
@@ -270,12 +270,12 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
 
         {/* Additional Info */}
         {checkIn && checkOut && (
-          <div className="bg-blue-50 p-3 rounded-lg text-sm text-blue-800">
+          <div className="bg-slate-50 p-3 rounded-lg text-sm text-gray-900">
             <div className="flex items-center gap-2 mb-1">
               <Calendar className="w-4 h-4" />
               <span className="font-medium">{t('roomCard.selectedDates', 'Selected Dates')}</span>
             </div>
-            <div className="text-blue-700">
+            <div className="text-gray-700">
               {new Date(checkIn).toLocaleDateString()} - {new Date(checkOut).toLocaleDateString()}
             </div>
           </div>

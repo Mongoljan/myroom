@@ -108,7 +108,7 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
         {/* Loading state */}
         {isLoadingSuggestions && (
           <div className="p-4 text-center">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-900 mx-auto"></div>
             <p className="text-sm text-gray-500 mt-2">{t('common.searching')}</p>
           </div>
         )}
@@ -121,7 +121,7 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
               <motion.button
                 key={index}
                 onClick={() => onLocationSelect(suggestion)}
-                className="w-full text-left p-3 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-3"
+                className="w-full text-left p-3 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-3"
                 whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
               >
                 <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />

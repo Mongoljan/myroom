@@ -41,7 +41,7 @@ export default function SectionHotelCard({
     const colors = {
       orange: 'bg-orange-500',
       green: 'bg-green-500',
-      blue: 'bg-blue-500',
+      blue: 'bg-primary',
       purple: 'bg-purple-500',
       gray: 'bg-gray-500'
     };
@@ -94,7 +94,7 @@ export default function SectionHotelCard({
 
         {/* Hotel Info */}
         <div className="p-4">
-          <h3 className={`${text.h4} text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors`}>
+          <h3 className={`${text.h4} text-gray-900 mb-2 line-clamp-1 group-hover:text-slate-900 transition-colors`}>
             {name}
           </h3>
 
@@ -106,7 +106,7 @@ export default function SectionHotelCard({
           {/* Rating and Price */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-medium mr-1">
+              <div className="bg-primary text-white px-2 py-0.5 rounded text-xs font-medium mr-1">
                 {rating}
               </div>
               <span className={`${text.caption} text-gray-500`}>

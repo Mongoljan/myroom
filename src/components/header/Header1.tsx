@@ -14,28 +14,28 @@ const Header1 = () => {
 
   return (
     <>
-      <header className="relative bg-blue-50/30 shadow-lg border-b border-blue-100/50">
+      <header className="relative bg-white shadow-lg border-b border-gray-200">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Link href="/" className="flex items-center mr-8">
              <div className="flex items-center space-x-2 ">
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center">
                 <span className="text-white font-bold text-lg">MR</span>
               </div>
               <span className={TYPOGRAPHY.heading.h2}>MyRoom</span>
             </div>
               </Link>
-              
+
               <div className="hidden xl:block">
-                <MainMenu style="text-blue-900" />
+                <MainMenu style="text-gray-900" />
               </div>
             </div>
 
             <div className="flex items-center">
               {/* Phone Number */}
               <div className="hidden lg:flex items-center mr-6">
-                <div className={`flex items-center text-blue-900 ${TYPOGRAPHY.nav.primary} font-medium`}>
+                <div className={`flex items-center text-gray-900 ${TYPOGRAPHY.nav.primary} font-medium`}>
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
@@ -47,7 +47,7 @@ const Header1 = () => {
               <div className="hidden lg:flex items-center mr-6">
                 <Link
                   href="/booking/manage"
-                  className={`text-blue-900 hover:text-blue-800 transition-colors ${TYPOGRAPHY.nav.primary} font-medium`}
+                  className={`text-gray-900 hover:text-primary transition-colors ${TYPOGRAPHY.nav.primary} font-medium`}
                 >
                   {t('navigation.manageBooking')}
                 </Link>
@@ -62,13 +62,13 @@ const Header1 = () => {
               <div className="hidden md:flex items-center space-x-3">
                 <Link
                   href="/hotel-login"
-                  className={`px-4 py-2.5 bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ${TYPOGRAPHY.button.standard} font-medium`}
+                  className={`px-4 py-2.5 bg-slate-900 hover:bg-primary/90 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ${TYPOGRAPHY.button.standard} font-medium`}
                 >
                   {t('navigation.hotelLogin')}
                 </Link>
                 <Link
                   href="/login"
-                  className={`px-4 py-2.5 bg-white/80 border border-blue-200 text-blue-900 rounded-lg hover:bg-blue-50/50 hover:border-blue-300 transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
+                  className={`px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
                 >
                   {t('navigation.loginRegister')}
                 </Link>

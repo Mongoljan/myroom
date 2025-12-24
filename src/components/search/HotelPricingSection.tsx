@@ -101,8 +101,8 @@ export default function HotelPricingSection({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className={`
-            relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-700
-            hover:from-blue-700 hover:to-blue-800 text-white font-semibold
+            relative overflow-hidden bg-gradient-to-r from-slate-600 to-slate-700
+            hover:from-slate-700 hover:to-slate-800 text-white font-semibold
             rounded-lg transition-all duration-300 flex items-center justify-center gap-2
             ${viewMode === 'list' ? 'px-6 py-3 text-sm' : 'px-4 py-2.5 text-xs'}
           `}

@@ -110,7 +110,7 @@ export default function RoomCard({
             <h3 className="text-xl font-bold text-gray-900 mb-1">
               {room.roomTypeName}
             </h3>
-            <p className="text-sm font-medium text-blue-600 mb-2">
+            <p className="text-sm font-medium text-slate-900 mb-2">
               {room.roomCategoryName}
             </p>
           </div>
@@ -138,7 +138,7 @@ export default function RoomCard({
           {Array.isArray(room.facilitiesDetails) && room.facilitiesDetails.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {room.facilitiesDetails.slice(0, 5).map((facility, idx) => (
-                <span key={idx} className="text-xs px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full">
+                <span key={idx} className="text-xs px-2.5 py-1 bg-slate-50 text-slate-800 rounded-full">
                   {facility.name_mn || facility.name_en}
                 </span>
               ))}
@@ -186,7 +186,7 @@ export default function RoomCard({
                 <select
                   value={getRoomQuantity('base')}
                   onChange={(e) => onQuantityChange('base', parseInt(e.target.value))}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white min-w-[80px]"
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white min-w-[80px]"
                 >
                   {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('base') + 1, 6) }, (_, i) => (
                     <option key={i} value={i}>
@@ -215,10 +215,10 @@ export default function RoomCard({
             {!showOnlyBasePrice && priceOptions && (
               <>
                 {priceOptions.halfDayPrice && priceOptions.halfDayPrice > 0 && (
-                  <div className="p-4 bg-blue-50 rounded-lg">
+                  <div className="p-4 bg-slate-50 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-blue-600" />
+                        <Clock className="w-4 h-4 text-slate-900" />
                         <span className="text-sm font-medium text-gray-900">{t('roomCard.halfDayPrice', 'Хагас өдөр')}</span>
                       </div>
                       <span className="text-sm font-bold text-gray-900">₮{priceOptions.halfDayPrice.toLocaleString()}</span>
@@ -226,7 +226,7 @@ export default function RoomCard({
                     <select
                       value={getRoomQuantity('halfDay')}
                       onChange={(e) => onQuantityChange('halfDay', parseInt(e.target.value))}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 bg-white"
                     >
                       {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('halfDay') + 1, 6) }, (_, i) => (
                         <option key={i} value={i}>{i === 0 ? t('roomCard.select', '0') : `${i}`}</option>

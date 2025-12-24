@@ -32,7 +32,7 @@ export default function PaginationControls({
 
           {/* Pagination controls */}
           <div className="flex items-center gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 text-gray-900 hover:text-blue-600 hover:bg-blue-50 transition-colors rounded-lg border border-gray-200">
+            <button className="flex items-center gap-2 px-4 py-2 text-gray-900 hover:underline transition-all rounded-lg border border-gray-200">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
@@ -45,8 +45,8 @@ export default function PaginationControls({
                   key={i}
                   className={`w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200 ${
                     page === currentPage
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'text-gray-900 hover:bg-gray-100 hover:text-blue-600'
+                      ? 'bg-primary text-white hover:bg-primary/90'
+                      : 'text-gray-900 hover:bg-gray-100 hover:underline'
                   }`}
                 >
                   {page}
@@ -54,7 +54,7 @@ export default function PaginationControls({
               ))}
             </div>
 
-            <button className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-colors rounded-lg border border-blue-200">
+            <button className="flex items-center gap-2 px-4 py-2 text-primary hover:underline transition-all rounded-lg border border-gray-200">
               <span>{t('search.pagination.next')}</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -299,29 +299,29 @@ export default function DateRangePicker({
             // Priority 2: SELECTED RANGE STATES
             else if (isRangeStart && isRangeEnd) {
               // Single day selection
-              buttonClass += ' bg-blue-600 text-white font-semibold cursor-pointer rounded-md';
+              buttonClass += ' bg-slate-900 text-white font-semibold cursor-pointer rounded-md';
             }
             else if (isRangeStart) {
-              buttonClass += ' bg-blue-600 text-white font-semibold cursor-pointer rounded-l-md';
+              buttonClass += ' bg-slate-900 text-white font-semibold cursor-pointer rounded-l-md';
             }
             else if (isRangeEnd) {
-              buttonClass += ' bg-blue-600 text-white font-semibold cursor-pointer rounded-r-md';
+              buttonClass += ' bg-slate-900 text-white font-semibold cursor-pointer rounded-r-md';
             }
             else if (isInRange) {
               // Days between range
-              buttonClass += ' bg-blue-200 text-blue-800 cursor-pointer';
+              buttonClass += ' bg-slate-200 text-slate-800 cursor-pointer';
             }
             // Priority 3: HOVER PREVIEW RANGE
             else if (isInHoverRange) {
-              buttonClass += ' bg-blue-100 text-blue-700 cursor-pointer rounded-md';
+              buttonClass += ' bg-slate-100 text-slate-800 cursor-pointer rounded-md';
             }
             // Priority 4: TODAY HIGHLIGHT (More Subtle)
             else if (isToday) {
-              buttonClass += ' text-gray-900 cursor-pointer rounded-md hover:bg-blue-100 relative';
+              buttonClass += ' text-gray-900 cursor-pointer rounded-md hover:bg-slate-100 relative';
             }
             // Priority 5: NORMAL CURRENT MONTH DAYS
             else {
-              buttonClass += ' text-gray-900 cursor-pointer rounded-md hover:bg-blue-100';
+              buttonClass += ' text-gray-900 cursor-pointer rounded-md hover:bg-slate-100';
             }
 
             return (
@@ -341,7 +341,7 @@ export default function DateRangePicker({
                 {day.date.getDate()}
                 {/* Subtle today indicator for non-range days */}
                 {isToday && !isInRange && !isRangeStart && !isRangeEnd && !isInHoverRange && (
-                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full"></div>
+                  <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-slate-500 rounded-full"></div>
                 )}
                 {/* Corner today indicator for range days */}
                 {isToday && (isInRange || isRangeStart || isRangeEnd) && (
@@ -376,7 +376,7 @@ export default function DateRangePicker({
         }}
         className={minimal 
           ? "w-full text-left border-none outline-none bg-transparent cursor-pointer"
-          : "w-full p-3 text-left bg-white border border-gray-200 rounded-xl hover:border-blue-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 cursor-pointer"
+          : "w-full p-3 text-left bg-white border border-gray-200 rounded-xl hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-all duration-200 cursor-pointer"
         }
       >
         {minimal ? (

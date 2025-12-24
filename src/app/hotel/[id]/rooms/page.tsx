@@ -85,7 +85,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             <div className="flex gap-3">
               <Link
                 href={`/booking/manage?code=${bookingResult.booking_code}&pin=${bookingResult.pin_code}`}
-                className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-medium hover:bg-blue-700 transition-colors"
+                className="flex-1 bg-slate-900 text-white py-3 px-4 rounded-xl font-medium hover:bg-slate-800 transition-colors"
               >
                 {t('booking.manageBooking', 'Захиалга удирдах')}
               </Link>
@@ -141,7 +141,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             <select
               value={roomCount}
               onChange={(e) => setRoomCount(Number(e.target.value))}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
             >
               {Array.from({ length: Math.min(available, 5) }, (_, i) => i + 1).map(num => (
                 <option key={num} value={num}>
@@ -160,7 +160,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               required
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               placeholder={t('booking.namePlaceholder', 'Нэрээ оруулна уу')}
             />
           </div>
@@ -174,7 +174,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               required
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               placeholder={t('booking.phonePlaceholder', 'Утасны дугаараа оруулна уу')}
             />
           </div>
@@ -188,7 +188,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               required
               value={customerEmail}
               onChange={(e) => setCustomerEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               placeholder={t('booking.emailPlaceholder', 'email@example.com')}
             />
           </div>
@@ -204,7 +204,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+              className="flex-1 py-3 px-4 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 disabled:bg-gray-400 transition-colors"
             >
               {loading ? t('common.loading', 'Ачаалж байна...') : t('booking.confirmBooking', 'Захиалга баталгаажуулах')}
             </button>
@@ -301,7 +301,7 @@ function HotelRoomsContent() {
           <div className="mb-8">
             <Link
               href={`/hotel/${hotelId}`}
-              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mb-4"
+              className="inline-flex items-center gap-2 text-slate-900 hover:text-slate-800 mb-4"
             >
               <ArrowLeft className="w-4 h-4" />
               {t('hotelRooms.backToHotel', 'Буцах')}
@@ -329,7 +329,7 @@ function HotelRoomsContent() {
                   <select
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value as 'all' | 'available' | 'bathroom')}
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
                   >
                     <option value="all">{t('hotelRooms.allRooms', 'Бүх өрөө')}</option>
                     <option value="available">{t('hotelRooms.availableOnly', 'Зөвхөн боломжтой')}</option>
@@ -342,7 +342,7 @@ function HotelRoomsContent() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'price' | 'size' | 'capacity')}
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
                   >
                     <option value="price">{t('hotelRooms.sortByPrice', 'Үнээр эрэмбэлэх')}</option>
                     <option value="size">{t('hotelRooms.sortBySize', 'Хэмжээгээр')}</option>

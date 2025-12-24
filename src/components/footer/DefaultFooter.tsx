@@ -10,7 +10,7 @@ const DefaultFooter = () => {
           <div className="col-span-1 md:col-span-2">
             <Link href="/" className="flex items-center mb-4">
               <div className="flex items-center">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mr-2">
+                <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center mr-2">
                   <span className="text-white font-bold text-lg">G</span>
                 </div>
                 <span className="text-white font-bold text-lg">GoTrip</span>

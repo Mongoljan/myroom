@@ -25,7 +25,7 @@ export default function SearchHeader() {
           transition-all duration-300 ease-out
         `}
       >
-        <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ease-out ${isSticky ? 'py-2' : 'py-3'}`}>
+        <div className={`max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 transition-all duration-300 ease-out ${isSticky ? 'py-1.5' : 'py-2'}`}>
           <div className="bg-white border border-primary rounded-xl overflow-hidden transition-all duration-300 ease-out">
             <HotelSearchForm compact={isSticky} />
           </div>
@@ -33,7 +33,7 @@ export default function SearchHeader() {
       </div>
 
       {/* Spacer to prevent content jump when header becomes fixed */}
-      {isSticky && <div className="h-[72px]" />}
+      {isSticky && <div className="h-[64px]" />}
     </>
   );
 }

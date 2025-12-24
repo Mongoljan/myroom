@@ -64,13 +64,13 @@ export default function LocationSuggestionsModal({
                   <button
                     key={search.id}
                     onClick={() => onLocationSelect(search.location)}
-                    className="w-full flex items-center p-2 text-left hover:bg-blue-50/50 rounded-lg transition-colors group border border-transparent hover:border-blue-200"
+                    className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 rounded-lg transition-colors group border border-transparent hover:border-slate-200"
                   >
-                    <div className="text-blue-900 mr-3">
+                    <div className="text-slate-900 mr-3">
                       <Clock className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm text-gray-900 group-hover:text-blue-900">
+                      <div className="text-sm text-gray-900 group-hover:text-slate-900">
                         {search.location.fullName}
                       </div>
                       <div className="text-xs text-gray-500">
@@ -91,7 +91,7 @@ export default function LocationSuggestionsModal({
           
           {isLoadingSuggestions ? (
             <div className="flex items-center justify-center py-4">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-900"></div>
             </div>
           ) : (
             <div className="space-y-1">
@@ -99,11 +99,11 @@ export default function LocationSuggestionsModal({
                 <button
                   key={suggestion.id}
                   onClick={() => onLocationSelect(suggestion)}
-                  className="w-full flex items-center p-2 text-left hover:bg-blue-50/50 rounded-lg transition-colors"
+                  className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 rounded-lg transition-colors"
                 >
                   <div className="mr-3">
                     {suggestion.type === 'property' ? (
-                      <Hotel className="w-4 h-4 text-blue-900" />
+                      <Hotel className="w-4 h-4 text-slate-900" />
                     ) : (
                       <MapPin className="w-4 h-4 text-gray-500" />
                     )}

@@ -138,7 +138,7 @@ export default function HotelImageGallery({
         <>
           {/* Aceternity-style background glow */}
           <motion.div
-            className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"
+            className="absolute -inset-0.5 bg-gradient-to-r from-slate-500/10 via-purple-500/10 to-pink-500/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm"
             animate={{
               background: [
                 "linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1), rgba(236, 72, 153, 0.1))",
@@ -174,7 +174,7 @@ export default function HotelImageGallery({
             {Array.from({ length: 3 }).map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1 h-1 bg-blue-400/30 rounded-full"
+                className="absolute w-1 h-1 bg-slate-400/30 rounded-full"
                 style={{
                   left: `${20 + i * 30}%`,
                   top: `${30 + i * 20}%`,

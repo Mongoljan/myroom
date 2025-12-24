@@ -20,7 +20,7 @@ const CurrencyMegaMenu: React.FC<CurrencyMegaMenuProps> = ({ textClass = "" }) =
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center space-x-1 ${textClass} hover:text-blue-400 transition-colors`}
+        className={`flex items-center space-x-1 ${textClass} hover:text-slate-400 transition-colors`}
       >
         <span>{selectedCurrency}</span>
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

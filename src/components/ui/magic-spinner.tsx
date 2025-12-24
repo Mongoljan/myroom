@@ -59,7 +59,7 @@ export function SpinningProgress() {
 
         {/* Progress circle */}
         <motion.div
-          className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent"
+          className="absolute inset-0 rounded-full border-4 border-slate-900 border-t-transparent"
           animate={{ rotate: 360 }}
           transition={{
             duration: 1.2,
@@ -70,7 +70,7 @@ export function SpinningProgress() {
 
         {/* Inner dot */}
         <motion.div
-          className="absolute top-1/2 left-1/2 w-2 h-2 bg-blue-600 rounded-full transform -translate-x-1/2 -translate-y-1/2"
+          className="absolute top-1/2 left-1/2 w-2 h-2 bg-slate-900 rounded-full transform -translate-x-1/2 -translate-y-1/2"
           animate={{
             scale: [1, 1.3, 1],
             opacity: [0.7, 1, 0.7]
@@ -95,7 +95,7 @@ export function HotelSearchSpinner() {
       <div className="relative mb-6">
         {/* Outer rotating ring */}
         <motion.div
-          className="w-20 h-20 border-4 border-blue-100 rounded-full"
+          className="w-20 h-20 border-4 border-slate-100 rounded-full"
           animate={{ rotate: 360 }}
           transition={{
             duration: 4,
@@ -106,7 +106,7 @@ export function HotelSearchSpinner() {
 
         {/* Inner counter-rotating ring */}
         <motion.div
-          className="absolute inset-2 border-4 border-blue-500 border-t-transparent border-r-transparent rounded-full"
+          className="absolute inset-2 border-4 border-slate-500 border-t-transparent border-r-transparent rounded-full"
           animate={{ rotate: -360 }}
           transition={{
             duration: 2,
@@ -128,7 +128,7 @@ export function HotelSearchSpinner() {
               ease: "easeInOut"
             }}
           >
-            <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
               <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"/>
               <path d="M9 12h2v2H9zM13 12h2v2h-2zM9 15h2v2H9zM13 15h2v2h-2z"/>
             </svg>

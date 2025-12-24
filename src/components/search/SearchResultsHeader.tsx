@@ -76,7 +76,7 @@ export default function SearchResultsHeader({
 
 
       {/* Main Header */}
-      <div className=" backdrop-blur-sm rounded-lg p-2 relative overflow-hidden">
+      <div className=" backdrop-blur-sm rounded-lg p-1.5 relative overflow-hidden">
         {/* Subtle gradient background */}
         <div className="relative flex justify-between items-center gap-x-4 border-b border-gray-100 mb-2 pb-2">
 
@@ -84,9 +84,9 @@ export default function SearchResultsHeader({
           <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ">
             <div className="flex-1">
-              <h1 className="text-lg font-semibold text-gray-900 mb-1">
-                {searchLocation ? `${searchLocation}` : t('hotel.title')}: 
-                <span className="text-lg font-semibold text-gray-900"> {filteredCount}</span>
+              <h1 className="text-xl font-bold text-gray-900 mb-1">
+                {searchLocation ? `${searchLocation}` : t('hotel.title')}:
+                <span className="text-xl font-bold text-gray-900"> {filteredCount}</span>
               </h1>
 
             </div>
@@ -107,7 +107,7 @@ export default function SearchResultsHeader({
                 <select
                   value={sortBy}
                   onChange={(e) => onSort(e.target.value)}
-                  className="appearance-none bg-white shadow-[0_0_4px_rgba(0,0,0,0.15)] rounded-md px-2 py-1 pr-8 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[190px]"
+                  className="appearance-none bg-white border border-gray-200 rounded-md px-2 py-1 pr-8 text-sm focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 transition-colors min-w-[190px]"
                 >
                   <option value="default">{t('search.sortOptions.default')}</option>
                   <option value="price_low">{t('search.sortOptions.priceLowToHigh')}</option>
@@ -134,7 +134,7 @@ export default function SearchResultsHeader({
                     onSearchByName(e.target.value);
                   }}
                   placeholder={t('search.searchByNamePlaceholder')}
-                  className="appearance-none bg-white shadow-[0_0_4px_rgba(0,0,0,0.15)] rounded-md pl-9 pr-3 py-1 text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400 transition-colors min-w-[220px]"
+                  className="appearance-none bg-white border border-gray-200 rounded-md pl-9 pr-3 py-1 text-sm focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 transition-colors min-w-[220px]"
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <Search className="w-4 h-4 text-gray-400" />
@@ -150,7 +150,7 @@ export default function SearchResultsHeader({
                   onClick={() => onViewModeChange('list')}
                   className={`flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium transition-all ${
                     viewMode === 'list'
-                      ? 'bg-white text-blue-600 border border-blue-200'
+                      ? 'bg-white text-slate-900 border border-slate-200'
                       : 'text-gray-700 hover:text-gray-900'
                   }`}
                 >
@@ -161,7 +161,7 @@ export default function SearchResultsHeader({
                   onClick={() => onViewModeChange('grid')}
                   className={`flex items-center gap-1 px-2 py-1 rounded text-sm font-medium transition-all ${
                     viewMode === 'grid'
-                      ? 'bg-white text-blue-600 border border-blue-200'
+                      ? 'bg-white text-slate-900 border border-slate-200'
                       : 'text-gray-700 hover:text-gray-900'
                   }`}
                 >

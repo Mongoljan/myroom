@@ -24,9 +24,9 @@ export default function LocationInput({
   const { t } = useHydratedTranslation();
 
   return (
-    <div className={`flex-1 ${compact ? 'p-1.5' : 'p-4'} w-full relative`}>
+    <div className={`flex-1 ${compact ? 'p-1.5' : 'p-2.5'} w-full relative`}>
       <div className="flex items-center">
-        <MapPin className={`${compact ? 'w-5 h-5' : 'w-6 h-6'} text-gray-700 ${compact ? 'mr-2' : 'mr-4'}`} />
+        <MapPin className={`${compact ? 'w-4 h-4' : 'w-4.5 h-4.5'} text-gray-700 ${compact ? 'mr-2' : 'mr-2.5'}`} />
         <div className="flex-1">
           <input
             ref={locationInputRef}
@@ -35,7 +35,7 @@ export default function LocationInput({
             onChange={(e) => onLocationChange(e.target.value)}
             onFocus={onLocationFocus}
             placeholder={t('search.destinationPlaceholder', 'Хот, дүүрэг оруулна уу')}
-            className="w-full text-gray-900 placeholder-gray-400 border-none outline-none font-medium"
+            className="w-full text-sm text-gray-900 placeholder-gray-400 border-none outline-none font-medium"
           />
         </div>
         {destination && (

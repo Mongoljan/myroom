@@ -82,9 +82,9 @@ export default function PopularDestinations() {
                 )}
 
                 {hasError && (
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-purple-100 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-1">
+                      <div className="w-10 h-10 bg-slate-500 rounded-full flex items-center justify-center mx-auto mb-1">
                         <span className="text-white font-bold text-base">
                           {destination.nameEn.charAt(0)}
                         </span>

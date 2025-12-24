@@ -125,7 +125,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative py-12 bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 overflow-hidden">
+      <section className="relative py-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
         {/* Animated background orb */}
         <motion.div
           animate={{
@@ -138,7 +138,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-500/20 to-violet-500/20 rounded-full blur-3xl"
+          className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-slate-500/20 to-violet-500/20 rounded-full blur-3xl"
         />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -164,7 +164,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-4"
             >
-              <MapPin className="w-8 h-8 text-blue-300" />
+              <MapPin className="w-8 h-8 text-slate-300" />
             </motion.div>
 
             {/* Title */}
@@ -212,7 +212,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                   {hasActiveFilters && (
                     <button
                       onClick={clearFilters}
-                      className="text-xs text-blue-600 hover:text-blue-700"
+                      className="text-xs text-slate-900 hover:text-slate-800"
                     >
                       {t('filters.clear', 'Цэвэрлэх')}
                     </button>
@@ -255,7 +255,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                         onClick={() => setSelectedRating(selectedRating === rating ? null : rating)}
                         className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                           selectedRating === rating
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            ? 'bg-slate-50 text-slate-800 border border-slate-200'
                             : 'hover:bg-gray-50 border border-transparent'
                         }`}
                       >
@@ -277,7 +277,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                         onClick={() => togglePropertyType(type)}
                         className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                           selectedPropertyTypes.has(type)
-                            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                            ? 'bg-slate-50 text-slate-800 border border-slate-200'
                             : 'hover:bg-gray-50 border border-transparent'
                         }`}
                       >
@@ -300,7 +300,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                   <Filter className="w-4 h-4" />
                   {t('filters.show', 'Шүүлтүүр')}
                   {hasActiveFilters && (
-                    <span className="w-2 h-2 rounded-full bg-blue-600" />
+                    <span className="w-2 h-2 rounded-full bg-slate-900" />
                   )}
                 </button>
               </div>
@@ -353,7 +353,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                   {hasActiveFilters && (
                     <button
                       onClick={clearFilters}
-                      className="text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-slate-900 hover:text-slate-800 font-medium"
                     >
                       {t('filters.clear', 'Шүүлтүүрийг цэвэрлэх')}
                     </button>

@@ -68,7 +68,7 @@ export default function HotelAmenities({ amenities, facilities }: HotelAmenities
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {items.map((item, index) => (
         <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
-          <div className="text-blue-600 flex-shrink-0">
+          <div className="text-slate-900 flex-shrink-0">
             {amenityIcons[item] || <Shield className="w-5 h-5" />}
           </div>
           <span className="text-sm font-medium text-gray-700">{item}</span>

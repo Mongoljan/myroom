@@ -356,7 +356,7 @@ export default function ImprovedHotelRoomsSection({
                     params.set('adults', e.target.value);
                     router.push(`?${params.toString()}`, { scroll: false });
                   }}
-                  className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-slate-500"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -371,7 +371,7 @@ export default function ImprovedHotelRoomsSection({
                     params.set('children', e.target.value);
                     router.push(`?${params.toString()}`, { scroll: false });
                   }}
-                  className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-slate-500"
                 />
               </div>
             </div>

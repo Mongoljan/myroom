@@ -6,8 +6,8 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸', color: 'from-blue-500 to-red-600' },
-  { code: 'mn', name: 'Монгол', flag: '🇲🇳', color: 'from-red-500 to-blue-600' }
+  { code: 'en', name: 'English', flag: '🇺🇸', color: 'from-slate-500 to-red-600' },
+  { code: 'mn', name: 'Монгол', flag: '🇲🇳', color: 'from-red-500 to-slate-600' }
 ];
 
 export default function LanguageSwitcher() {
@@ -42,7 +42,7 @@ export default function LanguageSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="group relative overflow-hidden rounded-xl bg-blue-50/40 backdrop-blur-sm border border-blue-200/50 hover:border-blue-300/70 transition-all duration-300"
+        className="group relative overflow-hidden rounded-xl bg-slate-50/40 backdrop-blur-sm border border-slate-200/50 hover:border-slate-300/70 transition-all duration-300"
       >
         {/* Animated background */}
         <motion.div
@@ -62,7 +62,7 @@ export default function LanguageSwitcher() {
             opacity: isHovered ? 0.3 : 0,
           }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="absolute -top-2 -right-2 w-8 h-8 bg-blue-400/40 rounded-full blur-md"
+          className="absolute -top-2 -right-2 w-8 h-8 bg-slate-400/40 rounded-full blur-md"
         />
 
         <div className="relative flex items-center space-x-2 px-2 py-2.5">          
@@ -78,7 +78,7 @@ export default function LanguageSwitcher() {
             >
               {mounted ? currentLanguage.flag : '🌐'}
             </motion.span>
-            <span className={`${TYPOGRAPHY.nav.secondary} text-blue-900 group-hover:text-blue-800 transition-colors tracking-wide font-medium`}>
+            <span className={`${TYPOGRAPHY.nav.secondary} text-slate-900 group-hover:text-slate-800 transition-colors tracking-wide font-medium`}>
               {mounted ? currentLanguage.code.toUpperCase() : 'EN'}
             </span>
           </motion.div>
@@ -87,7 +87,7 @@ export default function LanguageSwitcher() {
             animate={{ rotate: isOpen ? 180 : 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <ChevronDown className="w-3.5 h-3.5 text-blue-900/70 group-hover:text-blue-800/90 transition-colors" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-900/70 group-hover:text-slate-800/90 transition-colors" />
           </motion.div>
         </div>
 

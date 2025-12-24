@@ -4,7 +4,7 @@ export default function LoadingSkeleton() {
   return (
     <div className="bg-white">
       {/* Header Skeleton - Material Texture */}
-      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-slate-900 via-slate-900 to-slate-900 overflow-hidden">
         {/* Noise texture overlay */}
         <div className="absolute inset-0 opacity-[0.015]"
           style={{

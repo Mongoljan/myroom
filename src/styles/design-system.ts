@@ -269,7 +269,7 @@ export const DESIGN_SYSTEM = {
       light: 'border-gray-200',
       DEFAULT: 'border-gray-300',
       dark: 'border-gray-400',
-      primary: 'border-blue-500',
+      primary: 'border-slate-500',
     },
   },
 
@@ -287,7 +287,7 @@ export const DESIGN_SYSTEM = {
 
     // Special effects
     glow: {
-      blue: 'shadow-lg shadow-blue-500/20',
+      blue: 'shadow-lg shadow-slate-900/20',
       violet: 'shadow-lg shadow-violet-500/20',
       pink: 'shadow-lg shadow-pink-500/20',
     },
@@ -331,10 +331,10 @@ export const DESIGN_SYSTEM = {
     },
 
     gradient: {
-      primary: 'bg-gradient-to-r from-blue-500 to-violet-500',
+      primary: 'bg-gradient-to-r from-slate-500 to-violet-500',
       secondary: 'bg-gradient-to-r from-violet-500 to-purple-500',
       accent: 'bg-gradient-to-r from-pink-500 to-rose-500',
-      subtle: 'bg-gradient-to-br from-blue-500/10 via-violet-500/10 to-pink-500/10',
+      subtle: 'bg-gradient-to-br from-slate-500/10 via-violet-500/10 to-pink-500/10',
     },
 
     blur: {
@@ -356,7 +356,7 @@ export const DESIGN_SYSTEM = {
 
     // Button variants
     button: {
-      primary: 'bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg px-4 py-2 transition-colors duration-200',
+      primary: 'bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg px-4 py-2 transition-colors duration-200',
       secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium rounded-lg px-4 py-2 transition-colors duration-200',
       ghost: 'hover:bg-gray-100 text-gray-700 font-medium rounded-lg px-4 py-2 transition-colors duration-200',
     },
@@ -364,7 +364,7 @@ export const DESIGN_SYSTEM = {
     // Badge variants
     badge: {
       default: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700',
-      primary: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700',
+      primary: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800',
       success: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700',
     },
   },

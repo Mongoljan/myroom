@@ -143,7 +143,7 @@ export default function ModernSearchBar() {
       case 'province': return <MapPin className="w-4 h-4" />;
       case 'soum': return <Building className="w-4 h-4" />;
       case 'district': return <MapPin className="w-4 h-4" />;
-      case 'property': return <Building className="w-4 h-4 text-blue-500" />;
+      case 'property': return <Building className="w-4 h-4 text-slate-500" />;
       default: return <MapPin className="w-4 h-4" />;
     }
   };
@@ -161,10 +161,10 @@ export default function ModernSearchBar() {
           {/* Location Input */}
           <div ref={locationRef} className="flex-1 relative">
             <div 
-              className="flex items-center p-4 cursor-text hover:bg-blue-50 transition-colors"
+              className="flex items-center p-4 cursor-text hover:bg-slate-50 transition-colors"
               onClick={() => setShowLocationSuggestions(true)}
             >
-              <MapPin className="w-5 h-5 text-blue-600 mr-3" />
+              <MapPin className="w-5 h-5 text-slate-900 mr-3" />
               <div className="flex-1">
                 <div className={`${TYPOGRAPHY.form.label} text-gray-700 mb-1 font-medium`}>{t('hotel.destination', 'Байршил')}</div>
                 <input
@@ -201,7 +201,7 @@ export default function ModernSearchBar() {
                         <div className="flex flex-col gap-1">
                           <span>Search results</span>
                           {(hasCyrillic(searchData.location) || hasLatin(searchData.location)) && (
-                            <span className="text-xs text-blue-600">
+                            <span className="text-xs text-slate-900">
                               Including transliteration matches
                             </span>
                           )}
@@ -229,7 +229,7 @@ export default function ModernSearchBar() {
                                 <span className="w-2 h-2 bg-green-500 rounded-full" title={t('search.exactMatch', 'Яг таарсан')}></span>
                               )}
                               {suggestion.property_count > 0 && (
-                                <span className={`${TYPOGRAPHY.body.caption} text-blue-600`}>
+                                <span className={`${TYPOGRAPHY.body.caption} text-slate-900`}>
                                   ({suggestion.property_count} зочид буудал)
                                 </span>
                               )}
@@ -251,9 +251,9 @@ export default function ModernSearchBar() {
           <div ref={dateRef} className="relative">
             <button
               onClick={() => setShowDatePicker(true)}
-              className="flex items-center p-4 hover:bg-blue-50 transition-colors"
+              className="flex items-center p-4 hover:bg-slate-50 transition-colors"
             >
-              <Calendar className="w-5 h-5 text-blue-600 mr-3" />
+              <Calendar className="w-5 h-5 text-slate-900 mr-3" />
               <div>
                 <div className={`${TYPOGRAPHY.form.label} text-gray-700 mb-1 font-medium`}>Check in - Check out</div>
                 <div className={`${TYPOGRAPHY.body.standard} text-gray-900`}>
@@ -297,7 +297,7 @@ export default function ModernSearchBar() {
                           type="date"
                           value={searchData.checkIn}
                           onChange={(e) => setSearchData(prev => ({ ...prev, checkIn: e.target.value }))}
-                          className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${TYPOGRAPHY.form.input}`}
+                          className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 ${TYPOGRAPHY.form.input}`}
                         />
                       </div>
                       <div>
@@ -308,13 +308,13 @@ export default function ModernSearchBar() {
                           type="date"
                           value={searchData.checkOut}
                           onChange={(e) => setSearchData(prev => ({ ...prev, checkOut: e.target.value }))}
-                          className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${TYPOGRAPHY.form.input}`}
+                          className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 ${TYPOGRAPHY.form.input}`}
                         />
                       </div>
                     </div>
                     <button
                       onClick={() => setShowDatePicker(false)}
-                      className={`w-full mt-6 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors ${TYPOGRAPHY.button.standard}`}
+                      className={`w-full mt-6 bg-primary text-white py-3 rounded-lg hover:bg-primary/90 transition-colors ${TYPOGRAPHY.button.standard}`}
                     >
                       Apply Dates
                     </button>
@@ -341,7 +341,7 @@ export default function ModernSearchBar() {
               onClick={handleSearch}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl transition-colors shadow-md hover:shadow-lg"
+              className="bg-primary hover:bg-primary/90 text-white p-4 rounded-xl transition-colors shadow-md hover:shadow-lg"
             >
               <Search className="w-5 h-5" />
             </motion.button>

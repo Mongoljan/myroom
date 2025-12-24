@@ -181,7 +181,7 @@ export default function TermsPage() {
                       onClick={() => scrollToSection(String(section.id))}
                       className={`w-full text-left px-3 py-2 rounded-md transition-all duration-200 flex items-center justify-between group ${
                         activeSection === String(section.id)
-                          ? 'bg-blue-50 text-blue-600 font-medium border-l-4 border-blue-600 pl-2'
+                          ? 'bg-slate-50 text-slate-900 font-medium border-l-4 border-slate-900 pl-2'
                           : 'text-gray-700 hover:bg-gray-50 border-l-4 border-transparent'
                       }`}
                     >
@@ -189,7 +189,7 @@ export default function TermsPage() {
                       <ChevronRight
                         className={`w-4 h-4 transition-transform ${
                           activeSection === String(section.id)
-                            ? 'text-blue-600'
+                            ? 'text-slate-900'
                             : 'text-gray-400 group-hover:translate-x-1'
                         }`}
                       />

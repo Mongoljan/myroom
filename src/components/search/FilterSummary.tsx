@@ -240,7 +240,7 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
            {activeFilters.length > 0 && (
           <button
             onClick={onClearAll}
-            className="flex cursor-pointer items-center gap-1 text-xs ml-2 text-blue-500 hover:text-blue-800 transition-colors"
+            className="flex cursor-pointer items-center gap-1 text-xs ml-2 text-primary hover:underline transition-all"
           >
             <Trash2 className="w-3 h-3" />
             {t('search.clearAll')}

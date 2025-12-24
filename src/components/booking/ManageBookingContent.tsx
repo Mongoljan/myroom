@@ -85,7 +85,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
               value={newCheckIn}
               onChange={(e) => setNewCheckIn(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               required
             />
           </div>
@@ -99,7 +99,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
               value={newCheckOut}
               onChange={(e) => setNewCheckOut(e.target.value)}
               min={newCheckIn}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               required
             />
           </div>
@@ -121,7 +121,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-3 px-4 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 py-3 px-4 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
               {loading ? t('booking.manage.updating', 'Шинэчилж байна...') : t('booking.manage.updateDates', 'Өдөр шинэчлэх')}
             </button>
@@ -261,9 +261,9 @@ export default function ManageBookingContent() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             {/* Auto-filled notification */}
             {autoSearched && bookingCode && pinCode && !bookingData && !error && (
-              <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-blue-600" />
-                <p className="text-sm text-blue-800">
+              <div className="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-slate-900" />
+                <p className="text-sm text-slate-800">
                   {t('booking.manage.autoFilled', 'Захиалгын мэдээлэл автоматаар бөглөгдлөө')}
                 </p>
               </div>
@@ -302,7 +302,7 @@ export default function ManageBookingContent() {
               <button
                 type="submit"
                 disabled={loading || !bookingCode || !pinCode}
-                className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:text-white transition-colors"
+                className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 disabled:bg-gray-400 disabled:text-white transition-colors"
               >
                 <Search className="w-4 h-4" />
                 {loading ? t('booking.manage.searching', 'Хайж байна...') : t('booking.manage.findBooking', 'Захиалга хайх')}

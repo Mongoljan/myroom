@@ -95,14 +95,14 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const getFacilityIconById = (facilityId: number) => {
     const iconMap: { [key: number]: React.ReactNode } = {
       1: <Utensils className="w-4 h-4 text-orange-600" />, // Restaurant
-      2: <ConciergeBell className="w-4 h-4 text-blue-600" />, // Room service
-      4: <Clock className="w-4 h-4 text-indigo-600" />, // 24-hour front desk
+      2: <ConciergeBell className="w-4 h-4 text-primary" />, // Room service
+      4: <Clock className="w-4 h-4 text-primary" />, // 24-hour front desk
       5: <Dumbbell className="w-4 h-4 text-red-600" />, // Fitness center
       6: <Cigarette className="w-4 h-4 text-gray-600 line-through" />, // Non-smoking rooms
-      7: <Bus className="w-4 h-4 text-blue-600" />, // Airport shuttle
+      7: <Bus className="w-4 h-4 text-primary" />, // Airport shuttle
       8: <Users className="w-4 h-4 text-green-600" />, // Family rooms
       9: <Palmtree className="w-4 h-4 text-teal-600" />, // Spa & wellness center
-      10: <Wifi className="w-4 h-4 text-blue-600" />, // Free Wi-Fi
+      10: <Wifi className="w-4 h-4 text-primary" />, // Free Wi-Fi
       11: <Zap className="w-4 h-4 text-yellow-600" />, // Electric vehicle charging
       12: <WashingMachine className="w-4 h-4 text-cyan-600" />, // Guest Laundry
       13: <Briefcase className="w-4 h-4 text-gray-700" />, // Conference room
@@ -113,17 +113,17 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       18: <Wind className="w-4 h-4 text-cyan-600" />, // Air conditioning
       19: <Car className="w-4 h-4 text-gray-700" />, // Parking
       20: <PawPrint className="w-4 h-4 text-amber-600" />, // Pet friendly
-      21: <Hotel className="w-4 h-4 text-blue-600" />, // Wheelchair accessible
-      22: <Waves className="w-4 h-4 text-blue-500" />, // Swimming pool
+      21: <Hotel className="w-4 h-4 text-primary" />, // Wheelchair accessible
+      22: <Waves className="w-4 h-4 text-primary" />, // Swimming pool
       23: <DollarSign className="w-4 h-4 text-green-600" />, // Currency exchange
       24: <Package className="w-4 h-4 text-gray-600" />, // Luggage storage
       25: <ElevatorIcon className="w-4 h-4 text-gray-700" />, // Elevator
       26: <Cigarette className="w-4 h-4 text-gray-500" />, // Smoking area
-      27: <Car className="w-4 h-4 text-blue-600" />, // Car rental
-      28: <Bus className="w-4 h-4 text-blue-600" />, // Airport Pick-up Service
+      27: <Car className="w-4 h-4 text-primary" />, // Car rental
+      28: <Bus className="w-4 h-4 text-primary" />, // Airport Pick-up Service
       30: <Sunrise className="w-4 h-4 text-yellow-600" />, // Wake-up call
       31: <Flame className="w-4 h-4 text-red-600" />, // BBQ
-      32: <Waves className="w-4 h-4 text-blue-400" />, // Water park
+      32: <Waves className="w-4 h-4 text-primary" />, // Water park
       33: <Mountain className="w-4 h-4 text-green-700" />, // Golf course
       34: <Baby className="w-4 h-4 text-gray-600 line-through" />, // Adults only
       35: <Phone className="w-4 h-4 text-green-600" />, // Taxi call
@@ -146,24 +146,24 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
     const stringIconMap: { [key: string]: React.ReactNode } = {
       'restaurant': <Utensils className="w-5 h-5 text-orange-600" />,
       'ресторан': <Utensils className="w-5 h-5 text-orange-600" />,
-      'room service': <ConciergeBell className="w-5 h-5 text-blue-600" />,
-      'өрөөний үйлчилгээ': <ConciergeBell className="w-5 h-5 text-blue-600" />,
-      '24-hour front desk': <Clock className="w-5 h-5 text-indigo-600" />,
-      '24 цагийн хүлээн авах': <Clock className="w-5 h-5 text-indigo-600" />,
+      'room service': <ConciergeBell className="w-5 h-5 text-primary" />,
+      'өрөөний үйлчилгээ': <ConciergeBell className="w-5 h-5 text-primary" />,
+      '24-hour front desk': <Clock className="w-5 h-5 text-primary" />,
+      '24 цагийн хүлээн авах': <Clock className="w-5 h-5 text-primary" />,
       'fitness center': <Dumbbell className="w-5 h-5 text-red-600" />,
       'фитнес төв': <Dumbbell className="w-5 h-5 text-red-600" />,
       'non-smoking rooms': <Cigarette className="w-5 h-5 text-gray-600" />,
       'тамхи татдаггүй өрөө': <Cigarette className="w-5 h-5 text-gray-600" />,
-      'airport shuttle': <Bus className="w-5 h-5 text-blue-600" />,
-      'нисэх онгоцны буудлын автобус': <Bus className="w-5 h-5 text-blue-600" />,
+      'airport shuttle': <Bus className="w-5 h-5 text-slate-900" />,
+      'нисэх онгоцны буудлын автобус': <Bus className="w-5 h-5 text-slate-900" />,
       'family rooms': <Users className="w-5 h-5 text-green-600" />,
       'гэр бүлийн өрөө': <Users className="w-5 h-5 text-green-600" />,
       'spa & welness center': <Palmtree className="w-5 h-5 text-teal-600" />,
       'spa': <Palmtree className="w-5 h-5 text-teal-600" />,
       'спа': <Palmtree className="w-5 h-5 text-teal-600" />,
-      'free wi-fi': <Wifi className="w-5 h-5 text-blue-600" />,
-      'үнэгүй wi-fi': <Wifi className="w-5 h-5 text-blue-600" />,
-      'wifi': <Wifi className="w-5 h-5 text-blue-600" />,
+      'free wi-fi': <Wifi className="w-5 h-5 text-slate-900" />,
+      'үнэгүй wi-fi': <Wifi className="w-5 h-5 text-slate-900" />,
+      'wifi': <Wifi className="w-5 h-5 text-slate-900" />,
       'electric vehicle charging station': <Zap className="w-5 h-5 text-yellow-600" />,
       'цахилгаан машин цэнэглэх станц': <Zap className="w-5 h-5 text-yellow-600" />,
       'guest laundry': <WashingMachine className="w-5 h-5 text-cyan-600" />,
@@ -184,10 +184,10 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       'зогсоол': <Car className="w-5 h-5 text-gray-700" />,
       'pet friendly': <PawPrint className="w-5 h-5 text-amber-600" />,
       'тэжээвэр амьтан боломжтой': <PawPrint className="w-5 h-5 text-amber-600" />,
-      'wheelchair accessible': <Hotel className="w-5 h-5 text-blue-600" />,
-      'тэргэнцэртэй хүн ашиглах боломжтой': <Hotel className="w-5 h-5 text-blue-600" />,
-      'swimming pool': <Waves className="w-5 h-5 text-blue-500" />,
-      'усан сан': <Waves className="w-5 h-5 text-blue-500" />,
+      'wheelchair accessible': <Hotel className="w-5 h-5 text-slate-900" />,
+      'тэргэнцэртэй хүн ашиглах боломжтой': <Hotel className="w-5 h-5 text-slate-900" />,
+      'swimming pool': <Waves className="w-5 h-5 text-slate-500" />,
+      'усан сан': <Waves className="w-5 h-5 text-slate-500" />,
       'currency exchange': <DollarSign className="w-5 h-5 text-green-600" />,
       'валют солилцоо': <DollarSign className="w-5 h-5 text-green-600" />,
       'luggage storage': <Package className="w-5 h-5 text-gray-600" />,
@@ -196,15 +196,15 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       'цахилгаан шат': <ElevatorIcon className="w-5 h-5 text-gray-700" />,
       'smoking area': <Cigarette className="w-5 h-5 text-gray-500" />,
       'тамхи татах цэг': <Cigarette className="w-5 h-5 text-gray-500" />,
-      'car rental': <Car className="w-5 h-5 text-blue-600" />,
-      'машин түрээслэх үйлчилгээ': <Car className="w-5 h-5 text-blue-600" />,
-      'airport pick-up service': <Bus className="w-5 h-5 text-blue-600" />,
-      'онгоцны буудлаас тосох үйлчилгээ': <Bus className="w-5 h-5 text-blue-600" />,
+      'car rental': <Car className="w-5 h-5 text-slate-900" />,
+      'машин түрээслэх үйлчилгээ': <Car className="w-5 h-5 text-slate-900" />,
+      'airport pick-up service': <Bus className="w-5 h-5 text-slate-900" />,
+      'онгоцны буудлаас тосох үйлчилгээ': <Bus className="w-5 h-5 text-slate-900" />,
       'wake-up call': <Sunrise className="w-5 h-5 text-yellow-600" />,
       'сэрээх үйлчилгээ': <Sunrise className="w-5 h-5 text-yellow-600" />,
       'bbq': <Flame className="w-5 h-5 text-red-600" />,
-      'water park': <Waves className="w-5 h-5 text-blue-400" />,
-      'усан парк': <Waves className="w-5 h-5 text-blue-400" />,
+      'water park': <Waves className="w-5 h-5 text-slate-400" />,
+      'усан парк': <Waves className="w-5 h-5 text-slate-400" />,
       'golf course': <Mountain className="w-5 h-5 text-green-700" />,
       'голфын талбай': <Mountain className="w-5 h-5 text-green-700" />,
       'adults only': <Baby className="w-5 h-5 text-gray-600" />,
@@ -371,7 +371,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                     href={hotel.google_map}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    className="flex items-center gap-1 text-slate-900 hover:text-slate-800 text-sm font-medium"
                   >
                     <MapPin className="w-4 h-4" />
                     {t('hotelDetails.viewOnMap', 'Газрын зураг дээр харах')}
@@ -407,7 +407,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                     </span>
                   </>
                 )}
-                <span className="text-xl font-bold text-blue-600">
+                <span className="text-xl font-bold text-slate-900">
                   ₮{priceInfo.current.toLocaleString()}
                 </span>
                 <span className="text-sm text-gray-600">/{t('hotelDetails.night', 'шөнө')}</span>
@@ -417,7 +417,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             {/* Book Button */}
             <button
               onClick={scrollToRooms}
-              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-sm whitespace-nowrap"
+              className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg transition-colors shadow-sm whitespace-nowrap"
             >
               {t('hotelDetails.book', 'Захиалах')}
             </button>
@@ -561,7 +561,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       
       {loading && (
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
           <span className="ml-3 text-gray-600">{t('hotelDetails.loadingExtra', 'Мэдээлэл ачааллаж байна...')}</span>
         </div>
       )}

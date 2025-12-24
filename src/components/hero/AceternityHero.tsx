@@ -209,7 +209,7 @@ export default function AceternityHero() {
 
   const getLocationIcon = (type: LocationSuggestion['type']) => {
     switch (type) {
-      case 'property': return <Hotel className="w-4 h-4 text-blue-900" />;
+      case 'property': return <Hotel className="w-4 h-4 text-slate-900" />;
       default: return <MapPin className="w-4 h-4 text-gray-500" />;
     }
   };
@@ -239,7 +239,7 @@ export default function AceternityHero() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 tracking-tight leading-tight"
           >
-            <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-white via-slate-100 to-white bg-clip-text text-transparent">
               {t('hero.title', 'Зочид буудал хайх')}
             </span>
           </motion.h1>
@@ -269,18 +269,18 @@ export default function AceternityHero() {
               }}
             >
               {/* Gradient glow on hover */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/0 via-violet-500/0 to-pink-500/0 group-hover:from-blue-500/10 group-hover:via-violet-500/10 group-hover:to-pink-500/10 transition-all duration-500 -z-10" />
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-slate-500/0 via-violet-500/0 to-pink-500/0 group-hover:from-slate-500/10 group-hover:via-violet-500/10 group-hover:to-pink-500/10 transition-all duration-500 -z-10" />
 
               <form onSubmit={handleSearch}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4">
                   {/* Location Input */}
                   <div ref={locationRef} className="lg:col-span-4 relative">
-                    <div className="relative bg-white/10 hover:bg-white/15 backdrop-blur-md rounded-2xl p-4 transition-all duration-300 border border-white/10 hover:border-blue-400/40 group/input">
+                    <div className="relative bg-white/10 hover:bg-white/15 backdrop-blur-md rounded-2xl p-4 transition-all duration-300 border border-white/10 hover:border-slate-400/40 group/input">
                       <label className={`${text.caption} text-slate-400 mb-2 block font-medium uppercase tracking-wide`}>
                         {t('search.location')}
                       </label>
                       <div className="flex items-center gap-3">
-                        <MapPin className="w-5 h-5 text-blue-400 flex-shrink-0" />
+                        <MapPin className="w-5 h-5 text-slate-400 flex-shrink-0" />
                         <input
                           ref={locationInputRef}
                           type="text"
@@ -365,7 +365,7 @@ export default function AceternityHero() {
                       type="submit"
                       whileHover={{ scale: 1.05, y: -2 }}
                       whileTap={{ scale: 0.95 }}
-                      className="w-full h-full min-h-[80px] bg-gradient-to-r from-blue-600 via-blue-600 to-violet-600 hover:from-blue-500 hover:via-blue-500 hover:to-violet-500 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]"
+                      className="w-full h-full min-h-[80px] bg-gradient-to-r from-slate-600 via-slate-600 to-violet-600 hover:from-slate-500 hover:via-slate-500 hover:to-violet-500 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(59,130,246,0.3)] hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]"
                     >
                       <Search className="w-5 h-5" />
                       <span className="hidden sm:inline">{t('search.searchButton', 'Хайх')}</span>
@@ -407,13 +407,13 @@ export default function AceternityHero() {
                       <button
                         key={search.id}
                         onClick={() => handleLocationSelect(search.location)}
-                        className="w-full flex items-center p-3 text-left hover:bg-blue-500/10 rounded-xl transition-all group border border-transparent hover:border-blue-500/30"
+                        className="w-full flex items-center p-3 text-left hover:bg-slate-500/10 rounded-xl transition-all group border border-transparent hover:border-slate-500/30"
                       >
-                        <div className="text-blue-400 mr-3">
+                        <div className="text-slate-400 mr-3">
                           <Clock className="w-4 h-4" />
                         </div>
                         <div className="flex-1">
-                          <div className={`${text.bodySm} text-white group-hover:text-blue-300 font-medium`}>
+                          <div className={`${text.bodySm} text-white group-hover:text-slate-300 font-medium`}>
                             {search.location.fullName}
                           </div>
                           <div className={`${text.caption} text-slate-400`}>
@@ -434,7 +434,7 @@ export default function AceternityHero() {
 
               {isLoadingSuggestions ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-500 border-t-transparent"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-slate-500 border-t-transparent"></div>
                 </div>
               ) : (
                 <div className="space-y-1">
@@ -442,7 +442,7 @@ export default function AceternityHero() {
                     <button
                       key={suggestion.id}
                       onClick={() => handleLocationSelect(suggestion)}
-                      className="w-full flex items-center p-3 text-left hover:bg-blue-500/10 rounded-xl transition-all border border-transparent hover:border-blue-500/30"
+                      className="w-full flex items-center p-3 text-left hover:bg-slate-500/10 rounded-xl transition-all border border-transparent hover:border-slate-500/30"
                     >
                       <div className="mr-3">
                         {getLocationIcon(suggestion.type)}

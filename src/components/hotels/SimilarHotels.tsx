@@ -137,7 +137,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
 
               <div className="p-3 space-y-2">
                 <div>
-                  <h3 className="font-medium text-sm line-clamp-1 group-hover:text-blue-600 transition-colors text-gray-900">
+                  <h3 className="font-medium text-sm line-clamp-1 group-hover:text-slate-900 transition-colors text-gray-900">
                     {hotel.property_name}
                   </h3>
                   <div className="flex items-center gap-1 text-gray-600 text-xs">

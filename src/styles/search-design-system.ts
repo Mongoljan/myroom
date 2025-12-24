@@ -21,7 +21,7 @@ export const SEARCH_DESIGN_SYSTEM = {
     LABEL_MUTED: 'text-xs text-gray-500',
 
     // Links
-    LINK: 'text-xs text-blue-600 hover:text-blue-800',
+    LINK: 'text-xs text-primary hover:underline',
 
     // Button Text
     BUTTON_TEXT: 'text-sm font-medium',
@@ -33,7 +33,7 @@ export const SEARCH_DESIGN_SYSTEM = {
     // Backgrounds
     BG_WHITE: 'bg-white',
     BG_GRAY_LIGHT: 'bg-gray-50',
-    BG_BLUE_LIGHT: 'bg-blue-50',
+    BG_BLUE_LIGHT: 'bg-slate-50',
     BG_GREEN_LIGHT: 'bg-green-50',
     BG_RED_LIGHT: 'bg-red-50',
 
@@ -41,14 +41,14 @@ export const SEARCH_DESIGN_SYSTEM = {
     TEXT_PRIMARY: 'text-gray-900',
     TEXT_SECONDARY: 'text-gray-600',
     TEXT_MUTED: 'text-gray-500',
-    TEXT_BLUE: 'text-blue-600',
+    TEXT_BLUE: 'text-primary',
     TEXT_GREEN: 'text-green-600',
     TEXT_RED: 'text-red-600',
 
     // Borders
     BORDER_DEFAULT: 'border-gray-200',
     BORDER_HOVER: 'border-gray-300',
-    BORDER_FOCUS: 'border-blue-500',
+    BORDER_FOCUS: 'border-primary',
   },
 
   // Border Radius Standards

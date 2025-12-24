@@ -27,7 +27,7 @@ export const ds = {
       tertiary: 'text-slate-500',          // Subtle, elegant
       disabled: 'text-slate-400',          // Gentle disabled
       inverse: 'text-white',               // Pure white
-      accent: 'text-blue-600',             // Trust & reliability
+      accent: 'text-slate-900',             // Trust & reliability
     },
 
     // Background colors - Layered depth system
@@ -38,7 +38,7 @@ export const ds = {
       elevated: 'bg-white',
       overlay: 'bg-slate-900/60',          // Softer overlay
       glass: 'bg-white/80',                // Glassmorphism
-      mesh: 'bg-gradient-to-br from-blue-50/50 via-violet-50/30 to-cyan-50/50', // Mesh gradient
+      mesh: 'bg-gradient-to-br from-slate-50/50 via-violet-50/30 to-cyan-50/50', // Mesh gradient
     },
 
     // Primary brand - Trust + Energy (Blue-Cyan spectrum)
@@ -49,9 +49,9 @@ export const ds = {
       300: 'bg-cyan-300',
       400: 'bg-cyan-400',
       500: 'bg-cyan-500',             // Main: Trustworthy cyan
-      600: 'bg-blue-600',             // Action: Reliable blue
-      700: 'bg-blue-700',
-      800: 'bg-blue-800',
+      600: 'bg-slate-900',             // Action: Reliable blue
+      700: 'bg-slate-800',
+      800: 'bg-slate-800',
       900: 'bg-slate-900',            // Deep, premium
       text: {
         50: 'text-cyan-50',
@@ -60,9 +60,9 @@ export const ds = {
         300: 'text-cyan-300',
         400: 'text-cyan-400',
         500: 'text-cyan-500',
-        600: 'text-blue-600',
-        700: 'text-blue-700',
-        800: 'text-blue-800',
+        600: 'text-slate-900',
+        700: 'text-slate-800',
+        800: 'text-slate-800',
         900: 'text-slate-900',
       },
     },
@@ -280,10 +280,10 @@ export const ds = {
 
     // Gradients
     gradient: {
-      primary: 'bg-gradient-to-r from-blue-500 to-violet-500',
+      primary: 'bg-gradient-to-r from-slate-500 to-violet-500',
       secondary: 'bg-gradient-to-r from-violet-500 to-purple-500',
       accent: 'bg-gradient-to-r from-pink-500 to-rose-500',
-      subtle: 'bg-gradient-to-br from-blue-500/10 via-violet-500/10 to-pink-500/10',
+      subtle: 'bg-gradient-to-br from-slate-500/10 via-violet-500/10 to-pink-500/10',
     },
   },
 
@@ -313,7 +313,7 @@ export const ds = {
     // 🎨 NEXT-GEN BUTTON STYLES - Beyond Gradients
     button: {
       // ===== PRIMARY ACTIONS - Geometric Pattern Overlay =====
-      primary: `relative overflow-hidden bg-blue-400 text-white font-semibold rounded-xl px-6 py-2.5 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-[0.98] before:absolute before:inset-0 before:opacity-30 hover:before:opacity-40 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_at_20%_30%,_rgba(96,165,250,1)_0%,_transparent_40%),radial-gradient(circle_at_80%_70%,_rgba(167,139,250,1)_0%,_transparent_40%),radial-gradient(circle_at_50%_50%,_rgba(34,211,238,0.9)_0%,_transparent_50%)]`,
+      primary: `relative overflow-hidden bg-slate-400 text-white font-semibold rounded-xl px-6 py-2.5 transition-all duration-300 shadow-lg shadow-slate-900/30 hover:shadow-xl hover:shadow-slate-900/50 hover:scale-[1.02] active:scale-[0.98] before:absolute before:inset-0 before:opacity-30 hover:before:opacity-40 before:transition-opacity before:duration-300 before:bg-[radial-gradient(circle_at_20%_30%,_rgba(96,165,250,1)_0%,_transparent_40%),radial-gradient(circle_at_80%_70%,_rgba(167,139,250,1)_0%,_transparent_40%),radial-gradient(circle_at_50%_50%,_rgba(34,211,238,0.9)_0%,_transparent_50%)]`,
       
       // ===== SECONDARY - Neumorphic Soft Shadow =====
       secondary: 'relative bg-slate-50 hover:bg-slate-100 text-slate-900 font-semibold rounded-xl px-6 py-2.5 transition-all duration-300 shadow-[4px_4px_10px_rgba(0,0,0,0.08),-4px_-4px_10px_rgba(255,255,255,0.9)] hover:shadow-[6px_6px_15px_rgba(0,0,0,0.12),-6px_-6px_15px_rgba(255,255,255,1)]',
@@ -328,7 +328,7 @@ export const ds = {
       glass: 'relative bg-white/20 backdrop-blur-xl border border-white/30 text-slate-900 font-semibold rounded-xl px-6 py-2.5 transition-all duration-300 hover:bg-white/30 hover:border-white/40 shadow-lg shadow-black/5 hover:shadow-xl hover:shadow-black/10',
       
       // ===== GHOST - Minimal with Hover Fill =====
-      ghost: 'relative overflow-hidden text-slate-700 hover:text-white font-semibold rounded-xl px-6 py-2.5 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-600 before:to-cyan-600 before:translate-y-[100%] hover:before:translate-y-0 before:transition-transform before:duration-300 before:z-[-1]',
+      ghost: 'relative overflow-hidden text-slate-700 hover:text-white font-semibold rounded-xl px-6 py-2.5 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-r before:from-slate-600 before:to-cyan-600 before:translate-y-[100%] hover:before:translate-y-0 before:transition-transform before:duration-300 before:z-[-1]',
       
       // ===== WARM - Hospitality & Welcoming =====
       warm: 'relative overflow-hidden bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500 bg-size-200 hover:bg-pos-100 text-white font-semibold rounded-xl px-6 py-2.5 transition-all duration-500 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/50 hover:scale-[1.02]',
@@ -340,7 +340,7 @@ export const ds = {
       danger: 'relative bg-gradient-to-r from-rose-600 to-red-600 text-white font-semibold rounded-xl px-6 py-2.5 transition-all duration-300 shadow-lg shadow-rose-500/30 hover:shadow-xl hover:shadow-rose-500/50 hover:scale-[1.02]',
       
       // ===== OUTLINE - Modern Border Effect =====
-      outline: 'relative bg-transparent border-2 border-blue-600 text-blue-600 hover:text-white font-semibold rounded-xl px-6 py-2.5 transition-all duration-300 overflow-hidden before:absolute before:inset-0 before:bg-blue-600 before:translate-y-[100%] hover:before:translate-y-0 before:transition-transform before:duration-300 before:z-[-1]',
+      outline: 'relative bg-transparent border-2 border-slate-900 text-slate-900 hover:text-white font-semibold rounded-xl px-6 py-2.5 transition-all duration-300 overflow-hidden before:absolute before:inset-0 before:bg-slate-900 before:translate-y-[100%] hover:before:translate-y-0 before:transition-transform before:duration-300 before:z-[-1]',
 
       // Button sizes
       sm: 'text-xs font-semibold px-4 py-1.5 rounded-lg',

@@ -20,7 +20,7 @@ interface HotelCardProps {
 const _facilityIcons: { [key: string]: React.ReactNode } = {
   'Free Wi-Fi': <Wifi className="w-3 h-3 text-green-600" />,
   'Free WiFi': <Wifi className="w-3 h-3 text-green-600" />,
-  'Parking': <Car className="w-3 h-3 text-blue-600" />,
+  'Parking': <Car className="w-3 h-3 text-primary" />,
   'Restaurant': <Utensils className="w-3 h-3 text-orange-600" />,
   'Room Service': <Users className="w-3 h-3 text-purple-600" />,
   'Fitness Center': <Dumbbell className="w-3 h-3 text-red-600" />,
@@ -281,15 +281,15 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
   if (viewMode === 'list') {
     return (
         <div
-          className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} border ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT}  ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group cursor-pointer h-[280px]`}
+          className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} border ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT}  ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group cursor-pointer`}
           onClick={(e) => {
             e.preventDefault();
             window.open(buildHotelUrl(), '_blank');
           }}
         >
-          <div className="flex flex-col md:flex-row h-full">
+          <div className="flex flex-col md:flex-row">
             {/* Hotel Image */}
-            <div className="relative w-60 flex-shrink-0 overflow-hidden h-full">
+            <div className="relative w-60 h-[240px] flex-shrink-0 overflow-hidden">
               <Image
                 src={propertyDetails?.property_photos?.[0]?.image ||
                      (typeof hotel.images?.cover === 'string' ? hotel.images.cover :
@@ -315,11 +315,11 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
             </div>
 
             {/* Hotel Details - Compact */}
-            <div className="flex-1 p-3 min-w-0">
-              <div className="flex justify-between items-start mb-2">
+            <div className="flex-1 p-2 min-w-0">
+              <div className="flex justify-between items-start mb-1">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className={`${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.HOTEL_NAME_SMALL} line-clamp-1 group-hover:${SEARCH_DESIGN_SYSTEM.COLORS.TEXT_BLUE} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT}`}>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h3 className="text-lg font-bold text-gray-900 line-clamp-1 group-hover:text-primary transition-colors">
                       {hotel.property_name}
                     </h3>
                     {stars > 0 && (
@@ -331,9 +331,9 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                     )}
                   </div>
                   
-                  <div className={`flex items-center gap-1 ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.DESCRIPTION_SMALL} mb-1.5`}>
-                    <MapPin className="w-3 h-3" />
-                    <span>
+                  <div className={`flex items-center gap-1 ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.DESCRIPTION_SMALL} mb-1`}>
+                    <MapPin className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate">
                       {[hotel.location.province_city, hotel.location.soum, hotel.location.district]
                         .filter(Boolean)
                         .join(', ')}
@@ -353,28 +353,19 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                 </div>
               </div>
 
-
-              {/* Hotel room capacity info (not search criteria) */}
-             
-
-              {/* Enhanced Hotel Info - Removed old amenities display */}
-              <div className="mb-2">
-                {/* Amenities will be shown in room info section below */}
-              </div>
-
               {/* Room Info Section - Figma Design Style */}
               {cheapestPrice && cheapestRoom && (
-                <div className="mt-3 border-t border-gray-200 pt-3 flex ">
-                  <div className="flex-2">
+                <div className="mt-3 flex ">
+                  <div className="flex-2  rounded-md ">
                   {/* Room Type Header with Icons */}
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex flex-col gap-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-semibold text-gray-900">
+                        <h4 className="text-sm font-semibold text-gray-900 truncate">
                           {getRoomTypeName(cheapestRoom.room_type)}
                         </h4>
                         {/* Capacity Icons */}
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 flex-shrink-0">
                           {renderPersonIcons(cheapestRoom.adultQty || 2, cheapestRoom.childQty || 0)}
                           {cheapestRoom.bed_type && (
                             <>
@@ -385,7 +376,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                         </div>
                       </div>
                       {/* Room Category */}
-                      <p className="text-xs text-gray-600">
+                      <p className="text-xs text-gray-600 truncate">
                         {getRoomCategoryName(cheapestRoom.room_category)}
                         {cheapestRoom.room_size && (
                           <> • {cheapestRoom.room_size}м²</>
@@ -395,38 +386,38 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   </div>
 
                   {/* Room Details */}
-                  <div className="space-y-1.5 mb-3">
+                  <div className="space-y-0.5 mb-1.5">
 
                     {/* Cancellation Policy */}
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-600 truncate">
                       {t('hotel.freeCancellationUntil', { date: '10/31' }, '10/31-нээс өмнө цуцлах боломжтой. (Цуцлалтын хураамжгүй)')}
                     </p>
 
                     {/* Availability Warning */}
                     {((roomAvailability !== null ? roomAvailability : availableRoomsWithPrice) > 0) && (
-                      <p className="text-xs font-medium text-orange-600">
+                      <p className="text-xs font-medium truncate">
                         {t('hotel.onlyRoomsLeft', { count: roomAvailability !== null ? roomAvailability : availableRoomsWithPrice }, `Сүүлийн ${roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} өрөө үлдлээ.`)}
                       </p>
                     )}
                   </div>
 
                   {/* Facility Tags */}
-                  <div className="mb-3">
-                    <div className="flex flex-wrap gap-1.5">
-                      {hotel.general_facilities.slice(0, 4).map((facility, index) => (
-                        <span key={index} className="inline-flex items-center text-xs text-gray-700 bg-gray-100 rounded px-2 py-1 border border-gray-200">
+                  <div className="mb-1.5">
+                    <div className="flex flex-wrap gap-1 max-h-[28px] overflow-hidden">
+                      {hotel.general_facilities.slice(0, 3).map((facility, index) => (
+                        <span key={index} className="inline-flex items-center text-xs text-gray-700 bg-gray-100 rounded px-2 py-0.5 border border-gray-200 truncate max-w-[120px]">
                           {facility}
                         </span>
                       ))}
-                      {hotel.general_facilities.length > 4 && (
+                      {hotel.general_facilities.length > 3 && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowAllFacilities(true);
                           }}
-                          className="inline-flex items-center text-xs text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded px-2 py-1 border border-blue-200 transition-colors"
+                          className="inline-flex items-center text-xs text-primary bg-slate-50 hover:bg-slate-100 hover:underline rounded px-2 py-0.5 border border-gray-200 transition-all flex-shrink-0"
                         >
-                          {t('hotel.others', 'Бусад')} +{hotel.general_facilities.length - 4}
+                          +{hotel.general_facilities.length - 3}
                         </button>
                       )}
                     </div>
@@ -478,14 +469,14 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   </div>
 
                   {/* Pricing Section - Figma Style */}
-                  <div className="pt-3 border-l pl-4 border-gray-200 flex flex-col justify-between">
+                  <div className="pt-1.5 pl-2.5 flex flex-col justify-between">
                     {/* Price Info - Top Section */}
                     <div>
                       {pricingInfo.hasDiscount ? (
                         <div>
-                          <div className="flex justify-end gap-2">
+                          <div className="flex justify-end gap-1.5">
                             {/* Original Price Per Night - Strikethrough */}
-                            <div className="text-xl text-gray-500 line-through my-auto">
+                            <div className="text-lg text-gray-500 line-through my-auto">
                               {formatPrice(pricingInfo.originalPricePerNight)} ₮
                             </div>
                             <div className="bg-red-500 w-auto text-xs text-white text-center content-center font-bold px-1 py-[1px] rounded">
@@ -493,23 +484,23 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                             </div>
                           </div>
                           {/* Discounted Price Per Night - Bold */}
-                          <div className="text-2xl font-bold text-gray-900 text-end">
+                          <div className="text-xl font-bold text-gray-900 text-end">
                             {formatPrice(pricingInfo.pricePerNight)} ₮
                           </div>
                         </div>
                       ) : (
-                        <div className="text-2xl font-bold text-gray-900 text-end">
+                        <div className="text-xl font-bold text-gray-900 text-end">
                           {formatPrice(pricingInfo.pricePerNight)} ₮
                         </div>
                       )}
 
                       {/* Price per night label */}
-                      <div className="text-xs text-gray-500 text-end mt-1">
+                      <div className="text-xs text-gray-500 text-end mt-0.5">
                         {t('hotel.pricePerNightShort', '1 шөнийн үнэ')}
                       </div>
 
                       {/* Rooms x Nights */}
-                      <div className="text-sm text-gray-500 text-end mt-3">
+                      <div className="text-sm text-gray-500 text-end mt-2">
                         {rooms} {t('hotel.rooms', 'өрөө')} x {nights} {t('navigation.night', 'шөнө')}
                       </div>
                       {/* Total Price */}
@@ -518,8 +509,8 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                       </div>
                     </div>
 
-                    {/* Green Button - Bottom Section */}
-                    <button className="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200 mt-4 w-full">
+                    {/* Select Room Button - Bottom Section */}
+                    <button className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 mt-2 w-full">
                       {t('hotel.selectRoom', 'Өрөө сонгох')}
                     </button>
                   </div>
@@ -632,7 +623,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                       </>
                     )}
                   </div>
-                  <button className={`bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 ${SEARCH_DESIGN_SYSTEM.RADIUS.DEFAULT} ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.BUTTON_TEXT_SMALL} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT}`}>
+                  <button className={`bg-primary hover:bg-primary/90 text-white px-2.5 py-1 ${SEARCH_DESIGN_SYSTEM.RADIUS.DEFAULT} ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.BUTTON_TEXT_SMALL} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT}`}>
                     {t('hotel.viewDetails')}
                   </button>
                 </div>

@@ -30,7 +30,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ style = "" }) => {
       {/* нүүр - Home */}
       <Link
         href="/"
-        className={`${TYPOGRAPHY.nav.primary} hover:text-blue-400 transition-colors ${style}`}
+        className={`${TYPOGRAPHY.nav.primary} hover:text-slate-400 transition-colors ${style}`}
       >
         {t('navigation.home', 'Home')}
       </Link>
@@ -41,7 +41,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ style = "" }) => {
         onMouseEnter={() => setActiveDropdown('articles')}
         onMouseLeave={() => setActiveDropdown(null)}
       >
-        <button className={`${TYPOGRAPHY.nav.primary} hover:text-blue-400 transition-colors flex items-center space-x-1 ${style}`}>
+        <button className={`${TYPOGRAPHY.nav.primary} hover:text-slate-400 transition-colors flex items-center space-x-1 ${style}`}>
           <span>{t('navigation.articles', 'Articles')}</span>
           <ChevronDown className="w-4 h-4" />
         </button>
@@ -51,7 +51,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ style = "" }) => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`block px-4 py-2 ${TYPOGRAPHY.nav.secondary} text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors`}
+                className={`block px-4 py-2 ${TYPOGRAPHY.nav.secondary} text-gray-700 hover:bg-slate-50 hover:text-slate-900 transition-colors`}
               >
                 {item.label}
               </Link>
@@ -66,7 +66,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ style = "" }) => {
         onMouseEnter={() => setActiveDropdown('advice')}
         onMouseLeave={() => setActiveDropdown(null)}
       >
-        <button className={`${TYPOGRAPHY.nav.primary} hover:text-blue-400 transition-colors flex items-center space-x-1 ${style}`}>
+        <button className={`${TYPOGRAPHY.nav.primary} hover:text-slate-400 transition-colors flex items-center space-x-1 ${style}`}>
           <span>{t('navigation.advice', 'Advice')}</span>
           <ChevronDown className="w-4 h-4" />
         </button>
@@ -76,7 +76,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ style = "" }) => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`block px-4 py-2 ${TYPOGRAPHY.nav.secondary} text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors`}
+                className={`block px-4 py-2 ${TYPOGRAPHY.nav.secondary} text-gray-700 hover:bg-slate-50 hover:text-slate-900 transition-colors`}
               >
                 {item.label}
               </Link>
