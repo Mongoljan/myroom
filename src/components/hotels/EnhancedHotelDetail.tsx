@@ -11,9 +11,11 @@ import {
   MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart, Layers3 as Layers
 } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
+import GoogleMapModal, { NearbyPlace } from '@/components/common/GoogleMapModal';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { PropertyBasicInfo, ConfirmAddress, PropertyImage, AdditionalInfo, PropertyDetails, Facility, SearchHotelResult } from '@/types/api';
+import { Train, Plane, Landmark, Utensils as RestaurantIcon, ShoppingBag, Building2 } from 'lucide-react';
 
 interface EnhancedHotelDetailProps {
   hotel: SearchHotelResult;
@@ -33,6 +35,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const [facilitiesMap, setFacilitiesMap] = useState<Map<number, Facility>>(new Map());
   const [provinceMap, setProvinceMap] = useState<Map<number, string>>(new Map());
   const [soumMap, setSoumMap] = useState<Map<number, string>>(new Map());
+  const [showMapModal, setShowMapModal] = useState(false);
 
   useEffect(() => {
     const fetchHotelDetails = async () => {
@@ -45,13 +48,16 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
           addressData,
           imagesData,
           propertyDetailsData,
-          combinedData
+          combinedData = { facilities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] }
         ] = await Promise.all([
           ApiService.getPropertyBasicInfo(hotel.hotel_id).catch(e => { console.warn('Basic info failed:', e); return []; }),
           ApiService.getConfirmAddress(hotel.hotel_id).catch(e => { console.warn('Address failed:', e); return []; }),
           ApiService.getPropertyImages(hotel.hotel_id).catch(e => { console.warn('Images failed:', e); return []; }),
           ApiService.getPropertyDetails(hotel.hotel_id).catch(e => { console.warn('Property details failed:', e); return []; }),
-          ApiService.getCombinedData().catch(e => { console.warn('Combined data failed:', e); return { facilities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] }; })
+          ApiService.getCombinedData().catch(e => {
+            console.warn('Combined data failed:', e);
+            return { facilities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] };
+          })
         ]);
 
         // Set data from arrays (APIs return arrays with single items)
@@ -287,6 +293,43 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const hotelName = basicInfo?.property_name_en || basicInfo?.property_name_mn || hotel.property_name;
   const starRating = basicInfo?.star_rating || getStarRating(hotel.rating_stars.value);
 
+  // Generate nearby places based on location
+  const getNearbyPlaces = (): NearbyPlace[] => {
+    const city = hotel.location.province_city || '';
+
+    // Mock nearby places data - replace with actual API data when available
+    const places: NearbyPlace[] = [];
+
+    // Add transport options
+    if (city.toLowerCase().includes('ulaanbaatar') || city.toLowerCase().includes('улаанбаатар')) {
+      places.push(
+        { name: 'Chinggis Khaan International Airport', distance: 'About 17 km from hotel by car', category: 'transport' },
+        { name: 'Ulaanbaatar Train Station', distance: 'About 5 km from hotel by car', category: 'transport' }
+      );
+    }
+
+    // Add landmarks
+    places.push(
+      { name: 'Sukhbaatar Square', distance: 'About 3 km from hotel by car', category: 'landmarks' },
+      { name: 'Zaisan Memorial', distance: 'About 6 km from hotel by car', category: 'landmarks' },
+      { name: 'Gandan Monastery', distance: 'About 4 km from hotel by car', category: 'landmarks' }
+    );
+
+    // Add dining options
+    places.push(
+      { name: 'Restaurants nearby', distance: 'Within walking distance', category: 'dining' },
+      { name: 'Local cafes', distance: 'Within 500m', category: 'dining' }
+    );
+
+    // Add shopping
+    places.push(
+      { name: 'State Department Store', distance: 'About 3.5 km from hotel by car', category: 'shopping' },
+      { name: 'Narantuul Market', distance: 'About 7 km from hotel by car', category: 'shopping' }
+    );
+
+    return places;
+  };
+
   // Handle back navigation
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -381,15 +424,13 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
               {hotel.google_map && (
                 <>
                   <span className="text-gray-300">•</span>
-                  <a
-                    href={hotel.google_map}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => setShowMapModal(true)}
                     className="flex items-center gap-1 text-slate-900 hover:text-slate-800 text-sm font-medium"
                   >
                     <MapPin className="w-4 h-4" />
                     {t('hotelDetails.viewOnMap', 'Газрын зураг дээр харах')}
-                  </a>
+                  </button>
                 </>
               )}
             </div>
@@ -624,14 +665,12 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
 
               {/* View on map link */}
               {hotel.google_map && (
-                <a
-                  href={hotel.google_map}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => setShowMapModal(true)}
                   className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium inline-block"
                 >
                   {t('hotelDetails.viewOnMap', 'View on map')}
-                </a>
+                </button>
               )}
             </div>
 
@@ -726,6 +765,16 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
           <span className="ml-3 text-gray-600">{t('hotelDetails.loadingExtra', 'Мэдээлэл ачааллаж байна...')}</span>
         </div>
       )}
+
+      {/* Google Map Modal */}
+      <GoogleMapModal
+        isOpen={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        googleMapUrl={hotel.google_map}
+        hotelName={hotelName}
+        hotelAddress={address ? address.district : undefined}
+        nearbyPlaces={getNearbyPlaces()}
+      />
     </div>
   );
 }

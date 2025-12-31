@@ -12,6 +12,8 @@ import MobileFilterControls from './MobileFilterControls';
 import NoResultsState from './NoResultsState';
 import PaginationControls from './PaginationControls';
 import { HotelSearchSpinner } from '@/components/ui/magic-spinner';
+import HotelsMapView from './HotelsMapView';
+import MiniMapPreview from './MiniMapPreview';
 
 // Import the full CombinedApiData interface to match SearchFilters expectations
 interface PropertyType {
@@ -86,6 +88,7 @@ export default function SearchResults() {
   const [filteredHotels, setFilteredHotels] = useState<SearchHotelResult[]>([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(true);
+  const [showMapView, setShowMapView] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [sortBy, setSortBy] = useState('price_low');
   const [apiData, setApiData] = useState<CombinedApiData | null>(null);
@@ -664,11 +667,20 @@ export default function SearchResults() {
                   onShowFilters={() => setShowFilters(true)}
                   onSort={handleSort}
                   onViewModeChange={setViewMode}
+                  onShowMapView={() => setShowMapView(true)}
                 />
               </div>
 
               {/* Desktop Filters - Sticky with Independent Scroll */}
               <div className="hidden lg:block sticky top-[72px] max-h-[calc(100vh-88px)] overflow-y-auto custom-scrollbar">
+                {/* Mini Map Preview */}
+                <div className="mb-3">
+                  <MiniMapPreview
+                    hotels={filteredHotels}
+                    onShowFullMap={() => setShowMapView(true)}
+                  />
+                </div>
+
                 <SearchFilters
                   isOpen={true}
                   onClose={() => {}}
@@ -696,6 +708,7 @@ export default function SearchResults() {
                 viewMode={viewMode}
                 onSort={handleSort}
                 onViewModeChange={setViewMode}
+                onShowMapView={() => setShowMapView(true)}
                 onSearchByName={handleSearchByName}
                 filters={filters}
                 apiData={apiData}
@@ -847,6 +860,15 @@ export default function SearchResults() {
           />
         </div>
       </div>
+
+      {/* Full Map View */}
+      {showMapView && (
+        <HotelsMapView
+          hotels={filteredHotels}
+          onClose={() => setShowMapView(false)}
+          searchParams={searchParams}
+        />
+      )}
     </div>
   );
 }

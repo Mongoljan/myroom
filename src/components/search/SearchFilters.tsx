@@ -92,37 +92,8 @@ interface SearchFiltersProps {
 const STORAGE_KEY = 'hotel_search_filters';
 const RECENT_FILTERS_KEY = 'hotel_recent_filters';
 
-// Static data for features not available in API yet
-const PROPERTY_CATEGORIES = [
-  { id: 'budget', label: 'Хямд' },
-  { id: 'midRange', label: 'Дунд зэрэглэл' },
-  { id: 'luxury', label: 'Тансаг зэрэглэл' },
-  { id: 'familyFriendly', label: 'Гэр бүлд зориулсан' },
-  { id: 'business', label: 'Бизнес' }
-];
-
-const POPULAR_SEARCHES = [
-  { id: 'breakfast', label: 'Өглөөний хоол' },
-  { id: 'romantic', label: 'Романтик' },
-  { id: '5star', label: '5 од' },
-  { id: 'airportTransport', label: 'Онгоцны буудлын тээвэр' },
-  { id: 'wifiIncluded', label: 'Wi-Fi багтсан' }
-];
-
-const BED_TYPES = [
-  { id: 'single', label: 'Ганц ор' },
-  { id: 'double', label: 'Давхар ор' },
-  { id: 'queen', label: 'Хатан ор' },
-  { id: 'king', label: 'Хаан ор' }
-];
-
-const POPULAR_PLACES = [
-  { id: 'center', label: 'Төв хэсэг' },
-  { id: 'airport', label: 'Онгоцны буудлын ойр' },
-  { id: 'shopping', label: 'Худалдааны төв' },
-  { id: 'attractions', label: 'Аялалын газрын ойр' },
-  { id: 'transport', label: 'Тээврийн зангилаа' }
-];
+// Static data for features not available in API yet - moved to translation files
+// These will be dynamically generated from translations in the component
 
 interface RecentFilter {
   id: string;
@@ -133,6 +104,39 @@ interface RecentFilter {
 
 export default function SearchFilters({ isOpen, onClose, onFilterChange, embedded = false, apiData, filters: externalFilters, filterCounts = {} }: SearchFiltersProps) {
   const { t } = useHydratedTranslation();
+
+  // Translated filter options
+  const PROPERTY_CATEGORIES = [
+    { id: 'budget', label: t('filters.categories.budget', 'Budget') },
+    { id: 'midRange', label: t('filters.categories.midRange', 'Mid-range') },
+    { id: 'luxury', label: t('filters.categories.luxury', 'Luxury') },
+    { id: 'familyFriendly', label: t('filters.categories.familyFriendly', 'Family-friendly') },
+    { id: 'business', label: t('filters.categories.business', 'Business') }
+  ];
+
+  const POPULAR_SEARCHES = [
+    { id: 'breakfast', label: t('filters.popular.breakfast', 'Breakfast') },
+    { id: 'romantic', label: t('filters.popular.romantic', 'Romantic') },
+    { id: '5star', label: t('filters.popular.fiveStar', '5 Stars') },
+    { id: 'airportTransport', label: t('filters.popular.airportTransport', 'Airport Transport') },
+    { id: 'wifiIncluded', label: t('filters.popular.wifiIncluded', 'Wi-Fi Included') }
+  ];
+
+  const BED_TYPES = [
+    { id: 'single', label: t('filters.bedTypes.single', 'Single Bed') },
+    { id: 'double', label: t('filters.bedTypes.double', 'Double Bed') },
+    { id: 'queen', label: t('filters.bedTypes.queen', 'Queen Bed') },
+    { id: 'king', label: t('filters.bedTypes.king', 'King Bed') }
+  ];
+
+  const POPULAR_PLACES = [
+    { id: 'center', label: t('filters.places.center', 'City Center') },
+    { id: 'airport', label: t('filters.places.airport', 'Near Airport') },
+    { id: 'shopping', label: t('filters.places.shopping', 'Shopping District') },
+    { id: 'attractions', label: t('filters.places.attractions', 'Near Attractions') },
+    { id: 'transport', label: t('filters.places.transport', 'Transport Hub') }
+  ];
+
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: [],
     popularSearches: [],

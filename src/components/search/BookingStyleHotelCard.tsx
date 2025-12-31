@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import GoogleMapModal from '@/components/common/GoogleMapModal';
 
 interface HotelCardProps {
   hotel: SearchHotelResult;
@@ -38,6 +39,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
   const [cheapestRoom, setCheapestRoom] = useState<Room | null>(null);
   const [cheapestPrice, setCheapestPrice] = useState<RoomPrice | null>(null);
   const [showAllFacilities, setShowAllFacilities] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
   interface RoomReferenceData {
     room_types?: { id: number; name: string }[];
     room_rates?: { id: number; name: string }[];
@@ -280,6 +282,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
 
   if (viewMode === 'list') {
     return (
+      <>
         <div
           className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} border ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT}  ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group cursor-pointer`}
           onClick={(e) => {
@@ -339,15 +342,15 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                         .join(', ')}
                     </span>
                       {hotel.google_map && (
-                    <a
-                      href={hotel.google_map}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowMapModal(true);
+                      }}
                       className={`${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.LINK} whitespace-nowrap`}
                     >
                       {t('hotel.viewOnMap', 'Газрын зураг дээр харах')}
-                    </a>
+                    </button>
                   )}
                   </div>
                 </div>
@@ -522,11 +525,24 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
             </div>
           </div>
         </div>
+
+        {/* Google Map Modal */}
+        <GoogleMapModal
+          isOpen={showMapModal}
+          onClose={() => setShowMapModal(false)}
+          googleMapUrl={hotel.google_map}
+          hotelName={hotel.property_name}
+          hotelAddress={[hotel.location.province_city, hotel.location.soum, hotel.location.district]
+            .filter(Boolean)
+            .join(', ')}
+        />
+      </>
     );
   }
 
   // Grid View - Compact
   return (
+    <>
       <div
         className={`${SEARCH_DESIGN_SYSTEM.COLORS.BG_WHITE} ${SEARCH_DESIGN_SYSTEM.RADIUS.LARGE} ${SEARCH_DESIGN_SYSTEM.COLORS.BORDER_DEFAULT} border ${SEARCH_DESIGN_SYSTEM.SHADOWS.HOVER} ${SEARCH_DESIGN_SYSTEM.TRANSITIONS.DEFAULT} overflow-hidden group h-[420px] flex flex-col cursor-pointer`}
         onClick={(e) => {
@@ -632,5 +648,17 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
           </div>
         </div>
       </div>
+
+      {/* Google Map Modal */}
+      <GoogleMapModal
+        isOpen={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        googleMapUrl={hotel.google_map}
+        hotelName={hotel.property_name}
+        hotelAddress={[hotel.location.province_city, hotel.location.soum, hotel.location.district]
+          .filter(Boolean)
+          .join(', ')}
+      />
+    </>
   );
 }

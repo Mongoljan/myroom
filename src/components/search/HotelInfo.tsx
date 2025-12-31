@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Star, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { HotelLocation, RatingStars } from '@/types/api';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface HotelInfoProps {
   name: string;
@@ -22,6 +23,8 @@ export default function HotelInfo({
   viewMode,
   className = ""
 }: HotelInfoProps) {
+  const { t } = useHydratedTranslation();
+
   const getRatingStars = () => {
     const stars = parseInt(rating.value.match(/\d+/)?.[0] || '0');
     return stars;
@@ -96,8 +99,8 @@ export default function HotelInfo({
             }`}
           >
             {roomsAvailable > 5
-              ? `${roomsAvailable}+ өрөө боломжтой`
-              : `${roomsAvailable} өрөө үлдсэн`
+              ? t('hotelDetails.roomsAvailable', `${roomsAvailable}+ rooms available`)
+              : t('hotelDetails.roomsRemaining', `${roomsAvailable} rooms remaining`)
             }
           </Badge>
         </div>
@@ -108,7 +111,7 @@ export default function HotelInfo({
         <div className="pt-2 border-t border-slate-100">
           <div className="text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span>Дээд зэрэглэлийн зочид буудал</span>
+              <span>{t('hotelDetails.premiumClass', 'Premium hotel')}</span>
               <span className="text-xs text-slate-500">
                 Үнэлгээ: {getRatingStars()}.0/5.0
               </span>
@@ -120,8 +123,8 @@ export default function HotelInfo({
       {/* Grid View Compact Info */}
       {viewMode === 'grid' && (
         <div className="text-xs text-slate-500 line-clamp-2">
-          Олон төрлийн тохижилт бүхий зочид буудал.
-          Шилдэг үйлчилгээ, тансаг орчин.
+          {t('hotel.description.variety', 'Hotel with various amenities.')}{' '}
+          {t('hotel.description.luxury', 'Excellent service, luxurious environment.')}
         </div>
       )}
     </div>

@@ -65,7 +65,7 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
       {reviewCount > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 p-4 bg-gray-100 rounded-lg">
           <div className="text-center col-span-2 md:col-span-5 text-gray-600">
-            Rating breakdown will be available when review data is integrated
+            {t('hotel.reviewsSection.ratingBreakdownPlaceholder', 'Rating breakdown will be available when review data is integrated')}
           </div>
         </div>
       )}
@@ -74,8 +74,8 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
       <div className="space-y-6">
         {displayedReviews.length === 0 ? (
           <div className="text-center py-8 text-gray-600">
-            <div className="text-lg font-medium mb-2">No reviews yet</div>
-            <div className="text-sm">Be the first to share your experience!</div>
+            <div className="text-lg font-medium mb-2">{t('hotel.reviewsSection.noReviews', 'No reviews yet')}</div>
+            <div className="text-sm">{t('hotel.reviewsSection.beFirst', 'Be the first to share your experience!')}</div>
           </div>
         ) : (
           displayedReviews.map((review) => (
@@ -129,7 +129,10 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
             onClick={() => setShowAll(!showAll)}
             className="px-6 py-2 border border-gray-200 rounded-md hover:bg-gray-100 transition-colors"
           >
-            {showAll ? 'Show Less' : `Show All ${reviews.length} Reviews`}
+            {showAll
+              ? t('hotel.reviewsSection.showLess', 'Show Less')
+              : t('hotel.reviewsSection.showAll', `Show All ${reviews.length} Reviews`)
+            }
           </button>
         </div>
       )}

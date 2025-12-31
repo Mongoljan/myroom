@@ -124,7 +124,7 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
     const finalCheckOut = checkOut || tomorrow;
 
     if (new Date(finalCheckOut) <= new Date(finalCheckIn)) {
-      alert('Check-out date must be after check-in date');
+      alert(t('search.errors.invalidCheckoutDate', 'Check-out date must be after check-in date'));
       return;
     }
 

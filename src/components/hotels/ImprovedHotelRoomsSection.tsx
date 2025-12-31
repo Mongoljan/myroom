@@ -98,9 +98,38 @@ export default function ImprovedHotelRoomsSection({
           // Map prices by room_type + room_category
           prices.forEach(price => {
             const key = `${price.room_type}-${price.room_category}`;
+
+            // Calculate original price if not provided but discount exists
+            let basePriceRaw = price.base_price_raw;
+            if (!basePriceRaw && price.pricesetting) {
+              const { value_type, adjustment_type, value } = price.pricesetting;
+
+              if (adjustment_type === 'SUB') {
+                // Calculate original price from discounted price
+                if (value_type === 'PERCENT') {
+                  // If discount is 20%, then current price is 80% of original
+                  // original = current / (1 - discount/100)
+                  basePriceRaw = price.base_price / (1 - value / 100);
+                } else if (value_type === 'FIXED') {
+                  // If discount is fixed amount, add it back
+                  basePriceRaw = price.base_price + value;
+                }
+              } else if (adjustment_type === 'ADD') {
+                // Calculate original price from increased price
+                if (value_type === 'PERCENT') {
+                  // If increase is 20%, then current price is 120% of original
+                  // original = current / (1 + increase/100)
+                  basePriceRaw = price.base_price / (1 + value / 100);
+                } else if (value_type === 'FIXED') {
+                  // If increase is fixed amount, subtract it
+                  basePriceRaw = price.base_price - value;
+                }
+              }
+            }
+
             pricesData[key] = {
               basePrice: price.base_price,
-              basePriceRaw: price.base_price_raw, // Original price before discount
+              basePriceRaw: basePriceRaw, // Original price before discount
               halfDayPrice: price.half_day_price && price.half_day_price > 0 ? price.half_day_price : undefined,
               singlePersonPrice: price.single_person_price && price.single_person_price > 0 ? price.single_person_price : undefined,
               discount: price.pricesetting ? {

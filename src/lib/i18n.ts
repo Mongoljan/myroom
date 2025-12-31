@@ -169,7 +169,11 @@ const resources = {
         specialOffers: "Special Offers",
         partners: "Partners",
         downloadApp: "Download App",
-        cookiePolicy: "Cookie Policy"
+        cookiePolicy: "Cookie Policy",
+        brandName: "GoTrip",
+        tagline: "Discover amazing hotels at exclusive deals. Your perfect stay is just a click away.",
+        quickLinks: "Quick Links",
+        copyright: "© 2025 GoTrip. All rights reserved."
       },
       navigation: {
         home: "Home",
@@ -256,6 +260,13 @@ const resources = {
         onlyRoomsLeft: "Only {{count}} rooms left.",
         amenities: "Amenities",
         reviews: "Reviews",
+        reviewsSection: {
+          noReviews: "No reviews yet",
+          beFirst: "Be the first to share your experience!",
+          showLess: "Show Less",
+          showAll: "Show All {{count}} Reviews",
+          ratingBreakdownPlaceholder: "Rating breakdown will be available when review data is integrated"
+        },
         roomsAndRates: "Rooms & Rates",
         location: "Location",
         policies: "Policies",
@@ -315,6 +326,10 @@ const resources = {
         roomsAvailable: "rooms available",
         showOnMap: "Show on map",
         priceUnavailable: "Price unavailable",
+        description: {
+          variety: "Hotel with various amenities.",
+          luxury: "Excellent service, luxurious environment."
+        },
         overview: "Overview",
         houseRules: "House Rules",
         faq: "FAQ",
@@ -323,7 +338,14 @@ const resources = {
         noAmenities: "No information available",
         viewOnMap: "View on map",
         others: "Others",
-        allFacilities: "All Facilities"
+        allFacilities: "All Facilities",
+        surroundings: "Surroundings",
+        transport: "Transport",
+        landmarks: "Landmarks",
+        dining: "Dining",
+        shopping: "Shopping",
+        open_in_google_maps: "Open in Google Maps",
+        no_nearby_places: "No nearby places found"
       },
       search: {
         location: "Location",
@@ -341,6 +363,9 @@ const resources = {
         children: "Children",
         rooms: "Rooms",
         searchButton: "Search",
+        errors: {
+          invalidCheckoutDate: "Check-out date must be after check-in date"
+        },
         filters: "Filters",
         sortBy: "Sort by",
         priceRange: "Price Range",
@@ -488,7 +513,34 @@ const resources = {
         location: "Location",
         deals: "Special Deals",
         applyFilters: "Apply Filters",
-        clearFilters: "Clear All Filters"
+        clearFilters: "Clear All Filters",
+        categories: {
+          budget: "Budget",
+          midRange: "Mid-range",
+          luxury: "Luxury",
+          familyFriendly: "Family-friendly",
+          business: "Business"
+        },
+        popular: {
+          breakfast: "Breakfast",
+          romantic: "Romantic",
+          fiveStar: "5 Stars",
+          airportTransport: "Airport Transport",
+          wifiIncluded: "Wi-Fi Included"
+        },
+        bedTypes: {
+          single: "Single Bed",
+          double: "Double Bed",
+          queen: "Queen Bed",
+          king: "King Bed"
+        },
+        places: {
+          center: "City Center",
+          airport: "Near Airport",
+          shopping: "Shopping District",
+          attractions: "Near Attractions",
+          transport: "Transport Hub"
+        }
       },
       faq: {
         title: "FAQ",
@@ -677,7 +729,31 @@ const resources = {
         facilities: "Facilities",
         reviews: "Reviews",
         faq: "FAQ",
-        similarHotels: "Similar Hotels"
+        similarHotels: "Similar Hotels",
+        roomsAvailable: "{{count}}+ rooms available",
+        roomsRemaining: "{{count}} rooms remaining",
+        premiumClass: "Premium hotel",
+        locationUnknown: "Location unknown",
+        priceFrom: "from",
+        startingPrice: "Starting price",
+        night: "night",
+        book: "Book",
+        viewOnMap: "View on map",
+        exceptional: "Exceptional",
+        highlyRated: "Highly rated by guests",
+        wouldRecommend: "would recommend",
+        breakfast: "Breakfast",
+        foodDining: "Food & Dining",
+        locationInfo: "Location Information",
+        provinceCity: "Province/City",
+        soumDistrict: "District/Soum",
+        totalFloors: "Total Floors",
+        propertyHighlights: "Property highlights",
+        inCityCenter: "In",
+        center: "Center",
+        totalRooms: "Total Rooms",
+        operatingSince: "Operating since",
+        photos: "photos"
       },
       houseRules: {
         title: "House Rules",
@@ -1310,7 +1386,11 @@ const resources = {
         specialOffers: "Онцгой санал",
         partners: "Хамтрагч байгууллага",
         downloadApp: "Аппликешн татах",
-        cookiePolicy: "Cookie бодлого"
+        cookiePolicy: "Cookie бодлого",
+        brandName: "GoTrip",
+        tagline: "Онцгой хөнгөлөлттэй гайхамшигтай зочид буудлуудыг нээрээрэй. Таны төгс байрлах газар нэг товшилтын зайд.",
+        quickLinks: "Шууд холбоосууд",
+        copyright: "© 2025 GoTrip. Бүх эрх хуулиар хамгаалагдсан."
       },
       home: {
         popularDestinationsTitle: "Алдартай байршлууд",
@@ -1410,6 +1490,13 @@ const resources = {
         onlyRoomsLeft: "Сүүлийн {{count}} өрөө үлдлээ.",
         amenities: "Тохижилт",
         reviews: "Сэтгэгдэл",
+        reviewsSection: {
+          noReviews: "Үнэлгээ хараахан байхгүй байна",
+          beFirst: "Туршлагаа анхны хүн болж хуваалцаарай!",
+          showLess: "Цөөнийг харах",
+          showAll: "Бүх {{count}} үнэлгээг харах",
+          ratingBreakdownPlaceholder: "Үнэлгээний задаргаа нь үнэлгээний мэдээлэл нэгтгэгдсэний дараа харагдах болно"
+        },
         roomsAndRates: "Өрөө ба үнэ",
         location: "Байршил",
         policies: "Дүрэм журам",
@@ -1469,6 +1556,10 @@ const resources = {
         roomsAvailable: "өрөө боломжтой",
         showOnMap: "Газрын зураг дээр харах",
         priceUnavailable: "Үнэ тодорхойгүй",
+        description: {
+          variety: "Олон төрлийн тохижилт бүхий зочид буудал.",
+          luxury: "Шилдэг үйлчилгээ, тансаг орчин."
+        },
         overview: "Ерөнхий",
         houseRules: "Дотоод журам",
         faq: "Түгээмэл асуулт",
@@ -1477,7 +1568,14 @@ const resources = {
         noAmenities: "Мэдээлэл байхгүй байна",
         viewOnMap: "Газрын зураг дээр харах",
         others: "Бусад",
-        allFacilities: "Бүх тохижилт"
+        allFacilities: "Бүх тохижилт",
+        surroundings: "Ойр орчмын газрууд",
+        transport: "Тээвэр",
+        landmarks: "Үзэсгэлэнт газрууд",
+        dining: "Хоол, ресторан",
+        shopping: "Худалдаа",
+        open_in_google_maps: "Google Maps-д нээх",
+        no_nearby_places: "Ойр орчмын газар олдсонгүй"
       },
       search: {
         location: "Байршил",
@@ -1495,6 +1593,9 @@ const resources = {
         children: "Хүүхэд",
         rooms: "Өрөө",
         searchButton: "Хайх",
+        errors: {
+          invalidCheckoutDate: "Гарах өдөр орох өдрөөс хойш байх ёстой"
+        },
         filters: "Шүүлтүүр",
         sortBy: "Эрэмбэлэх",
         priceRange: "Үнийн хүрээ",
@@ -1638,7 +1739,34 @@ const resources = {
         location: "Байршил",
         deals: "Тусгай санал",
         applyFilters: "Шүүлтүүр хэрэглэх",
-        clearFilters: "Бүх шүүлтүүрийг арилгах"
+        clearFilters: "Бүх шүүлтүүрийг арилгах",
+        categories: {
+          budget: "Хямд",
+          midRange: "Дунд зэрэглэл",
+          luxury: "Тансаг зэрэглэл",
+          familyFriendly: "Гэр бүлд зориулсан",
+          business: "Бизнес"
+        },
+        popular: {
+          breakfast: "Өглөөний хоол",
+          romantic: "Романтик",
+          fiveStar: "5 од",
+          airportTransport: "Онгоцны буудлын тээвэр",
+          wifiIncluded: "Wi-Fi багтсан"
+        },
+        bedTypes: {
+          single: "Ганц ор",
+          double: "Давхар ор",
+          queen: "Хатан ор",
+          king: "Хаан ор"
+        },
+        places: {
+          center: "Төв хэсэг",
+          airport: "Онгоцны буудлын ойр",
+          shopping: "Худалдааны төв",
+          attractions: "Аялалын газрын ойр",
+          transport: "Тээврийн зангилаа"
+        }
       },
       faq: {
         title: "Түгээмэл асуултууд",
@@ -1822,7 +1950,31 @@ const resources = {
         facilities: "Тохижилт",
         reviews: "Үнэлгээ",
         faq: "Түгээмэл асуулт",
-        similarHotels: "Төстэй зочид буудлууд"
+        similarHotels: "Төстэй зочид буудлууд",
+        roomsAvailable: "{{count}}+ өрөө боломжтой",
+        roomsRemaining: "{{count}} өрөө үлдсэн",
+        premiumClass: "Дээд зэрэглэлийн зочид буудал",
+        locationUnknown: "Байршил тодорхойгүй",
+        priceFrom: "-с",
+        startingPrice: "Эхлэх үнэ",
+        night: "шөнө",
+        book: "Захиалах",
+        viewOnMap: "Газрын зураг дээр харах",
+        exceptional: "Гайхалтай",
+        highlyRated: "Зочдоос өндөр үнэлгээ авсан",
+        wouldRecommend: "санал болгох",
+        breakfast: "Өглөөний цай",
+        foodDining: "Хоол, хүнсний үйлчилгээ",
+        locationInfo: "Байршлын мэдээлэл",
+        provinceCity: "Хот/Аймаг",
+        soumDistrict: "Дүүрэг/Сум",
+        totalFloors: "Давхрын тоо",
+        propertyHighlights: "Онцлох шинж чанарууд",
+        inCityCenter: "",
+        center: "төвд",
+        totalRooms: "Нийт өрөө",
+        operatingSince: "Үйл ажиллагаа эхэлсэн",
+        photos: "зураг"
       },
       houseRules: {
         title: "Дотоод журам",

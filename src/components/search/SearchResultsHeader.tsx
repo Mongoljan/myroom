@@ -1,6 +1,6 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Search, MapPin } from 'lucide-react';
 import FilterSummary from './FilterSummary';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useState } from 'react';
@@ -33,6 +33,7 @@ interface SearchResultsHeaderProps {
   viewMode: 'grid' | 'list';
   onSort: (value: string) => void;
   onViewModeChange: (mode: 'grid' | 'list') => void;
+  onShowMapView?: () => void;
   filters?: FilterState;
   onRemoveFilter?: (filterType: string, value?: string | number) => void;
   onClearAllFilters?: () => void;
@@ -62,6 +63,7 @@ export default function SearchResultsHeader({
   viewMode,
   onSort,
   onViewModeChange,
+  onShowMapView,
   filters,
   onRemoveFilter,
   onClearAllFilters,
@@ -88,6 +90,17 @@ export default function SearchResultsHeader({
                 {searchLocation ? `${searchLocation}` : t('hotel.title')}:
                 <span className="text-xl font-bold text-gray-900"> {filteredCount}</span>
               </h1>
+
+              {/* Show on Map Button */}
+              {onShowMapView && (
+                <button
+                  onClick={onShowMapView}
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                >
+                  <MapPin className="w-4 h-4" />
+                  {t('search.showOnMap', 'Газрын зураг дээр харах')}
+                </button>
+              )}
 
             </div>
           

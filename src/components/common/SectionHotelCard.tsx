@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { text } from '@/styles/design-system';
 import SafeImage from '@/components/common/SafeImage';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface SectionHotelCardProps {
   id: string;
@@ -33,6 +34,8 @@ export default function SectionHotelCard({
   index = 0,
   className = ""
 }: SectionHotelCardProps) {
+  const { t } = useHydratedTranslation();
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('mn-MN').format(price);
   };
@@ -100,7 +103,7 @@ export default function SectionHotelCard({
 
           <div className="flex items-center text-gray-500 mb-2">
             <MapPin className="w-4 h-4 mr-1" />
-            <span className={`${text.caption} line-clamp-1`}>{location || 'Байршил тодорхойгүй'}</span>
+            <span className={`${text.caption} line-clamp-1`}>{location || t('hotelDetails.locationUnknown', 'Location unknown')}</span>
           </div>
 
           {/* Rating and Price */}
@@ -110,13 +113,13 @@ export default function SectionHotelCard({
                 {rating}
               </div>
               <span className={`${text.caption} text-gray-500`}>
-                {ratingLabel?.replace(/\d+\s*stars?/i, '').trim() || 'үнэлгээ'}
+                {ratingLabel?.replace(/\d+\s*stars?/i, '').trim() || t('hotel.rating', 'rating')}
               </span>
             </div>
             <div className="text-right">
-              <div className={`${text.caption} text-gray-500`}>эхлэх үнэ</div>
+              <div className={`${text.caption} text-gray-500`}>{t('hotelDetails.startingPrice', 'starting price')}</div>
               <div className={`${text.bodySm} font-bold text-gray-900`}>
-                ₮{formatPrice(price)}-с
+                ₮{formatPrice(price)}{t('hotelDetails.priceFrom', '-from')}
               </div>
             </div>
           </div>
