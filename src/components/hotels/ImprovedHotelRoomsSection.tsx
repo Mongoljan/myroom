@@ -94,18 +94,26 @@ export default function ImprovedHotelRoomsSection({
           
           // Use price_breakdown from the room API response
           if (room.price_breakdown && room.price_breakdown.final_customer_price > 0) {
-            const { price_after_price_setting, final_customer_price } = room.price_breakdown;
+            const { price_after_price_setting, final_customer_price, hotel_discount_amount } = room.price_breakdown;
             
-            // base_price is the original price, final_price is after hotel's price setting
-            // final_customer_price is the price customers see (after platform markup)
+            // Price structure:
+            // - price_after_price_setting: Price after hotel's internal adjustments (strikethrough price)
+            // - hotel_discount_amount: The discount amount from our contract with hotel
+            // - final_customer_price: What customer actually pays (main displayed price)
+            
+            // Calculate discount percentage: (price_after_price_setting - final_customer_price) / price_after_price_setting * 100
+            const discountPercent = price_after_price_setting > 0 
+              ? Math.round(((price_after_price_setting - final_customer_price) / price_after_price_setting) * 100)
+              : 0;
+            
             pricesData[key] = {
-              basePrice: final_customer_price, // Customer-facing price
-              basePriceRaw: room.base_price || price_after_price_setting, // Original price for showing discount
+              basePrice: final_customer_price, // Customer-facing price (what they pay)
+              basePriceRaw: price_after_price_setting, // Original price for strikethrough display
               halfDayPrice: room.half_day_price && room.half_day_price > 0 ? room.half_day_price : undefined,
               singlePersonPrice: room.single_person_price && room.single_person_price > 0 ? room.single_person_price : undefined,
-              discount: room.base_price && room.base_price > final_customer_price ? {
-                type: 'FIXED' as const,
-                value: room.base_price - final_customer_price
+              discount: hotel_discount_amount > 0 ? {
+                type: 'PERCENT' as const,
+                value: discountPercent
               } : undefined,
               priceBreakdown: room.price_breakdown // Include full breakdown for detailed display
             };
