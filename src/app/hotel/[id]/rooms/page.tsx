@@ -268,7 +268,7 @@ function HotelRoomsContent() {
           return (b.adultQty + b.childQty) - (a.adultQty + a.childQty);
         case 'price':
         default:
-          return a.room_number - b.room_number; // Sort by room number as proxy for price
+          return (a.room_number ?? 0) - (b.room_number ?? 0); // Sort by room number as proxy for price
       }
     });
 
