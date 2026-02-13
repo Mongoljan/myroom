@@ -88,8 +88,9 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
   return roomData?.room_types.find(type => type.id === typeId)?.name || `Room Type ${typeId}`;
   };
 
-  const getBedTypeName = (bedTypeId: number) => {
-  return roomData?.bed_types.find(type => type.id === bedTypeId)?.name || `Bed Type ${bedTypeId}`;
+  const getBedTypeName = (bedTypeId: number | undefined) => {
+    if (bedTypeId === undefined) return 'Bed';
+    return roomData?.bed_types.find(type => type.id === bedTypeId)?.name || `Bed Type ${bedTypeId}`;
   };
 
   const getRoomCategoryName = (categoryId: number) => {
