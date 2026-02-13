@@ -62,14 +62,23 @@ export interface RoomImage {
   description: string;
 }
 
+// Price breakdown structure from the API
+export interface RoomPriceBreakdown {
+  price_after_price_setting: number;
+  hotel_discount_amount: number;
+  platform_markup_amount: number;
+  final_customer_price: number;
+}
+
 export interface Room {
   id: number;
   hotel: number;
-  room_number: number;
+  room_number?: number;
   room_type: number;
   room_category: number;
   room_size: string;
-  bed_type: number;
+  bed_type?: number;
+  bed_details?: Array<{ bed_type: number; quantity: number }>;
   is_Bathroom: boolean;
   room_Facilities: number[];
   bathroom_Items: number[];
@@ -84,6 +93,13 @@ export interface Room {
   smoking_allowed: boolean;
   images: RoomImage[];
   total_count: number;
+  // New pricing fields from API
+  base_price: number | null;
+  single_person_price: number | null;
+  half_day_price: number | null;
+  breakfast_include_price: number | null;
+  final_price: number | null;
+  price_breakdown: RoomPriceBreakdown;
 }
 
 export interface AvailabilityResponse {
@@ -411,6 +427,16 @@ export interface CancellationFee {
   property: number;
 }
 
+// Breakfast policy object structure from API
+export interface BreakfastPolicy {
+  id: number;
+  status: boolean;
+  start_time: string;
+  end_time: string;
+  price: string | number;
+  breakfast_type: string | number;
+}
+
 export interface PropertyPolicy {
   id: number;
   cancellation_fee: CancellationFee;
@@ -418,7 +444,7 @@ export interface PropertyPolicy {
   check_in_until: string;
   check_out_from: string;
   check_out_until: string;
-  breakfast_policy: string;
+  breakfast_policy: BreakfastPolicy | string | null; // Can be object, string, or null
   parking_situation: string;
   allow_children: boolean;
   allow_pets: boolean;

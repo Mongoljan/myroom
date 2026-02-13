@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Bed } from 'lucide-react';
 import { hotelRoomsService, EnrichedHotelRoom } from '@/services/hotelRoomsApi';
-import { ApiService } from '@/services/api';
-import { RoomPrice } from '@/types/api';
 import { RoomPriceOptions, BookingItem } from './RoomCard';
 import TripComStyleRoomCard from './TripComStyleRoomCard';
 import BookingSummary from './BookingSummary';
@@ -84,63 +82,35 @@ export default function ImprovedHotelRoomsSection({
       try {
         setLoading(true);
 
-        // Load enriched room data
+        // Load enriched room data (now includes price_breakdown directly from API)
         const roomsData = await hotelRoomsService.getEnrichedHotelRooms(hotelId);
         setRooms(roomsData);
 
-        // Load price data by hotel (not individual room)
+        // Build price data from room's own price_breakdown (new API structure)
         const pricesData: Record<string, RoomPriceOptions> = {};
 
-        try {
-          // Use hotel-level API instead of room-level
-          const prices: RoomPrice[] = await ApiService.getRoomPrices(hotelId);
-
-          // Map prices by room_type + room_category
-          prices.forEach(price => {
-            const key = `${price.room_type}-${price.room_category}`;
-
-            // Calculate original price if not provided but discount exists
-            let basePriceRaw = price.base_price_raw;
-            if (!basePriceRaw && price.pricesetting) {
-              const { value_type, adjustment_type, value } = price.pricesetting;
-
-              if (adjustment_type === 'SUB') {
-                // Calculate original price from discounted price
-                if (value_type === 'PERCENT') {
-                  // If discount is 20%, then current price is 80% of original
-                  // original = current / (1 - discount/100)
-                  basePriceRaw = price.base_price / (1 - value / 100);
-                } else if (value_type === 'FIXED') {
-                  // If discount is fixed amount, add it back
-                  basePriceRaw = price.base_price + value;
-                }
-              } else if (adjustment_type === 'ADD') {
-                // Calculate original price from increased price
-                if (value_type === 'PERCENT') {
-                  // If increase is 20%, then current price is 120% of original
-                  // original = current / (1 + increase/100)
-                  basePriceRaw = price.base_price / (1 + value / 100);
-                } else if (value_type === 'FIXED') {
-                  // If increase is fixed amount, subtract it
-                  basePriceRaw = price.base_price - value;
-                }
-              }
-            }
-
+        roomsData.forEach(room => {
+          const key = `${room.room_type}-${room.room_category}`;
+          
+          // Use price_breakdown from the room API response
+          if (room.price_breakdown && room.price_breakdown.final_customer_price > 0) {
+            const { price_after_price_setting, final_customer_price } = room.price_breakdown;
+            
+            // base_price is the original price, final_price is after hotel's price setting
+            // final_customer_price is the price customers see (after platform markup)
             pricesData[key] = {
-              basePrice: price.base_price,
-              basePriceRaw: basePriceRaw, // Original price before discount
-              halfDayPrice: price.half_day_price && price.half_day_price > 0 ? price.half_day_price : undefined,
-              singlePersonPrice: price.single_person_price && price.single_person_price > 0 ? price.single_person_price : undefined,
-              discount: price.pricesetting ? {
-                type: price.pricesetting.value_type as 'PERCENT' | 'FIXED',
-                value: price.pricesetting.value
-              } : undefined
+              basePrice: final_customer_price, // Customer-facing price
+              basePriceRaw: room.base_price || price_after_price_setting, // Original price for showing discount
+              halfDayPrice: room.half_day_price && room.half_day_price > 0 ? room.half_day_price : undefined,
+              singlePersonPrice: room.single_person_price && room.single_person_price > 0 ? room.single_person_price : undefined,
+              discount: room.base_price && room.base_price > final_customer_price ? {
+                type: 'FIXED' as const,
+                value: room.base_price - final_customer_price
+              } : undefined,
+              priceBreakdown: room.price_breakdown // Include full breakdown for detailed display
             };
-          });
-        } catch {
-          // Silent failure for price fetching
-        }
+          }
+        });
 
         setRoomPrices(pricesData);
       } catch (error) {
@@ -290,14 +260,16 @@ export default function ImprovedHotelRoomsSection({
     );
   }
 
-  // Filter available rooms with pricing - BOTH inventory AND price required
+  // Filter available rooms with pricing - BOTH inventory AND valid price_breakdown required
   const availableRooms = rooms.filter(room => {
     const hasInventory = room.number_of_rooms_to_sell > 0;
-    const priceKey = `${room.room_type}-${room.room_category}`;
-    const hasPrice = roomPrices[priceKey]?.basePrice && roomPrices[priceKey].basePrice > 0;
+    
+    // Use the new hasValidPricing flag from enriched room data
+    // This checks if room.price_breakdown.final_customer_price > 0
+    const hasValidPricing = room.hasValidPricing;
 
-    // MUST have BOTH inventory AND valid pricing
-    return hasInventory && hasPrice;
+    // MUST have BOTH inventory AND valid pricing from price_breakdown
+    return hasInventory && hasValidPricing;
   });
 
   if (availableRooms.length === 0) {

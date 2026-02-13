@@ -4,18 +4,19 @@ import { useState } from 'react';
 import { BedDouble, BedSingle, User, CheckCircle } from 'lucide-react';
 import { FaChild } from 'react-icons/fa';
 import SafeImage from '@/components/common/SafeImage';
-import { EnrichedHotelRoom } from '@/services/hotelRoomsApi';
+import { EnrichedHotelRoom, PriceBreakdown } from '@/services/hotelRoomsApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 export interface RoomPriceOptions {
-  basePrice: number;
-  basePriceRaw?: number; // Original price before discount
+  basePrice: number; // Final customer-facing price (final_customer_price)
+  basePriceRaw?: number; // Original price before discount (base_price from API)
   halfDayPrice?: number;
   singlePersonPrice?: number;
   discount?: {
     type: 'PERCENT' | 'FIXED';
     value: number;
   };
+  priceBreakdown?: PriceBreakdown; // Full price breakdown from API
 }
 
 export interface BookingItem {

@@ -55,9 +55,23 @@ export function useNearbyPlaces({
     setError(null);
 
     try {
-      // Check if Google Maps is loaded
+      // Wait for Google Maps to load (with timeout)
+      const maxAttempts = 20; // 10 seconds max
+      let attempts = 0;
+      
+      while (attempts < maxAttempts) {
+        if (typeof google !== 'undefined' && google.maps?.places) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 500));
+        attempts++;
+      }
+
+      // Check if Google Maps is loaded after waiting
       if (typeof google === 'undefined' || !google.maps?.places) {
-        throw new Error('Google Maps Places API not loaded');
+        console.warn('Google Maps Places API not loaded yet, will retry later');
+        setIsLoading(false);
+        return;
       }
 
       // Create a hidden map div for PlacesService (required by the API)

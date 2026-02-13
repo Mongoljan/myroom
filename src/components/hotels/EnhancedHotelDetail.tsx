@@ -68,20 +68,20 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
 
         // Create facilities map for quick lookup
         const facMap = new Map<number, Facility>();
-        combinedData.facilities.forEach(fac => {
+        (combinedData.facilities || []).forEach(fac => {
           facMap.set(fac.id, fac);
         });
         setFacilitiesMap(facMap);
 
         // Create province and soum maps for quick lookup
         const provMap = new Map<number, string>();
-        combinedData.province.forEach(prov => {
+        (combinedData.province || []).forEach(prov => {
           provMap.set(prov.id, prov.name);
         });
         setProvinceMap(provMap);
 
         const soumMapTemp = new Map<number, string>();
-        combinedData.soum.forEach(soumItem => {
+        (combinedData.soum || []).forEach(soumItem => {
           soumMapTemp.set(soumItem.id, soumItem.name);
         });
         setSoumMap(soumMapTemp);

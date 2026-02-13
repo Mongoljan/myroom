@@ -54,14 +54,23 @@ export interface RoomImage {
   description: string;
 }
 
+// Price breakdown structure from the API
+export interface PriceBreakdown {
+  price_after_price_setting: number;
+  hotel_discount_amount: number;
+  platform_markup_amount: number;
+  final_customer_price: number;
+}
+
 export interface HotelRoom {
   id: number;
   hotel: number;
-  room_number: number;
+  room_number?: number;
   room_type: number;
   room_category: number;
   room_size: string;
-  bed_type: number;
+  bed_type?: number;
+  bed_details?: Array<{ bed_type: number; quantity: number }>;
   is_Bathroom: boolean;
   room_Facilities: number[];
   bathroom_Items: number[];
@@ -76,6 +85,13 @@ export interface HotelRoom {
   smoking_allowed: boolean;
   images: RoomImage[];
   total_count: number;
+  // New pricing fields from API
+  base_price: number | null;
+  single_person_price: number | null;
+  half_day_price: number | null;
+  breakfast_include_price: number | null;
+  final_price: number | null;
+  price_breakdown: PriceBreakdown;
 }
 
 export interface AllRoomData {
@@ -98,6 +114,8 @@ export interface EnrichedHotelRoom extends HotelRoom {
   freeToiletriesDetails: FreeToiletries[];
   foodAndDrinkDetails: FoodAndDrink[];
   outdoorAndViewDetails: OutdoorAndView[];
+  // Helper flag to check if room has valid pricing
+  hasValidPricing: boolean;
 }
 
 class HotelRoomsService {
@@ -230,6 +248,13 @@ class HotelRoomsService {
       .map(id => allData.outdoor_and_view.find(ov => ov.id === id))
       .filter(Boolean) as OutdoorAndView[];
 
+    // Check if room has valid pricing based on price_breakdown
+    // A room is valid if it has a price_breakdown with final_customer_price > 0
+    const hasValidPricing = Boolean(
+      room.price_breakdown &&
+      room.price_breakdown.final_customer_price > 0
+    );
+
     return {
       ...room,
       roomTypeName: roomType?.name || 'Unknown',
@@ -239,7 +264,8 @@ class HotelRoomsService {
       bathroomItemsDetails,
       freeToiletriesDetails,
       foodAndDrinkDetails,
-      outdoorAndViewDetails
+      outdoorAndViewDetails,
+      hasValidPricing
     };
   }
 

@@ -218,7 +218,26 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
                   {t('houseRules.breakfast', 'Өглөөний цай')}
                 </h3>
                 <div className="text-[15px] text-gray-700">
-                  {policy.breakfast_policy}
+                  {typeof policy.breakfast_policy === 'string' 
+                    ? policy.breakfast_policy 
+                    : policy.breakfast_policy.status 
+                      ? (
+                        <div className="space-y-1">
+                          <div>{t('houseRules.breakfastAvailable', 'Өглөөний цай байна')}</div>
+                          {policy.breakfast_policy.start_time && policy.breakfast_policy.end_time && (
+                            <div>
+                              {t('houseRules.breakfastTime', 'Цаг:')} {formatTime(policy.breakfast_policy.start_time)} - {formatTime(policy.breakfast_policy.end_time)}
+                            </div>
+                          )}
+                          {policy.breakfast_policy.price && Number(policy.breakfast_policy.price) > 0 && (
+                            <div>
+                              {t('houseRules.breakfastPrice', 'Үнэ:')} {Number(policy.breakfast_policy.price).toLocaleString()}₮
+                            </div>
+                          )}
+                        </div>
+                      )
+                      : t('houseRules.noBreakfast', 'Өглөөний цай байхгүй')
+                  }
                 </div>
               </div>
             </div>
