@@ -1,7 +1,6 @@
 'use client';
 
-import Image from 'next/image';
-import { Star, MapPin, Heart, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed, BedDouble, BedSingle, X } from 'lucide-react';
+import { Star, MapPin, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed, BedDouble, BedSingle, X } from 'lucide-react';
 import { FaChild } from 'react-icons/fa';
 import { SearchHotelResult, AdditionalInfo, PropertyDetails, RoomPrice, Room } from '@/types/api';
 import { SEARCH_DESIGN_SYSTEM } from '@/styles/search-design-system';
@@ -10,6 +9,7 @@ import { createPortal } from 'react-dom';
 import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import GoogleMapModal from '@/components/common/GoogleMapModal';
+import HotelImageGallery from './HotelImageGallery';
 
 interface HotelCardProps {
   hotel: SearchHotelResult;
@@ -291,30 +291,21 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
           }}
         >
           <div className="flex flex-col md:flex-row">
-            {/* Hotel Image */}
+            {/* Hotel Image with gallery modal */}
             <div className="relative w-60 h-[240px] flex-shrink-0 overflow-hidden">
-              <Image
-                src={propertyDetails?.property_photos?.[0]?.image ||
-                     (typeof hotel.images?.cover === 'string' ? hotel.images.cover :
-                      hotel.images?.cover?.url ||
-                      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop')}
-                alt={hotel.property_name}
-                fill
-                className="object-cover"
-                sizes="240px"
-                unoptimized
+              <HotelImageGallery
+                images={hotel.images}
+                hotelName={hotel.property_name}
+                viewMode="list"
+                className="w-full h-full"
               />
-         
+
               {/* Discount Badge - Top Left (Trip.com Style) */}
               {pricingInfo.hasDiscount && (
                 <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                   {Math.round(pricingInfo.discountPercent)}% off
                 </div>
               )}
-              
-              <button className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full hover:bg-white transition-colors">
-                <Heart className="w-3 h-3 text-gray-600" />
-              </button>
             </div>
 
             {/* Hotel Details - Compact */}
@@ -550,18 +541,13 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
           window.open(buildHotelUrl(), '_blank');
         }}
       >
-        {/* Hotel Image */}
+        {/* Hotel Image with gallery modal */}
         <div className="relative w-full overflow-hidden flex-shrink-0" style={{ aspectRatio: '4/3' }}>
-          <Image
-            src={propertyDetails?.property_photos?.[0]?.image ||
-                 (typeof hotel.images?.cover === 'string' ? hotel.images.cover :
-                  hotel.images?.cover?.url ||
-                  'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop')}
-            alt={hotel.property_name}
-            fill
-            className="object-cover"
-            sizes="280px"
-            unoptimized
+          <HotelImageGallery
+            images={hotel.images}
+            hotelName={hotel.property_name}
+            viewMode="grid"
+            className="w-full h-full"
           />
           
           {/* Discount Badge - Top Left (Trip.com Style) */}
@@ -570,10 +556,6 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
               {Math.round(pricingInfo.discountPercent)}% off
             </div>
           )}
-          
-          <button className="absolute top-2 right-2 p-1 bg-white/90 rounded-full hover:bg-white transition-colors">
-            <Heart className="w-3 h-3 text-gray-600" />
-          </button>
         </div>
 
         {/* Hotel Info - Compact */}

@@ -59,8 +59,7 @@ export class ApiService {
       const problematicPatterns = [
         'closeup-shot-waving-flag-mongolia',
         'nonexistent',
-        'placeholder',
-        'temp'
+        'placeholder'
       ];
       
       for (const pattern of problematicPatterns) {

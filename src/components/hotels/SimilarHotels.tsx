@@ -158,14 +158,19 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
     );
   }
 
-  if (hotels.length === 0) return null;
+  // De-duplicate by hotel_id to avoid key collisions
+  const uniqueHotels = hotels.filter((hotel, index, arr) =>
+    hotel?.hotel_id && arr.findIndex(h => h?.hotel_id === hotel.hotel_id) === index
+  );
+
+  if (uniqueHotels.length === 0) return null;
 
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-gray-900">{t('similarHotels.title')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {hotels.filter(hotel => hotel?.hotel_id).map((hotel, index) => (
-          <Link key={hotel.hotel_id || `hotel-${index}`} href={`/hotel/${hotel.hotel_id}`}>
+        {uniqueHotels.map((hotel, index) => (
+          <Link key={`${hotel.hotel_id}-${index}`} href={`/hotel/${hotel.hotel_id}`}>
             <div className="group cursor-pointer bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200">
               <div className="relative h-32 overflow-hidden">
                 <SafeImage

@@ -8,9 +8,10 @@ import {
   Wine, Briefcase, PawPrint, Cigarette, Clock,
   Palmtree, Bus, WashingMachine, Heater, Mountain,
   ArrowLeft, Bell as ConciergeBell, Zap, Hotel, DollarSign, Package,
-  MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart, Layers3 as Layers
+  MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart, Layers3 as Layers, X
 } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
+import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
 import GoogleMapModal, { NearbyPlace } from '@/components/common/GoogleMapModal';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
@@ -25,6 +26,8 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const { t } = useHydratedTranslation();
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [modalImageIndex, setModalImageIndex] = useState(0);
   const [basicInfo, setBasicInfo] = useState<PropertyBasicInfo | null>(null);
   const [address, setAddress] = useState<ConfirmAddress | null>(null);
   const [propertyImages, setPropertyImages] = useState<PropertyImage[]>([]);
@@ -278,6 +281,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       setCurrentImageIndex((prev) => 
         prev === allImages.length - 1 ? 0 : prev + 1
       );
+      setModalImageIndex((prev) => prev === allImages.length - 1 ? 0 : prev + 1);
     }
   };
 
@@ -286,7 +290,14 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       setCurrentImageIndex((prev) => 
         prev === 0 ? allImages.length - 1 : prev - 1
       );
+      setModalImageIndex((prev) => prev === 0 ? allImages.length - 1 : prev - 1);
     }
+  };
+
+  const openGalleryAt = (index: number) => {
+    setCurrentImageIndex(index);
+    setModalImageIndex(index);
+    setIsGalleryOpen(true);
   };
 
   // Use API data for hotel name if available
@@ -488,12 +499,18 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             {/* Main Large Image - Left side */}
             <div className="w-[55%] relative">
               <div className="relative bg-gray-100 overflow-hidden rounded-l-xl h-full">
-                <SafeImage
-                  src={allImages[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url) || '/placeholder-hotel.jpg'}
-                  alt={hotelName || 'Hotel'}
-                  fill
-                  className="object-cover"
-                />
+                <button
+                  type="button"
+                  className="relative w-full h-full"
+                  onClick={() => openGalleryAt(currentImageIndex)}
+                >
+                  <SafeImage
+                    src={allImages[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url) || '/placeholder-hotel.jpg'}
+                    alt={hotelName || 'Hotel'}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
 
                 {allImages.length > 1 && (
                   <>
@@ -525,7 +542,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                     index === 1 ? 'rounded-tr-xl' : 
                     index === 3 ? 'rounded-br-xl' : ''
                   }`}
-                  onClick={() => setCurrentImageIndex(index + 1)}
+                  onClick={() => openGalleryAt(index + 1)}
                 >
                   <SafeImage
                     src={image.url}
@@ -563,7 +580,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                 <div
                   key={index}
                   className={`relative h-16 flex-1 cursor-pointer bg-gray-100 overflow-hidden rounded-lg group ${currentImageIndex === index ? 'ring-2 ring-blue-600' : ''}`}
-                  onClick={() => setCurrentImageIndex(index)}
+                  onClick={() => openGalleryAt(index)}
                 >
                   <SafeImage
                     src={image.url}
@@ -576,6 +593,78 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             </div>
           )}
         </div>
+
+        <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
+          <DialogContent className="max-w-6xl w-[95vw] p-0 border border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl overflow-hidden">
+            <DialogTitle className="sr-only">{hotelName} photos</DialogTitle>
+            <div className="flex flex-col h-[85vh]">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white/95">
+                <div className="text-sm font-semibold truncate text-slate-900">{hotelName}</div>
+                <div className="flex items-center gap-2 text-xs text-slate-600">
+                  <span>{modalImageIndex + 1} / {allImages.length}</span>
+                  <DialogClose asChild>
+                    <button className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors" aria-label="Close">
+                      <X className="w-4 h-4 text-slate-700" />
+                    </button>
+                  </DialogClose>
+                </div>
+              </div>
+
+              <div className="relative flex-1 bg-white">
+                {allImages[modalImageIndex]?.url && (
+                  <SafeImage
+                    src={allImages[modalImageIndex].url}
+                    alt={hotelName || 'Hotel'}
+                    fill
+                    className="object-contain"
+                  />
+                )}
+
+                {allImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setModalImageIndex(modalImageIndex === 0 ? allImages.length - 1 : modalImageIndex - 1)}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 text-slate-800 rounded-full p-3 shadow-lg"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setModalImageIndex((modalImageIndex + 1) % allImages.length)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 text-slate-800 rounded-full p-3 shadow-lg"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {allImages.length > 1 && (
+                <div className="p-4 bg-white border-t border-slate-200 overflow-x-auto">
+                  <div className="flex gap-2 min-w-full">
+                    {allImages.map((img, index) => (
+                      <button
+                        key={img.url + index}
+                        onClick={() => setModalImageIndex(index)}
+                        className={`relative w-20 h-14 rounded-md overflow-hidden border ${
+                          index === modalImageIndex ? 'border-slate-900' : 'border-slate-200'
+                        }`}
+                      >
+                        <SafeImage
+                          src={img.url}
+                          alt={hotelName || 'Hotel'}
+                          fill
+                          className="object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Right: Info Sidebar */}
         <div className="w-[300px] flex-shrink-0">
