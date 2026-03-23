@@ -61,7 +61,7 @@ const Header1 = () => {
 
               <div className="hidden md:flex items-center space-x-3">
                 <Link
-                  href="/hotel-login"
+                  href="https://hotel-front-five.vercel.app/"
                   className={`px-4 py-2.5 bg-slate-900 hover:bg-primary/90 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ${TYPOGRAPHY.button.standard} font-medium`}
                 >
                   {t('navigation.hotelLogin')}
