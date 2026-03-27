@@ -120,8 +120,8 @@ export default function CustomGuestSelector({
 
   return (
     <div className={`relative ${className}`}>
-      {/* Trigger Button */}
-      <button
+      {/* Trigger Button - Enhanced with modern styling */}
+      <motion.button
         ref={buttonRef}
         onClick={() => {
           if (!isOpen) {
@@ -131,25 +131,33 @@ export default function CustomGuestSelector({
             setIsOpen(false);
           }
         }}
-        className={`w-full flex items-center justify-between ${compact ? 'p-1.5' : 'p-2.5'} hover:bg-gray-50 transition-colors`}
+        whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
+        transition={{ duration: 0.2 }}
+        className={`w-full flex items-center justify-between ${compact ? 'p-1.5' : 'p-5'} transition-colors group`}
       >
-        <div className="flex items-center">
-          <Users className={`${compact ? 'w-4 h-4' : 'w-4.5 h-4.5'} text-gray-900 ${compact ? 'mr-2' : 'mr-2.5'}`} />
+        <div className="flex items-center gap-4">
+          <motion.div
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            <Users className={`${compact ? 'w-4 h-4' : 'w-6 h-6'} text-slate-900`} />
+          </motion.div>
           <div className="text-left">
-            {/* <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-1`}>
-              {t('search.guest', 'Guest')}
-            </div> */}
-            <div className={`text-sm text-gray-900`}>
+            <div className="text-xs font-medium text-gray-500 mb-1">
+              {t('search.guest', 'Зочин')}
+            </div>
+            <div className="text-base font-medium text-gray-900">
               {getGuestText()}
             </div>
           </div>
         </div>
-        <ChevronDown 
-          className={`w-5 h-5 text-gray-900 transition-transform duration-200 ${
-            isOpen ? 'rotate-180' : ''
-          }`} 
-        />
-      </button>
+        <motion.div
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+        </motion.div>
+      </motion.button>
 
       {/* Dropdown */}
       {isOpen && typeof window !== 'undefined' && createPortal(
@@ -271,14 +279,16 @@ export default function CustomGuestSelector({
                 </div>
               </div>
 
-              {/* Done Button */}
+              {/* Done Button - Matching site theme */}
               <div className="pt-3 border-t border-gray-100">
-                <button
+                <motion.button
                   onClick={() => setIsOpen(false)}
-                  className="w-full bg-primary text-white py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors text-sm"
+                  whileHover={{ scale: 1.01, y: -1 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-lg font-semibold transition-colors text-sm shadow-sm"
                 >
                   {t('common.done', 'Болсон')}
-                </button>
+                </motion.button>
               </div>
             </div>
           </motion.div>

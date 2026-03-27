@@ -63,10 +63,10 @@ export default function Footer() {
           <div>
             <h4 className={`${TYPOGRAPHY.heading.h3} mb-6 text-slate-300`}>ТУСЛАМЖ</h4>
             <ul className="space-y-3">
-              <li><Link href="/guide" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Заавар</Link></li>
-              <li><Link href="/info" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Мэдээлэл</Link></li>
-              <li><Link href="/faq" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Түгээмэл асуулт, хариулт</Link></li>
-              <li><Link href="/feedback" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Санал, хүсэлт</Link></li>
+              <li><Link href="/help#videos" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Заавар</Link></li>
+              <li><Link href="/help#faq" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Мэдээлэл</Link></li>
+              <li><Link href="/help#faq" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Түгээмэл асуулт, хариулт</Link></li>
+              <li><Link href="/help#contact" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Санал, хүсэлт</Link></li>
             </ul>
           </div>
 
@@ -74,8 +74,8 @@ export default function Footer() {
           <div>
             <h4 className={`${TYPOGRAPHY.heading.h3} mb-6 text-slate-300`}>ХАМТАРЧ АЖИЛЛАХ</h4>
             <ul className="space-y-3">
-              <li><Link href="/pms" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Өрөө удирдлагын систем</Link></li>
-              <li><Link href="/register" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Бүртгүүлэх / Нэвтрэх</Link></li>
+              <li><a href="https://hotel-front-five.vercel.app/" target="_blank" rel="noopener noreferrer" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Өрөө удирдлагын систем</a></li>
+              <li><a href="https://hotel-front-five.vercel.app/" target="_blank" rel="noopener noreferrer" className={`${TYPOGRAPHY.body.standard} text-slate-200 hover:text-slate-100 transition-colors`}>Бүртгүүлэх / Нэвтрэх</a></li>
             </ul>
           </div>
         </div>

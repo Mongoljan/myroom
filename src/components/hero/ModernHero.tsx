@@ -255,7 +255,7 @@ export default function ModernHero() {
   };
 
   return (
-    <section className="relative  pt-6 lg:min-h-[35vh] bg-slate-50/30">
+    <section className="relative pt-6 lg:min-h-[35vh] bg-slate-50/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl overflow-hidden shadow-2xl shadow-blue-900/20">
       {/* Animated Gradient Background */}
@@ -304,7 +304,7 @@ export default function ModernHero() {
 
       {/* Grid Pattern with Animation */}
       <div className="absolute inset-0 opacity-5 overflow-hidden pointer-events-none">
-        <motion.div 
+        <motion.div
           animate={{
             opacity: [0.05, 0.1, 0.05],
           }}
@@ -313,14 +313,14 @@ export default function ModernHero() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute inset-0" 
+          className="absolute inset-0"
           style={{
             backgroundImage: `
               linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
               linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
             `,
             backgroundSize: '40px 40px'
-          }} 
+          }}
         />
       </div>
 
@@ -399,15 +399,7 @@ export default function ModernHero() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className={`${TYPOGRAPHY.hero.title} text-white mb-6 leading-tight relative`}
             >
-              {/* <motion.span
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                className="block"
-              >
-                {t('hero.findPerfect')}
-              </motion.span> */}
-              <motion.span 
+              <motion.span
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
@@ -418,36 +410,7 @@ export default function ModernHero() {
                 </span>
               </motion.span>
             </motion.h1>
-            
-            {/* Subtitle with typewriter effect */}
-            {/* <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-              className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-20"
-            >
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 1.0 }}
-                className="text-gray-200 text-md"
-              >
-                {t('hero.discoverHotels')}
-              </motion.span>
-            </motion.div> */}
           </motion.div>
-
-          {/* CSS for typewriter effect */}
-          <style jsx>{`
-            @keyframes typing {
-              from { width: 0 }
-              to { width: 100% }
-            }
-            @keyframes blink {
-              0%, 50% { border-color: transparent }
-              51%, 100% { border-color: #60a5fa }
-            }
-          `}</style>
 
           {/* Modern Search Bar */}
           <motion.div
@@ -479,55 +442,75 @@ export default function ModernHero() {
                 }}
                 transition={{ duration: 0.3 }}
               />
-              <div className="relative bg-white/95 rounded-2xl" style={{ overflow: 'visible' }}>
+
+              <div className="relative bg-white rounded-2xl" style={{ overflow: 'visible' }}>
                 <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200" style={{ overflow: 'visible' }}>
                 
-                {/* Location */}
-                <div ref={locationRef} className="flex-1 p-4 w-full relative">
-                  <div className="flex items-center">
-                    <MapPin className="w-6 h-6 text-gray-700 mr-4" />
+                {/* Location - Enhanced with modern styling */}
+                <motion.div
+                  ref={locationRef}
+                  className="flex-1 p-5 w-full relative group"
+                  whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="flex items-center gap-4">
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <MapPin className="w-6 h-6 text-slate-900" />
+                    </motion.div>
                     <div className="flex-1">
-                      {/* <div className={`${TYPOGRAPHY.form.label} text-gray-500  mb-1`}>{t('search.location')}</div> */}
+                      <div className="text-xs font-medium text-gray-500 mb-1">{t('search.location', 'Газар')}</div>
                       <input
                         ref={locationInputRef}
                         type="text"
                         value={destination}
                         onChange={(e) => {
                           setDestination(e.target.value);
-                          setSelectedLocationSuggestion(null); // Clear selected suggestion when user types
-                          setShowLocationTooltip(false); // Hide tooltip when typing
+                          setSelectedLocationSuggestion(null);
+                          setShowLocationTooltip(false);
                         }}
                         onFocus={() => {
                           calculateLocationPosition();
                           setShowLocationSuggestions(true);
                           setShowLocationTooltip(false);
                         }}
-                        placeholder={t('search.locationPlaceholder')}
-                        className={`w-full text-gray-900 placeholder-gray-400 border-none outline-none ${TYPOGRAPHY.form.input}`}
+                        placeholder={t('search.locationPlaceholder', 'Хаана байрлах вэ?')}
+                        className="w-full text-base font-medium text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent"
                         required
                       />
                     </div>
                     {destination && (
-                      <button
+                      <motion.button
                         onClick={clearLocationSearch}
-                        className="text-gray-400 hover:text-gray-600 ml-2"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
                       >
                         <X className="w-4 h-4" />
-                      </button>
+                      </motion.button>
                     )}
                   </div>
 
-                  {/* Location Error Tooltip */}
-                  {showLocationTooltip && (
-                    <div className="absolute top-full left-0 mt-2 z-50 animate-fade-in">
-                      <div className="bg-red-500 text-white text-xs px-3 py-2 rounded-lg shadow-lg relative">
-                        <div className="absolute -top-1 left-8 w-2 h-2 bg-red-500 transform rotate-45"></div>
-                        <span>{t('search.selectLocation')}</span>
-                      </div>
-                    </div>
-                  )}
+                  {/* Location Error Tooltip - Enhanced */}
+                  <AnimatePresence>
+                    {showLocationTooltip && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        className="absolute top-full left-0 mt-2 z-50"
+                      >
+                        <div className="bg-red-500 text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-lg relative">
+                          <div className="absolute -top-1 left-8 w-2 h-2 bg-red-500 transform rotate-45"></div>
+                          <span>{t('search.selectLocation', 'Газраа сонгоно уу')}</span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                </div>
+                </motion.div>
 
                 {/* Location Suggestions Dropdown */}
                 {showLocationSuggestions && typeof window !== 'undefined' && createPortal(
@@ -621,12 +604,21 @@ export default function ModernHero() {
                   document.body
                 )}
 
-                {/* Check-in Check-out */}
-                <div className="lg:flex-1 p-4 w-full">
-                  <div className="flex items-center">
-                    <Calendar className="w-6 h-6 text-gray-700 mr-4" style={{ stroke: '#374151', fill: 'none' }} />
+                {/* Check-in Check-out - Enhanced */}
+                <motion.div
+                  className="lg:flex-1 p-5 w-full"
+                  whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="flex items-center gap-4">
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: -5 }}
+                      transition={{ type: "spring", stiffness: 400 }}
+                    >
+                      <Calendar className="w-6 h-6 text-slate-900" />
+                    </motion.div>
                     <div className="flex-1">
-                      {/* <div className={`${TYPOGRAPHY.form.label} text-gray-500 mb-1`}>{t('hero.checkInOut')}</div> */}
+                      <div className="text-xs font-medium text-gray-500 mb-1">{t('hero.checkInOut', 'Огноо')}</div>
                       <div className="relative z-[1]">
                         <DateRangePicker
                           checkIn={checkIn}
@@ -641,9 +633,9 @@ export default function ModernHero() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Guests */}
+                {/* Guests - Enhanced with label */}
                 <div className="lg:flex-1 w-full relative z-[1]">
                   <CustomGuestSelector
                     adults={adults}
@@ -669,7 +661,7 @@ export default function ModernHero() {
                     className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-sm shadow-lg shadow-blue-600/30"
                   >
                     <Search className="w-5 h-5" />
-                    <span className="hidden text-base xl:inline tracking-wide">{t('search.searchButton')}</span>
+                    <span className="hidden text-base xl:inline tracking-wide">{t('search.searchButton', 'Хайх')}</span>
                   </motion.button>
                 </div>
                 </div>
