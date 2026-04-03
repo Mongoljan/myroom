@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import AuthLayout from "@/components/layout/AuthLayout";
 
 export const metadata: Metadata = {
   title: 'Нэвтрэх | MyRoom',
@@ -15,5 +14,5 @@ export default function LoginLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AuthLayout>{children}</AuthLayout>;
+  return <>{children}</>;
 }

@@ -2,14 +2,19 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Globe, Menu, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Globe, Menu, X, User, LogOut, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { useAuth } from '@/contexts/AuthContext';
 import { TYPOGRAPHY } from '@/styles/containers';
 
 export default function Header() {
   const { t, i18n } = useHydratedTranslation();
+  const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const navigation = [
     { name: 'navigation.home', href: '/' },
@@ -20,6 +25,12 @@ export default function Header() {
   const toggleLanguage = () => {
     const newLang = i18n.language === 'mn' ? 'en' : 'mn';
     i18n.changeLanguage(newLang);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    setIsUserMenuOpen(false);
+    router.push('/');
   };
 
   return (
@@ -59,12 +70,65 @@ export default function Header() {
             </button>
 
             {/* User Actions */}
-            <Link
-              href="/login"
-              className={`bg-primary text-white px-4 py-2 rounded-lg ${TYPOGRAPHY.button.standard} hover:bg-primary/90 transition-colors`}
-            >
-              {t('navigation.login')}
-            </Link>
+            {isAuthenticated && user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center text-white text-sm font-bold">
+                    {user.first_name?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                  <span className="hidden md:inline text-sm font-medium text-gray-700">
+                    {user.first_name}
+                  </span>
+                </button>
+
+                {/* User Dropdown Menu */}
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50"
+                    >
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        {t('navigation.dashboard')}
+                      </Link>
+                      <Link
+                        href="/profile"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <Settings className="w-4 h-4 mr-2" />
+                        {t('navigation.profile')}
+                      </Link>
+                      <hr className="my-2 border-gray-100" />
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        {t('navigation.logout')}
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className={`bg-primary text-white px-4 py-2 rounded-lg ${TYPOGRAPHY.button.standard} hover:bg-primary/90 transition-colors`}
+              >
+                {t('navigation.login')}
+              </Link>
+            )}
 
             {/* Mobile Menu Button */}
             <button

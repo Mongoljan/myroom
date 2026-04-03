@@ -9,6 +9,7 @@ import { BookingService } from '@/services/bookingApi';
 import { ApiService } from '@/services/api';
 import { CreateBookingRequest, CreateBookingResponse, PropertyPolicy } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface BookingRoom {
   room_category_id: number;
@@ -21,6 +22,7 @@ interface BookingRoom {
 
 function BookingContent() {
   const { t } = useHydratedTranslation();
+  const { user, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -92,6 +94,16 @@ function BookingContent() {
 
     fetchHotelData();
   }, [hotelId]);
+
+  // Auto-fill guest info when user is logged in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (!customerName) setCustomerName(user.first_name || '');
+      if (!customerPhone) setCustomerPhone(user.phone || '');
+      if (!customerEmail) setCustomerEmail(user.email || '');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, user]);
 
   // Recalculate total when dates change
   useEffect(() => {
@@ -593,7 +605,7 @@ function BookingContent() {
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-800">Check-in</span>
+                    <span className="text-xs text-slate-800">{t('hotel.checkIn', 'Check-in')}</span>
                     <span className="text-sm font-medium text-slate-900">
                       {new Date(checkIn).toLocaleDateString('en-US', { 
                         weekday: 'short', 
@@ -604,7 +616,7 @@ function BookingContent() {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-800">Check-out</span>
+                    <span className="text-xs text-slate-800">{t('hotel.checkOut', 'Check-out')}</span>
                     <span className="text-sm font-medium text-slate-900">
                       {new Date(checkOut).toLocaleDateString('en-US', { 
                         weekday: 'short', 
@@ -634,11 +646,11 @@ function BookingContent() {
                         <div className="text-sm font-medium text-gray-900">
                           ₮{room.price_per_night.toLocaleString()}
                         </div>
-                        <div className="text-xs text-gray-600">per night × {room.room_count}</div>
+                        <div className="text-xs text-gray-600">{t('hotel.pricePerNight', 'per night')} × {room.room_count}</div>
                       </div>
                     </div>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-600">{nights} night{nights !== 1 ? 's' : ''}</span>
+                      <span className="text-gray-600">{nights} {nights !== 1 ? t('hotel.nights', 'nights') : t('hotel.night', 'night')}</span>
                       <span className="font-medium text-gray-900">
                         ₮{room.total_price.toLocaleString()}
                       </span>
@@ -666,7 +678,7 @@ function BookingContent() {
 // Wrap the component that uses useSearchParams in a Suspense boundary to satisfy Next.js requirements
 export default function BookingPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-gray-600">Loading booking details...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-gray-600">{/* Loading */}</div>}>
       <BookingContent />
     </Suspense>
   );

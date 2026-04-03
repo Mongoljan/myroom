@@ -1,6 +1,7 @@
 'use client';
 
 import { Calendar, MapPin, Clock, TrendingUp } from 'lucide-react';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -8,94 +9,64 @@ interface StatCardProps {
   value: string | number;
   trend?: string;
   trendUp?: boolean;
-  delay?: string;
 }
 
-function StatCard({ icon, label, value, trend, trendUp, delay }: StatCardProps) {
+function StatCard({ icon, label, value, trend, trendUp }: StatCardProps) {
   return (
-    <div
-      className="group relative overflow-hidden animate-fade-in"
-      style={{ animationDelay: delay }}
-    >
-      {/* Glass Card with Border */}
-      <div className="relative h-full bg-white/70 backdrop-blur-xl rounded-2xl border border-white/60 shadow-lg shadow-slate-200/50 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-slate-300/50 hover:border-slate-200/80 hover:-translate-y-1">
-        {/* Gradient Overlay on Hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-violet-500/0 to-pink-500/0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-300 rounded-2xl" />
-
-        {/* Content */}
-        <div className="relative z-10 flex items-start justify-between">
-          <div className="flex-1">
-            {/* Icon Container */}
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/10 to-violet-500/10 text-blue-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-              {icon}
-            </div>
-
-            {/* Label */}
-            <p className="text-sm font-medium text-slate-600 mb-1">{label}</p>
-
-            {/* Value */}
-            <p className="text-3xl font-bold text-slate-900 tracking-tight">{value}</p>
-
-            {/* Trend Indicator */}
-            {trend && (
-              <div className="flex items-center gap-1.5 mt-3">
-                <TrendingUp
-                  className={`w-4 h-4 ${trendUp ? 'text-emerald-600' : 'text-rose-600 rotate-180'}`}
-                />
-                <span
-                  className={`text-xs font-medium ${trendUp ? 'text-emerald-600' : 'text-rose-600'}`}
-                >
-                  {trend}
-                </span>
-                <span className="text-xs text-slate-500">vs last month</span>
-              </div>
-            )}
-          </div>
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 hover:shadow-md transition-shadow duration-200">
+      <div className="flex items-start justify-between">
+        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-600">
+          {icon}
         </div>
-
-        {/* Shimmer Effect */}
-        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        {trend && (
+          <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full ${trendUp ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+            <TrendingUp className={`w-3 h-3 ${!trendUp && 'rotate-180'}`} />
+            {trend}
+          </span>
+        )}
+      </div>
+      <div className="mt-3">
+        <p className="text-2xl font-bold text-gray-900">{value}</p>
+        <p className="text-sm text-gray-500 mt-0.5">{label}</p>
       </div>
     </div>
   );
 }
 
 export default function StatsOverview() {
+  const { t } = useHydratedTranslation();
+
   const stats = [
     {
-      icon: <Calendar className="w-6 h-6" />,
-      label: 'Total Bookings',
+      icon: <Calendar className="w-5 h-5" />,
+      label: t('dashboard.totalBookings', 'Total Bookings'),
       value: 12,
       trend: '+3',
       trendUp: true,
-      delay: '0ms',
     },
     {
-      icon: <MapPin className="w-6 h-6" />,
-      label: 'Destinations Visited',
+      icon: <MapPin className="w-5 h-5" />,
+      label: t('dashboard.destinationsVisited', 'Destinations Visited'),
       value: 8,
       trend: '+2',
       trendUp: true,
-      delay: '50ms',
     },
     {
-      icon: <Clock className="w-6 h-6" />,
-      label: 'Upcoming Trips',
+      icon: <Clock className="w-5 h-5" />,
+      label: t('dashboard.upcomingTrips', 'Upcoming Trips'),
       value: 2,
-      delay: '100ms',
     },
     {
-      icon: <TrendingUp className="w-6 h-6" />,
-      label: 'Total Spent',
-      value: '$4,850',
-      trend: '+$1,200',
+      icon: <TrendingUp className="w-5 h-5" />,
+      label: t('dashboard.totalSpent', 'Total Spent'),
+      value: '₮4,850,000',
+      trend: '+₮1,200,000',
       trendUp: true,
-      delay: '150ms',
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
       {stats.map((stat, index) => (
         <StatCard key={index} {...stat} />
       ))}

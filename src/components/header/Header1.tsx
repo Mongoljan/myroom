@@ -1,16 +1,40 @@
 'use client'
 import Link from "next/link";
 import Image from 'next/image';
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { LayoutDashboard, User, LogOut, Settings, ChevronDown } from "lucide-react";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
+import { useAuth } from '@/contexts/AuthContext';
 import LanguageSwitcher from "../common/LanguageSwitcher";
 import MainMenu from "./MainMenu";
 import MobileMenu from "./MobileMenu";
 
 const Header1 = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const { t } = useHydratedTranslation();
+  const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+  const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleLogout = async () => {
+    await logout();
+    setProfileMenuOpen(false);
+    router.push('/');
+  };
 
   return (
     <>
@@ -62,16 +86,80 @@ const Header1 = () => {
               <div className="hidden md:flex items-center space-x-3">
                 <Link
                   href="https://hotel-front-five.vercel.app/"
-                  className={`px-4 py-2.5 bg-slate-900 hover:bg-primary/90 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ${TYPOGRAPHY.button.standard} font-medium`}
+                  className={`px-4 py-2.5 bg-slate-900 hover:bg-slate-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ${TYPOGRAPHY.button.standard} font-medium`}
                 >
                   {t('navigation.hotelLogin')}
                 </Link>
-                <Link
-                  href="/login"
-                  className={`px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
-                >
-                  {t('navigation.loginRegister')}
-                </Link>
+
+                {isAuthenticated && user ? (
+                  /* Profile Dropdown */
+                  <div className="relative" ref={profileMenuRef}>
+                    <button
+                      onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 shadow-sm"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-linear-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white text-xs font-bold">
+                        {user.first_name?.charAt(0).toUpperCase() || 'U'}
+                      </div>
+                      <span className={`${TYPOGRAPHY.button.standard} text-gray-800 font-medium max-w-20 truncate`}>
+                        {user.first_name}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${profileMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <AnimatePresence>
+                      {profileMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -8, scale: 0.97 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-50"
+                        >
+                          {/* User Info */}
+                          <div className="px-4 py-3 border-b border-gray-100">
+                            <p className="text-sm font-semibold text-gray-900 truncate">{user.first_name} {user.last_name}</p>
+                            <p className="text-xs text-gray-500 truncate mt-0.5">{user.email}</p>
+                          </div>
+
+                          <Link
+                            href="/dashboard"
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            onClick={() => setProfileMenuOpen(false)}
+                          >
+                            <LayoutDashboard className="w-4 h-4 text-gray-500" />
+                            {t('navigation.dashboard')}
+                          </Link>
+                          <Link
+                            href="/profile"
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                            onClick={() => setProfileMenuOpen(false)}
+                          >
+                            <Settings className="w-4 h-4 text-gray-500" />
+                            {t('navigation.profile')}
+                          </Link>
+
+                          <div className="border-t border-gray-100 mt-1.5 pt-1.5">
+                            <button
+                              onClick={handleLogout}
+                              className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              {t('navigation.logout')}
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  <Link
+                    href="/login"
+                    className={`px-4 py-2.5 bg-white border border-gray-300 text-gray-900 rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
+                  >
+                    {t('navigation.loginRegister')}
+                  </Link>
+                )}
               </div>
 
               <div className="flex xl:hidden items-center ml-4 space-x-3 text-gray-600">
@@ -80,12 +168,18 @@ const Header1 = () => {
                   <LanguageSwitcher />
                 </div>
                 <Link
-                  href="/login"
+                  href={isAuthenticated ? '/dashboard' : '/login'}
                   className="flex items-center text-xl"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
+                  {isAuthenticated && user ? (
+                    <div className="w-7 h-7 rounded-full bg-linear-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white text-xs font-bold">
+                      {user.first_name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                  ) : (
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  )}
                 </Link>
                 <button
                   onClick={() => setMobileMenuOpen(true)}

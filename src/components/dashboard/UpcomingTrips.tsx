@@ -1,7 +1,8 @@
 'use client';
 
 import { Calendar, MapPin, Users, Clock, ArrowRight } from 'lucide-react';
-import Image from 'next/image';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { useRouter } from 'next/navigation';
 
 interface Trip {
   id: string;
@@ -11,48 +12,30 @@ interface Trip {
   checkOut: string;
   guests: number;
   roomType: string;
-  image: string;
   status: 'confirmed' | 'pending';
 }
 
 export default function UpcomingTrips() {
+  const { t } = useHydratedTranslation();
+  const router = useRouter();
+
   // Mock data - replace with actual API call
-  const trips: Trip[] = [
-    {
-      id: '1',
-      hotelName: 'Grand Plaza Hotel & Spa',
-      location: 'Paris, France',
-      checkIn: '2025-01-15',
-      checkOut: '2025-01-20',
-      guests: 2,
-      roomType: 'Deluxe Suite',
-      image: '/img/hotels/hotel1.jpg',
-      status: 'confirmed',
-    },
-    {
-      id: '2',
-      hotelName: 'Seaside Resort & Beach',
-      location: 'Bali, Indonesia',
-      checkIn: '2025-02-10',
-      checkOut: '2025-02-17',
-      guests: 4,
-      roomType: 'Ocean View Villa',
-      image: '/img/hotels/hotel2.jpg',
-      status: 'confirmed',
-    },
-  ];
+  const trips: Trip[] = [];
 
   if (trips.length === 0) {
     return (
-      <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/60 shadow-lg shadow-slate-200/50 p-8">
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">Upcoming Trips</h2>
-        <div className="text-center py-12">
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
-            <Calendar className="w-10 h-10 text-slate-400" />
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+        <h2 className="text-base font-bold text-gray-900 mb-4">{t('dashboard.upcomingTripsTitle', 'Upcoming Trips')}</h2>
+        <div className="text-center py-8">
+          <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
+            <Calendar className="w-7 h-7 text-gray-400" />
           </div>
-          <p className="text-slate-600 mb-4">No upcoming trips</p>
-          <button className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-medium transition-colors">
-            Browse Hotels
+          <p className="text-sm text-gray-500 mb-4">{t('dashboard.noUpcomingTrips', 'No upcoming trips')}</p>
+          <button
+            onClick={() => router.push('/search')}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-700 text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            {t('dashboard.browseHotels', 'Browse Hotels')}
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -61,108 +44,67 @@ export default function UpcomingTrips() {
   }
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/60 shadow-lg shadow-slate-200/50 p-6 sm:p-8">
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-slate-900">Upcoming Trips</h2>
-        <span className="text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full">
-          {trips.length} {trips.length === 1 ? 'Trip' : 'Trips'}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-bold text-gray-900">{t('dashboard.upcomingTripsTitle', 'Upcoming Trips')}</h2>
+        <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+          {trips.length} {trips.length === 1 ? t('dashboard.trip', 'Trip') : t('dashboard.trips', 'Trips')}
         </span>
       </div>
 
       {/* Trips List */}
-      <div className="space-y-4">
-        {trips.map((trip, index) => (
+      <div className="space-y-3">
+        {trips.map((trip) => (
           <div
             key={trip.id}
-            className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
-            style={{ animationDelay: `${index * 50}ms` }}
+            className="flex flex-col sm:flex-row gap-3 p-4 rounded-lg border border-gray-100 bg-gray-50 hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all duration-200"
           >
-            <div className="flex flex-col sm:flex-row gap-4 p-4">
-              {/* Hotel Image */}
-              <div className="relative w-full sm:w-40 h-32 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-violet-500/20" />
-                <div className="absolute inset-0 flex items-center justify-center text-slate-400">
-                  <MapPin className="w-12 h-12" />
-                </div>
-              </div>
-
-              {/* Trip Details */}
-              <div className="flex-1 min-w-0">
-                {/* Status Badge */}
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-semibold text-slate-900 truncate group-hover:text-blue-600 transition-colors">
-                      {trip.hotelName}
-                    </h3>
-                    <p className="text-sm text-slate-600 flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-3.5 h-3.5" />
-                      {trip.location}
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 ml-2">
-                    {trip.status === 'confirmed' ? 'Confirmed' : 'Pending'}
-                  </span>
-                </div>
-
-                {/* Trip Info Grid */}
-                <div className="grid grid-cols-2 gap-3 mt-3">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Calendar className="w-4 h-4 text-slate-400" />
-                    <div>
-                      <p className="text-xs text-slate-500">Check-in</p>
-                      <p className="font-medium text-slate-900">
-                        {new Date(trip.checkIn).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="w-4 h-4 text-slate-400" />
-                    <div>
-                      <p className="text-xs text-slate-500">Check-out</p>
-                      <p className="font-medium text-slate-900">
-                        {new Date(trip.checkOut).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm">
-                    <Users className="w-4 h-4 text-slate-400" />
-                    <div>
-                      <p className="text-xs text-slate-500">Guests</p>
-                      <p className="font-medium text-slate-900">{trip.guests}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm">
-                    <div>
-                      <p className="text-xs text-slate-500">Room</p>
-                      <p className="font-medium text-slate-900 truncate">{trip.roomType}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
-                  <button className="flex-1 px-4 py-2 text-sm font-medium text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
-                    View Details
-                  </button>
-                  <button className="flex-1 px-4 py-2 text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 rounded-lg transition-colors">
-                    Manage Booking
-                  </button>
-                </div>
-              </div>
+            {/* Placeholder Image */}
+            <div className="w-full sm:w-28 h-20 rounded-lg bg-gray-200 flex items-center justify-center shrink-0">
+              <MapPin className="w-8 h-8 text-gray-400" />
             </div>
 
-            {/* Shimmer Effect */}
-            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
+            {/* Trip Details */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold text-gray-900 truncate">{trip.hotelName}</h3>
+                  <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                    <MapPin className="w-3 h-3" />
+                    {trip.location}
+                  </p>
+                </div>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium shrink-0 ${trip.status === 'confirmed' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
+                  {trip.status === 'confirmed' ? t('dashboard.confirmed', 'Confirmed') : 'Pending'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs text-gray-500 mb-3">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                  {new Date(trip.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5 text-gray-400" />
+                  {new Date(trip.checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Users className="w-3.5 h-3.5 text-gray-400" />
+                  {trip.guests} {t('dashboard.guests', 'Guests')}
+                </span>
+                <span className="truncate">{trip.roomType}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button className="flex-1 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                  {t('dashboard.viewDetails', 'View Details')}
+                </button>
+                <button className="flex-1 px-3 py-1.5 text-xs font-medium text-white bg-slate-900 rounded-lg hover:bg-slate-700 transition-colors">
+                  {t('dashboard.manageBookings', 'Manage')}
+                </button>
+              </div>
+            </div>
           </div>
         ))}
       </div>

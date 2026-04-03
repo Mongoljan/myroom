@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { ToastProvider } from "@/components/common/ToastContainer";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Header1 from "@/components/header/Header1";
 import Footer from "@/components/layout/Footer";
 import "./globals.css";
@@ -90,19 +91,21 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ToastProvider>
-          <I18nProvider>
-            <div className="print:hidden">
-              <Header1 />
-            </div>
-            <main className="">
-              {children}
-            </main>
-            <div className="print:hidden">
-              <Footer />
-            </div>
-          </I18nProvider>
-        </ToastProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <I18nProvider>
+              <div className="print:hidden">
+                <Header1 />
+              </div>
+              <main className="">
+                {children}
+              </main>
+              <div className="print:hidden">
+                <Footer />
+              </div>
+            </I18nProvider>
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );
