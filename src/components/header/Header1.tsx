@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, LogOut, Settings, ChevronDown } from "lucide-react";
+import { LogOut, Settings, ChevronDown } from "lucide-react";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 import { useAuth } from '@/contexts/AuthContext';

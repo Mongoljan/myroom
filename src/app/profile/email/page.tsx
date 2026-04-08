@@ -175,7 +175,7 @@ export default function EmailPage() {
       {step === 'verify_otp' && (
         <div>
           <p className="text-sm text-gray-500 mb-4">
-            {t('ProfileEmail.otpSent', '{{email}} хаяг руу OTP код илгээлээ. Кодоо оруулна уу.', { email: newEmail || user.email })}
+            {t('ProfileEmail.otpSent', { email: newEmail || user.email }, '{{email}} хаяг руу OTP код илгээлээ. Кодоо оруулна уу.')}
           </p>
           <form onSubmit={handleVerify} className="flex items-center gap-3 max-w-sm">
             <input
