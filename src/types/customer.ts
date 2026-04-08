@@ -87,6 +87,7 @@ export interface CreateCustomerBookingResponse {
 
 export interface CustomerBooking {
   id: number;
+  hotel: number;
   hotel_name: string;
   room_type: string;
   check_in: string;

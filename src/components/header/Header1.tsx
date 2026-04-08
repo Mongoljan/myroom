@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, User, LogOut, Settings, ChevronDown } from "lucide-react";
+import { User, LogOut, Settings, ChevronDown } from "lucide-react";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 import { useAuth } from '@/contexts/AuthContext';
@@ -84,13 +84,6 @@ const Header1 = () => {
               </div>
 
               <div className="hidden md:flex items-center space-x-3">
-                <Link
-                  href="https://hotel-front-five.vercel.app/"
-                  className={`px-4 py-2.5 bg-slate-900 hover:bg-slate-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 ${TYPOGRAPHY.button.standard} font-medium`}
-                >
-                  {t('navigation.hotelLogin')}
-                </Link>
-
                 {isAuthenticated && user ? (
                   /* Profile Dropdown */
                   <div className="relative" ref={profileMenuRef}>
@@ -122,14 +115,6 @@ const Header1 = () => {
                             <p className="text-xs text-gray-500 truncate mt-0.5">{user.email}</p>
                           </div>
 
-                          <Link
-                            href="/dashboard"
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                            onClick={() => setProfileMenuOpen(false)}
-                          >
-                            <LayoutDashboard className="w-4 h-4 text-gray-500" />
-                            {t('navigation.dashboard')}
-                          </Link>
                           <Link
                             href="/profile"
                             className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
@@ -167,20 +152,6 @@ const Header1 = () => {
                 <div className="md:hidden flex items-center space-x-2">
                   <LanguageSwitcher />
                 </div>
-                <Link
-                  href={isAuthenticated ? '/dashboard' : '/login'}
-                  className="flex items-center text-xl"
-                >
-                  {isAuthenticated && user ? (
-                    <div className="w-7 h-7 rounded-full bg-linear-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white text-xs font-bold">
-                      {user.first_name?.charAt(0).toUpperCase() || 'U'}
-                    </div>
-                  ) : (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  )}
-                </Link>
                 <button
                   onClick={() => setMobileMenuOpen(true)}
                   className="flex items-center text-xl"

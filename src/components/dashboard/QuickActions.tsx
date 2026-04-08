@@ -5,36 +5,25 @@ import {
   Calendar,
   Heart,
   Settings,
-  CreditCard,
-  Bell,
   MessageCircle,
-  Award,
+  Tag,
+  Star,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface ActionItemProps {
   icon: React.ReactNode;
   label: string;
-  href?: string;
-  onClick?: () => void;
+  href: string;
   color: string;
 }
 
-function ActionItem({ icon, label, href, onClick, color }: ActionItemProps) {
+function ActionItem({ icon, label, href, color }: ActionItemProps) {
   const router = useRouter();
-
-  const handleClick = () => {
-    if (onClick) {
-      onClick();
-    } else if (href) {
-      router.push(href);
-    }
-  };
 
   return (
     <button
-      onClick={handleClick}
+      onClick={() => router.push(href)}
       className="flex items-center gap-3 w-full px-4 py-3 rounded-lg border border-gray-100 bg-gray-50 hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all duration-200 text-left group"
     >
       <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
@@ -46,65 +35,55 @@ function ActionItem({ icon, label, href, onClick, color }: ActionItemProps) {
 }
 
 export default function QuickActions() {
-  const { t } = useHydratedTranslation();
-  const router = useRouter();
-
   const actions = [
     {
       icon: <Search className="w-4 h-4" />,
-      label: t('dashboard.newSearch', 'New Search'),
+      label: 'Буудал хайх',
       href: '/search',
       color: 'bg-slate-800',
     },
     {
       icon: <Calendar className="w-4 h-4" />,
-      label: t('dashboard.manageBookings', 'Manage Bookings'),
-      href: '/booking/manage',
+      label: 'Захиалгын түүх',
+      href: '/profile/bookings',
       color: 'bg-slate-700',
     },
     {
       icon: <Heart className="w-4 h-4" />,
-      label: t('dashboard.savedHotels', 'Saved Hotels'),
-      href: '/profile',
-      color: 'bg-slate-600',
+      label: 'Хадгалсан буудлууд',
+      href: '/profile/saved',
+      color: 'bg-rose-500',
     },
     {
-      icon: <CreditCard className="w-4 h-4" />,
-      label: t('dashboard.paymentMethods', 'Payment Methods'),
-      href: '/profile',
-      color: 'bg-slate-600',
+      icon: <Star className="w-4 h-4" />,
+      label: 'Үнэлгээ өгөх',
+      href: '/profile/reviews',
+      color: 'bg-yellow-500',
     },
     {
-      icon: <Bell className="w-4 h-4" />,
-      label: t('dashboard.notifications', 'Notifications'),
-      href: '/profile',
-      color: 'bg-slate-500',
+      icon: <Tag className="w-4 h-4" />,
+      label: 'Промо код',
+      href: '/profile/promo',
+      color: 'bg-emerald-600',
     },
     {
       icon: <MessageCircle className="w-4 h-4" />,
-      label: t('dashboard.support', 'Support'),
+      label: 'Тусламж',
       href: '/help',
-      color: 'bg-slate-500',
-    },
-    {
-      icon: <Award className="w-4 h-4" />,
-      label: t('dashboard.rewards', 'Rewards'),
-      href: '/profile',
-      color: 'bg-slate-500',
+      color: 'bg-blue-500',
     },
     {
       icon: <Settings className="w-4 h-4" />,
-      label: t('dashboard.settings', 'Settings'),
-      href: '/profile',
-      color: 'bg-slate-400',
+      label: 'Тохиргоо',
+      href: '/profile/settings',
+      color: 'bg-slate-500',
     },
   ];
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
       <div className="mb-4">
-        <h2 className="text-base font-bold text-gray-900">{t('dashboard.quickActions', 'Quick Actions')}</h2>
-        <p className="text-xs text-gray-500 mt-0.5">{t('dashboard.shortcutsToTasks', 'Shortcuts to common tasks')}</p>
+        <h2 className="text-base font-bold text-gray-900">Хурдан үйлдлүүд</h2>
       </div>
 
       <div className="space-y-2">
