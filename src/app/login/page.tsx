@@ -5,27 +5,53 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useAuth } from '@/contexts/AuthContext';
+import { Eye, EyeOff } from 'lucide-react';
+import { useToast } from '@/components/common/ToastContainer';
 
 export default function LoginPage() {
   const { t } = useHydratedTranslation();
   const { login } = useAuth();
   const router = useRouter();
+  const { addToast } = useToast();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
     setIsLoading(true);
 
     try {
       await login(email, password);
-      router.push('/dashboard');
+      router.push('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('AuthLogin.loginFailed', 'Login failed'));
+      // Parse backend error for login failures
+      if (err instanceof Error) {
+        try {
+          const errorData = JSON.parse(err.message);
+          if (errorData.non_field_errors && Array.isArray(errorData.non_field_errors)) {
+            // Show error message as toast
+            addToast({
+              type: 'error',
+              title: errorData.non_field_errors[0] || t('AuthLogin.loginFailed', 'Login failed')
+            });
+            return;
+          }
+        } catch {
+          // Not JSON, show as is
+        }
+        addToast({
+          type: 'error',
+          title: err.message || t('AuthLogin.loginFailed', 'Login failed')
+        });
+      } else {
+        addToast({
+          type: 'error',
+          title: t('AuthLogin.loginFailed', 'Login failed')
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -46,12 +72,6 @@ export default function LoginPage() {
 
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
-            </div>
-          )}
-
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Email */}
             <div>
@@ -77,18 +97,28 @@ export default function LoginPage() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 {t('AuthLogin.passwordLabel', 'Password')}
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
-                placeholder={t('AuthLogin.passwordPlaceholder', 'Enter your password')}
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
+                  placeholder={t('AuthLogin.passwordPlaceholder', 'Enter your password')}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
 
             {/* Submit Button */}

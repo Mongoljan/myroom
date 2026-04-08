@@ -55,7 +55,7 @@ export default function OTPLoginPage() {
     try {
       const response = await CustomerService.verifyOTP({ phone, otp_code: otpCode });
       CustomerService.saveToken(response.token);
-      router.push('/dashboard');
+      router.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'OTP баталгаажуулахад алдаа гарлаа');
     } finally {

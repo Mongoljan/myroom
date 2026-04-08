@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Settings,
   ChevronDown,
+  Hotel,
 } from 'lucide-react';
 
 const personalInfoLinks = [
@@ -58,6 +59,15 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
         <div className="flex gap-8 items-start">
           {/* ─── Sidebar ─── */}
           <aside className="w-60 shrink-0">
+            {/* Quick Action - Book Hotel */}
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-2 w-full mb-4 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
+            >
+              <Hotel size={18} />
+              <span>Буудал захиалах</span>
+            </Link>
+
             {/* Personal info accordion */}
             <div className="mb-1">
               <div className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-default select-none">

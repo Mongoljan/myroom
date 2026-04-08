@@ -69,6 +69,14 @@ export class CustomerService {
         if (response.status === 401) {
           this.clearToken();
         }
+
+        // Check if response contains field validation errors (common Django REST format)
+        // Example: { "phone": ["User with this phone already exists."], "password": ["Ensure this field has at least 6 characters."] }
+        if (data && typeof data === 'object' && !data.error && !data.message && !data.detail) {
+          // Likely field validation errors - throw as JSON string
+          throw new Error(JSON.stringify(data));
+        }
+
         // Extract error message from API response
         const errorMessage = (data.error || data.message || data.detail || `HTTP error! status: ${response.status}`) as string;
         throw new Error(errorMessage);

@@ -5,13 +5,38 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useAuth } from '@/contexts/AuthContext';
+import { z } from 'zod';
+import { Eye, EyeOff } from 'lucide-react';
+import { useToast } from '@/components/common/ToastContainer';
+
+// Create schema factory function to support translations with stronger password validation
+const createSignupSchema = (t: (key: string, fallback: string) => string) => z.object({
+  first_name: z.string().min(1, t('AuthSignup.firstNameRequired', 'First name is required')),
+  last_name: z.string().min(1, t('AuthSignup.lastNameRequired', 'Last name is required')),
+  email: z.string().email(t('AuthSignup.invalidEmail', 'Invalid email address')),
+  phone: z.string().optional(),
+  password: z.string()
+    .min(8, t('AuthSignup.passwordMinLength', 'Password must be at least 8 characters'))
+    .regex(/[a-z]/, t('AuthSignup.passwordLowercase', 'Password must contain at least one lowercase letter'))
+    .regex(/[A-Z]/, t('AuthSignup.passwordUppercase', 'Password must contain at least one uppercase letter'))
+    .regex(/[0-9]/, t('AuthSignup.passwordNumber', 'Password must contain at least one number')),
+  confirm_password: z.string().min(1, t('AuthSignup.confirmPasswordRequired', 'Please confirm your password')),
+}).refine((data) => data.password === data.confirm_password, {
+  message: t('AuthSignup.passwordMismatch', "Passwords do not match"),
+  path: ["confirm_password"],
+});
 
 export default function SignupPage() {
   const { t } = useHydratedTranslation();
   const { register } = useAuth();
   const router = useRouter();
+  const { addToast } = useToast();
 
-  const [formData, setFormData] = useState({
+  // Create schema with translations
+  const signupSchema = createSignupSchema(t);
+  type SignupFormData = z.infer<typeof signupSchema>;
+
+  const [formData, setFormData] = useState<SignupFormData>({
     first_name: '',
     last_name: '',
     email: '',
@@ -19,22 +44,41 @@ export default function SignupPage() {
     password: '',
     confirm_password: '',
   });
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+    // Clear field error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setErrors({});
 
-    if (formData.password !== formData.confirm_password) {
-      setError(t('AuthSignup.passwordMismatch', 'Passwords do not match'));
+    // Validate with Zod
+    const result = signupSchema.safeParse(formData);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.issues.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0] as string] = err.message;
+        }
+      });
+      setErrors(fieldErrors);
       return;
     }
 
@@ -42,9 +86,43 @@ export default function SignupPage() {
 
     try {
       await register(formData);
-      router.push('/dashboard');
+      router.push('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('AuthSignup.registrationFailed', 'Registration failed'));
+      // Try to parse backend field errors
+      if (err instanceof Error) {
+        try {
+          const errorData = JSON.parse(err.message);
+          if (typeof errorData === 'object') {
+            const fieldErrors: Record<string, string> = {};
+            Object.keys(errorData).forEach((key) => {
+              const messages = errorData[key];
+              if (Array.isArray(messages) && messages.length > 0) {
+                let errorMessage = messages[0];
+
+                // Translate common backend errors and show toast for duplicate errors
+                if (errorMessage.includes('with this email already exists') ||
+                    errorMessage.includes('Хэрэглэгч with this email already exists')) {
+                  errorMessage = t('backendErrors.emailExists', 'User with this email already exists');
+                  addToast({ type: 'error', title: errorMessage });
+                } else if (errorMessage.includes('with this phone already exists') ||
+                           errorMessage.includes('Хэрэглэгч with this phone already exists')) {
+                  errorMessage = t('backendErrors.phoneExists', 'User with this phone already exists');
+                  addToast({ type: 'error', title: errorMessage });
+                }
+
+                fieldErrors[key] = errorMessage;
+              }
+            });
+            setErrors(fieldErrors);
+            return;
+          }
+        } catch {
+          // Not JSON, show general error
+          setErrors({ general: err.message });
+        }
+      } else {
+        setErrors({ general: t('AuthSignup.registrationFailed', 'Registration failed') });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -65,10 +143,10 @@ export default function SignupPage() {
 
         {/* Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
-          {/* Error Message */}
-          {error && (
+          {/* General Error Message */}
+          {errors.general && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-sm text-red-600">{errors.general}</p>
             </div>
           )}
 
@@ -87,9 +165,14 @@ export default function SignupPage() {
                   required
                   value={formData.first_name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
+                  className={`w-full px-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
+                    errors.first_name ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   disabled={isLoading}
                 />
+                {errors.first_name && (
+                  <p className="mt-1 text-sm text-red-600">{errors.first_name}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -102,9 +185,14 @@ export default function SignupPage() {
                   required
                   value={formData.last_name}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
+                  className={`w-full px-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
+                    errors.last_name ? 'border-red-500' : 'border-gray-300'
+                  }`}
                   disabled={isLoading}
                 />
+                {errors.last_name && (
+                  <p className="mt-1 text-sm text-red-600">{errors.last_name}</p>
+                )}
               </div>
             </div>
 
@@ -121,10 +209,15 @@ export default function SignupPage() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
+                className={`w-full px-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
+                  errors.email ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder={t('AuthSignup.emailPlaceholder', 'you@example.com')}
                 disabled={isLoading}
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+              )}
             </div>
 
             {/* Phone (Optional) */}
@@ -139,9 +232,14 @@ export default function SignupPage() {
                 autoComplete="tel"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
+                className={`w-full px-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
+                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                }`}
                 disabled={isLoading}
               />
+              {errors.phone && (
+                <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -149,18 +247,33 @@ export default function SignupPage() {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 {t('AuthSignup.passwordLabel', 'Password')}
               </label>
-              <input
-                id="password"
-                type="password"
-                name="password"
-                autoComplete="new-password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
-                placeholder={t('AuthSignup.passwordPlaceholder', '••••••••')}
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  autoComplete="new-password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 pr-12 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
+                    errors.password ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder={t('AuthSignup.passwordPlaceholder', '••••••••')}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+              )}
             </div>
 
             {/* Confirm Password */}
@@ -168,18 +281,33 @@ export default function SignupPage() {
               <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-2">
                 {t('AuthSignup.confirmPasswordLabel', 'Confirm Password')}
               </label>
-              <input
-                id="confirm_password"
-                type="password"
-                name="confirm_password"
-                autoComplete="new-password"
-                required
-                value={formData.confirm_password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
-                placeholder={t('AuthSignup.confirmPasswordPlaceholder', '••••••••')}
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <input
+                  id="confirm_password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirm_password"
+                  autoComplete="new-password"
+                  required
+                  value={formData.confirm_password}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-3 pr-12 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
+                    errors.confirm_password ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder={t('AuthSignup.confirmPasswordPlaceholder', '••••••••')}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+              {errors.confirm_password && (
+                <p className="mt-1 text-sm text-red-600">{errors.confirm_password}</p>
+              )}
             </div>
 
             {/* Submit Button */}

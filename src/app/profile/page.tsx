@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import DatePicker from '@/components/DatePicker';
 
 const COUNTRIES = [
   'Mongolia', 'China', 'Russia', 'Japan', 'South Korea', 'USA', 'Germany',
@@ -10,6 +12,7 @@ const COUNTRIES = [
 ];
 
 export default function ProfilePage() {
+  const { t } = useHydratedTranslation();
   const { user, token, refreshProfile } = useAuth();
 
   const [isSaving, setIsSaving] = useState(false);
@@ -43,6 +46,10 @@ export default function ProfilePage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleDateChange = useCallback((value: string) => {
+    setFormData(prev => ({ ...prev, date_of_birth: value }));
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) return;
@@ -59,9 +66,9 @@ export default function ProfilePage() {
         date_of_birth: formData.date_of_birth || undefined,
       });
       await refreshProfile();
-      setSuccess('Мэдээлэл амжилттай шинэчлэгдлээ.');
+      setSuccess(t('Profile.updateSuccess', 'Мэдээлэл амжилттай шинэчлэгдлээ.'));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Алдаа гарлаа.');
+      setError(err instanceof Error ? err.message : t('Profile.updateError', 'Алдаа гарлаа.'));
     } finally {
       setIsSaving(false);
     }
@@ -83,9 +90,9 @@ export default function ProfilePage() {
     <div className="bg-white rounded-xl border border-gray-200 p-8">
       {/* Header */}
       <div className="mb-6 pb-4 border-b border-gray-100">
-        <h1 className="text-xl font-semibold text-gray-900">Таны профайл</h1>
+        <h1 className="text-xl font-semibold text-gray-900">{t('Profile.title', 'Таны профайл')}</h1>
         {lastModified && (
-          <p className="text-sm text-gray-400 mt-0.5">Сүүлд өөрчилсөн: {lastModified}</p>
+          <p className="text-sm text-gray-400 mt-0.5">{t('Profile.lastModified', 'Сүүлд өөрчилсөн')}: {lastModified}</p>
         )}
       </div>
 
@@ -105,30 +112,27 @@ export default function ProfilePage() {
           {/* Left column */}
           <div className="space-y-5">
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">Таны овог</label>
+              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.lastName', 'Таны овог')}</label>
               <input
                 type="text"
                 name="last_name"
                 value={formData.last_name}
                 onChange={handleChange}
-                placeholder="Овог"
+                placeholder={t('Profile.lastNamePlaceholder', 'Овог')}
                 className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">Төрсөн огноо</label>
-              <input
-                type="date"
-                name="date_of_birth"
+              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.dateOfBirth', 'Төрсөн огноо')}</label>
+              <DatePicker
                 value={formData.date_of_birth}
-                onChange={handleChange}
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                onChange={handleDateChange}
               />
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">Иргэншил</label>
+              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.nationality', 'Иргэншил')}</label>
               <div className="relative">
                 <select
                   name="nationality"
@@ -148,19 +152,19 @@ export default function ProfilePage() {
           {/* Right column */}
           <div className="space-y-5">
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">Өөрийн нэр</label>
+              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.firstName', 'Өөрийн нэр')}</label>
               <input
                 type="text"
                 name="first_name"
                 value={formData.first_name}
                 onChange={handleChange}
-                placeholder="Нэр"
+                placeholder={t('Profile.firstNamePlaceholder', 'Нэр')}
                 className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">Хүйс</label>
+              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.gender', 'Хүйс')}</label>
               <div className="relative">
                 <select
                   name="gender"
@@ -168,20 +172,20 @@ export default function ProfilePage() {
                   onChange={handleChange}
                   className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white"
                 >
-                  <option value="">Сонгох</option>
-                  <option value="male">Эрэгтэй</option>
-                  <option value="female">Эмэгтэй</option>
-                  <option value="other">Бусад</option>
+                  <option value="">{t('Profile.genderSelect', 'Сонгох')}</option>
+                  <option value="male">{t('Profile.male', 'Эрэгтэй')}</option>
+                  <option value="female">{t('Profile.female', 'Эмэгтэй')}</option>
+                  <option value="other">{t('Profile.other', 'Бусад')}</option>
                 </select>
                 <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">▾</span>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">И-баримт холбох</label>
+              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.invoiceLink', 'И-баримт холбох')}</label>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 w-44 shrink-0">Хувь хүн</span>
+                  <span className="text-sm text-gray-500 w-44 shrink-0">{t('Profile.individual', 'Хувь хүн')}</span>
                   <input
                     type="text"
                     name="invoice_individual"
@@ -191,7 +195,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 w-44 shrink-0">Хувь хүн /бизнес эрхлэгч/</span>
+                  <span className="text-sm text-gray-500 w-44 shrink-0">{t('Profile.business', 'Хувь хүн /бизнес эрхлэгч/')}</span>
                   <input
                     type="text"
                     name="invoice_business"
@@ -201,7 +205,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 w-44 shrink-0">Байгуулага</span>
+                  <span className="text-sm text-gray-500 w-44 shrink-0">{t('Profile.organization', 'Байгуулага')}</span>
                   <input
                     type="text"
                     name="invoice_organization"
@@ -221,7 +225,7 @@ export default function ProfilePage() {
             disabled={isSaving}
             className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSaving ? 'Хадгалж байна...' : 'Мэдээлэл шинэчлэх'}
+            {isSaving ? t('Profile.updating', 'Хадгалж байна...') : t('Profile.updateButton', 'Мэдээлэл шинэчлэх')}
           </button>
         </div>
       </form>

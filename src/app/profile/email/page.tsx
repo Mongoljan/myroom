@@ -4,13 +4,18 @@ import { useState } from 'react';
 import { CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { useToast } from '@/components/common/ToastContainer';
 
-type Step = 'view' | 'send_otp' | 'verify_otp' | 'done';
+type Step = 'view' | 'enter_email' | 'verify_otp' | 'done';
 
 export default function EmailPage() {
+  const { t } = useHydratedTranslation();
   const { user, token, refreshProfile } = useAuth();
+  const { addToast } = useToast();
 
   const [step, setStep] = useState<Step>('view');
+  const [newEmail, setNewEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -24,10 +29,19 @@ export default function EmailPage() {
     setError('');
     setIsSending(true);
     try {
-      await CustomerService.sendEmailOTP(token);
+      const response = await CustomerService.sendEmailOTP(token);
       setStep('verify_otp');
+
+      // Show OTP code in development mode as a toast
+      if (response.otp_code) {
+        addToast({
+          type: 'info',
+          title: `${t('ProfileEmail.devOtpCode', 'Development OTP Code')}: ${response.otp_code}`,
+          message: t('ProfileEmail.devOtpHint', 'This is only shown in development mode')
+        });
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Алдаа гарлаа.');
+      setError(err instanceof Error ? err.message : t('Profile.updateError', 'Алдаа гарлаа.'));
     } finally {
       setIsSending(false);
     }
@@ -39,12 +53,23 @@ export default function EmailPage() {
     setError('');
     setIsVerifying(true);
     try {
-      await CustomerService.verifyEmail(token, { email: user.email, otp_code: otp });
+      // Use new email if provided, otherwise use current email
+      const emailToVerify = newEmail || user.email;
+      await CustomerService.verifyEmail(token, { email: emailToVerify, otp_code: otp });
       await refreshProfile();
-      setSuccess('Цахим шуудан амжилттай баталгаажлаа.');
+
+      if (newEmail && newEmail !== user.email) {
+        setSuccess(t('ProfileEmail.changeSuccess', 'Цахим шуудан амжилттай солигдлоо.'));
+        addToast({ type: 'success', title: t('ProfileEmail.changeSuccess', 'Цахим шуудан амжилттай солигдлоо.') });
+      } else {
+        setSuccess(t('ProfileEmail.verifySuccess', 'Цахим шуудан амжилттай баталгаажлаа.'));
+        addToast({ type: 'success', title: t('ProfileEmail.verifySuccess', 'Цахим шуудан амжилттай баталгаажлаа.') });
+      }
       setStep('done');
+      setNewEmail('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'OTP буруу эсвэл хугацаа дууссан.');
+      setError(err instanceof Error ? err.message : t('ProfileEmail.verifyError', 'OTP буруу эсвэл хугацаа дууссан.'));
+      addToast({ type: 'error', title: err instanceof Error ? err.message : t('ProfileEmail.verifyError', 'OTP буруу эсвэл хугацаа дууссан.') });
     } finally {
       setIsVerifying(false);
     }
@@ -53,7 +78,7 @@ export default function EmailPage() {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-8">
       <div className="mb-6 pb-4 border-b border-gray-100">
-        <h1 className="text-xl font-semibold text-gray-900">Цахим шуудан</h1>
+        <h1 className="text-xl font-semibold text-gray-900">{t('ProfileEmail.title', 'Цахим шуудан')}</h1>
       </div>
 
       {error && (
@@ -71,9 +96,9 @@ export default function EmailPage() {
       {(step === 'view' || step === 'done') && (
         <div>
           {user.is_verified ? (
-            <p className="text-sm text-gray-500 mb-4">Таны цахим шуудан баталгаажсан байна.</p>
+            <p className="text-sm text-gray-500 mb-4">{t('ProfileEmail.verified', 'Таны цахим шуудан баталгаажсан байна.')}</p>
           ) : (
-            <p className="text-sm text-gray-500 mb-4">Таны цахим шуудан баталгаажаагүй байна.</p>
+            <p className="text-sm text-gray-500 mb-4">{t('ProfileEmail.notVerified', 'Таны цахим шуудан баталгаажаагүй байна.')}</p>
           )}
           <div className="flex items-center gap-3">
             <div className="relative flex-1 max-w-sm">
@@ -96,19 +121,53 @@ export default function EmailPage() {
                 disabled={isSending}
                 className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
               >
-                {isSending ? 'Илгээж байна...' : 'Цахим шуудан солих'}
+                {isSending ? t('ProfileEmail.sending', 'Илгээж байна...') : t('ProfileEmail.verifyEmail', 'Имэйл баталгаажуулах')}
               </button>
             )}
             {user.is_verified && (
               <button
-                onClick={handleSendOtp}
-                disabled={isSending}
+                onClick={() => setStep('enter_email')}
                 className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
               >
-                {isSending ? 'Илгээж байна...' : 'Цахим шуудан солих'}
+                {t('ProfileEmail.changeEmail', 'Цахим шуудан солих')}
               </button>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Enter new email step */}
+      {step === 'enter_email' && (
+        <div>
+          <p className="text-sm text-gray-500 mb-4">
+            {t('ProfileEmail.enterNewEmail', 'Шинэ имэйл хаягаа оруулна уу')}
+          </p>
+          <div className="flex items-center gap-3 max-w-md">
+            <input
+              type="email"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              placeholder={t('ProfileEmail.newEmailPlaceholder', 'example@email.com')}
+              className="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+            />
+            <button
+              onClick={handleSendOtp}
+              disabled={isSending || !newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)}
+              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 whitespace-nowrap"
+            >
+              {isSending ? t('ProfileEmail.sending', 'Илгээж байна...') : t('ProfileEmail.sendCode', 'Код илгээх')}
+            </button>
+          </div>
+          <button
+            onClick={() => {
+              setStep('view');
+              setNewEmail('');
+              setError('');
+            }}
+            className="mt-3 text-sm text-gray-400 hover:text-gray-600 transition"
+          >
+            {t('ProfileEmail.back', 'Буцах')}
+          </button>
         </div>
       )}
 
@@ -116,14 +175,14 @@ export default function EmailPage() {
       {step === 'verify_otp' && (
         <div>
           <p className="text-sm text-gray-500 mb-4">
-            {user.email} хаяг руу OTP код илгээлээ. Кодоо оруулна уу.
+            {t('ProfileEmail.otpSent', '{{email}} хаяг руу OTP код илгээлээ. Кодоо оруулна уу.', { email: newEmail || user.email })}
           </p>
           <form onSubmit={handleVerify} className="flex items-center gap-3 max-w-sm">
             <input
               type="text"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              placeholder="OTP код"
+              placeholder={t('ProfileEmail.otpPlaceholder', 'OTP код')}
               maxLength={6}
               className="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition tracking-widest text-center"
             />
@@ -132,14 +191,14 @@ export default function EmailPage() {
               disabled={isVerifying || otp.length < 4}
               className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
             >
-              {isVerifying ? 'Шалгаж байна...' : 'Баталгаажуулах'}
+              {isVerifying ? t('ProfileEmail.verifying', 'Шалгаж байна...') : t('ProfileEmail.verifyButton', 'Баталгаажуулах')}
             </button>
           </form>
           <button
             onClick={() => setStep('view')}
             className="mt-3 text-sm text-gray-400 hover:text-gray-600 transition"
           >
-            Буцах
+            {t('ProfileEmail.back', 'Буцах')}
           </button>
         </div>
       )}

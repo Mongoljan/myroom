@@ -5,8 +5,10 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { CustomerService } from '@/services/customerApi';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 export default function PasswordPage() {
+  const { t } = useHydratedTranslation();
   const { token, logout } = useAuth();
   const router = useRouter();
 
@@ -32,7 +34,7 @@ export default function PasswordPage() {
     if (!token) return;
 
     if (formData.new_password !== formData.confirm_password) {
-      setError('Шинэ нууц үгнүүд таарахгүй байна.');
+      setError(t('ProfilePassword.passwordMismatch', 'Шинэ нууц үгнүүд таарахгүй байна.'));
       return;
     }
 
@@ -42,14 +44,14 @@ export default function PasswordPage() {
 
     try {
       await CustomerService.changePassword(token, formData);
-      setSuccess('Нууц үг амжилттай солигдлоо. Дахин нэвтэрч орно уу.');
+      setSuccess(t('ProfilePassword.changeSuccess', 'Нууц үг амжилттай солигдлоо. Дахин нэвтэрч орно уу.'));
       setFormData({ old_password: '', new_password: '', confirm_password: '' });
       setTimeout(async () => {
         await logout();
         router.push('/login');
       }, 2000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Алдаа гарлаа.');
+      setError(err instanceof Error ? err.message : t('ProfilePassword.changeError', 'Алдаа гарлаа.'));
     } finally {
       setIsSaving(false);
     }
@@ -58,7 +60,7 @@ export default function PasswordPage() {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-8">
       <div className="mb-6 pb-4 border-b border-gray-100">
-        <h1 className="text-xl font-semibold text-gray-900">Нууц үг солих</h1>
+        <h1 className="text-xl font-semibold text-gray-900">{t('ProfilePassword.title', 'Нууц үг солих')}</h1>
       </div>
 
       {error && (
@@ -75,7 +77,7 @@ export default function PasswordPage() {
       <form onSubmit={handleSubmit} className="max-w-md space-y-5">
         {/* Current password */}
         <div>
-          <label className="block text-sm text-gray-600 mb-1.5">Одоогийн нууц үг</label>
+          <label className="block text-sm text-gray-600 mb-1.5">{t('ProfilePassword.currentPassword', 'Одоогийн нууц үг')}</label>
           <div className="relative">
             <input
               type={show.old ? 'text' : 'password'}
@@ -97,7 +99,7 @@ export default function PasswordPage() {
 
         {/* New password */}
         <div>
-          <label className="block text-sm text-gray-600 mb-1.5">Шинэ нууц үг</label>
+          <label className="block text-sm text-gray-600 mb-1.5">{t('ProfilePassword.newPassword', 'Шинэ нууц үг')}</label>
           <div className="relative">
             <input
               type={show.new_ ? 'text' : 'password'}
@@ -119,7 +121,7 @@ export default function PasswordPage() {
 
         {/* Confirm new password */}
         <div>
-          <label className="block text-sm text-gray-600 mb-1.5">Шинэ нууц үг давтах</label>
+          <label className="block text-sm text-gray-600 mb-1.5">{t('ProfilePassword.confirmNewPassword', 'Шинэ нууц үг давтах')}</label>
           <div className="relative">
             <input
               type={show.confirm ? 'text' : 'password'}
@@ -144,7 +146,7 @@ export default function PasswordPage() {
           disabled={isSaving}
           className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
         >
-          {isSaving ? 'Солиж байна...' : 'Солих'}
+          {isSaving ? t('ProfilePassword.changing', 'Солиж байна...') : t('ProfilePassword.changeButton', 'Солих')}
         </button>
       </form>
     </div>
