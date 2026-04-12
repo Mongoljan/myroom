@@ -79,7 +79,7 @@ export default function ReviewsPage() {
           setHotels(hotelMap);
 
           // Also store the name map for later use
-          (window as any).__hotelByNameMap = hotelByNameMap;
+          (window as unknown as Record<string, unknown>).__hotelByNameMap = hotelByNameMap;
         } catch (hotelError) {
           console.error('Failed to fetch hotel info (non-critical):', hotelError);
           // Continue without hotel info - we can still match by name
@@ -109,7 +109,7 @@ export default function ReviewsPage() {
       const hotelNameLower = reviewTarget.hotel_name?.toLowerCase() || '';
 
       // First check our stored name map
-      const hotelByNameMap = (window as any).__hotelByNameMap as Map<string, HotelInfo> | undefined;
+      const hotelByNameMap = (window as unknown as Record<string, unknown>).__hotelByNameMap as Map<string, HotelInfo> | undefined;
 
       if (hotelByNameMap) {
         const hotelEntry = hotelByNameMap.get(hotelNameLower);
@@ -155,7 +155,7 @@ export default function ReviewsPage() {
     setIsSubmitting(true);
     try {
       // Ensure we have valid data
-      const reviewData: any = {
+      const reviewData: { hotel: number; booking: number; rating: number; comment?: string } = {
         hotel: parseInt(hotelId.toString()), // Ensure it's a number
         booking: reviewTarget.id,
         rating: emojiRating,
@@ -180,11 +180,12 @@ export default function ReviewsPage() {
 
       // Show success for a moment
       console.log('Review submitted successfully!');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Review submission error:', err);
-      const errorMessage = err?.response?.data?.error ||
-                          err?.response?.data?.message ||
-                          err?.message ||
+      const e = err as { response?: { data?: { error?: string; message?: string } }; message?: string };
+      const errorMessage = e?.response?.data?.error ||
+                          e?.response?.data?.message ||
+                          e?.message ||
                           'Failed to submit review. Please try again.';
       setSubmitError(errorMessage);
     } finally {
