@@ -112,7 +112,6 @@ export default function SavedPage() {
                 <button
                   onClick={() => handleRemove(hotel.id)}
                   className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white dark:bg-gray-700 shadow flex items-center justify-center z-10 hover:bg-red-50 dark:hover:bg-red-900/30 transition">
-              >
                 <Heart size={16} className="text-red-500 fill-red-500" />
               </button>
             </div>

@@ -461,22 +461,29 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
 
             {/* Price Info */}
             {priceInfo && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600 dark:text-gray-400">{t('hotelDetails.startingPrice', 'Эхлэх үнэ')}:</span>
-                {priceInfo.discount && priceInfo.original && (
-                  <>
-                    <span className="text-base text-gray-500 dark:text-gray-400 line-through">
-                      ₮{priceInfo.original.toLocaleString()}
-                    </span>
-                    <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-semibold rounded">
-                      -{priceInfo.discount}%
-                    </span>
-                  </>
+              <div className="flex flex-col items-end gap-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{t('hotelDetails.startingPrice', 'Эхлэх үнэ')}:</span>
+                  {priceInfo.discount && priceInfo.original && (
+                    <>
+                      <span className="text-base text-gray-500 dark:text-gray-400 line-through">
+                        ₮{priceInfo.original.toLocaleString()}
+                      </span>
+                      <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-semibold rounded">
+                        -{priceInfo.discount}%
+                      </span>
+                    </>
+                  )}
+                  <span className="text-xl font-bold text-slate-900 dark:text-white">
+                    ₮{priceInfo.current.toLocaleString()}
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">/{t('hotelDetails.night', 'шөнө')}</span>
+                </div>
+                {hotel.cheapest_room && hotel.cheapest_room.nights > 1 && (
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {t('hotelDetails.totalForStay', 'Нийт')} {hotel.cheapest_room.nights} {t('hotelDetails.nights', 'шөнө')}: <span className="font-semibold text-gray-700 dark:text-gray-300">₮{hotel.cheapest_room.estimated_total_for_requested_rooms.toLocaleString()}</span>
+                  </span>
                 )}
-                <span className="text-xl font-bold text-slate-900">
-                  ₮{priceInfo.current.toLocaleString()}
-                </span>
-                <span className="text-sm text-gray-600 dark:text-gray-400">/{t('hotelDetails.night', 'шөнө')}</span>
               </div>
             )}
 

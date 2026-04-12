@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import { CustomerBooking } from '@/types/customer';
@@ -155,11 +155,7 @@ export default function BookingsPage() {
                     <span className="text-blue-600 font-medium">{formatDate(booking.check_out)}</span>
                   </div>
                 </div>
-                {booking.status === 'canceled' && (
-                  <p className="text-xs text-green-600 mt-1">
-                    Буцаан олгох дүн: {formatPrice(Math.round(booking.total_price * 0.5))} (орсон)
-                  </p>
-                )}
+
               </div>
 
               {/* Price + actions */}
@@ -168,29 +164,31 @@ export default function BookingsPage() {
                   <div className="text-base font-semibold text-gray-900 dark:text-white">{formatPrice(booking.total_price)}</div>
                 </div>
 
-                <div className="flex gap-2">
-                  {booking.status === 'confirmed' && (
-                    <button className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                      Дэлгэрэнгүй
-                    </button>
+                <div className="flex gap-2 flex-wrap justify-end">
+                  {/* Details link — always visible; manage page lets user enter pin */}
+                  <Link
+                    href={`/booking/manage?booking_code=${booking.booking_code}`}
+                    className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  >
+                    Дэлгэрэнгүй
+                  </Link>
+                  {/* Write review — only for finished bookings without a review */}
+                  {booking.status === 'finished' && !booking.has_review && (
+                    <Link
+                      href="/profile/reviews"
+                      className="px-3 py-1.5 border border-blue-300 dark:border-blue-600 rounded-lg text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+                    >
+                      Үнэлгээ бичих
+                    </Link>
                   )}
-                  {booking.status === 'pending' && (
-                    <button className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                      Төлбөр төлөх
-                    </button>
-                  )}
+                  {/* Re-book — link to hotel page */}
                   {(booking.status === 'finished' || booking.status === 'canceled') && (
-                    <>
-                      <button
-                        onClick={() => { setCancelTarget(booking); setPinCode(''); setCancelError(''); }}
-                        className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                      >
-                        Устгах
-                      </button>
-                      <button className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs transition">
-                        Дахин захиалах
-                      </button>
-                    </>
+                    <Link
+                      href={`/hotel/${booking.hotel}`}
+                      className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs transition"
+                    >
+                      Дахин захиалах
+                    </Link>
                   )}
                 </div>
               </div>
