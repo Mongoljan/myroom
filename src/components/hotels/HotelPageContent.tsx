@@ -42,9 +42,9 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
   }, [hotel]);
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-white dark:bg-gray-900 min-h-screen">
       {/* Hero section with ID for sticky nav detection */}
-      <div id="hotel-hero" className="bg-white border-b border-gray-200">
+      <div id="hotel-hero" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div id="overview">
             <EnhancedHotelDetail hotel={hotel} />
@@ -65,7 +65,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
         <div className="space-y-12">
           {/* Rooms Section */}
           <div id="rooms" className="">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('hotelDetails.selectRoom', 'Өрөө сонгох')}</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">{t('hotelDetails.selectRoom', 'Өрөө сонгох')}</h2>
             <ImprovedHotelRoomsSection
               hotelId={hotel.hotel_id}
               hotelName={hotel.property_name}
@@ -81,7 +81,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
 
           {/* Facilities Section */}
           <div id="facilities" className="">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('hotelDetails.facilities', 'Үйлчилгээ')}</h2>
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">{t('hotelDetails.facilities', 'Үйлчилгээ')}</h2>
             <HotelAmenities facilities={hotel.general_facilities} />
           </div>
 
@@ -106,7 +106,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
 
         {/* Similar Hotels */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">{t('hotelDetails.similarHotels', 'Төстэй зочид буудлууд')}</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('hotelDetails.similarHotels', 'Төстэй зочид буудлууд')}</h2>
           <SimilarHotels currentHotelId={hotel.hotel_id.toString()} />
         </div>
       </div>

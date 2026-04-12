@@ -101,19 +101,19 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
 
   return (
     <nav className={`
-      ${isSticky ? 'fixed top-0 left-0 right-0 z-40 shadow-md bg-white/95 backdrop-blur-sm' : 'relative bg-white'} 
+      ${isSticky ? 'fixed top-0 left-0 right-0 z-40 shadow-md bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm' : 'relative bg-white dark:bg-gray-800'} 
       transition-all duration-300
     `}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {isSticky && (
-          <div className="flex items-center justify-between py-1.5 border-b border-gray-200">
+          <div className="flex items-center justify-between py-1.5 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center">
-              <h1 className="font-medium text-gray-900 mr-3 text-sm">{hotelName}</h1>
+              <h1 className="font-medium text-gray-900 dark:text-white mr-3 text-sm">{hotelName}</h1>
             </div>
             <div className="flex items-center">
               <div className="text-right mr-3">
-                <div className="text-xs text-gray-800">{t('hotel.priceFrom', 'Эхлэх үнэ')}</div>
-                <div className="font-bold text-slate-900 text-sm">{price.toLocaleString()}₮</div>
+                <div className="text-xs text-gray-800 dark:text-gray-300">{t('hotel.priceFrom', 'Эхлэх үнэ')}</div>
+                <div className="font-bold text-slate-900 dark:text-white text-sm">{price.toLocaleString()}₮</div>
               </div>
               <button
                 onClick={() => scrollToSection('rooms')}
@@ -133,8 +133,8 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
               className={`
                 py-3 px-2 text-xs font-medium border-b-2 whitespace-nowrap transition-colors duration-200
                 ${activeSection === section.id
-                  ? 'border-slate-900 text-slate-900'
-                  : 'border-transparent text-gray-800 hover:text-gray-900 hover:border-gray-300'
+                  ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white'
+                  : 'border-transparent text-gray-800 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-500'
                 }
               `}
             >

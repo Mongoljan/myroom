@@ -20,7 +20,7 @@ export default function ProfessionalHotelCard({ hotel, viewMode }: ProfessionalH
         animate={{ opacity: 1, y: 0 }}
         whileHover={{ y: -2 }}
         transition={{ duration: 0.3 }}
-        className="group bg-white border border-slate-200/60 rounded-2xl overflow-hidden hover:shadow-xl hover:border-slate-300/60 transition-all duration-300 w-full"
+        className="group bg-white dark:bg-gray-800 border border-slate-200/60 dark:border-gray-700/60 rounded-2xl overflow-hidden hover:shadow-xl hover:border-slate-300/60 dark:hover:border-gray-600/60 transition-all duration-300 w-full"
       >
         <div className="flex flex-col md:flex-row">
           {/* Image Section */}
@@ -80,7 +80,7 @@ export default function ProfessionalHotelCard({ hotel, viewMode }: ProfessionalH
         duration: 0.4,
         ease: "easeOut"
       }}
-      className="group relative bg-gradient-to-br from-white via-white to-slate-50/30 border border-slate-200/60 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-slate-300/60 transition-all duration-500 backdrop-blur-sm"
+      className="group relative bg-gradient-to-br from-white dark:from-gray-800 via-white dark:via-gray-800 to-slate-50/30 dark:to-gray-900/30 border border-slate-200/60 dark:border-gray-700/60 rounded-2xl overflow-hidden hover:shadow-2xl hover:border-slate-300/60 dark:hover:border-gray-600/60 transition-all duration-500 backdrop-blur-sm"
       style={{
         transformStyle: "preserve-3d",
         perspective: "1000px"

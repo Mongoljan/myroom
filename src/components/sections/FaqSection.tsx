@@ -122,7 +122,7 @@ export default function FaqSection() {
           transition={{ duration: 0.5, ease: "easeOut" }}
           viewport={{ once: true }}
         >
-          <h2 className="text-lg font-bold text-gray-900 mb-1">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
             {t('faq.title', 'Frequently Asked Questions')}
           </h2>
         </motion.div>
@@ -151,7 +151,7 @@ export default function FaqSection() {
                   className="group"
                 >
                   <motion.div 
-                    className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
                     whileHover={{ 
                       y: -2,
                       boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
@@ -159,7 +159,7 @@ export default function FaqSection() {
                     layout
                   >
                     <motion.button
-                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-slate-500 dark:focus:ring-slate-400"
                       onClick={() => toggleItem(idx)}
                       whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.02)" }}
                       transition={{ duration: 0.2 }}
@@ -183,7 +183,7 @@ export default function FaqSection() {
                             </motion.div>
                           </motion.div>
                           
-                          <h3 className={`${TYPOGRAPHY.card.subtitle} text-gray-900 pr-3`}>
+                          <h3 className={`${TYPOGRAPHY.card.subtitle} text-gray-900 dark:text-white pr-3`}>
                             {faq.q}
                           </h3>
                         </div>
@@ -191,7 +191,7 @@ export default function FaqSection() {
                         <motion.div
                           animate={{ rotate: isOpen ? 180 : 0 }}
                           transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="flex-shrink-0 text-gray-400 hover:text-gray-600"
+                          className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                         >
                           <ChevronDown className="w-4 h-4" />
                         </motion.div>
@@ -221,15 +221,15 @@ export default function FaqSection() {
                           className="overflow-hidden"
                         >
                           <motion.div 
-                            className="px-4 pb-4 bg-white"
+                            className="px-4 pb-4 bg-white dark:bg-gray-800"
                             initial={{ y: -10, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: -10, opacity: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
                           >
-                            <div className="pl-10 border-l border-gray-200">
+                            <div className="pl-10 border-l border-gray-200 dark:border-gray-700">
                               <motion.p 
-                                className={`${TYPOGRAPHY.body.standard} text-gray-600`}
+                                className={`${TYPOGRAPHY.body.standard} text-gray-600 dark:text-gray-400`}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.3, delay: 0.2 }}
@@ -267,7 +267,7 @@ export default function FaqSection() {
                   className="group"
                 >
                   <motion.div 
-                    className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
                     whileHover={{ 
                       y: -2,
                       boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
@@ -275,7 +275,7 @@ export default function FaqSection() {
                     layout
                   >
                     <motion.button
-                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-slate-500 dark:focus:ring-slate-400"
                       onClick={() => toggleItem(actualIndex)}
                       whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.02)" }}
                       transition={{ duration: 0.2 }}
@@ -283,7 +283,7 @@ export default function FaqSection() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center flex-1 min-w-0">
                           <motion.div 
-                            className="flex-shrink-0 w-7 h-7 bg-slate-900 text-white rounded-lg flex items-center justify-center mr-3"
+                            className="flex-shrink-0 w-7 h-7 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-lg flex items-center justify-center mr-3"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                           >
@@ -299,7 +299,7 @@ export default function FaqSection() {
                             </motion.div>
                           </motion.div>
                           
-                          <h3 className={`${TYPOGRAPHY.card.subtitle} text-gray-900 pr-3`}>
+                          <h3 className={`${TYPOGRAPHY.card.subtitle} text-gray-900 dark:text-white pr-3`}>
                             {faq.q}
                           </h3>
                         </div>
@@ -307,7 +307,7 @@ export default function FaqSection() {
                         <motion.div
                           animate={{ rotate: isOpen ? 180 : 0 }}
                           transition={{ duration: 0.3, ease: "easeInOut" }}
-                          className="flex-shrink-0 text-gray-400 hover:text-gray-600"
+                          className="flex-shrink-0 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                         >
                           <ChevronDown className="w-4 h-4" />
                         </motion.div>
@@ -337,15 +337,15 @@ export default function FaqSection() {
                           className="overflow-hidden"
                         >
                           <motion.div 
-                            className="px-4 pb-4 bg-white"
+                            className="px-4 pb-4 bg-white dark:bg-gray-800"
                             initial={{ y: -10, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: -10, opacity: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
                           >
-                            <div className="pl-10 border-l border-gray-200">
+                            <div className="pl-10 border-l border-gray-200 dark:border-gray-700">
                               <motion.p 
-                                className={`${TYPOGRAPHY.body.standard} text-gray-600`}
+                                className={`${TYPOGRAPHY.body.standard} text-gray-600 dark:text-gray-400`}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ duration: 0.3, delay: 0.2 }}
@@ -374,7 +374,7 @@ export default function FaqSection() {
             >
               <motion.button
                 onClick={handleShowMoreToggle}
-                className="inline-flex items-center px-6 py-3 bg-gray-50 hover:bg-slate-50 border border-gray-200 hover:border-slate-200 text-gray-700 hover:text-slate-900 rounded-xl transition-all duration-200 font-medium"
+                className="inline-flex items-center px-6 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-slate-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 hover:border-slate-200 text-gray-700 dark:text-gray-200 hover:text-slate-900 dark:hover:text-white rounded-xl transition-all duration-200 font-medium"
                 whileHover={{ y: -1, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >

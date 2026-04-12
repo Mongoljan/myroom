@@ -80,15 +80,15 @@ export default function SearchResultsHeader({
       {/* Main Header */}
       <div className=" backdrop-blur-sm rounded-lg p-1.5 relative overflow-hidden">
         {/* Subtle gradient background */}
-        <div className="relative flex justify-between items-center gap-x-4 border-b border-gray-100 mb-2 pb-2">
+        <div className="relative flex justify-between items-center gap-x-4 border-b border-gray-100 dark:border-gray-700 mb-2 pb-2">
 
           {/* Search Info Row - Trip.com style */}
           <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ">
             <div className="flex-1">
-              <h1 className="text-xl font-bold text-gray-900 mb-1">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                 {searchLocation ? `${searchLocation}` : t('hotel.title')}:
-                <span className="text-xl font-bold text-gray-900"> {filteredCount}</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white"> {filteredCount}</span>
               </h1>
 
               {/* Show on Map Button */}
@@ -120,7 +120,7 @@ export default function SearchResultsHeader({
                 <select
                   value={sortBy}
                   onChange={(e) => onSort(e.target.value)}
-                  className="appearance-none bg-white border border-gray-200 rounded-md px-2 py-1 pr-8 text-sm focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 transition-colors min-w-[190px]"
+                  className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md px-2 py-1 pr-8 text-sm text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 dark:hover:border-gray-600 transition-colors min-w-[190px]"
                 >
                   <option value="default">{t('search.sortOptions.default')}</option>
                   <option value="price_low">{t('search.sortOptions.priceLowToHigh')}</option>
@@ -129,7 +129,7 @@ export default function SearchResultsHeader({
                   <option value="recommended">{t('search.sortOptions.recommended')}</option>
                 </select>
                 <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </div>
@@ -147,7 +147,7 @@ export default function SearchResultsHeader({
                     onSearchByName(e.target.value);
                   }}
                   placeholder={t('search.searchByNamePlaceholder')}
-                  className="appearance-none bg-white border border-gray-200 rounded-md pl-9 pr-3 py-1 text-sm focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 transition-colors min-w-[220px]"
+                  className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md pl-9 pr-3 py-1 text-sm text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 dark:hover:border-gray-600 transition-colors min-w-[220px]"
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <Search className="w-4 h-4 text-gray-400" />

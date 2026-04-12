@@ -55,7 +55,7 @@ export function SpinningProgress() {
     <div className="flex items-center justify-center">
       <motion.div className="relative w-12 h-12">
         {/* Background circle */}
-        <div className="absolute inset-0 rounded-full border-4 border-gray-200"></div>
+        <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
 
         {/* Progress circle */}
         <motion.div
@@ -145,11 +145,11 @@ export function HotelSearchSpinner() {
       >
         <h3 className="text-lg font-semibold text-gray-800 mb-2">{t('common.findingHotels')}</h3>
         <div className="flex items-center justify-center gap-1">
-          <span className="text-gray-600">{t('common.searching')}</span>
+          <span className="text-gray-600 dark:text-gray-400">{t('common.searching')}</span>
           {[0, 1, 2].map((i) => (
             <motion.span
               key={i}
-              className="text-gray-600"
+              className="text-gray-600 dark:text-gray-400"
               animate={{
                 opacity: [0.3, 1, 0.3]
               }}

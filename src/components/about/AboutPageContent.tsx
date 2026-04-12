@@ -20,7 +20,7 @@ export default function AboutPageContent() {
   const { t } = useHydratedTranslation();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Section - Clean and simple */}
       <section className="relative py-20 md:py-28 overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800">
         <div className="absolute inset-0 overflow-hidden">
@@ -59,7 +59,7 @@ export default function AboutPageContent() {
       </section>
 
       {/* Why Choose Us - 3 simple cards */}
-      <section className="py-16 md:py-20 bg-white">
+      <section className="py-16 md:py-20 bg-white dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -68,7 +68,7 @@ export default function AboutPageContent() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
               Эрхэм зорилго
             </h2>
           </motion.div>
@@ -101,14 +101,14 @@ export default function AboutPageContent() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -8 }}
                 >
-                  <div className="bg-white border border-gray-200 rounded-xl p-8 h-full hover:shadow-xl hover:border-gray-300 transition-all duration-300">
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-8 h-full hover:shadow-xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300">
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-slate-900 mb-6">
                       <Icon className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-3 leading-snug">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 leading-snug">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
@@ -120,7 +120,7 @@ export default function AboutPageContent() {
       </section>
 
       {/* Vision Section - Gradient card like before */}
-      <section className="py-16 md:py-24 bg-gray-50">
+      <section className="py-16 md:py-24 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 md:p-12 overflow-hidden relative">
             {/* Decorative elements */}
@@ -185,7 +185,7 @@ export default function AboutPageContent() {
       </section>
 
       {/* Services Section - Clean and simple */}
-      <section className="py-16 md:py-24 bg-white">
+      <section className="py-16 md:py-24 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -194,7 +194,7 @@ export default function AboutPageContent() {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3">
               Бидний үйлчилгээ
             </h2>
           </motion.div>
@@ -236,17 +236,17 @@ export default function AboutPageContent() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   whileHover={{ y: -5 }}
                 >
-                  <div className="bg-white rounded-xl p-6 h-full shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl p-6 h-full shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700">
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-slate-900 mb-4">
                       <Icon className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-xs font-bold text-gray-900 mb-1 uppercase tracking-wider">
+                    <h3 className="text-xs font-bold text-gray-900 dark:text-white mb-1 uppercase tracking-wider">
                       {service.title}
                     </h3>
-                    <p className="text-sm text-gray-500 mb-3 font-medium">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 font-medium">
                       {service.subtitle}
                     </p>
-                    <p className="text-sm text-gray-600 leading-relaxed">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                       {service.description}
                     </p>
                   </div>

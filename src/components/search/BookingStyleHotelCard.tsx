@@ -25,7 +25,7 @@ const _facilityIcons: { [key: string]: React.ReactNode } = {
   'Restaurant': <Utensils className="w-3 h-3 text-orange-600" />,
   'Room Service': <Users className="w-3 h-3 text-purple-600" />,
   'Fitness Center': <Dumbbell className="w-3 h-3 text-red-600" />,
-  '24-hour Front Desk': <Clock className="w-3 h-3 text-gray-600" />,
+  '24-hour Front Desk': <Clock className="w-3 h-3 text-gray-600 dark:text-gray-400" />,
   'Pool': <Users className="w-3 h-3 text-cyan-600" />,
 };
 
@@ -79,11 +79,11 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
       <div className="flex items-center gap-0.5" title={`${adults} adults${children > 0 ? `, ${children} children` : ''}`}>
         {/* Adult icons - larger */}
         {Array.from({ length: adults }).map((_, i) => (
-          <User key={`adult-${i}`} className="w-4 h-4 text-gray-700" strokeWidth={2.5} />
+          <User key={`adult-${i}`} className="w-4 h-4 text-gray-700 dark:text-gray-300" strokeWidth={2.5} />
         ))}
         {/* Child icons - smaller with different style */}
         {children > 0 && Array.from({ length: children }).map((_, i) => (
-          <FaChild key={`child-${i}`} className="w-3 h-3 text-gray-500" />
+          <FaChild key={`child-${i}`} className="w-3 h-3 text-gray-500 dark:text-gray-400" />
         ))}
       </div>
     );
@@ -113,7 +113,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
         {Array.from({ length: bedCount }).map((_, i) => (
           <BedIcon
             key={i}
-            className={`${isDoubleBed ? 'w-5 h-5' : 'w-4 h-4'} text-gray-600`}
+            className={`${isDoubleBed ? 'w-5 h-5' : 'w-4 h-4'} text-gray-600 dark:text-gray-400`}
             strokeWidth={2}
           />
         ))}
@@ -313,7 +313,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
               <div className="flex justify-between items-start mb-1">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className="text-lg font-bold text-gray-900 line-clamp-1 group-hover:text-primary transition-colors">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
                       {hotel.property_name}
                     </h3>
                     {stars > 0 && (
@@ -355,7 +355,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-semibold text-gray-900 truncate">
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                           {getRoomTypeName(cheapestRoom.room_type)}
                         </h4>
                         {/* Capacity Icons */}
@@ -370,7 +370,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                         </div>
                       </div>
                       {/* Room Category */}
-                      <p className="text-xs text-gray-600 truncate">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
                         {getRoomCategoryName(cheapestRoom.room_category)}
                         {cheapestRoom.room_size && (
                           <> • {cheapestRoom.room_size}м²</>
@@ -383,7 +383,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   <div className="space-y-0.5 mb-1.5">
 
                     {/* Cancellation Policy */}
-                    <p className="text-xs text-gray-600 truncate">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
                       {t('hotel.freeCancellationUntil', { date: '10/31' }, '10/31-нээс өмнө цуцлах боломжтой. (Цуцлалтын хураамжгүй)')}
                     </p>
 
@@ -399,7 +399,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                   <div className="mb-1.5">
                     <div className="flex flex-wrap gap-1 max-h-[28px] overflow-hidden">
                       {hotel.general_facilities.slice(0, 3).map((facility, index) => (
-                        <span key={index} className="inline-flex items-center text-xs text-gray-700 bg-gray-100 rounded px-2 py-0.5 border border-gray-200 truncate max-w-[120px]">
+                        <span key={index} className="inline-flex items-center text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 truncate max-w-[120px]">
                           {facility}
                         </span>
                       ))}
@@ -409,7 +409,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                             e.stopPropagation();
                             setShowAllFacilities(true);
                           }}
-                          className="inline-flex items-center text-xs text-primary bg-slate-50 hover:bg-slate-100 hover:underline rounded px-2 py-0.5 border border-gray-200 transition-all flex-shrink-0"
+                          className="inline-flex items-center text-xs text-primary bg-slate-50 dark:bg-gray-700 hover:bg-slate-100 dark:hover:bg-gray-600 hover:underline rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 transition-all flex-shrink-0"
                         >
                           +{hotel.general_facilities.length - 3}
                         </button>
@@ -426,11 +426,11 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                         }}
                       >
                         <div
-                          className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl"
+                          className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                               {t('hotel.allFacilities', 'Бүх тохижилт')}
                             </h3>
                             <button
@@ -438,7 +438,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                                 e.stopPropagation();
                                 setShowAllFacilities(false);
                               }}
-                              className="text-gray-400 hover:text-gray-600 transition-colors"
+                              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                             >
                               <X className="w-5 h-5" />
                             </button>
@@ -448,7 +448,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                               {hotel.general_facilities.map((facility, index) => (
                                 <div
                                   key={index}
-                                  className="flex items-center text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 border border-gray-200"
+                                  className="flex items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 rounded px-3 py-2 border border-gray-200 dark:border-gray-600"
                                 >
                                   {facility}
                                 </div>
@@ -470,7 +470,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                         <div>
                           <div className="flex justify-end gap-1.5">
                             {/* Original Price Per Night - Strikethrough */}
-                            <div className="text-lg text-gray-500 line-through my-auto">
+                            <div className="text-lg text-gray-500 dark:text-gray-400 line-through my-auto">
                               {formatPrice(pricingInfo.originalPricePerNight)} ₮
                             </div>
                             <div className="bg-red-500 w-auto text-xs text-white text-center content-center font-bold px-1 py-[1px] rounded">
@@ -478,27 +478,27 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                             </div>
                           </div>
                           {/* Discounted Price Per Night - Bold */}
-                          <div className="text-xl font-bold text-gray-900 text-end">
+                          <div className="text-xl font-bold text-gray-900 dark:text-white text-end">
                             {formatPrice(pricingInfo.pricePerNight)} ₮
                           </div>
                         </div>
                       ) : (
-                        <div className="text-xl font-bold text-gray-900 text-end">
+                        <div className="text-xl font-bold text-gray-900 dark:text-white text-end">
                           {formatPrice(pricingInfo.pricePerNight)} ₮
                         </div>
                       )}
 
                       {/* Price per night label */}
-                      <div className="text-xs text-gray-500 text-end mt-0.5">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 text-end mt-0.5">
                         {t('hotel.pricePerNightShort', '1 шөнийн үнэ')}
                       </div>
 
                       {/* Rooms x Nights */}
-                      <div className="text-sm text-gray-500 text-end mt-2">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 text-end mt-2">
                         {rooms} {t('hotel.rooms', 'өрөө')} x {nights} {t('navigation.night', 'шөнө')}
                       </div>
                       {/* Total Price */}
-                      <div className="text-sm text-gray-500 text-end">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 text-end">
                         {t('hotel.totalPrice', 'Нийт үнэ')}: {formatPrice(pricingInfo.discountedPrice)} ₮
                       </div>
                     </div>
@@ -596,7 +596,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
           {/* Price - always at bottom with discount support */}
           <div className="mt-auto">
             {hotel.cheapest_room && (
-              <div className="border-t border-gray-100 pt-1.5">
+                <div className="border-t border-gray-100 dark:border-gray-700 pt-1.5">
                 <div className="flex items-end justify-between">
                   <div>
                     {pricingInfo.hasDiscount ? (
@@ -606,17 +606,17 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
                           {Math.round(pricingInfo.discountPercent)}% off
                         </div>
                         {/* Original Price - Strikethrough */}
-                        <div className="text-xs text-gray-400 line-through">
+                        <div className="text-xs text-gray-400 dark:text-gray-500 line-through">
                           ₮{formatPrice(pricingInfo.originalPrice)}
                         </div>
                         {/* Discounted Price */}
-                        <div className={`${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.PRICE_SMALL} text-gray-900`}>
+                        <div className={`${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.PRICE_SMALL} text-gray-900 dark:text-white`}>
                           ₮{formatPrice(pricingInfo.discountedPrice)}
                         </div>
                       </>
                     ) : (
                       <>
-                        <div className="text-xs text-gray-500">{t('hotel.cheapestRoom')}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{t('hotel.cheapestRoom')}</div>
                         <div className={SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.PRICE_SMALL}>₮{formatPrice(pricingInfo.discountedPrice)}</div>
                       </>
                     )}

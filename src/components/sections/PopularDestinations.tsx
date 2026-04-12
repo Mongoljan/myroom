@@ -30,8 +30,8 @@ export default function PopularDestinations() {
           transition={{ duration: 0.5 }}
           className="mb-4"
         >
-          <h2 className={`${text.h2} text-gray-900 mb-1`}>{t('home.popularDestinationsTitle')}</h2>
-          <p className={`${text.caption} text-gray-600`}>{t('home.popularDestinationsSubtitle')}</p>
+          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-1`}>{t('home.popularDestinationsTitle')}</h2>
+          <p className={`${text.caption} text-gray-600 dark:text-gray-400`}>{t('home.popularDestinationsSubtitle')}</p>
         </motion.div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -77,19 +77,19 @@ export default function PopularDestinations() {
 
                 {!isLoaded && !hasError && (
                   <div className="absolute inset-0 bg-gray-300 flex items-center justify-center animate-pulse">
-                    <span className="text-gray-500 text-xs">Loading...</span>
+                    <span className="text-gray-500 dark:text-gray-400 text-xs">Loading...</span>
                   </div>
                 )}
 
                 {hasError && (
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-purple-100 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-purple-100 dark:from-slate-800 dark:to-purple-900 flex items-center justify-center">
                     <div className="text-center">
                       <div className="w-10 h-10 bg-slate-500 rounded-full flex items-center justify-center mx-auto mb-1">
                         <span className="text-white font-bold text-base">
                           {destination.nameEn.charAt(0)}
                         </span>
                       </div>
-                      <span className="text-gray-600 text-[10px]">{t(`destinations.${destination.key}`, destination.nameEn)}</span>
+                      <span className="text-gray-600 dark:text-gray-400 text-[10px]">{t(`destinations.${destination.key}`, destination.nameEn)}</span>
                     </div>
                   </div>
                 )}

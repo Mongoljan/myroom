@@ -76,9 +76,9 @@ export default function EmailPage() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-8">
-      <div className="mb-6 pb-4 border-b border-gray-100">
-        <h1 className="text-xl font-semibold text-gray-900">{t('ProfileEmail.title', 'Цахим шуудан')}</h1>
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+      <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{t('ProfileEmail.title', 'Цахим шуудан')}</h1>
       </div>
 
       {error && (
@@ -96,9 +96,9 @@ export default function EmailPage() {
       {(step === 'view' || step === 'done') && (
         <div>
           {user.is_verified ? (
-            <p className="text-sm text-gray-500 mb-4">{t('ProfileEmail.verified', 'Таны цахим шуудан баталгаажсан байна.')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('ProfileEmail.verified', 'Таны цахим шуудан баталгаажсан байна.')}</p>
           ) : (
-            <p className="text-sm text-gray-500 mb-4">{t('ProfileEmail.notVerified', 'Таны цахим шуудан баталгаажаагүй байна.')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('ProfileEmail.notVerified', 'Таны цахим шуудан баталгаажаагүй байна.')}</p>
           )}
           <div className="flex items-center gap-3">
             <div className="relative flex-1 max-w-sm">
@@ -106,7 +106,7 @@ export default function EmailPage() {
                 type="email"
                 value={user.email}
                 readOnly
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-700 bg-gray-50 pr-10"
+                className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 pr-10"
               />
               {user.is_verified && (
                 <CheckCircle
@@ -139,7 +139,7 @@ export default function EmailPage() {
       {/* Enter new email step */}
       {step === 'enter_email' && (
         <div>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             {t('ProfileEmail.enterNewEmail', 'Шинэ имэйл хаягаа оруулна уу')}
           </p>
           <div className="flex items-center gap-3 max-w-md">
@@ -148,7 +148,7 @@ export default function EmailPage() {
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               placeholder={t('ProfileEmail.newEmailPlaceholder', 'example@email.com')}
-              className="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+              className="flex-1 px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
             />
             <button
               onClick={handleSendOtp}
@@ -164,7 +164,7 @@ export default function EmailPage() {
               setNewEmail('');
               setError('');
             }}
-            className="mt-3 text-sm text-gray-400 hover:text-gray-600 transition"
+            className="mt-3 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
             {t('ProfileEmail.back', 'Буцах')}
           </button>
@@ -174,7 +174,7 @@ export default function EmailPage() {
       {/* OTP verification state */}
       {step === 'verify_otp' && (
         <div>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             {t('ProfileEmail.otpSent', { email: newEmail || user.email }, '{{email}} хаяг руу OTP код илгээлээ. Кодоо оруулна уу.')}
           </p>
           <form onSubmit={handleVerify} className="flex items-center gap-3 max-w-sm">
@@ -184,7 +184,7 @@ export default function EmailPage() {
               onChange={(e) => setOtp(e.target.value)}
               placeholder={t('ProfileEmail.otpPlaceholder', 'OTP код')}
               maxLength={6}
-              className="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition tracking-widest text-center"
+              className="flex-1 px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition tracking-widest text-center"
             />
             <button
               type="submit"
@@ -196,7 +196,7 @@ export default function EmailPage() {
           </form>
           <button
             onClick={() => setStep('view')}
-            className="mt-3 text-sm text-gray-400 hover:text-gray-600 transition"
+            className="mt-3 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
             {t('ProfileEmail.back', 'Буцах')}
           </button>

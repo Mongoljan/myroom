@@ -58,7 +58,7 @@ export default function Toast({ message, type = 'info', duration = 5000, onClose
       <p className="text-sm font-medium flex-1">{message}</p>
       <button
         onClick={handleClose}
-        className="text-gray-400 hover:text-gray-600 transition"
+        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
       >
         <X size={18} />
       </button>

@@ -54,7 +54,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
   const isPersonalInfoActive = personalInfoLinks.some((l) => l.href === pathname);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex gap-8 items-start">
           {/* ─── Sidebar ─── */}
@@ -71,7 +71,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
             {/* Personal info accordion */}
             <div className="mb-1">
               <div className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-default select-none">
-                <div className="flex items-center gap-2.5 text-gray-700 font-medium text-sm">
+                <div className="flex items-center gap-2.5 text-gray-700 dark:text-gray-300 font-medium text-sm">
                   <User size={16} />
                   <span>Хувийн мэдээлэл</span>
                 </div>
@@ -84,8 +84,8 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                     href={link.href}
                     className={`block px-3 py-2 rounded-lg text-sm transition-colors ${
                       pathname === link.href
-                        ? 'text-blue-600 font-medium'
-                        : 'text-gray-500 hover:text-gray-700'
+                        ? 'text-blue-600 dark:text-blue-400 font-medium'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     }`}
                   >
                     {link.label}
@@ -102,8 +102,8 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                   href={href}
                   className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                     pathname === href
-                      ? 'bg-gray-100 text-gray-900 font-medium'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white font-medium'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white'
                   }`}
                 >
                   <Icon size={16} />

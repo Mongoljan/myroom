@@ -496,21 +496,21 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           onClearAll={handleClearAllFilters}
         /> */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-gray-900">{t('search.filtersSection.title')}</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
 
           {/* Recent Filters Section */}
           {recentFilters.length > 0 && (
-            <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.usedByYou')}</h4>
+            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.usedByYou')}</h4>
               <div className="space-y-1">
                 {recentFilters.map((recentFilter) => (
                   <button
                     key={recentFilter.id}
                     onClick={() => applyRecentFilter(recentFilter)}
-                    className="flex items-center w-full p-1.5 rounded-md border border-gray-200 hover:border-primary-300 hover:bg-primary-50 text-xs transition-colors text-left"
+                    className="flex items-center w-full p-1.5 rounded-md border border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:bg-primary-50 dark:bg-gray-800 dark:text-gray-300 text-xs transition-colors text-left"
                   >
-                    <Clock className="w-3 h-3 mr-1.5 text-gray-500" />
-                    <span className="text-gray-700 flex-1 truncate">{recentFilter.label}</span>
+                    <Clock className="w-3 h-3 mr-1.5 text-gray-500 dark:text-gray-400" />
+                    <span className="text-gray-700 dark:text-gray-300 flex-1 truncate">{recentFilter.label}</span>
                   </button>
                 ))}
               </div>
@@ -518,12 +518,12 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           )}
 
         {loadingApi ? (
-          <div className="text-xs text-gray-500">{t('search.filtersSection.loading')}</div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">{t('search.filtersSection.loading')}</div>
         ) : (
           <>
             {/* 1. Property Categories */}
-            <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.hotelType')}</h4>
+            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelType')}</h4>
               <div className="space-y-1">
                 {PROPERTY_CATEGORIES.map((category) => {
                   const isSelected = filters.popularSearches?.includes(category.id) || false;
@@ -540,9 +540,9 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                             ? (filters.popularSearches || []).filter(id => id !== category.id)
                             : [...(filters.popularSearches || []), category.id]
                         })}
-                        className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                       />
-                      <span className="text-sm text-gray-700">{category.label}</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{category.label}</span>
                     </label>
                   );
                 })}
@@ -550,8 +550,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             </div>
 
             {/* 2. Popular Searches */}
-            <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.popularSearches')}</h4>
+            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.popularSearches')}</h4>
               <div className="space-y-1">
                 {POPULAR_SEARCHES.map((search) => {
                   // For 5star, check if starRating includes 5
@@ -585,9 +585,9 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                             starRating: newStarRating
                           });
                         }}
-                        className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                       />
-                      <span className="text-sm text-gray-700">{search.label}</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{search.label}</span>
                     </label>
                   );
                 })}
@@ -595,10 +595,10 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             </div>
 
             {/* 3. Price Range */}
-            <div className="space-y-2 border-b border-gray-100 pb-3">
+            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.price')}</h4>
-                <span className="text-xs text-gray-500">
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.price')}</h4>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   ₮{filters.priceRange[0].toLocaleString()}-{filters.priceRange[1].toLocaleString()}
                 </span>
               </div>
@@ -629,12 +629,12 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                       className={`w-full p-1.5 rounded-md border text-xs transition-all flex flex-col items-center justify-center ${
                         isSelected
                           ? 'border-primary-500 bg-primary-50 text-primary-700'
-                          : 'border-gray-200 hover:border-gray-300 bg-white text-gray-600'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300'
                       }`}
                     >
                       <span className="font-medium">{range.label}</span>
                       {count !== undefined && (
-                        <span className="text-[10px] text-gray-500">({count})</span>
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400">({count})</span>
                       )}
                     </button>
                   );
@@ -643,8 +643,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             </div>
 
             {/* 4. Hotel Star Rating (буудлын зэрэглэл) */}
-            <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.hotelStarRating')}</h4>
+            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelStarRating')}</h4>
               <div className="flex gap-1.5 justify-between">
                 {[1, 2, 3, 4, 5].map((stars) => {
                   const isSelected = filters.starRating?.includes(stars) || false;
@@ -672,13 +672,13 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                       className={`flex-1 p-2 rounded-md border text-xs transition-all flex flex-col items-center justify-center ${
                         isSelected
                           ? 'border-primary-500 bg-primary-50 text-primary-700'
-                          : 'border-gray-200 hover:border-gray-300 bg-white text-gray-600'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300'
                       }`}
                     >
                       <Star className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
                       <span className="font-medium">{stars}</span>
                       {filterCounts[`rating_${stars}`] !== undefined && (
-                        <span className="text-[10px] text-gray-500">({filterCounts[`rating_${stars}`]})</span>
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400">({filterCounts[`rating_${stars}`]})</span>
                       )}
                     </button>
                   );
@@ -688,8 +688,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
 
             {/* 5. Room Features */}
             {roomFeatureFacilities.length > 0 ? (
-              <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.roomFeatures')}</h4>
+              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.roomFeatures')}</h4>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {roomFeatureFacilities.map((facility) => {
                     const isSelected = filters.roomFeatures?.includes(facility.id) || false;
@@ -706,11 +706,11 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                               ? (filters.roomFeatures || []).filter(id => id !== facility.id)
                               : [...(filters.roomFeatures || []), facility.id]
                           })}
-                          className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                          className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                         />
-                        <span className="text-sm text-gray-700 flex-1">{facility.name_mn}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                         {filterCounts[`facility_${facility.id}`] !== undefined && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             ({filterCounts[`facility_${facility.id}`]})
                           </span>
                         )}
@@ -720,16 +720,16 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 </div>
               </div>
             ) : (
-              <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.roomFeatures')}</h4>
-                <div className="text-xs text-gray-500">{t('common.loading')}</div>
+              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.roomFeatures')}</h4>
+                <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
 
             {/* 6. General Services */}
             {generalServiceFacilities.length > 0 ? (
-              <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.generalServices')}</h4>
+              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.generalServices')}</h4>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {generalServiceFacilities.map((facility) => {
                     const isSelected = filters.generalServices?.includes(facility.id) || false;
@@ -746,11 +746,11 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                               ? (filters.generalServices || []).filter(id => id !== facility.id)
                               : [...(filters.generalServices || []), facility.id]
                           })}
-                          className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                          className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                         />
-                        <span className="text-sm text-gray-700 flex-1">{facility.name_mn}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                         {filterCounts[`facility_${facility.id}`] !== undefined && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             ({filterCounts[`facility_${facility.id}`]})
                           </span>
                         )}
@@ -760,15 +760,15 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 </div>
               </div>
             ) : (
-              <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.generalServices')}</h4>
-                <div className="text-xs text-gray-500">{t('common.loading')}</div>
+              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.generalServices')}</h4>
+                <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
 
             {/* 7. Bed Types */}
-            <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.bedType')}</h4>
+            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.bedType')}</h4>
               <div className="space-y-1.5">
                 {BED_TYPES.map((bed) => {
                   const bedTypesObj = typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)
@@ -779,11 +779,11 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                   return (
                     <div
                       key={bed.id}
-                      className="flex items-center justify-between p-1.5 rounded-md border border-gray-200 bg-white"
+                      className="flex items-center justify-between p-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
                     >
                       <div className="flex items-center gap-1.5">
-                        <Bed className="w-3 h-3 text-gray-600" />
-                        <span className="text-xs text-gray-700">{bed.label}</span>
+                        <Bed className="w-3 h-3 text-gray-600 dark:text-gray-400" />
+                        <span className="text-xs text-gray-700 dark:text-gray-300">{bed.label}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -792,7 +792,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                             newBedTypes[bed.id as keyof typeof newBedTypes] = Math.max(0, count - 1);
                             updateFilters({ bedTypes: newBedTypes });
                           }}
-                          className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                           disabled={count === 0}
                         >
                           -
@@ -804,7 +804,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                             newBedTypes[bed.id as keyof typeof newBedTypes] = count + 1;
                             updateFilters({ bedTypes: newBedTypes });
                           }}
-                          className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 bg-white hover:bg-gray-50 text-gray-600"
+                          className="w-6 h-6 flex items-center justify-center rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
                         >
                           +
                         </button>
@@ -816,8 +816,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             </div>
 
             {/* 8. Popular Places */}
-            <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.popularPlaces')}</h4>
+            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.popularPlaces')}</h4>
               <div className="space-y-1">
                 {POPULAR_PLACES.map((place) => {
                   const isSelected = filters.popularPlaces?.includes(place.id) || false;
@@ -834,9 +834,9 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                             ? (filters.popularPlaces || []).filter(id => id !== place.id)
                             : [...(filters.popularPlaces || []), place.id]
                         })}
-                        className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                       />
-                      <span className="text-sm text-gray-700">{place.label}</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{place.label}</span>
                     </label>
                   );
                 })}
@@ -844,22 +844,22 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             </div>
 
             {/* 9. Discounted */}
-            <div className="space-y-2 border-b border-gray-100 pb-3">
-              <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.discounted')}</h4>
+            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.discounted')}</h4>
               <label className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                 <input
                   type="checkbox"
                   checked={filters.discounted}
                   onChange={() => updateFilters({ discounted: !filters.discounted })}
-                  className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                 />
-                <span className="text-sm text-gray-700">{t('search.discountedPrice')}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{t('search.discountedPrice')}</span>
               </label>
             </div>
             {/* 10. Guest Rating (зочдын үнэлгээ) - Compact version */}
             {apiData?.ratings && apiData.ratings.length > 0 ? (
-              <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.guestRating')}</h4>
+              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.guestRating')}</h4>
                 <div className="grid grid-cols-5 gap-1">
                   {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
                     const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
@@ -876,13 +876,13 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                         className={`p-1.5 rounded-md border text-xs transition-all flex flex-col items-center justify-center ${
                           isSelected
                             ? 'border-primary-500 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 hover:border-gray-300 bg-white text-gray-600'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300'
                         }`}
                       >
                         <Star className={`w-3 h-3 mb-0.5 ${isSelected ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
                         <span className="font-medium text-[10px]">{stars}+</span>
                         {filterCounts[`rating_${stars}`] !== undefined && (
-                          <span className="text-[9px] text-gray-500">({filterCounts[`rating_${stars}`]})</span>
+                          <span className="text-[9px] text-gray-500 dark:text-gray-400">({filterCounts[`rating_${stars}`]})</span>
                         )}
                       </button>
                     );
@@ -890,16 +890,16 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 </div>
               </div>
             ) : (
-              <div className="space-y-2 border-b border-gray-100 pb-3">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.guestRating')}</h4>
-                <div className="text-xs text-gray-500">{t('common.loading')}</div>
+              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.guestRating')}</h4>
+                <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
 
             {/* 11. Outdoor Areas */}
             {outdoorFacilities.length > 0 ? (
               <div className="space-y-2">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.outdoorArea')}</h4>
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.outdoorArea')}</h4>
                 <div className="space-y-1">
                   {outdoorFacilities.map((facility) => {
                     const isSelected = filters.outdoorAreas?.includes(facility.id) || false;
@@ -916,11 +916,11 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                               ? (filters.outdoorAreas || []).filter(id => id !== facility.id)
                               : [...(filters.outdoorAreas || []), facility.id]
                           })}
-                          className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                          className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                         />
-                        <span className="text-sm text-gray-700 flex-1">{facility.name_mn}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                         {filterCounts[`facility_${facility.id}`] !== undefined && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             ({filterCounts[`facility_${facility.id}`]})
                           </span>
                         )}
@@ -931,8 +931,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2">
-                <h4 className="text-xs font-medium text-gray-700">{t('search.filtersSection.outdoorArea')}</h4>
-                <div className="text-xs text-gray-500">{t('common.loading')}</div>
+                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.outdoorArea')}</h4>
+                <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
           </>
@@ -947,26 +947,26 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     return (
       <div className="fixed inset-0 z-50 lg:hidden">
         <div className="fixed inset-0 bg-black/25" onClick={onClose} />
-        <div className="fixed top-0 left-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
+        <div className="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-800 shadow-xl overflow-y-auto">
           <div className="p-4">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">{t('search.filtersSection.title')}</h2>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h2>
               <button
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
             
-            <div className="bg-white rounded-lg border border-gray-200 p-4 space-y-4">
-              <h3 className="font-semibold text-gray-900">{t('search.filtersSection.title')}</h3>
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
               
               {/* Same content as embedded version */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-semibold text-gray-900 text-base">{t('search.filtersSection.priceRange')}</h4>
-                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                  <h4 className="font-semibold text-gray-900 dark:text-white text-base">{t('search.filtersSection.priceRange')}</h4>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
                     ₮{filters.priceRange[0].toLocaleString()} - ₮{filters.priceRange[1].toLocaleString()}
                   </span>
                 </div>
@@ -988,7 +988,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                         className={`w-full p-3 rounded-lg border transition-all duration-200 ${
                           isSelected
                             ? 'border-primary-500 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 hover:border-primary-300 bg-white hover:bg-primary-50/30 text-gray-700'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 bg-white dark:bg-gray-800 hover:bg-primary-50/30 text-gray-700 dark:text-gray-300'
                         }`}
                       >
                         <div className="font-medium text-sm">{range.label}</div>
@@ -999,35 +999,35 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
 
               <div>
-                <h4 className="font-medium text-gray-900 text-sm mb-2">{t('search.filtersSection.starRating') || t('search.starRating')}</h4>
+                <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-2">{t('search.filtersSection.starRating') || t('search.starRating')}</h4>
                 <div className="space-y-2">
                   {[5, 4, 3, 2, 1].map((stars) => (
                     <button
                       key={stars}
-                      className="flex items-center gap-2 w-full p-2 rounded-lg border border-gray-200 hover:border-primary-200"
+                      className="flex items-center gap-2 w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-200 dark:bg-gray-800"
                     >
                       <div className="flex gap-0.5">
                         {Array.from({ length: stars }, (_, i) => (
                           <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                         ))}
                       </div>
-                      <span className="text-sm text-gray-700">{t('search.filtersSection.starsPlus', { rating: stars })}</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{t('search.filtersSection.starsPlus', { rating: stars })}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div>
-                <h4 className="font-medium text-gray-900 text-sm mb-2">{t('search.amenities')}</h4>
+                <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-2">{t('search.amenities')}</h4>
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {apiData?.facilities.map((facility) => (
                     <button
                       key={facility.id}
-                      className="flex items-center justify-between w-full p-2 rounded-lg border border-gray-200 hover:border-primary-200"
+                      className="flex items-center justify-between w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-200 dark:bg-gray-800"
                     >
                       <div className="flex items-center gap-2">
                         {getFacilityIcon(facility.name_en)}
-                        <span className="text-sm text-gray-700">{facility.name_mn}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{facility.name_mn}</span>
                       </div>
                     </button>
                   ))}

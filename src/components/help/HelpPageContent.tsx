@@ -70,7 +70,7 @@ export default function HelpPageContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Section - Blue gradient like main search */}
       <section className="relative py-12 overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800">
         {/* Animated gradient background */}
@@ -150,10 +150,10 @@ export default function HelpPageContent() {
             transition={{ duration: 0.5 }}
             className="text-center mb-6"
           >
-            <h2 className="text-lg font-bold text-gray-900 mb-1">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
               Түгээмэл асуултууд
             </h2>
-            <p className={`${TYPOGRAPHY.body.small} text-gray-600`}>
+            <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>
               Захиалгын процесстой холбоотой түгээмэл асуудаг асуултууд
             </p>
           </motion.div>
@@ -181,12 +181,12 @@ export default function HelpPageContent() {
                       px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                       ${isActive
                         ? 'bg-slate-900 text-white shadow-md'
-                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
                       }
                     `}
                   >
                     <div className="flex items-center gap-2">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500'}`} />
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} />
                       <span>{category.title}</span>
                     </div>
                   </motion.button>
@@ -217,7 +217,7 @@ export default function HelpPageContent() {
                     className="group"
                   >
                     <motion.div
-                      className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
+                      className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
                       whileHover={{ y: -2 }}
                     >
                       <button
@@ -243,7 +243,7 @@ export default function HelpPageContent() {
                               </motion.div>
                             </motion.div>
 
-                            <h3 className={`${TYPOGRAPHY.card.subtitle} text-gray-900 pr-3`}>
+                            <h3 className={`${TYPOGRAPHY.card.subtitle} text-gray-900 dark:text-white pr-3`}>
                               {faq.question}
                             </h3>
                           </div>
@@ -280,9 +280,9 @@ export default function HelpPageContent() {
                             }}
                             className="overflow-hidden"
                           >
-                            <div className="px-4 pb-4 bg-white">
-                              <div className="pl-10 border-l border-gray-200">
-                                <p className={`${TYPOGRAPHY.body.standard} text-gray-600`}>
+                            <div className="px-4 pb-4 bg-white dark:bg-gray-800">
+                              <div className="pl-10 border-l border-gray-200 dark:border-gray-700">
+                                <p className={`${TYPOGRAPHY.body.standard} text-gray-600 dark:text-gray-400`}>
                                   {faq.answer}
                                 </p>
                               </div>
@@ -307,10 +307,10 @@ export default function HelpPageContent() {
             transition={{ duration: 0.5 }}
             className="text-center mb-6"
           >
-            <h2 className="text-lg font-bold text-gray-900 mb-1">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
               Видео заавар
             </h2>
-            <p className={`${TYPOGRAPHY.body.small} text-gray-600`}>
+            <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>
               Системийн ашиглалтын заавар
             </p>
           </motion.div>
@@ -326,9 +326,9 @@ export default function HelpPageContent() {
                 whileHover={{ y: -4 }}
                 className="group cursor-pointer"
               >
-                <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg overflow-hidden aspect-video border border-gray-200 hover:border-gray-300 transition-colors">
+                <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-lg overflow-hidden aspect-video border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 transition-colors">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-md group-hover:bg-slate-900 transition-colors">
+                    <div className="w-12 h-12 bg-white/90 dark:bg-gray-700/90 rounded-full flex items-center justify-center shadow-md group-hover:bg-slate-900 transition-colors">
                       <PlayCircle className="w-6 h-6 text-slate-900 group-hover:text-white transition-colors" />
                     </div>
                   </div>
@@ -350,17 +350,17 @@ export default function HelpPageContent() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="relative overflow-hidden bg-white/80 backdrop-blur-xl rounded-xl border border-gray-200/50 p-6 hover:shadow-lg hover:shadow-gray-200/50 transition-all duration-300"
+            className="relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-6 hover:shadow-lg hover:shadow-gray-200/50 transition-all duration-300"
           >
             {/* Subtle gradient background */}
             <div className="absolute inset-0 bg-gradient-to-br from-slate-500/5 via-teal-500/5 to-slate-500/5 -z-10" />
 
             <div className="text-center mb-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-1">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
                 Холбоо барих
               </h2>
-              <p className={`${TYPOGRAPHY.body.small} text-gray-600`}>
-                Утсаар холбогдох бол <span className="font-semibold text-gray-900">99972626</span>
+              <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>
+                Утсаар холбогдох бол <span className="font-semibold text-gray-900 dark:text-white">99972626</span>
               </p>
             </div>
 
@@ -369,10 +369,10 @@ export default function HelpPageContent() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex items-center justify-center gap-2 bg-white border border-gray-200 hover:border-gray-300 rounded-lg px-4 py-3 transition-all group"
+                className="flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-gray-300 rounded-lg px-4 py-3 transition-all group"
               >
-                <MessageCircle className="w-5 h-5 text-gray-600 group-hover:text-gray-900 transition-colors" />
-                <span className="font-medium text-gray-900">
+                <MessageCircle className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
+                <span className="font-medium text-gray-900 dark:text-white">
                   Чат эхлүүлэх
                 </span>
               </motion.button>
@@ -391,7 +391,7 @@ export default function HelpPageContent() {
 
             {/* Working Hours */}
             <div className="text-center mt-4">
-              <p className={`${TYPOGRAPHY.body.small} text-gray-600`}>
+              <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>
                 24/7 үйлчилгээ үзүүлнэ
               </p>
             </div>

@@ -196,20 +196,20 @@ function BookingContent() {
     };
 
     return (
-      <div className="min-h-screen bg-gray-100 py-8 print:bg-white print:py-0">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-8 print:bg-white print:py-0">
         <div className="max-w-4xl mx-auto px-4 print:px-0 print:max-w-full">
           {/* Action Buttons - Hidden on print */}
           <div className="mb-4 flex justify-between items-center print:hidden">
             <button
               onClick={() => router.push('/')}
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
             >
               ← {t('bookingExtra.backHome', 'Буцах')}
             </button>
             <div className="flex gap-2">
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900"
+                className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -218,7 +218,7 @@ function BookingContent() {
               </button>
               <button
                 onClick={handleDownloadPDF}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900"
+                className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -232,15 +232,15 @@ function BookingContent() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white border border-gray-300"
+            className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600"
             id="booking-confirmation"
           >
             {/* Success Header */}
-            <div className="bg-white border-b-2 border-gray-900 px-6 py-6">
-              <h1 className="text-xl font-bold text-gray-900 text-center mb-1">
+            <div className="bg-white dark:bg-gray-800 border-b-2 border-gray-900 dark:border-gray-400 px-6 py-6">
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white text-center mb-1">
                 {t('bookingExtra.confirmationTitle', 'Таны захиалга амжилттай баталгаажлаа. Баярлалаа.')}
               </h1>
-              <p className="text-xs text-gray-600 text-center">
+              <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
                 {t('bookingExtra.confirmationSubtitle', 'Захиалгын мэдээллийг бид таны имэйл рүү илгээлээ. Та имэйлээ шалгаж үзнэ үү.')}
               </p>
             </div>
@@ -248,13 +248,13 @@ function BookingContent() {
             {/* Main Content */}
             <div className="px-6 py-5">
               {/* Title */}
-              <h2 className="text-sm font-semibold text-gray-900 mb-5">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-5">
                 {t('bookingExtra.bookingConfirmation', 'Захиалгын хуудас')}
               </h2>
 
               {/* Hotel Info */}
               <div className="mb-5">
-                <h3 className="text-xs font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-300">
+                <h3 className="text-xs font-semibold text-gray-900 dark:text-white mb-2 pb-1.5 border-b border-gray-300 dark:border-gray-600">
                   {t('bookingExtra.hotelInfo', 'Зочид буудлын мэдээлэл')}
                 </h3>
                 <div className="text-xs space-y-1">
@@ -262,7 +262,7 @@ function BookingContent() {
                     <a href={`/hotel/${hotelId}`} className="text-slate-900 hover:underline font-medium">{hotelName}</a>
                   </div>
                   {hotelDetails?.location && (
-                    <div className="text-gray-700 flex items-start gap-1">
+                    <div className="text-gray-700 dark:text-gray-300 flex items-start gap-1">
                       <svg className="w-3 h-3 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -273,7 +273,7 @@ function BookingContent() {
                     </div>
                   )}
                   {!loadingHotelData && !hotelDetails?.location && (
-                    <div className="text-gray-500 text-xs italic">
+                    <div className="text-gray-500 dark:text-gray-400 text-xs italic">
                       {t('bookingExtra.contactHotel', 'Холбоо барих мэдээллийг зочид буудалтай шалгана уу')}
                     </div>
                   )}
@@ -282,13 +282,13 @@ function BookingContent() {
 
               {/* Booking Details Grid */}
               <div className="mb-5">
-                <h3 className="text-xs font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-300">
+                <h3 className="text-xs font-semibold text-gray-900 dark:text-white mb-2 pb-1.5 border-b border-gray-300 dark:border-gray-600">
                   {t('bookingExtra.bookingDetailsSection', 'Захиалгын дэлгэрэнгүй')}
                 </h3>
                 <div className="space-y-1.5 text-xs">
                   <div className="flex">
-                    <span className="text-gray-600 w-32">{t('bookingExtra.checkInLabel', 'Орох өдөр')}</span>
-                    <span className="text-gray-900">
+                    <span className="text-gray-600 dark:text-gray-400 w-32">{t('bookingExtra.checkInLabel', 'Орох өдөр')}</span>
+                    <span className="text-gray-900 dark:text-white">
                       {new Date(checkIn).toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'short', 
@@ -298,8 +298,8 @@ function BookingContent() {
                     </span>
                   </div>
                   <div className="flex">
-                    <span className="text-gray-600 w-32">{t('bookingExtra.checkOutLabel', 'Гарах өдөр')}</span>
-                    <span className="text-gray-900">
+                    <span className="text-gray-600 dark:text-gray-400 w-32">{t('bookingExtra.checkOutLabel', 'Гарах өдөр')}</span>
+                    <span className="text-gray-900 dark:text-white">
                       {new Date(checkOut).toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'short', 
@@ -309,20 +309,20 @@ function BookingContent() {
                     </span>
                   </div>
                   <div className="flex">
-                    <span className="text-gray-600 w-32">{t('bookingExtra.guests', 'Зочид')}</span>
-                    <span className="text-gray-900">
+                    <span className="text-gray-600 dark:text-gray-400 w-32">{t('bookingExtra.guests', 'Зочид')}</span>
+                    <span className="text-gray-900 dark:text-white">
                       {rooms.reduce((sum, room) => sum + room.room_count, 0)} том хүн, 2 хүүхэд
                     </span>
                   </div>
                   <div className="flex">
-                    <span className="text-gray-600 w-32">{t('bookingExtra.guestName', 'Захиалагч')}</span>
-                    <span className="text-gray-900">
+                    <span className="text-gray-600 dark:text-gray-400 w-32">{t('bookingExtra.guestName', 'Захиалагч')}</span>
+                    <span className="text-gray-900 dark:text-white">
                       {customerName} / {customerPhone}, {customerEmail}
                     </span>
                   </div>
                   <div className="flex">
-                    <span className="text-gray-600 w-32">{t('bookingExtra.bookingDateLabel', 'Захиалсан огноо')}</span>
-                    <span className="text-gray-900">
+                    <span className="text-gray-600 dark:text-gray-400 w-32">{t('bookingExtra.bookingDateLabel', 'Захиалсан огноо')}</span>
+                    <span className="text-gray-900 dark:text-white">
                       {new Date().toLocaleDateString('en-US', { 
                         year: 'numeric', 
                         month: 'short', 
@@ -336,15 +336,15 @@ function BookingContent() {
               </div>
 
               {/* Booking Numbers */}
-              <div className="mb-5 bg-gray-100 border border-gray-300 p-3">
+              <div className="mb-5 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 p-3">
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div>
-                    <div className="text-gray-600 mb-0.5">{t('bookingExtra.bookingNumber', 'Захиалгын №')}</div>
-                    <div className="font-mono font-semibold text-sm text-gray-900">{bookingResult.booking_code}</div>
+                    <div className="text-gray-600 dark:text-gray-400 mb-0.5">{t('bookingExtra.bookingNumber', 'Захиалгын №')}</div>
+                    <div className="font-mono font-semibold text-sm text-gray-900 dark:text-white">{bookingResult.booking_code}</div>
                   </div>
                   <div>
-                    <div className="text-gray-600 mb-0.5">{t('bookingExtra.pinCodeLabel', 'PIN код')}</div>
-                    <div className="font-mono font-semibold text-sm text-gray-900">{bookingResult.pin_code}</div>
+                    <div className="text-gray-600 dark:text-gray-400 mb-0.5">{t('bookingExtra.pinCodeLabel', 'PIN код')}</div>
+                    <div className="font-mono font-semibold text-sm text-gray-900 dark:text-white">{bookingResult.pin_code}</div>
                   </div>
                 </div>
               </div>
@@ -374,44 +374,44 @@ function BookingContent() {
                   <tbody>
                     {rooms.map((room, index) => (
                       <tr key={index}>
-                        <td className="border border-gray-300 px-2 py-2 font-mono text-gray-900">
+                        <td className="border border-gray-300 dark:border-gray-600 px-2 py-2 font-mono text-gray-900 dark:text-white">
                           {bookingResult.booking_ids?.[index] || `${bookingResult.booking_code}`}
                         </td>
-                        <td className="border border-gray-300 px-2 py-2 text-gray-900">
-                          <div>{room.room_name} <span className="text-gray-500">(☾)</span></div>
+                        <td className="border border-gray-300 dark:border-gray-600 px-2 py-2 text-gray-900 dark:text-white">
+                          <div>{room.room_name} <span className="text-gray-500 dark:text-gray-400">(☾)</span></div>
                         </td>
-                        <td className="border border-gray-300 px-2 py-2 text-right text-gray-900">
+                        <td className="border border-gray-300 dark:border-gray-600 px-2 py-2 text-right text-gray-900 dark:text-white">
                           {room.price_per_night.toLocaleString()} ₮
                         </td>
-                        <td className="border border-gray-300 px-2 py-2 text-center text-gray-900">
+                        <td className="border border-gray-300 dark:border-gray-600 px-2 py-2 text-center text-gray-900 dark:text-white">
                           {room.room_count}
                         </td>
-                        <td className="border border-gray-300 px-2 py-2 text-right font-semibold text-gray-900">
+                        <td className="border border-gray-300 dark:border-gray-600 px-2 py-2 text-right font-semibold text-gray-900 dark:text-white">
                           {room.total_price.toLocaleString()} ₮
                         </td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-gray-100">
-                      <td colSpan={4} className="border border-gray-300 px-2 py-2.5 text-right font-semibold text-gray-900">
+                    <tr className="bg-gray-100 dark:bg-gray-700">
+                      <td colSpan={4} className="border border-gray-300 dark:border-gray-600 px-2 py-2.5 text-right font-semibold text-gray-900 dark:text-white">
                         {t('bookingExtra.totalAmount', 'Нийт үнэ')}
                       </td>
-                      <td className="border border-gray-300 px-2 py-2.5 text-right font-bold text-base text-gray-900">
+                      <td className="border border-gray-300 dark:border-gray-600 px-2 py-2.5 text-right font-bold text-base text-gray-900 dark:text-white">
                         {totalPrice.toLocaleString()} ₮
                       </td>
                     </tr>
                   </tfoot>
                 </table>
-                <p className="text-xs text-gray-500 mt-1">*{t('bookingExtra.taxNote', 'НӨАТ багтсан үнэ')}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">*{t('bookingExtra.taxNote', 'НӨАТ багтсан үнэ')}</p>
               </div>
 
               {/* Additional Info */}
               <div className="mb-4">
-                <h3 className="text-xs font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-300">
+                <h3 className="text-xs font-semibold text-gray-900 dark:text-white mb-2 pb-1.5 border-b border-gray-300 dark:border-gray-600">
                   {t('bookingExtra.additionalInfo', 'Нэмэлт мэдээлэл')}
                 </h3>
-                <div className="text-xs text-gray-700 space-y-0.5">
+                <div className="text-xs text-gray-700 dark:text-gray-300 space-y-0.5">
                   <p>{t('bookingExtra.infoLine1', 'Үнэгүй зогсоол')}</p>
                   <p>{t('bookingExtra.infoLine2', 'Free WiFi')}</p>
                 </div>
@@ -419,11 +419,11 @@ function BookingContent() {
 
               {/* Cancellation Policy */}
               <div className="mb-4">
-                <h3 className="text-xs font-semibold text-gray-900 mb-2 pb-1.5 border-b border-gray-300">
+                <h3 className="text-xs font-semibold text-gray-900 dark:text-white mb-2 pb-1.5 border-b border-gray-300 dark:border-gray-600">
                   {t('bookingExtra.cancellationPolicy', 'Цуцлах нөхцөл')}
                 </h3>
                 {hotelPolicy ? (
-                  <div className="text-xs text-gray-700 space-y-2">
+                  <div className="text-xs text-gray-700 dark:text-gray-300 space-y-2">
                     <div className="flex justify-between">
                       <span>{t('bookingExtra.beforeCancelTime', 'Цуцлах хугацааны өмнө')}:</span>
                       <span className="font-semibold">{hotelPolicy.cancellation_fee.before_fee}%</span>
@@ -436,19 +436,19 @@ function BookingContent() {
                       <span>{t('bookingExtra.cancelDeadline', 'Цуцлах хугацаа')}:</span>
                       <span className="font-semibold">{hotelPolicy.cancellation_fee.cancel_time.substring(0, 5)}</span>
                     </div>
-                    <p className="text-gray-600 mt-2 italic">
+                    <p className="text-gray-600 dark:text-gray-400 mt-2 italic">
                       {t('bookingExtra.cancellationNote', 'Цуцлах болон урьдчилгаа төлбөрийн бодлого нь захиалгын төрлөөс хамаарч өөр байна.')}
                     </p>
                   </div>
                 ) : (
-                  <div className="text-xs text-gray-600">
+                  <div className="text-xs text-gray-600 dark:text-gray-400">
                     {t('bookingExtra.noPolicyInfo', 'Цуцлалтын нөхцөлийн талаар зочид буудалтай холбогдоно уу.')}
                   </div>
                 )}
               </div>
 
               {/* Footer */}
-              <div className="text-xs text-gray-600 border-t border-gray-300 pt-3 space-y-0.5">
+              <div className="text-xs text-gray-600 dark:text-gray-400 border-t border-gray-300 dark:border-gray-600 pt-3 space-y-0.5">
                 <p>{t('bookingExtra.footerNote1', 'Бидний сонгон үйлчлүүлж байгаад танд баярлалаа.')}</p>
                 <p>{t('bookingExtra.footerNote2', 'Бид та бүхэнд үйлчлэх зэргээ улам бүр хялбар болгохоор зорин ажиллаж байна.')}</p>
               </div>
@@ -456,10 +456,10 @@ function BookingContent() {
 
             {/* Action Buttons */}
             <div className="px-6 pb-5 print:hidden">
-              <div className="flex gap-2 pt-3 border-t border-gray-300">
+              <div className="flex gap-2 pt-3 border-t border-gray-300 dark:border-gray-600">
                 <button
                   onClick={() => router.push('/')}
-                  className="flex-1 bg-white border border-gray-300 text-gray-700 py-2 px-4 text-xs hover:bg-gray-50 transition-colors"
+                  className="flex-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 text-xs hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   {t('bookingExtra.goHome', 'Нүүр хуудас руу буцах')}
                 </button>
@@ -478,19 +478,19 @@ function BookingContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="w-5 h-5" />
             {t('common.back')}
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">{t('booking.confirmBooking')}</h1>
-          <p className="text-gray-600 mt-1">{hotelName}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('booking.confirmBooking')}</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{hotelName}</p>
         </div>
       </div>
 
@@ -501,9 +501,9 @@ function BookingContent() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
             >
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('booking.guestDetails')}</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">{t('booking.guestDetails')}</h2>
 
               {bookingError && (
                 <motion.div
@@ -528,46 +528,46 @@ function BookingContent() {
               <form onSubmit={handleBookingSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('booking.firstName')} *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('booking.firstName')} *</label>
                     <input
                       type="text"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
                       required
                       disabled={bookingInProgress}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
                       placeholder={t('booking.namePlaceholder', 'Нэр')}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('booking.phone')} *</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('booking.phone')} *</label>
                     <input
                       type="tel"
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       required
                       disabled={bookingInProgress}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
                       placeholder="99001122"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('booking.email')} *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('booking.email')} *</label>
                   <input
                     type="email"
                     value={customerEmail}
                     onChange={(e) => setCustomerEmail(e.target.value)}
                     required
                     disabled={bookingInProgress}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
                     placeholder={t('booking.emailPlaceholder', 'email@example.com')}
                   />
                 </div>
 
-                <div className="pt-6 border-t">
+                  <div className="pt-6 border-t dark:border-gray-700">
                   <button
                     type="submit"
                     disabled={bookingInProgress || !customerName || !customerPhone || !customerEmail}
@@ -593,12 +593,12 @@ function BookingContent() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-8"
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8"
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('bookingExtra.detailsTitle')}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('bookingExtra.detailsTitle')}</h3>
 
               {/* Date Info - Display Only */}
-              <div className="mb-6 p-4 bg-slate-50 rounded-lg">
+              <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
                 <div className="flex items-center gap-2 mb-3">
                   <Calendar className="w-4 h-4 text-slate-900" />
                   <span className="text-sm font-medium text-slate-900">{t('bookingExtra.stayDates')}</span>
@@ -637,21 +637,21 @@ function BookingContent() {
 
               {/* Rooms */}
               <div className="space-y-3 mb-6">
-                <h4 className="font-medium text-gray-900">{t('bookingExtra.selectedRooms')}</h4>
+                <h4 className="font-medium text-gray-900 dark:text-white">{t('bookingExtra.selectedRooms')}</h4>
                 {rooms.map((room, index) => (
-                  <div key={index} className="border rounded-lg p-3 bg-gray-50">
+                  <div key={index} className="border dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700">
                     <div className="flex justify-between items-start mb-2">
-                      <h5 className="font-medium text-gray-900 text-sm">{room.room_name}</h5>
+                      <h5 className="font-medium text-gray-900 dark:text-white text-sm">{room.room_name}</h5>
                       <div className="text-right">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
                           ₮{room.price_per_night.toLocaleString()}
                         </div>
-                        <div className="text-xs text-gray-600">{t('hotel.pricePerNight', 'per night')} × {room.room_count}</div>
+                        <div className="text-xs text-gray-600 dark:text-gray-400">{t('hotel.pricePerNight', 'per night')} × {room.room_count}</div>
                       </div>
                     </div>
                     <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-600">{nights} {nights !== 1 ? t('hotel.nights', 'nights') : t('hotel.night', 'night')}</span>
-                      <span className="font-medium text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-400">{nights} {nights !== 1 ? t('hotel.nights', 'nights') : t('hotel.night', 'night')}</span>
+                      <span className="font-medium text-gray-900 dark:text-white">
                         ₮{room.total_price.toLocaleString()}
                       </span>
                     </div>
@@ -660,12 +660,12 @@ function BookingContent() {
               </div>
 
               {/* Total */}
-              <div className="border-t pt-4">
+              <div className="border-t dark:border-gray-700 pt-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-gray-900">{t('bookingExtra.totalPrice')}</span>
+                  <span className="text-lg font-semibold text-gray-900 dark:text-white">{t('bookingExtra.totalPrice')}</span>
                   <span className="text-xl font-bold text-slate-900">₮{totalPrice.toLocaleString()}</span>
                 </div>
-                <div className="text-xs text-gray-500 mt-1">{t('bookingExtra.taxesIncluded')}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('bookingExtra.taxesIncluded')}</div>
               </div>
             </motion.div>
           </div>
@@ -678,7 +678,7 @@ function BookingContent() {
 // Wrap the component that uses useSearchParams in a Suspense boundary to satisfy Next.js requirements
 export default function BookingPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-gray-600">{/* Loading */}</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-gray-600 dark:bg-gray-900 dark:text-gray-400">{/* Loading */}</div>}>
       <BookingContent />
     </Suspense>
   );

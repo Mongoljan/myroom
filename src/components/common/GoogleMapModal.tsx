@@ -161,16 +161,16 @@ export default function GoogleMapModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[1800px] w-[98vw] h-[95vh] p-0 gap-0 overflow-hidden bg-gray-100">
+      <DialogContent className="max-w-[1800px] w-[98vw] h-[95vh] p-0 gap-0 overflow-hidden bg-gray-100 dark:bg-gray-900">
         <DialogTitle className="sr-only">{hotelName}</DialogTitle>
 
         {/* Close Button - Floating */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-50 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors"
+          className="absolute top-4 right-4 z-50 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           aria-label="Close"
         >
-          <X className="w-5 h-5 text-gray-600" />
+          <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         </button>
 
         <div className="flex h-full">
@@ -186,20 +186,20 @@ export default function GoogleMapModal({
             />
 
             {/* Reset Map Button */}
-            <button className="absolute top-4 left-4 bg-white px-3 py-2 rounded-lg shadow-md text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+            <button className="absolute top-4 left-4 bg-white dark:bg-gray-800 px-3 py-2 rounded-lg shadow-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2">
               <Navigation className="w-4 h-4" />
               {t('hotelDetails.resetMap', 'Reset Map')}
             </button>
           </div>
 
           {/* Right Sidebar - Hotel Info & Surroundings */}
-          <div className="w-[380px] bg-white flex flex-col border-l border-gray-200 shadow-xl">
+          <div className="w-[380px] bg-white dark:bg-gray-800 flex flex-col border-l border-gray-200 dark:border-gray-700 shadow-xl">
             {/* Hotel Info Card */}
-            <div className="p-4 border-b border-gray-200">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h2 className="text-lg font-bold text-gray-900 line-clamp-1">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1">
                       {hotelInfo?.name || hotelName}
                     </h2>
                     {(hotelInfo?.rating || 0) > 0 && (
@@ -212,7 +212,7 @@ export default function GoogleMapModal({
                   </div>
                   
                   {/* Address */}
-                  <div className="flex items-start gap-1 text-sm text-gray-600 mb-2">
+                  <div className="flex items-start gap-1 text-sm text-gray-600 dark:text-gray-400 mb-2">
                     <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
                     <span className="line-clamp-2">
                       {hotelInfo?.address || hotelAddress || 'Ulaanbaatar, Mongolia'}
@@ -230,7 +230,7 @@ export default function GoogleMapModal({
                           {hotelInfo.reviewLabel || t('hotelDetails.veryGood', 'Very good')}
                         </span>
                         {hotelInfo.reviewCount && (
-                          <span className="text-gray-500 text-xs ml-1">
+                          <span className="text-gray-500 dark:text-gray-400 text-xs ml-1">
                             {hotelInfo.reviewCount} {t('hotelDetails.reviews', 'reviews')}
                           </span>
                         )}
@@ -250,13 +250,13 @@ export default function GoogleMapModal({
             </div>
 
             {/* Tabs */}
-            <div className="flex border-b border-gray-200">
+            <div className="flex border-b border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setActiveTab('surroundings')}
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'surroundings'
                     ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
                 {t('hotelDetails.surroundings', 'Surroundings')}
@@ -266,7 +266,7 @@ export default function GoogleMapModal({
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'nearby'
                     ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
                 {t('hotelDetails.nearbyProperties', 'Nearby Properties')}
@@ -274,7 +274,7 @@ export default function GoogleMapModal({
             </div>
 
             {/* Category Pills */}
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-700/50">
               <div className="flex gap-2 overflow-x-auto">
                 {(Object.keys(categoryConfig) as Category[]).map((cat) => {
                   const config = categoryConfig[cat];
@@ -288,7 +288,7 @@ export default function GoogleMapModal({
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                         activeCategory === cat
                           ? 'bg-blue-600 text-white shadow-sm'
-                          : 'bg-white text-gray-700 border border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
@@ -308,7 +308,7 @@ export default function GoogleMapModal({
             <div className="flex-1 overflow-y-auto">
               {/* Loading State */}
               {isLoadingPlaces && (
-                <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
                   <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
                   <p className="text-sm">{t('hotelDetails.loadingNearbyPlaces', 'Loading nearby places...')}</p>
                 </div>
@@ -316,7 +316,7 @@ export default function GoogleMapModal({
 
               {/* Error State */}
               {placesError && !isLoadingPlaces && (
-                <div className="p-4 text-center text-gray-500 text-sm">
+                <div className="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
                   <p>{t('hotelDetails.nearbyPlacesError', 'Could not load nearby places')}</p>
                   <p className="text-xs text-gray-400 mt-1">{placesError}</p>
                 </div>
@@ -329,8 +329,8 @@ export default function GoogleMapModal({
                   {trainStations.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-3">
-                        <Train className="w-4 h-4 text-gray-600" />
-                        <h3 className="text-sm font-semibold text-gray-900">
+                        <Train className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                           {t('hotelDetails.trainStation', 'Train station')}
                         </h3>
                       </div>
@@ -340,7 +340,7 @@ export default function GoogleMapModal({
                             <p className="text-sm font-medium text-blue-600 hover:underline cursor-pointer">
                               {place.name}
                             </p>
-                            <p className="text-xs text-gray-500 mt-0.5">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                               {place.distance}
                             </p>
                           </div>
@@ -353,8 +353,8 @@ export default function GoogleMapModal({
                   {airports.length > 0 && (
                     <div>
                       <div className="flex items-center gap-2 mb-3">
-                        <Plane className="w-4 h-4 text-gray-600" />
-                        <h3 className="text-sm font-semibold text-gray-900">
+                        <Plane className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                           {t('hotelDetails.airport', 'Airport')}
                         </h3>
                       </div>
@@ -364,7 +364,7 @@ export default function GoogleMapModal({
                             <p className="text-sm font-medium text-blue-600 hover:underline cursor-pointer">
                               {place.name}
                             </p>
-                            <p className="text-xs text-gray-500 mt-0.5">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                               {place.distance}
                             </p>
                           </div>
@@ -375,7 +375,7 @@ export default function GoogleMapModal({
 
                   {/* Empty transport state */}
                   {trainStations.length === 0 && airports.length === 0 && (
-                    <div className="text-center py-8 text-gray-500 text-sm">
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
                       {t('hotelDetails.noTransportNearby', 'No transport stations found nearby')}
                     </div>
                   )}
@@ -386,14 +386,14 @@ export default function GoogleMapModal({
                     filteredPlaces.map((place, idx) => (
                       <div 
                         key={idx} 
-                        className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                        className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
                       >
-                        <p className="text-sm text-gray-900">{place.name}</p>
-                        <p className="text-sm text-gray-500 shrink-0 ml-2">{place.distance}</p>
+                        <p className="text-sm text-gray-900 dark:text-white">{place.name}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 shrink-0 ml-2">{place.distance}</p>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8 text-gray-500 text-sm">
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
                       {t('hotelDetails.noPlacesInCategory', 'No places in this category')}
                     </div>
                   )}
@@ -403,7 +403,7 @@ export default function GoogleMapModal({
 
             {/* Footer with external link */}
             {googleMapUrl && (
-              <div className="px-4 py-3 border-t border-gray-200 bg-gray-50">
+              <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
                 <a
                   href={googleMapUrl}
                   target="_blank"

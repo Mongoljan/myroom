@@ -137,8 +137,8 @@ export default function RecentlyViewed() {
           className="mb-4"
         >
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-0.5">{t('hotel.recentlyViewed')}</h2>
-            <p className="text-xs text-gray-600">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-0.5">{t('hotel.recentlyViewed')}</h2>
+            <p className="text-xs text-gray-600 dark:text-gray-400">
               {t('hotel.recentlyViewedCount', { count: recentHotels.length })}
             </p>
           </div>
@@ -149,13 +149,13 @@ export default function RecentlyViewed() {
             {[...Array(4)].map((_, index) => (
               <div
                 key={`skeleton-${index}`}
-                className="bg-white border border-gray-200 rounded-lg overflow-hidden animate-pulse min-w-[280px] flex-shrink-0"
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse min-w-[280px] flex-shrink-0"
               >
-                <div className="h-36 bg-gray-200"></div>
+                <div className="h-36 bg-gray-200 dark:bg-gray-700"></div>
                 <div className="p-3">
-                  <div className="h-3 bg-gray-200 rounded-md mb-1"></div>
-                  <div className="h-2 bg-gray-200 rounded-md mb-2 w-3/4"></div>
-                  <div className="h-2 bg-gray-200 rounded-md w-1/2"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-md mb-1"></div>
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-md mb-2 w-3/4"></div>
+                  <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-md w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -181,9 +181,9 @@ export default function RecentlyViewed() {
               {canScrollLeft && (
                 <button
                   onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <ChevronLeft className="w-4 h-4 text-gray-600" />
+                  <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                 </button>
               )}
               
@@ -191,9 +191,9 @@ export default function RecentlyViewed() {
               {canScrollRight && (
                 <button
                   onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  <ChevronRight className="w-4 h-4 text-gray-600" />
+                  <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
                 </button>
               )}
             {recentHotels.map((hotel, index) => (

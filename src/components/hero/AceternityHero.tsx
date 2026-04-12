@@ -210,7 +210,7 @@ export default function AceternityHero() {
   const getLocationIcon = (type: LocationSuggestion['type']) => {
     switch (type) {
       case 'property': return <Hotel className="w-4 h-4 text-slate-900" />;
-      default: return <MapPin className="w-4 h-4 text-gray-500" />;
+      default: return <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />;
     }
   };
 

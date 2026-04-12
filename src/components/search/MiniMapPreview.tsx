@@ -86,10 +86,10 @@ export default function MiniMapPreview({ hotels, onShowFullMap, className = '' }
   // Loading state
   if (!isLoaded) {
     return (
-      <div className={`bg-gray-100 rounded-lg flex items-center justify-center ${className}`} style={{ height: '180px' }}>
+      <div className={`bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center ${className}`} style={{ height: '180px' }}>
         <div className="flex flex-col items-center gap-2">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-          <p className="text-xs text-gray-500">{t('loading', 'Ачааллаж байна...')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('loading', 'Ачааллаж байна...')}</p>
         </div>
       </div>
     );
@@ -110,10 +110,10 @@ export default function MiniMapPreview({ hotels, onShowFullMap, className = '' }
   // No hotels with coordinates
   if (hotelsWithCoords.length === 0) {
     return (
-      <div className={`bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200 ${className}`} style={{ height: '180px' }}>
+      <div className={`bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 ${className}`} style={{ height: '180px' }}>
         <div className="text-center p-4">
           <MapPin className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-          <p className="text-xs text-gray-500">{t('noHotelsWithLocation', 'Байршилтай зочид буудал алга')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('noHotelsWithLocation', 'Байршилтай зочид буудал алга')}</p>
         </div>
       </div>
     );
@@ -170,14 +170,14 @@ export default function MiniMapPreview({ hotels, onShowFullMap, className = '' }
         onClick={onShowFullMap}
         className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center group"
       >
-        <div className="bg-white/95 backdrop-blur-sm text-primary px-4 py-2 rounded-lg shadow-lg font-medium text-sm flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:scale-100 scale-95">
+        <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-primary px-4 py-2 rounded-lg shadow-lg font-medium text-sm flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:scale-100 scale-95">
           <MapPin className="w-4 h-4" />
           {t('showOnMap', 'Газрын зураг дээр харах')}
         </div>
       </button>
 
       {/* Hotel count badge */}
-      <div className="absolute bottom-2 left-2 bg-white/95 backdrop-blur-sm text-gray-700 px-2 py-1 rounded text-xs font-medium shadow-sm">
+      <div className="absolute bottom-2 left-2 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm text-gray-700 dark:text-gray-300 px-2 py-1 rounded text-xs font-medium shadow-sm">
         {hotelsWithCoords.length} {t('hotels', 'зочид буудал')}
       </div>
     </div>

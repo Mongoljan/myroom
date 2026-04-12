@@ -82,26 +82,26 @@ export default function HotelFAQ({ hotelName, hotelFacilities = [] }: HotelFAQPr
   return (
     <section id="faq" className="py-8">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
           {t('faq.title', 'Түгээмэл асуулт, хариулт')}
         </h2>
       </div>
 
       <div className="space-y-4">
         {faqData.map((faq, index) => (
-          <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+          <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
             <button
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
-              className="w-full px-6 py-4 text-left bg-white hover:bg-gray-100 transition-colors duration-200"
+              className="w-full px-6 py-4 text-left bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium text-gray-900 pr-4">{faq.question}</span>
+                <span className="font-medium text-gray-900 dark:text-white pr-4">{faq.question}</span>
                 <motion.div
                   animate={{ rotate: openIndex === index ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
                   className="flex-shrink-0"
                 >
-                  <ChevronDown className="w-5 h-5 text-gray-900" />
+                  <ChevronDown className="w-5 h-5 text-gray-900 dark:text-gray-300" />
                 </motion.div>
               </div>
             </button>
@@ -115,7 +115,7 @@ export default function HotelFAQ({ hotelName, hotelFacilities = [] }: HotelFAQPr
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="px-6 pb-4 text-gray-800 leading-relaxed border-t border-gray-100">
+                  <div className="px-6 pb-4 text-gray-800 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-gray-700">
                     {faq.answer}
                   </div>
                 </motion.div>

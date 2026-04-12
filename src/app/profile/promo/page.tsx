@@ -53,9 +53,9 @@ export default function PromoPage() {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="px-6 pt-6 pb-0">
-        <h1 className="text-xl font-semibold text-gray-900 mb-5">Промо код</h1>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-5">Промо код</h1>
 
         {/* Add promo input */}
         <form onSubmit={handleAdd} className="flex gap-2 mb-5 max-w-lg">
@@ -64,7 +64,7 @@ export default function PromoPage() {
             value={codeInput}
             onChange={(e) => setCodeInput(e.target.value)}
             placeholder="Промо код оруулах"
-            className="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+            className="flex-1 px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
           />
           <button
             type="submit"
@@ -79,7 +79,7 @@ export default function PromoPage() {
         {addSuccess && <p className="mb-3 text-sm text-green-600">{addSuccess}</p>}
 
         {/* Tabs */}
-        <div className="flex gap-0 border-b border-gray-100">
+        <div className="flex gap-0 border-b border-gray-100 dark:border-gray-700">
           {TABS.map((tab) => (
             <button
               key={tab.value}
@@ -87,7 +87,7 @@ export default function PromoPage() {
               className={`px-5 py-2.5 text-sm transition border-b-2 -mb-px ${
                 activeTab === tab.value
                   ? 'border-blue-600 text-blue-600 font-medium'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               }`}
             >
               {tab.label}
@@ -115,22 +115,22 @@ export default function PromoPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500">Промо код</th>
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500">Хөнгөлтийн хувь</th>
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500">Хүчинтэй хугацаа</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500">Ашиглах боломжтой тоо</th>
-                    <th className="text-right py-3 font-medium text-gray-500">Ашигласан тоо</th>
+                  <tr className="border-b border-gray-100 dark:border-gray-700">
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Промо код</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Хөнгөлтийн хувь</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Хүчинтэй хугацаа</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашиглах боломжтой тоо</th>
+                    <th className="text-right py-3 font-medium text-gray-500 dark:text-gray-400">Ашигласан тоо</th>
                   </tr>
                 </thead>
                 <tbody>
                   {activeCoupons.map((c) => (
                     <tr key={c.id} className="border-b border-gray-50">
-                      <td className="py-3 pr-4 text-gray-800 font-medium">{c.code}</td>
-                      <td className="py-3 pr-4 text-gray-600">-{c.discount_percentage}%</td>
-                      <td className="py-3 pr-4 text-gray-600">—</td>
-                      <td className="py-3 pr-4 text-right text-gray-600">1</td>
-                      <td className="py-3 text-right text-gray-600">0</td>
+                      <td className="py-3 pr-4 text-gray-800 dark:text-gray-200 font-medium">{c.code}</td>
+                      <td className="py-3 pr-4 text-gray-600 dark:text-gray-400">-{c.discount_percentage}%</td>
+                      <td className="py-3 pr-4 text-gray-600 dark:text-gray-400">—</td>
+                      <td className="py-3 pr-4 text-right text-gray-600 dark:text-gray-400">1</td>
+                      <td className="py-3 text-right text-gray-600 dark:text-gray-400">0</td>
                     </tr>
                   ))}
                 </tbody>
@@ -147,12 +147,12 @@ export default function PromoPage() {
             ) : (
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500">Промо код</th>
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500">Хөнгөлтийн хувь / дүн</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500">Ашиглах боломжтой тоо</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500">Ашигласан тоо</th>
-                    <th className="text-right py-3 font-medium text-gray-500">Ашигласан огноо</th>
+                  <tr className="border-b border-gray-100 dark:border-gray-700">
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Промо код</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Хөнгөлтийн хувь / дүн</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашиглах боломжтой тоо</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашигласан тоо</th>
+                    <th className="text-right py-3 font-medium text-gray-500 dark:text-gray-400">Ашигласан огноо</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -175,22 +175,22 @@ export default function PromoPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100">
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500">Промо код</th>
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500">Хөнгөлтийн хувь / дүн</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500">Ашиглах боломжтой тоо</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500">Ашигласан тоо</th>
-                    <th className="text-right py-3 font-medium text-gray-500">Хүчинтэй хугацаа</th>
+                  <tr className="border-b border-gray-100 dark:border-gray-700">
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Промо код</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Хөнгөлтийн хувь / дүн</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашиглах боломжтой тоо</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашигласан тоо</th>
+                    <th className="text-right py-3 font-medium text-gray-500 dark:text-gray-400">Хүчинтэй хугацаа</th>
                   </tr>
                 </thead>
                 <tbody>
                   {inactiveCoupons.map((c) => (
                     <tr key={c.id} className="border-b border-gray-50">
-                      <td className="py-3 pr-4 text-gray-800 font-medium">{c.code}</td>
-                      <td className="py-3 pr-4 text-gray-600">-{c.discount_percentage}%</td>
-                      <td className="py-3 pr-4 text-right text-gray-600">1</td>
-                      <td className="py-3 pr-4 text-right text-gray-600">0</td>
-                      <td className="py-3 text-right text-gray-500 text-xs">— (дууссан)</td>
+                      <td className="py-3 pr-4 text-gray-800 dark:text-gray-200 font-medium">{c.code}</td>
+                      <td className="py-3 pr-4 text-gray-600 dark:text-gray-400">-{c.discount_percentage}%</td>
+                      <td className="py-3 pr-4 text-right text-gray-600 dark:text-gray-400">1</td>
+                      <td className="py-3 pr-4 text-right text-gray-600 dark:text-gray-400">0</td>
+                      <td className="py-3 text-right text-gray-500 dark:text-gray-400 text-xs">— (дууссан)</td>
                     </tr>
                   ))}
                 </tbody>

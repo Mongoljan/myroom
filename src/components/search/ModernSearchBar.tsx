@@ -154,32 +154,32 @@ export default function ModernSearchBar() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 overflow-hidden hover:shadow-xl transition-shadow duration-300"
+        className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl transition-shadow duration-300"
       >
-        <div className="flex items-center divide-x divide-gray-200">
+              <div className="flex items-center divide-x divide-gray-200 dark:divide-gray-700">
           
           {/* Location Input */}
           <div ref={locationRef} className="flex-1 relative">
             <div 
-              className="flex items-center p-4 cursor-text hover:bg-slate-50 transition-colors"
+              className="flex items-center p-4 cursor-text hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors"
               onClick={() => setShowLocationSuggestions(true)}
             >
               <MapPin className="w-5 h-5 text-slate-900 mr-3" />
               <div className="flex-1">
-                <div className={`${TYPOGRAPHY.form.label} text-gray-700 mb-1 font-medium`}>{t('hotel.destination', 'Байршил')}</div>
+                <div className={`${TYPOGRAPHY.form.label} text-gray-700 dark:text-gray-300 mb-1 font-medium`}>{t('hotel.destination', 'Байршил')}</div>
                 <input
                   type="text"
                   value={searchData.location}
                   onChange={(e) => setSearchData(prev => ({ ...prev, location: e.target.value }))}
                   onFocus={() => setShowLocationSuggestions(true)}
                   placeholder={t('hero.whereAreYouGoing', 'Хаашаа явах вэ?')}
-                  className={`w-full ${TYPOGRAPHY.form.input} text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent`}
+                  className={`w-full ${TYPOGRAPHY.form.input} text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border-none outline-none bg-transparent`}
                 />
               </div>
               {searchData.location && (
                 <button
                   onClick={() => setSearchData(prev => ({ ...prev, location: '' }))}
-                  className="text-gray-400 hover:text-gray-600 ml-2 transition-colors"
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 ml-2 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -193,21 +193,21 @@ export default function ModernSearchBar() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 mt-2 max-h-80 overflow-y-auto"
+                  className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 z-50 mt-2 max-h-80 overflow-y-auto"
                 >
                   <div className="p-4">
-                    <div className={`${TYPOGRAPHY.form.label} text-gray-900 mb-3`}>
+                    <div className={`${TYPOGRAPHY.form.label} text-gray-900 dark:text-white mb-3`}>
                       {searchData.location ? (
                         <div className="flex flex-col gap-1">
-                          <span>Search results</span>
+                          <span>{t('search.searchResults', 'Search results')}</span>
                           {(hasCyrillic(searchData.location) || hasLatin(searchData.location)) && (
                             <span className="text-xs text-slate-900">
-                              Including transliteration matches
+                              {t('search.transliterationMatches', 'Including transliteration matches')}
                             </span>
                           )}
                         </div>
                       ) : (
-                        'Popular destinations'
+                        t('home.popularDestinationsTitle', 'Popular destinations')
                       )}
                     </div>
                     <div className="space-y-1">
@@ -215,26 +215,26 @@ export default function ModernSearchBar() {
                         <button
                           key={suggestion.id}
                           onClick={() => handleLocationSelect(suggestion)}
-                          className="w-full flex items-center p-3 text-left hover:bg-gray-50 rounded-lg transition-colors"
+                          className="w-full flex items-center p-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
-                          <div className="text-gray-900 mr-3">
+                          <div className="text-gray-900 dark:text-gray-300 mr-3">
                             {getLocationIcon(suggestion.type)}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className={`${TYPOGRAPHY.body.standard} text-gray-900`}>
+                              <span className={`${TYPOGRAPHY.body.standard} text-gray-900 dark:text-white`}>
                                 {suggestion.name}
                               </span>
                               {suggestion.searchScore && suggestion.searchScore >= 90 && (
                                 <span className="w-2 h-2 bg-green-500 rounded-full" title={t('search.exactMatch', 'Яг таарсан')}></span>
                               )}
                               {suggestion.property_count > 0 && (
-                                <span className={`${TYPOGRAPHY.body.caption} text-slate-900`}>
+                                <span className={`${TYPOGRAPHY.body.caption} text-slate-900 dark:text-slate-300`}>
                                   ({suggestion.property_count} зочид буудал)
                                 </span>
                               )}
                             </div>
-                            <div className={`${TYPOGRAPHY.body.caption} text-gray-900`}>
+                            <div className={`${TYPOGRAPHY.body.caption} text-gray-900 dark:text-gray-400`}>
                               {suggestion.fullName}
                             </div>
                           </div>
@@ -251,12 +251,12 @@ export default function ModernSearchBar() {
           <div ref={dateRef} className="relative">
             <button
               onClick={() => setShowDatePicker(true)}
-              className="flex items-center p-4 hover:bg-slate-50 transition-colors"
+              className="flex items-center p-4 hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors"
             >
               <Calendar className="w-5 h-5 text-slate-900 mr-3" />
               <div>
-                <div className={`${TYPOGRAPHY.form.label} text-gray-700 mb-1 font-medium`}>Check in - Check out</div>
-                <div className={`${TYPOGRAPHY.body.standard} text-gray-900`}>
+                <div className={`${TYPOGRAPHY.form.label} text-gray-700 dark:text-gray-300 mb-1 font-medium`}>Check in - Check out</div>
+                <div className={`${TYPOGRAPHY.body.standard} text-gray-900 dark:text-gray-200`}>
                   {searchData.checkIn && searchData.checkOut 
                     ? `${formatDate(searchData.checkIn)} - ${formatDate(searchData.checkOut)}`
                     : 'August 15 - September 14'
@@ -276,39 +276,39 @@ export default function ModernSearchBar() {
                   onClick={() => setShowDatePicker(false)}
                 >
                   <div 
-                    className="bg-white rounded-2xl p-6 max-w-md w-full"
+                    className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex justify-between items-center mb-4">
-                      <h3 className={`${TYPOGRAPHY.heading.h3} text-gray-900`}>Select Dates</h3>
+                      <h3 className={`${TYPOGRAPHY.heading.h3} text-gray-900 dark:text-white`}>Select Dates</h3>
                       <button
                         onClick={() => setShowDatePicker(false)}
-                        className="text-gray-900 hover:text-gray-800"
+                        className="text-gray-900 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
                       >
                         <X className="w-5 h-5" />
                       </button>
                     </div>
                     <div className="space-y-4">
                       <div>
-                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-900 mb-2`}>
+                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-900 dark:text-gray-300 mb-2`}>
                           Check-in Date
                         </label>
                         <input
                           type="date"
                           value={searchData.checkIn}
                           onChange={(e) => setSearchData(prev => ({ ...prev, checkIn: e.target.value }))}
-                          className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 ${TYPOGRAPHY.form.input}`}
+                          className={`w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 ${TYPOGRAPHY.form.input}`}
                         />
                       </div>
                       <div>
-                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-900 mb-2`}>
+                        <label className={`block ${TYPOGRAPHY.form.label} text-gray-900 dark:text-gray-300 mb-2`}>
                           Check-out Date
                         </label>
                         <input
                           type="date"
                           value={searchData.checkOut}
                           onChange={(e) => setSearchData(prev => ({ ...prev, checkOut: e.target.value }))}
-                          className={`w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 ${TYPOGRAPHY.form.input}`}
+                          className={`w-full p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 ${TYPOGRAPHY.form.input}`}
                         />
                       </div>
                     </div>

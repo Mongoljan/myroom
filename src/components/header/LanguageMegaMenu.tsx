@@ -33,7 +33,7 @@ const LanguageMegaMenu: React.FC<LanguageMegaMenuProps> = ({ textClass = "" }) =
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[150px]">
+        <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-[150px]">
           {languages.map((language) => (
             <button
               key={language.code}
@@ -41,11 +41,11 @@ const LanguageMegaMenu: React.FC<LanguageMegaMenuProps> = ({ textClass = "" }) =
                 i18n.changeLanguage(language.code);
                 setIsOpen(false);
               }}
-              className="w-full text-left px-4 py-2 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg"
+              className="w-full text-left px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700 first:rounded-t-lg last:rounded-b-lg"
             >
               <div className="flex items-center space-x-2">
                 <span>{language.flag}</span>
-                <span className="text-gray-900">{language.name}</span>
+                <span className="text-gray-900 dark:text-gray-100">{language.name}</span>
               </div>
             </button>
           ))}

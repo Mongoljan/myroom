@@ -19,7 +19,7 @@ export default function LoadingSkeleton({
     switch (variant) {
       case 'hotel-card':
         return (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
             <SkeletonBase className="h-48 w-full" />
             <div className="p-4 space-y-3">
               <div className="flex items-center space-x-1">
@@ -42,7 +42,7 @@ export default function LoadingSkeleton({
 
       case 'hotel-list':
         return (
-          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
             <div className="flex flex-col md:flex-row">
               <SkeletonBase className="md:w-80 h-64 md:h-auto" />
               <div className="flex-1 p-6 space-y-4">

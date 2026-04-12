@@ -129,20 +129,20 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div>
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-2">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-2">
             {t('AuthSignup.createAccount', 'Create Account')}
           </h2>
-          <p className="text-sm text-gray-600 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
             {t('AuthSignup.subtitle', 'Start your journey with us today')}
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8">
           {/* General Error Message */}
           {errors.general && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -155,7 +155,7 @@ export default function SignupPage() {
             {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t('AuthSignup.firstNameLabel', 'First Name')}
                 </label>
                 <input
@@ -165,8 +165,8 @@ export default function SignupPage() {
                   required
                   value={formData.first_name}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
-                    errors.first_name ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                    errors.first_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   disabled={isLoading}
                 />
@@ -175,7 +175,7 @@ export default function SignupPage() {
                 )}
               </div>
               <div>
-                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t('AuthSignup.lastNameLabel', 'Last Name')}
                 </label>
                 <input
@@ -185,8 +185,8 @@ export default function SignupPage() {
                   required
                   value={formData.last_name}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
-                    errors.last_name ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                    errors.last_name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   disabled={isLoading}
                 />
@@ -198,7 +198,7 @@ export default function SignupPage() {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('AuthSignup.emailLabel', 'Email Address')}
               </label>
               <input
@@ -209,8 +209,8 @@ export default function SignupPage() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
-                  errors.email ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                  errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 placeholder={t('AuthSignup.emailPlaceholder', 'you@example.com')}
                 disabled={isLoading}
@@ -222,8 +222,8 @@ export default function SignupPage() {
 
             {/* Phone (Optional) */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                {t('AuthSignup.phoneLabel', 'Phone Number')} <span className="text-gray-500">({t('AuthSignup.optional', 'Optional')})</span>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('AuthSignup.phoneLabel', 'Phone Number')} <span className="text-gray-500 dark:text-gray-400">({t('AuthSignup.optional', 'Optional')})</span>
               </label>
               <input
                 id="phone"
@@ -232,8 +232,8 @@ export default function SignupPage() {
                 autoComplete="tel"
                 value={formData.phone}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
-                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                  errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 }`}
                 disabled={isLoading}
               />
@@ -244,7 +244,7 @@ export default function SignupPage() {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('AuthSignup.passwordLabel', 'Password')}
               </label>
               <div className="relative">
@@ -256,8 +256,8 @@ export default function SignupPage() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 pr-12 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
-                    errors.password ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 pr-12 bg-gray-50 dark:bg-gray-700 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                    errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder={t('AuthSignup.passwordPlaceholder', '••••••••')}
                   disabled={isLoading}
@@ -265,7 +265,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -278,7 +278,7 @@ export default function SignupPage() {
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('AuthSignup.confirmPasswordLabel', 'Confirm Password')}
               </label>
               <div className="relative">
@@ -290,8 +290,8 @@ export default function SignupPage() {
                   required
                   value={formData.confirm_password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 pr-12 bg-gray-50 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 ${
-                    errors.confirm_password ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-4 py-3 pr-12 bg-gray-50 dark:bg-gray-700 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 ${
+                    errors.confirm_password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
                   placeholder={t('AuthSignup.confirmPasswordPlaceholder', '••••••••')}
                   disabled={isLoading}
@@ -299,7 +299,7 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
                   tabIndex={-1}
                 >
                   {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -322,7 +322,7 @@ export default function SignupPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-600">
+        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
           {t('AuthSignup.haveAccount', 'Already have an account?')}{' '}
           <Link href="/login" className="text-blue-600 hover:text-blue-700 font-medium">
             {t('AuthSignup.signIn', 'Sign in')}

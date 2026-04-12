@@ -43,7 +43,7 @@ export default function LocationSuggestionsModal({
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
-        className="fixed bg-white rounded-xl border border-gray-200 z-[100000] max-h-96 overflow-y-auto w-[400px] max-w-[90vw]"
+        className="fixed bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 z-[100000] max-h-96 overflow-y-auto w-[400px] max-w-[90vw]"
         style={{ 
           top: locationRef.current ? locationRef.current.getBoundingClientRect().bottom + 8 : 0,
           left: locationRef.current ? Math.max(8, Math.min(locationRef.current.getBoundingClientRect().left, window.innerWidth - 416)) : 0,
@@ -55,7 +55,7 @@ export default function LocationSuggestionsModal({
           {/* Recent Searches Section */}
           {destination.length < 2 && recentSearches.length > 0 && (
             <div className="mb-4">
-              <div className="text-xs text-gray-500 mb-2 flex items-center">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center">
                 <Clock className="w-3 h-3 mr-1" />
                 {t('search.recentSearches')}
               </div>
@@ -64,28 +64,28 @@ export default function LocationSuggestionsModal({
                   <button
                     key={search.id}
                     onClick={() => onLocationSelect(search.location)}
-                    className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 rounded-lg transition-colors group border border-transparent hover:border-slate-200"
+                    className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-colors group border border-transparent hover:border-slate-200 dark:hover:border-gray-600"
                   >
                     <div className="text-slate-900 mr-3">
                       <Clock className="w-4 h-4" />
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm text-gray-900 group-hover:text-slate-900">
+                      <div className="text-sm text-gray-900 dark:text-gray-100 group-hover:text-slate-900 dark:group-hover:text-white">
                         {search.location.fullName}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
                         {search.checkIn} - {search.checkOut} • {search.guests.adults} {t('hotel.adults')}, {search.guests.children} {t('hotel.children')} • {search.guests.rooms} {t('hotel.rooms')}
                       </div>
                     </div>
                   </button>
                 ))}
               </div>
-              <div className="border-t border-gray-100 my-3"></div>
+              <div className="border-t border-gray-100 dark:border-gray-700 my-3"></div>
             </div>
           )}
 
           {/* Popular Locations / Search Results Section */}
-          <div className="text-xs text-gray-500 mb-2">
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
             {destination.length < 2 ? t('search.popularLocations') : t('search.searchResults')}
           </div>
           
@@ -99,27 +99,27 @@ export default function LocationSuggestionsModal({
                 <button
                   key={suggestion.id}
                   onClick={() => onLocationSelect(suggestion)}
-                  className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 rounded-lg transition-colors"
+                  className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
                 >
                   <div className="mr-3">
                     {suggestion.type === 'property' ? (
                       <Hotel className="w-4 h-4 text-slate-900" />
                     ) : (
-                      <MapPin className="w-4 h-4 text-gray-500" />
+                      <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
                       {suggestion.fullName}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
                       {suggestion.type === 'property' ? t('search.property') : t('search.hotelsCount', { count: suggestion.property_count })}
                     </div>
                   </div>
                 </button>
               ))}
               {locationSuggestions.length === 0 && !isLoadingSuggestions && (
-                <div className="text-sm text-gray-500 text-center py-3">
+                <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-3">
                   {t('search.noResults')}
                 </div>
               )}

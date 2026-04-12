@@ -107,7 +107,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300 group"
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-md transition-all duration-300 group"
     >
       {/* Room Image */}
       <div className="relative h-64 overflow-hidden">
@@ -121,14 +121,14 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-            <Bed className="w-16 h-16 text-gray-900" />
+            <Bed className="w-16 h-16 text-gray-900 dark:text-gray-200" />
           </div>
         )}
         
         {/* Availability Badge */}
         <div className="absolute top-4 right-4">
           {loading ? (
-            <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
+            <div className="bg-white/90 dark:bg-gray-700/90 backdrop-blur-sm px-3 py-1 rounded-full">
               <div className="flex items-center gap-2 text-sm text-gray-800">
                 <Clock className="w-4 h-4 animate-spin" />
                 {t('common.checking', 'Checking...')}
@@ -167,7 +167,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
       <div className="p-6 space-y-4">
         {/* Header */}
         <div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-1">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
             {room.room_Description}
           </h3>
           <div className="flex items-center gap-4 text-sm text-slate-900 mb-2 font-medium">
@@ -205,14 +205,14 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
         {/* Facilities */}
         {room.room_Facilities.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium text-gray-900 mb-2">{t('roomCard.roomFacilities', 'Room Facilities')}</h4>
+            <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">{t('roomCard.roomFacilities', 'Room Facilities')}</h4>
             <div className="flex flex-wrap gap-2">
               {room.room_Facilities.slice(0, 6).map((facilityId) => {
                 const facilityName = getFacilityName(facilityId);
                 return (
                   <div 
                     key={facilityId}
-                    className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded-lg text-xs text-gray-900"
+                    className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700 px-2 py-1 rounded-lg text-xs text-gray-900 dark:text-gray-200"
                   >
                     {IconMappingService.getRoomFacilityIcon(facilityId, facilityName)}
                     <span>{facilityName}</span>
@@ -220,7 +220,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
                 );
               })}
               {room.room_Facilities.length > 6 && (
-                <div className="text-xs text-gray-900 bg-gray-50 px-2 py-1 rounded-lg">
+                <div className="text-xs text-gray-900 dark:text-gray-200 bg-gray-50 dark:bg-gray-700 px-2 py-1 rounded-lg">
                   +{room.room_Facilities.length - 6} {t('amenitiesLabels.moreCount', { count: room.room_Facilities.length - 6 })}
                 </div>
               )}
@@ -241,7 +241,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
         {/* Pricing and Booking */}
         <div className="border-t pt-4 flex items-center justify-between">
           <div>
-            <div className="text-2xl font-bold text-gray-900">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {basePrice > 0 ? formatCurrency(basePrice) : ''}
             </div>
             <div className="text-sm text-gray-800">{t('hotel.perNight', 'per night')}</div>
@@ -253,7 +253,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
             className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
               isAvailable && !loading
                 ? 'bg-primary text-white hover:bg-primary/90 hover:shadow-lg transform hover:-translate-y-0.5'
-                : 'bg-gray-100 text-gray-900 cursor-not-allowed'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-400 cursor-not-allowed'
             }`}
           >
             {loading ? (
@@ -271,12 +271,12 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
 
         {/* Additional Info */}
         {checkIn && checkOut && (
-          <div className="bg-slate-50 p-3 rounded-lg text-sm text-gray-900">
+          <div className="bg-slate-50 dark:bg-gray-700 p-3 rounded-lg text-sm text-gray-900 dark:text-gray-200">
             <div className="flex items-center gap-2 mb-1">
               <Calendar className="w-4 h-4" />
               <span className="font-medium">{t('roomCard.selectedDates', 'Selected Dates')}</span>
             </div>
-            <div className="text-gray-700">
+            <div className="text-gray-700 dark:text-gray-300">
               {new Date(checkIn).toLocaleDateString()} - {new Date(checkOut).toLocaleDateString()}
             </div>
           </div>

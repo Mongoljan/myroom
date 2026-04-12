@@ -63,13 +63,13 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-2xl max-w-md w-full p-6"
+        className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">{t('booking.manage.changeDatesTitle', 'Өдөр солих')}</h3>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t('booking.manage.changeDatesTitle', 'Өдөр солих')}</h3>
           <button
             onClick={onClose}
-            className="text-gray-900 hover:text-gray-800 text-2xl"
+            className="text-gray-900 dark:text-white hover:text-gray-800 text-2xl"
           >
             ×
           </button>
@@ -77,7 +77,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
               {t('booking.manage.newCheckIn', 'Шинэ орох өдөр')}
             </label>
             <input
@@ -85,13 +85,13 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
               value={newCheckIn}
               onChange={(e) => setNewCheckIn(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
               {t('booking.manage.newCheckOut', 'Шинэ гарах өдөр')}
             </label>
             <input
@@ -99,7 +99,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
               value={newCheckOut}
               onChange={(e) => setNewCheckOut(e.target.value)}
               min={newCheckIn}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               required
             />
           </div>
@@ -114,7 +114,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 transition-colors"
+              className="flex-1 py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               {t('common.cancel', 'Цуцлах')}
             </button>
@@ -202,7 +202,7 @@ export default function ManageBookingContent() {
       case 'cancelled':
         return 'text-red-700 bg-red-100';
       default:
-        return 'text-gray-900 bg-gray-100';
+        return 'text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700';
     }
   };
 
@@ -249,7 +249,7 @@ export default function ManageBookingContent() {
         >
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {t('booking.manage.title', 'Захиалгаа удирдах')}
             </h1>
             <p className="text-gray-800">
@@ -258,7 +258,7 @@ export default function ManageBookingContent() {
           </div>
 
           {/* Search Form */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             {/* Auto-filled notification */}
             {autoSearched && bookingCode && pinCode && !bookingData && !error && (
               <div className="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center gap-2">
@@ -272,7 +272,7 @@ export default function ManageBookingContent() {
             <form onSubmit={(e) => { e.preventDefault(); fetchBooking(); }} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                     {t('booking.manage.bookingCode', 'Захиалгын код')}
                   </label>
                   <input
@@ -280,12 +280,12 @@ export default function ManageBookingContent() {
                     value={bookingCode}
                     onChange={(e) => setBookingCode(e.target.value)}
                     placeholder={t('booking.manage.enterBookingCode', 'Захиалгын код оруулна уу')}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
                     {t('booking.manage.pinCode', 'PIN код')}
                   </label>
                   <input
@@ -293,7 +293,7 @@ export default function ManageBookingContent() {
                     value={pinCode}
                     onChange={(e) => setPinCode(e.target.value)}
                     placeholder={t('booking.manage.enterPinCode', 'PIN код оруулна уу')}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     required
                   />
                 </div>
@@ -324,9 +324,9 @@ export default function ManageBookingContent() {
               className="space-y-6"
             >
               {/* Summary */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900">{t('booking.manage.bookingSummary', 'Захиалгын тойм')}</h2>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('booking.manage.bookingSummary', 'Захиалгын тойм')}</h2>
                   <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(bookingData.status)}`}>
                     {getStatusIcon(bookingData.status)}
                     {bookingData.status.charAt(0).toUpperCase() + bookingData.status.slice(1)}
@@ -335,7 +335,7 @@ export default function ManageBookingContent() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
                   <div className="space-y-3">
-                    <h3 className="font-medium text-gray-900">{t('booking.manage.bookingInfo', 'Захиалгын мэдээлэл')}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-white">{t('booking.manage.bookingInfo', 'Захиалгын мэдээлэл')}</h3>
                     <div className="space-y-1 text-gray-800">
                       <p><span className="font-medium">{t('booking.manage.code', 'Код')}:</span> {bookingCode}</p>
                       <p><span className="font-medium">{t('booking.manage.pin', 'PIN')}:</span> {pinCode}</p>
@@ -344,7 +344,7 @@ export default function ManageBookingContent() {
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="font-medium text-gray-900">{t('booking.manage.guestInfo', 'Зочны мэдээлэл')}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-white">{t('booking.manage.guestInfo', 'Зочны мэдээлэл')}</h3>
                     <div className="space-y-1 text-gray-800">
                       <div className="flex items-center gap-2">
                         <User className="w-4 h-4" />
@@ -362,7 +362,7 @@ export default function ManageBookingContent() {
                   </div>
 
                   <div className="space-y-3">
-                    <h3 className="font-medium text-gray-900">{t('booking.manage.actions', 'Үйлдлүүд')}</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-white">{t('booking.manage.actions', 'Үйлдлүүд')}</h3>
                     <div className="space-y-2">
                       {bookingData.status === 'pending' && (
                         <button
@@ -385,12 +385,12 @@ export default function ManageBookingContent() {
                         </button>
                       )}
                       {bookingData.status === 'confirmed' && (
-                        <div className="text-xs text-gray-600 text-center p-2 bg-green-50 rounded-lg">
+                        <div className="text-xs text-gray-600 dark:text-gray-400 text-center p-2 bg-green-50 dark:bg-green-900/30 rounded-lg">
                           {t('booking.manage.alreadyConfirmed', 'Захиалга баталгаажсан байна')}
                         </div>
                       )}
                       {(bookingData.status === 'cancelled' || bookingData.status === 'finished') && (
-                        <div className="text-xs text-gray-600 text-center p-2 bg-gray-50 rounded-lg">
+                        <div className="text-xs text-gray-600 dark:text-gray-400 text-center p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
                           {t('booking.manage.noActions', 'Үйлдэл хийх боломжгүй')}
                         </div>
                       )}
@@ -401,14 +401,14 @@ export default function ManageBookingContent() {
 
               {/* Individual Bookings */}
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900">{t('booking.manage.roomReservations', 'Өрөөний захиалга')}</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('booking.manage.roomReservations', 'Өрөөний захиалга')}</h2>
                 {bookingData.bookings.map((booking, index) => (
                   <motion.div
                     key={booking.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+                    className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6"
                   >
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                       <div className="space-y-3">
@@ -431,7 +431,7 @@ export default function ManageBookingContent() {
                           </div>
                         </div>
 
-                        <div className="text-lg font-semibold text-gray-900">
+                        <div className="text-lg font-semibold text-gray-900 dark:text-white">
                           {formatCurrency(booking.total_price)}
                         </div>
                       </div>
@@ -440,7 +440,7 @@ export default function ManageBookingContent() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setShowDateModal(booking)}
-                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-900 hover:bg-gray-50 text-sm transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 text-sm transition-colors"
                           >
                             <Edit3 className="w-4 h-4" />
                             {t('booking.manage.changeDates', 'Өдөр солих')}

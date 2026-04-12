@@ -103,9 +103,9 @@ export default function PhonePage() {
   if (!user) return null;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-8">
-      <div className="mb-6 pb-4 border-b border-gray-100">
-        <h1 className="text-xl font-semibold text-gray-900">Утасны дугаар</h1>
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+      <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Утасны дугаар</h1>
       </div>
 
       {error && (
@@ -117,14 +117,14 @@ export default function PhonePage() {
       {/* ── View: current verified phone ── */}
       {step === 'view' && user.phone && (
         <div>
-          <p className="text-sm text-gray-500 mb-4">Таны утасны дугаар баталгаажсан байна.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Таны утасны дугаар баталгаажсан байна.</p>
           <div className="flex items-center gap-3">
             <div className="relative max-w-xs w-full">
               <input
                 type="text"
                 value={user.phone}
                 readOnly
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-700 bg-gray-50 pr-10"
+                className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 pr-10"
               />
               <CheckCircle
                 size={18}
@@ -144,14 +144,14 @@ export default function PhonePage() {
       {/* ── View: no phone yet ── */}
       {step === 'view' && !user.phone && (
         <div>
-          <p className="text-sm text-gray-500 mb-4">Та солих утасны дугаараа оруулна уу.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Та солих утасны дугаараа оруулна уу.</p>
           <div className="flex items-center gap-3 max-w-md">
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="____-____"
-              className="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition tracking-wider"
+              className="flex-1 px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition tracking-wider"
             />
             <button
               onClick={handleSendOtp}
@@ -167,14 +167,14 @@ export default function PhonePage() {
       {/* ── Enter new phone ── */}
       {step === 'enter_phone' && (
         <div>
-          <p className="text-sm text-gray-500 mb-4">Та солих утасны дугаараа оруулна уу.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Та солих утасны дугаараа оруулна уу.</p>
           <div className="flex items-center gap-3 max-w-md">
             <input
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="____-____"
-              className="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition tracking-wider"
+              className="flex-1 px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition tracking-wider"
             />
             <button
               onClick={handleSendOtp}
@@ -186,7 +186,7 @@ export default function PhonePage() {
           </div>
           <button
             onClick={() => setStep('view')}
-            className="mt-3 text-sm text-gray-400 hover:text-gray-600 transition"
+            className="mt-3 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
             Буцах
           </button>
@@ -196,7 +196,7 @@ export default function PhonePage() {
       {/* ── OTP verification ── */}
       {step === 'verify_otp' && (
         <div>
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             Таны дугаар луу илгээсэн кодыг оруулж, баталгаажуулна уу.
           </p>
           <form onSubmit={handleVerify}>
@@ -206,7 +206,7 @@ export default function PhonePage() {
                 type="text"
                 value={phone}
                 readOnly
-                className="w-36 px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-600 bg-gray-50"
+                className="w-36 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700"
               />
 
               {/* 4 OTP boxes */}
@@ -221,7 +221,7 @@ export default function PhonePage() {
                     value={d}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="w-11 h-11 text-center border border-gray-300 rounded-lg text-base font-medium text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    className="w-11 h-11 text-center border border-gray-300 dark:border-gray-600 rounded-lg text-base font-medium text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   />
                 ))}
               </div>
@@ -249,7 +249,7 @@ export default function PhonePage() {
                 className={`text-sm transition ${
                   countdown > 0
                     ? 'text-gray-300 cursor-not-allowed'
-                    : 'text-gray-500 hover:text-gray-700'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
               >
                 Дахин илгээх
@@ -262,14 +262,14 @@ export default function PhonePage() {
       {/* ── Verified ── */}
       {step === 'verified' && (
         <div>
-          <p className="text-sm text-gray-500 mb-4">Таны утасны дугаар баталгаажсан байна.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Таны утасны дугаар баталгаажсан байна.</p>
           <div className="flex items-center gap-3">
             <div className="relative max-w-xs w-full">
               <input
                 type="text"
                 value={phone.replace(/\D/g, '')}
                 readOnly
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-700 bg-gray-50 pr-10"
+                className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 pr-10"
               />
               <CheckCircle
                 size={18}

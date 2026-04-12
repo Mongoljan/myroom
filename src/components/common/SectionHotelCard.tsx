@@ -74,10 +74,10 @@ export default function SectionHotelCard({
     >
       <Link
         href={`/hotel/${id}`}
-        className="group bg-white rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 hover:shadow-lg block h-full"
+        className="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:shadow-lg block h-full"
       >
         {/* Hotel Image - Fixed dimensions for consistent sizing */}
-        <div className="relative w-full h-[180px] overflow-hidden bg-gray-100">
+          <div className="relative w-full h-[180px] overflow-hidden bg-gray-100 dark:bg-gray-700">
           <SafeImage
             src={imageUrl}
             alt={`${name} - Hotel image`}
@@ -97,11 +97,11 @@ export default function SectionHotelCard({
 
         {/* Hotel Info */}
         <div className="p-4">
-          <h3 className={`${text.h4} text-gray-900 mb-2 line-clamp-1 group-hover:text-slate-900 transition-colors`}>
+          <h3 className={`${text.h4} text-gray-900 dark:text-white mb-2 line-clamp-1 group-hover:text-slate-900 dark:group-hover:text-gray-100 transition-colors`}>
             {name}
           </h3>
 
-          <div className="flex items-center text-gray-500 mb-2">
+          <div className="flex items-center text-gray-500 dark:text-gray-400 mb-2">
             <MapPin className="w-4 h-4 mr-1" />
             <span className={`${text.caption} line-clamp-1`}>{location || t('hotelDetails.locationUnknown', 'Location unknown')}</span>
           </div>
@@ -112,13 +112,13 @@ export default function SectionHotelCard({
               <div className="bg-primary text-white px-2 py-0.5 rounded text-xs font-medium mr-1">
                 {rating}
               </div>
-              <span className={`${text.caption} text-gray-500`}>
+              <span className={`${text.caption} text-gray-500 dark:text-gray-400`}>
                 {ratingLabel?.replace(/\d+\s*stars?/i, '').trim() || t('hotel.rating', 'rating')}
               </span>
             </div>
             <div className="text-right">
-              <div className={`${text.caption} text-gray-500`}>{t('hotelDetails.startingPrice', 'starting price')}</div>
-              <div className={`${text.bodySm} font-bold text-gray-900`}>
+              <div className={`${text.caption} text-gray-500 dark:text-gray-400`}>{t('hotelDetails.startingPrice', 'starting price')}</div>
+              <div className={`${text.bodySm} font-bold text-gray-900 dark:text-white`}>
                 ₮{formatPrice(price)}{t('hotelDetails.priceFrom', '-from')}
               </div>
             </div>

@@ -250,7 +250,7 @@ export default function ModernHero() {
       case 'province': 
       case 'soum': 
       case 'district': 
-      default: return <MapPin className="w-4 h-4 text-gray-500" />; // All locations
+      default: return <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />; // All locations
     }
   };
 
@@ -421,7 +421,7 @@ export default function ModernHero() {
             style={{ overflow: 'visible' }}
           >
             <motion.div
-              className="backdrop-blur-md bg-white/95 rounded-2xl border border-gray-200/50 relative"
+              className="backdrop-blur-md bg-white/95 dark:bg-gray-800/95 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 relative"
               style={{
                 overflow: 'visible',
                 boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)"
@@ -443,7 +443,7 @@ export default function ModernHero() {
                 transition={{ duration: 0.3 }}
               />
 
-              <div className="relative bg-white rounded-2xl" style={{ overflow: 'visible' }}>
+              <div className="relative bg-white dark:bg-gray-800 rounded-2xl" style={{ overflow: 'visible' }}>
                 <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200" style={{ overflow: 'visible' }}>
                 
                 {/* Location - Enhanced with modern styling */}
@@ -461,7 +461,7 @@ export default function ModernHero() {
                       <MapPin className="w-6 h-6 text-slate-900" />
                     </motion.div>
                     <div className="flex-1">
-                      <div className="text-xs font-medium text-gray-500 mb-1">{t('search.location', 'Газар')}</div>
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('search.location', 'Газар')}</div>
                       <input
                         ref={locationInputRef}
                         type="text"
@@ -477,7 +477,7 @@ export default function ModernHero() {
                           setShowLocationTooltip(false);
                         }}
                         placeholder={t('search.locationPlaceholder', 'Хаана байрлах вэ?')}
-                        className="w-full text-base font-medium text-gray-900 placeholder-gray-400 border-none outline-none bg-transparent"
+                        className="w-full text-base font-medium text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 border-none outline-none bg-transparent"
                         required
                       />
                     </div>
@@ -486,7 +486,7 @@ export default function ModernHero() {
                         onClick={clearLocationSearch}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors"
+                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </motion.button>
@@ -520,7 +520,7 @@ export default function ModernHero() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="fixed bg-white rounded-xl border border-gray-200 z-[100000] max-h-96 overflow-y-auto w-[400px] max-w-[90vw]"
+                      className="fixed bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 z-[100000] max-h-96 overflow-y-auto w-[400px] max-w-[90vw]"
                       style={{ 
                         top: Math.max(8, locationModalPosition.top),
                         left: Math.max(8, Math.min(locationModalPosition.left, window.innerWidth - 416)),
@@ -532,7 +532,7 @@ export default function ModernHero() {
                           {/* Recent Searches Section */}
                           {destination.length < 2 && recentSearches.length > 0 && (
                             <div className="mb-4">
-                              <div className={`${TYPOGRAPHY.body.caption} text-gray-500 mb-2 flex items-center`}>
+                              <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400 mb-2 flex items-center`}>
                                 <Clock className="w-3 h-3 mr-1" />
                                 {t('search.recentSearches')}
                               </div>
@@ -547,22 +547,22 @@ export default function ModernHero() {
                                       <Clock className="w-4 h-4" />
                                     </div>
                                     <div className="flex-1">
-                                      <div className={`${TYPOGRAPHY.modal.content} text-gray-900 group-hover:text-slate-900`}>
+                                      <div className={`${TYPOGRAPHY.modal.content} text-gray-900 dark:text-white group-hover:text-slate-900`}>
                                         {search.location.fullName}
                                       </div>
-                                      <div className={`${TYPOGRAPHY.body.caption} text-gray-500`}>
+                                      <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400`}>
                                         {search.checkIn} - {search.checkOut} • {search.guests.adults} {t('search.adults').toLowerCase()}, {search.guests.children} {t('search.children').toLowerCase()} • {search.guests.rooms} {t('search.rooms').toLowerCase()}
                                       </div>
                                     </div>
                                   </button>
                                 ))}
                               </div>
-                              <div className="border-t border-gray-100 my-3"></div>
+                              <div className="border-t border-gray-100 dark:border-gray-700 my-3"></div>
                             </div>
                           )}
 
                           {/* Popular Locations / Search Results Section */}
-                          <div className={`${TYPOGRAPHY.body.caption} text-gray-500 mb-2`}>
+                          <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400 mb-2`}>
                             {destination.length < 2 ? t('search.popularLocations') : t('search.searchResults')}
                           </div>
                           
@@ -582,17 +582,17 @@ export default function ModernHero() {
                                     {getLocationIcon(suggestion.type)}
                                   </div>
                                   <div className="flex-1">
-                                    <div className={`${TYPOGRAPHY.modal.content} text-gray-900`}>
+                                    <div className={`${TYPOGRAPHY.modal.content} text-gray-900 dark:text-white`}>
                                       {suggestion.fullName}
                                     </div>
-                                    <div className={`${TYPOGRAPHY.body.caption} text-gray-500`}>
+                                    <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400`}>
                                       {suggestion.type === 'property' ? t('search.property') : t('search.hotelsCount', { count: suggestion.property_count })}
                                     </div>
                                   </div>
                                 </button>
                               ))}
                               {locationSuggestions.length === 0 && !isLoadingSuggestions && (
-                                <div className="text-sm text-gray-500 text-center py-3">
+                                <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-3">
                                   {t('search.noResults')}
                                 </div>
                               )}
@@ -618,7 +618,7 @@ export default function ModernHero() {
                       <Calendar className="w-6 h-6 text-slate-900" />
                     </motion.div>
                     <div className="flex-1">
-                      <div className="text-xs font-medium text-gray-500 mb-1">{t('hero.checkInOut', 'Огноо')}</div>
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('hero.checkInOut', 'Огноо')}</div>
                       <div className="relative z-[1]">
                         <DateRangePicker
                           checkIn={checkIn}

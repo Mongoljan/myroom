@@ -62,9 +62,9 @@ export default function SavedPage() {
 
   if (hotels.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-8">
-        <div className="mb-6 pb-4 border-b border-gray-100">
-          <h1 className="text-xl font-semibold text-gray-900">Хадгалсан</h1>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+        <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Хадгалсан</h1>
         </div>
         <div className="py-16 flex flex-col items-center gap-3 text-gray-400">
           <Heart size={40} className="text-gray-200" />
@@ -81,12 +81,12 @@ export default function SavedPage() {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="px-6 pt-6 pb-0">
-        <h1 className="text-xl font-semibold text-gray-900 mb-5">Хадгалсан</h1>
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-5">Хадгалсан</h1>
 
         {/* City tabs */}
-        <div className="flex gap-1 overflow-x-auto border-b border-gray-100 pb-0.5 mb-5">
+        <div className="flex gap-1 overflow-x-auto border-b border-gray-100 dark:border-gray-700 pb-0.5 mb-5">
           {cities.map((city) => (
             <button
               key={city}
@@ -94,7 +94,7 @@ export default function SavedPage() {
               className={`px-4 py-2 text-sm whitespace-nowrap transition border-b-2 -mb-0.5 ${
                 activeCity === city
                   ? 'border-blue-600 text-blue-600 font-medium'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
               {city}({cityCount(city)})
@@ -106,12 +106,12 @@ export default function SavedPage() {
       {/* Hotel grid */}
       <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map((hotel) => (
-          <div key={hotel.id} className="border border-gray-200 rounded-xl overflow-hidden group">
+          <div key={hotel.id} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden group">
             {/* Image area */}
-            <div className="relative h-40 bg-gray-100">
-              <button
-                onClick={() => handleRemove(hotel.id)}
-                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white shadow flex items-center justify-center z-10 hover:bg-red-50 transition"
+              <div className="relative h-40 bg-gray-100 dark:bg-gray-700">
+                <button
+                  onClick={() => handleRemove(hotel.id)}
+                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white dark:bg-gray-700 shadow flex items-center justify-center z-10 hover:bg-red-50 dark:hover:bg-red-900/30 transition">
               >
                 <Heart size={16} className="text-red-500 fill-red-500" />
               </button>
@@ -119,8 +119,8 @@ export default function SavedPage() {
 
             {/* Info */}
             <div className="p-3">
-              <h3 className="text-sm font-semibold text-gray-900">{hotel.name}</h3>
-              <p className="text-xs text-gray-400 mt-0.5">
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{hotel.name}</h3>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                 {hotel.city}, {hotel.district}
               </p>
 

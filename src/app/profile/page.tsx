@@ -87,10 +87,10 @@ export default function ProfilePage() {
     : '';
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-8">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
       {/* Header */}
-      <div className="mb-6 pb-4 border-b border-gray-100">
-        <h1 className="text-xl font-semibold text-gray-900">{t('Profile.title', 'Таны профайл')}</h1>
+      <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
+        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{t('Profile.title', 'Таны профайл')}</h1>
         {lastModified && (
           <p className="text-sm text-gray-400 mt-0.5">{t('Profile.lastModified', 'Сүүлд өөрчилсөн')}: {lastModified}</p>
         )}
@@ -112,19 +112,19 @@ export default function ProfilePage() {
           {/* Left column */}
           <div className="space-y-5">
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.lastName', 'Таны овог')}</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.lastName', 'Таны овог')}</label>
               <input
                 type="text"
                 name="last_name"
                 value={formData.last_name}
                 onChange={handleChange}
                 placeholder={t('Profile.lastNamePlaceholder', 'Овог')}
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.dateOfBirth', 'Төрсөн огноо')}</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.dateOfBirth', 'Төрсөн огноо')}</label>
               <DatePicker
                 value={formData.date_of_birth}
                 onChange={handleDateChange}
@@ -132,13 +132,13 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.nationality', 'Иргэншил')}</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.nationality', 'Иргэншил')}</label>
               <div className="relative">
                 <select
                   name="nationality"
                   value={formData.nationality}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white dark:bg-gray-700"
                 >
                   {COUNTRIES.map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -152,25 +152,25 @@ export default function ProfilePage() {
           {/* Right column */}
           <div className="space-y-5">
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.firstName', 'Өөрийн нэр')}</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.firstName', 'Өөрийн нэр')}</label>
               <input
                 type="text"
                 name="first_name"
                 value={formData.first_name}
                 onChange={handleChange}
                 placeholder={t('Profile.firstNamePlaceholder', 'Нэр')}
-                className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.gender', 'Хүйс')}</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.gender', 'Хүйс')}</label>
               <div className="relative">
                 <select
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white"
+                  className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none"
                 >
                   <option value="">{t('Profile.genderSelect', 'Сонгох')}</option>
                   <option value="male">{t('Profile.male', 'Эрэгтэй')}</option>
@@ -182,36 +182,36 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm text-gray-600 mb-1.5">{t('Profile.invoiceLink', 'И-баримт холбох')}</label>
+              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.invoiceLink', 'И-баримт холбох')}</label>
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 w-44 shrink-0">{t('Profile.individual', 'Хувь хүн')}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 w-44 shrink-0">{t('Profile.individual', 'Хувь хүн')}</span>
                   <input
                     type="text"
                     name="invoice_individual"
                     value={formData.invoice_individual}
                     onChange={handleChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 w-44 shrink-0">{t('Profile.business', 'Хувь хүн /бизнес эрхлэгч/')}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 w-44 shrink-0">{t('Profile.business', 'Хувь хүн /бизнес эрхлэгч/')}</span>
                   <input
                     type="text"
                     name="invoice_business"
                     value={formData.invoice_business}
                     onChange={handleChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 w-44 shrink-0">{t('Profile.organization', 'Байгуулага')}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 w-44 shrink-0">{t('Profile.organization', 'Байгуулага')}</span>
                   <input
                     type="text"
                     name="invoice_organization"
                     value={formData.invoice_organization}
                     onChange={handleChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
                   />
                 </div>
               </div>

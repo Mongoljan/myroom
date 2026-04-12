@@ -11,7 +11,7 @@ export default function SearchFormContainer({ children, compact = false }: Searc
   if (compact) {
     // Compact mode - no border, no shadow, seamless with header
     return (
-      <div className="bg-white">
+      <div className="bg-white dark:bg-gray-800">
         {children}
       </div>
     );
@@ -20,7 +20,7 @@ export default function SearchFormContainer({ children, compact = false }: Searc
   // Normal mode - with border and shadow
   return (
     <div 
-      className="bg-white border border-primary rounded-xl hover:border-gray-300 transition-all duration-200 overflow-hidden"
+      className="bg-white dark:bg-gray-800 border border-primary rounded-xl hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-200 overflow-hidden"
      
     >
       {children}

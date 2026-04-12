@@ -141,15 +141,15 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
   if (loading) {
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">{t('similarHotels.title')}</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('similarHotels.title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, index) => (
-            <div key={index} className="bg-white border border-gray-200 rounded-lg overflow-hidden animate-pulse">
-              <div className="h-32 bg-gray-300"></div>
+            <div key={index} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse">
+              <div className="h-32 bg-gray-300 dark:bg-gray-600"></div>
               <div className="p-3 space-y-2">
-                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-300 rounded w-1/2"></div>
-                <div className="h-6 bg-gray-300 rounded w-1/3"></div>
+                <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+                <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+                <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-1/3"></div>
               </div>
             </div>
           ))}
@@ -167,11 +167,11 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900">{t('similarHotels.title')}</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('similarHotels.title')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {uniqueHotels.map((hotel, index) => (
           <Link key={`${hotel.hotel_id}-${index}`} href={`/hotel/${hotel.hotel_id}`}>
-            <div className="group cursor-pointer bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200">
+            <div className="group cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200">
               <div className="relative h-32 overflow-hidden">
                 <SafeImage
                   src={hotel.images?.cover ?
@@ -191,10 +191,10 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
 
               <div className="p-3 space-y-2">
                 <div>
-                  <h3 className="font-medium text-sm line-clamp-1 group-hover:text-slate-900 transition-colors text-gray-900">
+                  <h3 className="font-medium text-sm line-clamp-1 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-gray-900 dark:text-white">
                     {hotel.property_name}
                   </h3>
-                  <div className="flex items-center gap-1 text-gray-600 text-xs">
+                  <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs">
                     <MapPin className="w-3 h-3" />
                     <span className="line-clamp-1">
                       {hotel.location?.province_city}, {hotel.location?.soum}
@@ -208,7 +208,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                       <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <span className="text-xs text-gray-600">
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
                     {hotel.rating_stars?.label || t('similarHotels.noRating')}
                   </span>
                 </div>
@@ -229,7 +229,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                       `₮${hotel.cheapest_room?.price_per_night?.toLocaleString() || t('similarHotels.priceUnknown')}`
                     }
                   </span>
-                  <span className="text-xs text-gray-600">{t('similarHotels.from')}</span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">{t('similarHotels.from')}</span>
                 </div>
               </div>
             </div>

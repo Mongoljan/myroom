@@ -50,7 +50,7 @@ export default function HotelInfo({
       <div>
         <motion.h3
           whileHover={{ scale: 1.01 }}
-          className={`font-bold text-slate-900 leading-tight line-clamp-2 ${
+          className={`font-bold text-slate-900 dark:text-white leading-tight line-clamp-2 ${
             viewMode === 'list' ? 'text-xl mb-2' : 'text-lg mb-2'
           }`}
         >
@@ -62,7 +62,7 @@ export default function HotelInfo({
           <div className="flex items-center gap-1">
             {renderStars()}
           </div>
-          <span className="text-sm text-slate-600 font-medium">
+          <span className="text-sm text-slate-600 dark:text-slate-300 font-medium">
             {rating.label}
           </span>
           {viewMode === 'list' && (
@@ -75,14 +75,14 @@ export default function HotelInfo({
 
       {/* Location */}
       <div className="flex items-start gap-2">
-        <MapPin className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0" />
-        <div className="text-sm text-slate-600 leading-relaxed">
+        <MapPin className="w-4 h-4 text-slate-500 dark:text-slate-400 mt-0.5 flex-shrink-0" />
+        <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
           <div className="font-medium">{location.province_city}</div>
           {location.soum && (
-            <div className="text-slate-500">{location.soum}</div>
+            <div className="text-slate-500 dark:text-slate-400">{location.soum}</div>
           )}
           {location.district && (
-            <div className="text-slate-500">{location.district}</div>
+            <div className="text-slate-500 dark:text-slate-400">{location.district}</div>
           )}
         </div>
       </div>
@@ -108,11 +108,11 @@ export default function HotelInfo({
 
       {/* Quick Info for List View */}
       {viewMode === 'list' && (
-        <div className="pt-2 border-t border-slate-100">
-          <div className="text-sm text-slate-600">
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-700">
+          <div className="text-sm text-slate-600 dark:text-slate-400">
             <div className="flex items-center justify-between">
               <span>{t('hotelDetails.premiumClass', 'Premium hotel')}</span>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
                 Үнэлгээ: {getRatingStars()}.0/5.0
               </span>
             </div>
@@ -122,7 +122,7 @@ export default function HotelInfo({
 
       {/* Grid View Compact Info */}
       {viewMode === 'grid' && (
-        <div className="text-xs text-slate-500 line-clamp-2">
+        <div className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
           {t('hotel.description.variety', 'Hotel with various amenities.')}{' '}
           {t('hotel.description.luxury', 'Excellent service, luxurious environment.')}
         </div>

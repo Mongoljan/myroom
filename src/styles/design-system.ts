@@ -266,8 +266,8 @@ export const DESIGN_SYSTEM = {
     },
 
     color: {
-      light: 'border-gray-200',
-      DEFAULT: 'border-gray-300',
+      light: 'border-gray-200 dark:border-gray-700',
+      DEFAULT: 'border-gray-300 dark:border-gray-600',
       dark: 'border-gray-400',
       primary: 'border-slate-500',
     },
@@ -325,8 +325,8 @@ export const DESIGN_SYSTEM = {
   // ============================================
   effects: {
     glass: {
-      light: 'bg-white/80 backdrop-blur-xl',
-      medium: 'bg-white/70 backdrop-blur-lg',
+      light: 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl',
+      medium: 'bg-white/70 dark:bg-gray-700/70 backdrop-blur-lg',
       dark: 'bg-gray-900/80 backdrop-blur-xl',
     },
 
@@ -349,21 +349,21 @@ export const DESIGN_SYSTEM = {
   components: {
     // Card variants
     card: {
-      default: 'bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg hover:border-gray-300 transition-all duration-300',
-      elevated: 'bg-white rounded-xl border border-gray-200 p-5 shadow-md hover:shadow-xl transition-all duration-300',
-      glass: 'bg-white/80 backdrop-blur-xl rounded-xl border border-gray-200/50 p-5 hover:shadow-lg transition-all duration-300',
+      default: 'bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 hover:shadow-lg hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300',
+      elevated: 'bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-md hover:shadow-xl transition-all duration-300',
+      glass: 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-5 hover:shadow-lg transition-all duration-300',
     },
 
     // Button variants
     button: {
       primary: 'bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg px-4 py-2 transition-colors duration-200',
-      secondary: 'bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium rounded-lg px-4 py-2 transition-colors duration-200',
-      ghost: 'hover:bg-gray-100 text-gray-700 font-medium rounded-lg px-4 py-2 transition-colors duration-200',
+      secondary: 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium rounded-lg px-4 py-2 transition-colors duration-200',
+      ghost: 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg px-4 py-2 transition-colors duration-200',
     },
 
     // Badge variants
     badge: {
-      default: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700',
+      default: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
       primary: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800',
       success: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700',
     },

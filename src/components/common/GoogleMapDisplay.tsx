@@ -84,7 +84,7 @@ export default function GoogleMapDisplay({
         <div className="text-center p-4">
           <p className="text-red-600 font-semibold mb-2">Error loading Google Maps</p>
           <p className="text-red-500 text-sm">{loadError.message}</p>
-          <p className="text-gray-600 text-xs mt-2">
+          <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
             Please check your API key configuration in .env.local
           </p>
         </div>
@@ -95,10 +95,10 @@ export default function GoogleMapDisplay({
   // Loading state
   if (!isLoaded) {
     return (
-      <div className={`w-full bg-gray-100 rounded-lg flex items-center justify-center ${containerClassName}`} style={{ height }}>
+      <div className={`w-full bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center ${containerClassName}`} style={{ height }}>
         <div className="flex flex-col items-center gap-2">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="text-gray-600">Loading map...</p>
+          <p className="text-gray-600 dark:text-gray-400">Loading map...</p>
         </div>
       </div>
     );
@@ -124,7 +124,7 @@ export default function GoogleMapDisplay({
       </GoogleMap>
 
       {editable && (
-        <div className="mt-2 text-sm text-gray-600">
+        <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Click on the map to set location: {position.lat.toFixed(6)}, {position.lng.toFixed(6)}
         </div>
       )}

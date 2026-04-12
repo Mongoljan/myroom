@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Heart, X } from 'lucide-react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
 import { HotelImages } from '@/types/api';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface HotelImageGalleryProps {
   images: HotelImages;
@@ -20,6 +21,7 @@ export default function HotelImageGallery({
   viewMode,
   className = ""
 }: HotelImageGalleryProps) {
+  const { t } = useHydratedTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -142,7 +144,7 @@ export default function HotelImageGallery({
         {/* Wishlist Button */}
         <button
           onClick={toggleWishlist}
-          className="absolute top-3 right-3 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-colors group/heart"
+          className="absolute top-3 right-3 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-2 shadow-lg transition-colors group/heart"
         >
           <Heart
             className={`w-4 h-4 transition-all ${
@@ -157,9 +159,9 @@ export default function HotelImageGallery({
         {normalizedImages.length > 0 && (
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); openModalAt(currentImageIndex); }}
-            className="absolute bottom-3 right-3 bg-white/90 hover:bg-white text-slate-900 text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2"
+            className="absolute bottom-3 right-3 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 text-slate-900 dark:text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-2"
           >
-            <span>View photos</span>
+            <span>{t('hotel.viewPhotos', 'View photos')}</span>
             <span className="bg-slate-900 text-white text-[10px] px-2 py-0.5 rounded-full">
               {normalizedImages.length}
             </span>
@@ -178,15 +180,15 @@ export default function HotelImageGallery({
           <div className="absolute inset-0 flex items-center justify-between p-3 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); prevImage(); }}
-              className="bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-colors"
+              className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-2 shadow-lg transition-colors"
             >
-              <ChevronLeft className="w-4 h-4 text-slate-700" />
+              <ChevronLeft className="w-4 h-4 text-slate-700 dark:text-slate-300" />
             </button>
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); nextImage(); }}
-              className="bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-colors"
+              className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-2 shadow-lg transition-colors"
             >
-              <ChevronRight className="w-4 h-4 text-slate-700" />
+              <ChevronRight className="w-4 h-4 text-slate-700 dark:text-slate-300" />
             </button>
           </div>
         )}
@@ -254,22 +256,22 @@ export default function HotelImageGallery({
 
       {/* Lightbox / modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-6xl w-[95vw] p-0 border border-slate-200 bg-white text-slate-900 shadow-2xl rounded-2xl overflow-hidden">
+        <DialogContent className="max-w-6xl w-[95vw] p-0 border border-slate-200 dark:border-slate-700 bg-white dark:bg-gray-900 text-slate-900 dark:text-white shadow-2xl rounded-2xl overflow-hidden">
           <DialogTitle className="sr-only">{hotelName} photos</DialogTitle>
           <div className="flex flex-col h-[85vh]">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white/95">
-              <div className="text-sm font-semibold truncate text-slate-900">{hotelName}</div>
-              <div className="flex items-center gap-2 text-xs text-slate-600">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-gray-900/95">
+              <div className="text-sm font-semibold truncate text-slate-900 dark:text-white">{hotelName}</div>
+              <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
                 <span>{modalImageIndex + 1} / {normalizedImages.length}</span>
                 <DialogClose asChild>
-                  <button className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors" aria-label="Close">
-                    <X className="w-4 h-4 text-slate-700" />
+                  <button className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors" aria-label="Close">
+                    <X className="w-4 h-4 text-slate-700 dark:text-slate-300" />
                   </button>
                 </DialogClose>
               </div>
             </div>
 
-            <div className="relative flex-1 bg-white">
+            <div className="relative flex-1 bg-white dark:bg-gray-900">
               {normalizedImages[modalImageIndex]?.url && (
                 <Image
                   src={normalizedImages[modalImageIndex].url}
@@ -285,14 +287,14 @@ export default function HotelImageGallery({
                 <>
                   <button
                     onClick={() => setModalImageIndex(modalImageIndex === 0 ? normalizedImages.length - 1 : modalImageIndex - 1)}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 text-slate-800 rounded-full p-3 shadow-lg"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-800 dark:text-slate-200 rounded-full p-3 shadow-lg"
                     aria-label="Previous image"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={() => setModalImageIndex((modalImageIndex + 1) % normalizedImages.length)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 text-slate-800 rounded-full p-3 shadow-lg"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-800 dark:text-slate-200 rounded-full p-3 shadow-lg"
                     aria-label="Next image"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -302,7 +304,7 @@ export default function HotelImageGallery({
             </div>
 
             {hasMultipleImages && (
-              <div className="p-4 bg-white border-t border-slate-200 overflow-x-auto">
+              <div className="p-4 bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-slate-700 overflow-x-auto">
                 <div className="flex gap-2 min-w-full">
                   {normalizedImages.map((img, index) => (
                     <button

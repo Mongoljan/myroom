@@ -215,8 +215,8 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
     <div className="">
       <div className="flex  ">
         <div className="flex items-center gap-1.5 w-[160px] ">
-          <Filter className="w-3.5 h-3.5 text-gray-600" />
-          <h3 className="text-xs font-medium text-gray-700">
+          <Filter className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
+          <h3 className="text-xs font-medium text-gray-700 dark:text-gray-300">
             {t('search.activeFilters')}:
           </h3>
         </div>
@@ -225,12 +225,12 @@ export default function FilterSummary({ filters, onRemoveFilter, onClearAll, api
           {activeFilters.map((filter) => (
             <div
               key={`${filter.type}-${filter.value}`}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-gray-50 text-gray-700 text-xs rounded-md border border-gray-200"
+              className="inline-flex items-center gap-1 px-2 py-1 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-md border border-gray-200 dark:border-gray-600"
             >
               <span>{filter.label}</span>
               <button
                 onClick={() => onRemoveFilter(filter.type, filter.value)}
-                className="hover:text-gray-900 transition-colors"
+                className="hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 <X className="w-2.5 h-2.5" />
               </button>

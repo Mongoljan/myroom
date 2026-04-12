@@ -174,8 +174,8 @@ export default function RecommendedHotels() {
           transition={{ duration: 0.5 }}
           className="mb-4"
         >
-          <h2 className={`${text.h2} text-gray-900 mb-1`}>{t('hotel.recommended')}</h2>
-          <p className={`${text.caption} text-gray-600`}>{t('features.wideSelectionDesc')}</p>
+          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-1`}>{t('hotel.recommended')}</h2>
+          <p className={`${text.caption} text-gray-600 dark:text-gray-400`}>{t('features.wideSelectionDesc')}</p>
         </motion.div>
 
         {/* Tab filters */}
@@ -189,8 +189,8 @@ export default function RecommendedHotels() {
                 whileTap={{ scale: 0.98 }}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   activeTab === tab.key
-                    ? 'bg-slate-900 text-white shadow-sm'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-slate-300'
+                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-sm'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-slate-300 dark:hover:border-slate-500'
                 }`}
               >
                 {tab.label} {tabCounts[tab.key] > 0 && <span className="ml-0.5 opacity-70">({tabCounts[tab.key]})</span>}
@@ -206,13 +206,13 @@ export default function RecommendedHotels() {
               {[...Array(8)].map((_, index) => (
                 <div
                   key={`skeleton-${index}`}
-                  className="bg-white border border-gray-200 rounded-lg overflow-hidden animate-pulse w-[260px] sm:w-[280px] flex-shrink-0"
+                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse w-[260px] sm:w-[280px] flex-shrink-0"
                 >
-                  <div className="h-36 bg-gray-200"></div>
+                  <div className="h-36 bg-gray-200 dark:bg-gray-700"></div>
                   <div className="p-3">
-                    <div className="h-3 bg-gray-200 rounded mb-1"></div>
-                    <div className="h-2 bg-gray-200 rounded mb-2 w-3/4"></div>
-                    <div className="h-2 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded mb-1"></div>
+                    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-3/4"></div>
+                    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                   </div>
                 </div>
               ))}
@@ -224,9 +224,9 @@ export default function RecommendedHotels() {
             {canScrollLeft && (
               <button
                 onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-gray-600" />
+                <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               </button>
             )}
             
@@ -234,9 +234,9 @@ export default function RecommendedHotels() {
             {canScrollRight && (
               <button
                 onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
-                <ChevronRight className="w-4 h-4 text-gray-600" />
+                <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               </button>
             )}
 
@@ -277,12 +277,12 @@ export default function RecommendedHotels() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
+            <div className="text-gray-400 dark:text-gray-500 mb-4">
               <svg className="w-12 h-12 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4M9 7h6m-6 4h6m-6 4h6" />
               </svg>
             </div>
-            <p className="text-sm text-gray-600">{t('hotel.noCategoryResults')}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{t('hotel.noCategoryResults')}</p>
           </div>
         )}
       </div>

@@ -31,14 +31,14 @@ export default function HotelPricingSection({
   if (!cheapestRoom) {
     return (
       <div className={`text-center ${className}`}>
-        <div className="text-slate-500 text-sm mb-3">
+        <div className="text-slate-500 dark:text-slate-400 text-sm mb-3">
           {t('hotel.priceUnavailable')}
         </div>
         <Link href={`/hotel/${hotelId}`} className="block">
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-semibold text-sm transition-colors hover:bg-slate-200"
+            className="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg font-semibold text-sm transition-colors hover:bg-slate-200 dark:hover:bg-slate-600"
           >
             {t('hotel.viewDetails')}
           </motion.div>
@@ -51,10 +51,10 @@ export default function HotelPricingSection({
     <div className={`${className}`}>
       {/* Room Type & Capacity */}
       <div className="mb-3">
-        <div className="text-sm font-medium text-slate-900 mb-1">
+        <div className="text-sm font-medium text-slate-900 dark:text-white mb-1">
           {cheapestRoom.room_type_label}
         </div>
-        <div className="text-xs text-slate-600 flex items-center gap-1">
+        <div className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1">
           <Users className="w-3 h-3" />
           <span>
             {cheapestRoom.capacity_per_room_adults} {t('hotel.adults')}
@@ -68,23 +68,23 @@ export default function HotelPricingSection({
       {/* Pricing */}
       <div className="space-y-2 mb-4">
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-slate-900">
+          <span className="text-2xl font-bold text-slate-900 dark:text-white">
             {formatPrice(cheapestRoom.price_per_night)}
           </span>
-          <span className="text-sm text-slate-600">/ {t('hotel.night')}</span>
+          <span className="text-sm text-slate-600 dark:text-slate-400">/ {t('hotel.night')}</span>
         </div>
 
         {cheapestRoom.nights > 1 && (
-          <div className="text-sm text-slate-600">
+          <div className="text-sm text-slate-600 dark:text-slate-400">
             {t('hotel.totalEstimate')}: {cheapestRoom.nights} {t('hotel.nights')}: {' '}
-            <span className="font-semibold text-slate-900">
+            <span className="font-semibold text-slate-900 dark:text-white">
               {formatPrice(cheapestRoom.estimated_total_for_requested_rooms)}
             </span>
           </div>
         )}
 
         {/* Availability */}
-        <div className="text-xs text-slate-500">
+        <div className="text-xs text-slate-500 dark:text-slate-400">
           {cheapestRoom.available_in_this_type > 0 ? (
             <>
               {cheapestRoom.available_in_this_type} {t('hotel.roomsAvailable')}
@@ -140,7 +140,7 @@ export default function HotelPricingSection({
 
       {/* Additional Room Info for List View */}
       {viewMode === 'list' && (
-        <div className="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600">
+        <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-400">
           <div className="space-y-1">
             <div>{t('hotel.roomsAndRates')}: {cheapestRoom.room_category_label}</div>
             <div>{t('booking.taxes')}</div>

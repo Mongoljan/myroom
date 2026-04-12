@@ -227,12 +227,12 @@ export default function PrivacyPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar Navigation */}
           <aside className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
               <h2 className="font-semibold text-lg mb-4 text-gray-800">
                 Нууцлалын бодлого
               </h2>
@@ -244,7 +244,7 @@ export default function PrivacyPage() {
                     className={`w-full text-left px-3 py-2 rounded-md transition-all duration-200 flex items-center justify-between group ${
                       activeSection === String(section.id)
                         ? 'bg-slate-50 text-slate-900 font-medium border-l-4 border-slate-900 pl-2'
-                        : 'text-gray-700 hover:bg-gray-50 border-l-4 border-transparent'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-l-4 border-transparent'
                     }`}
                   >
                     <span className="text-sm">{section.title}</span>
@@ -263,26 +263,26 @@ export default function PrivacyPage() {
 
           {/* Main Content */}
           <main className="lg:col-span-3">
-            <h1 className="text-2xl font-medium text-center text-gray-900 flex-1">
+            <h1 className="text-2xl font-medium text-center text-gray-900 dark:text-white flex-1">
               Нууцлалын бодлого
             </h1>
             <div className="mt-3.5 mb-6 flex-1 flex justify-end">
-              <p className="text-gray-500 text-sm">Шинэчлэгдсэн: 2025.01.01</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Шинэчлэгдсэн: 2025.01.01</p>
             </div>
             <div className="">
               {privacySections.map((section: Section) => (
                 <section
                   key={section.id}
                   id={`section-${section.id}`}
-                  className="bg-white p-6 shadow-sm rounded-lg mb-4 last:mb-0 scroll-mt-24"
+                  className="bg-white dark:bg-gray-800 p-6 shadow-sm rounded-lg mb-4 last:mb-0 scroll-mt-24"
                 >
-                  <h3 className="text-md font-bold text-gray-900 mb-4 pb-2">
+                  <h3 className="text-md font-bold text-gray-900 dark:text-white mb-4 pb-2">
                     {section.title}
                   </h3>
 
                   {section.description && (
                     <div className="prose max-w-none mb-6">
-                      <p className="text-gray-700 leading-relaxed whitespace-pre-line text-sm">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-sm">
                         {section.description}
                       </p>
                     </div>
@@ -293,8 +293,8 @@ export default function PrivacyPage() {
                     section.clauses.map((clause: Clause) => (
                       <div key={clause.id} className="mb-4 last:mb-0">
                         <div className="pl-4">
-                          <p className="text-gray-700 leading-relaxed text-sm">
-                            <span className="font-semibold text-gray-900 mr-2">
+                          <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
+                            <span className="font-semibold text-gray-900 dark:text-white mr-2">
                               {clause.id}
                             </span>
                             {clause.content}

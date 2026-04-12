@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface DatePickerProps {
   value: string; // YYYY-MM-DD format
@@ -10,6 +11,7 @@ interface DatePickerProps {
 }
 
 export default function DatePicker({ value, onChange, className = '', disabled = false }: DatePickerProps) {
+  const { t } = useHydratedTranslation();
   const [day, setDay] = useState('');
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
@@ -40,18 +42,18 @@ export default function DatePicker({ value, onChange, className = '', disabled =
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
   const months = [
-    { value: '1', label: 'January' },
-    { value: '2', label: 'February' },
-    { value: '3', label: 'March' },
-    { value: '4', label: 'April' },
-    { value: '5', label: 'May' },
-    { value: '6', label: 'June' },
-    { value: '7', label: 'July' },
-    { value: '8', label: 'August' },
-    { value: '9', label: 'September' },
-    { value: '10', label: 'October' },
-    { value: '11', label: 'November' },
-    { value: '12', label: 'December' },
+    { value: '1', label: t('calendar.months.january', 'January') },
+    { value: '2', label: t('calendar.months.february', 'February') },
+    { value: '3', label: t('calendar.months.march', 'March') },
+    { value: '4', label: t('calendar.months.april', 'April') },
+    { value: '5', label: t('calendar.months.may', 'May') },
+    { value: '6', label: t('calendar.months.june', 'June') },
+    { value: '7', label: t('calendar.months.july', 'July') },
+    { value: '8', label: t('calendar.months.august', 'August') },
+    { value: '9', label: t('calendar.months.september', 'September') },
+    { value: '10', label: t('calendar.months.october', 'October') },
+    { value: '11', label: t('calendar.months.november', 'November') },
+    { value: '12', label: t('calendar.months.december', 'December') },
   ];
 
   // Calculate days in month
@@ -71,9 +73,9 @@ export default function DatePicker({ value, onChange, className = '', disabled =
           value={month}
           onChange={(e) => setMonth(e.target.value)}
           disabled={disabled}
-          className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white disabled:bg-gray-50 disabled:text-gray-500"
+          className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white dark:bg-gray-700 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
         >
-          <option value="">Month</option>
+          <option value="">{t('datePicker.month', 'Month')}</option>
           {months.map((m) => (
             <option key={m.value} value={m.value}>
               {m.label}
@@ -89,9 +91,9 @@ export default function DatePicker({ value, onChange, className = '', disabled =
           value={day}
           onChange={(e) => setDay(e.target.value)}
           disabled={disabled}
-          className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white disabled:bg-gray-50 disabled:text-gray-500"
+          className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white dark:bg-gray-700 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
         >
-          <option value="">Day</option>
+          <option value="">{t('datePicker.day', 'Day')}</option>
           {days.map((d) => (
             <option key={d} value={d}>
               {d}
@@ -107,9 +109,9 @@ export default function DatePicker({ value, onChange, className = '', disabled =
           value={year}
           onChange={(e) => setYear(e.target.value)}
           disabled={disabled}
-          className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white disabled:bg-gray-50 disabled:text-gray-500"
+          className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white dark:bg-gray-700 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
         >
-          <option value="">Year</option>
+          <option value="">{t('datePicker.year', 'Year')}</option>
           {years.map((y) => (
             <option key={y} value={y}>
               {y}

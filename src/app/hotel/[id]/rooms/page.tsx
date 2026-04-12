@@ -70,17 +70,17 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-white rounded-2xl p-8 max-w-md w-full"
+          className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full"
         >
           <div className="text-center space-y-4">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
               <span className="text-2xl">✅</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">{t('booking.confirmed', 'Захиалга баталгаажлаа!')}</h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{t('booking.confirmed', 'Захиалга баталгаажлаа!')}</h3>
             <div className="space-y-2 text-sm">
               <p><span className="font-medium">{t('booking.bookingCode', 'Захиалгын код')}:</span> {bookingResult.booking_code}</p>
               <p><span className="font-medium">{t('booking.pinCode', 'PIN код')}:</span> {bookingResult.pin_code}</p>
-              <p className="text-gray-600">{bookingResult.message}</p>
+              <p className="text-gray-600 dark:text-gray-400">{bookingResult.message}</p>
             </div>
             <div className="flex gap-3">
               <Link
@@ -91,7 +91,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               </Link>
               <button
                 onClick={onClose}
-                className="flex-1 bg-gray-100 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               >
                 {t('common.close', 'Хаах')}
               </button>
@@ -107,41 +107,41 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-800 rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
       >
         <div className="p-6 border-b">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Book Room {room.room_number}</h2>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('hotelRooms.bookRoom', 'Book Room')} {room.room_number}</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
+              className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
             >
               ×
             </button>
           </div>
-          <p className="text-gray-600 mt-1">{room.room_Description}</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">{room.room_Description}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
+          <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
             <div>
-              <span className="text-gray-600">Check-in:</span>
+              <span className="text-gray-600 dark:text-gray-400">{t('houseRules.checkIn', 'Check-in:')}</span>
               <div className="font-medium">{new Date(checkIn).toLocaleDateString()}</div>
             </div>
             <div>
-              <span className="text-gray-600">Check-out:</span>
+              <span className="text-gray-600 dark:text-gray-400">{t('houseRules.checkOut', 'Check-out:')}</span>
               <div className="font-medium">{new Date(checkOut).toLocaleDateString()}</div>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Number of Rooms
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              {t('hotelRooms.numberOfRooms', 'Number of Rooms')}
             </label>
             <select
               value={roomCount}
               onChange={(e) => setRoomCount(Number(e.target.value))}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
             >
               {Array.from({ length: Math.min(available, 5) }, (_, i) => i + 1).map(num => (
                 <option key={num} value={num}>
@@ -152,7 +152,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('booking.fullName', 'Бүтэн нэр')} *
             </label>
             <input
@@ -160,13 +160,13 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               required
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               placeholder={t('booking.namePlaceholder', 'Нэрээ оруулна уу')}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('booking.phone', 'Утасны дугаар')} *
             </label>
             <input
@@ -174,13 +174,13 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               required
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               placeholder={t('booking.phonePlaceholder', 'Утасны дугаараа оруулна уу')}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t('booking.email', 'Имэйл хаяг')} *
             </label>
             <input
@@ -188,7 +188,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
               required
               value={customerEmail}
               onChange={(e) => setCustomerEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
               placeholder={t('booking.emailPlaceholder', 'email@example.com')}
             />
           </div>
@@ -197,7 +197,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="flex-1 py-3 px-4 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
             >
               {t('common.cancel', 'Цуцлах')}
             </button>
@@ -309,11 +309,11 @@ function HotelRoomsContent() {
             
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   {t('hotelRooms.availableRooms', 'Боломжтой өрөөнүүд')}
                 </h1>
                 {checkIn && checkOut && (
-                  <div className="flex items-center gap-4 text-gray-600">
+                  <div className="flex items-center gap-4 text-gray-600 dark:text-gray-400">
                     <div className="flex items-center gap-1">
                       <Calendar className="w-4 h-4" />
                       {new Date(checkIn).toLocaleDateString()} - {new Date(checkOut).toLocaleDateString()}
@@ -325,11 +325,11 @@ function HotelRoomsContent() {
               {/* Filters and Sorting */}
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Filter className="w-4 h-4 text-gray-500" />
+                  <Filter className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   <select
                     value={filterBy}
                     onChange={(e) => setFilterBy(e.target.value as 'all' | 'available' | 'bathroom')}
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+                    className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
                   >
                     <option value="all">{t('hotelRooms.allRooms', 'Бүх өрөө')}</option>
                     <option value="available">{t('hotelRooms.availableOnly', 'Зөвхөн боломжтой')}</option>
@@ -338,11 +338,11 @@ function HotelRoomsContent() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <SortAsc className="w-4 h-4 text-gray-500" />
+                  <SortAsc className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'price' | 'size' | 'capacity')}
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
+                    className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
                   >
                     <option value="price">{t('hotelRooms.sortByPrice', 'Үнээр эрэмбэлэх')}</option>
                     <option value="size">{t('hotelRooms.sortBySize', 'Хэмжээгээр')}</option>
@@ -382,8 +382,8 @@ function HotelRoomsContent() {
               <div className="text-gray-400 mb-4">
                 <Users className="w-16 h-16 mx-auto" />
               </div>
-              <h3 className="text-xl font-medium text-gray-900 mb-2">{t('hotelRooms.noRoomsFound', 'Өрөө олдсонгүй')}</h3>
-              <p className="text-gray-600">{t('hotelRooms.tryAdjustingFilters', 'Шүүлтүүр эсвэл огноог өөрчилж үзнэ үү.')}</p>
+              <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">{t('hotelRooms.noRoomsFound', 'Өрөө олдсонгүй')}</h3>
+              <p className="text-gray-600 dark:text-gray-400">{t('hotelRooms.tryAdjustingFilters', 'Шүүлтүүр эсвэл огноог өөрчилж үзнэ үү.')}</p>
             </div>
           )}
         </div>

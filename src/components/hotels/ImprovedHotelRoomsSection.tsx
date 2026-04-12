@@ -251,14 +251,14 @@ export default function ImprovedHotelRoomsSection({
       <div className="py-8">
         <div className="grid grid-cols-1 gap-6">
           {[...Array(3)].map((_, index) => (
-            <div key={index} className="bg-white rounded-lg border border-gray-200 p-6 animate-pulse">
-              <div className="h-6 bg-gray-300 rounded w-1/3 mb-4"></div>
+              <div key={index} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
+              <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-1/3 mb-4"></div>
               <div className="flex gap-4">
-                <div className="w-48 h-32 bg-gray-300 rounded"></div>
+                <div className="w-48 h-32 bg-gray-300 dark:bg-gray-600 rounded"></div>
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-                  <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+                  <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
                 </div>
               </div>
             </div>
@@ -286,11 +286,11 @@ export default function ImprovedHotelRoomsSection({
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="text-center">
             <Bed className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-600 text-lg mb-2">{t('hotelRooms.noRoomsAvailable', 'No rooms available')}</p>
-            <p className="text-gray-500">
+            <p className="text-gray-600 dark:text-gray-400 text-lg mb-2">{t('hotelRooms.noRoomsAvailable', 'No rooms available')}</p>
+            <p className="text-gray-500 dark:text-gray-400">
               {t('hotelRooms.loaded', 'Loaded')} {rooms.length} {t('hotelRooms.roomsLoaded', 'room(s), but none meet availability criteria.')}
             </p>
-            <p className="text-gray-500">{t('hotelRooms.tryDifferentDates', 'Please try different dates or contact the hotel directly.')}</p>
+            <p className="text-gray-500 dark:text-gray-400">{t('hotelRooms.tryDifferentDates', 'Please try different dates or contact the hotel directly.')}</p>
           </div>
         </div>
         <div className="w-80">
@@ -313,11 +313,11 @@ export default function ImprovedHotelRoomsSection({
   return (
     <div>
       {/* Mini Search Form - Matches main search style */}
-      <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           {/* Check-in Date */}
           <div className="flex-1">
-            <label className="block text-xs text-gray-500 mb-1">
+            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
               {t('hotelRooms.checkInDate', 'Нэвтрэх огноо')}
             </label>
             <input
@@ -325,15 +325,15 @@ export default function ImprovedHotelRoomsSection({
               value={selectedCheckIn}
               onChange={(e) => handleCheckInChange(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
-              className="w-full px-3 py-2 border-0 focus:outline-none text-gray-900"
+              className="w-full px-3 py-2 border-0 focus:outline-none text-gray-900 dark:text-gray-100 dark:bg-transparent"
             />
           </div>
 
-          <div className="hidden lg:block h-8 w-px bg-gray-200"></div>
+          <div className="hidden lg:block h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
 
           {/* Check-out Date */}
           <div className="flex-1">
-            <label className="block text-xs text-gray-500 mb-1">
+            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
               {t('hotelRooms.checkOutDate', 'Гарах огноо')}
             </label>
             <input
@@ -341,20 +341,20 @@ export default function ImprovedHotelRoomsSection({
               value={selectedCheckOut}
               onChange={(e) => handleCheckOutChange(e.target.value)}
               min={selectedCheckIn}
-              className="w-full px-3 py-2 border-0 focus:outline-none text-gray-900"
+              className="w-full px-3 py-2 border-0 focus:outline-none text-gray-900 dark:text-gray-100 dark:bg-transparent"
             />
           </div>
 
-          <div className="hidden lg:block h-8 w-px bg-gray-200"></div>
+          <div className="hidden lg:block h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
 
           {/* Guests */}
           <div className="flex-1">
-            <label className="block text-xs text-gray-500 mb-1">
+            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
               {t('hotelRooms.guests', 'Зочид')}
             </label>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{t('hotelRooms.adults', 'Том хүн')}:</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{t('hotelRooms.adults', 'Том хүн')}:</span>
                 <input
                   type="number"
                   min="1"
@@ -365,11 +365,11 @@ export default function ImprovedHotelRoomsSection({
                     params.set('adults', e.target.value);
                     router.push(`?${params.toString()}`, { scroll: false });
                   }}
-                  className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-slate-500"
+                  className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-slate-500"
                 />
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{t('hotelRooms.children', 'Хүүхэд')}:</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">{t('hotelRooms.children', 'Хүүхэд')}:</span>
                 <input
                   type="number"
                   min="0"
@@ -380,7 +380,7 @@ export default function ImprovedHotelRoomsSection({
                     params.set('children', e.target.value);
                     router.push(`?${params.toString()}`, { scroll: false });
                   }}
-                  className="w-16 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-slate-500"
+                  className="w-16 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-slate-500"
                 />
               </div>
             </div>
@@ -388,7 +388,7 @@ export default function ImprovedHotelRoomsSection({
         </div>
 
         {/* Nights Info */}
-        <div className="mt-3 pt-3 border-t border-gray-100 text-sm text-gray-600">
+        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
           <span className="font-medium">{getNumberOfNights()} {getNumberOfNights() !== 1 ? t('roomCard.nights', 'шөнө') : t('roomCard.night', 'шөнө')}</span>
         </div>
       </div>

@@ -41,7 +41,7 @@ function HotelPriceMarker({ isSelected, onClick, price, hasDiscount, discountPer
           ? 'bg-primary text-white scale-110 z-40' 
           : hasDiscount 
             ? 'bg-red-500 text-white hover:bg-red-600' 
-            : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-200'
+            : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-200 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:border-gray-700'
         }
       `}
       style={{ 
@@ -115,7 +115,7 @@ function HotelSidebarCard({ hotel, isSelected, onClick, searchParams }: HotelSid
         flex gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200
         ${isSelected 
           ? 'bg-blue-50 border-2 border-primary shadow-md' 
-          : 'bg-white border border-gray-200 hover:border-gray-300 hover:shadow-sm'
+          : 'bg-white border border-gray-200 hover:border-gray-300 hover:shadow-sm dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600'
         }
       `}
     >
@@ -138,7 +138,7 @@ function HotelSidebarCard({ hotel, isSelected, onClick, searchParams }: HotelSid
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <h4 className="font-semibold text-gray-900 text-sm line-clamp-1 hover:text-primary">
+        <h4 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-1 hover:text-primary">
           <a href={buildHotelUrl()} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
             {hotel.property_name}
           </a>
@@ -152,7 +152,7 @@ function HotelSidebarCard({ hotel, isSelected, onClick, searchParams }: HotelSid
           </div>
         )}
 
-        <div className="flex items-center text-gray-500 text-xs mt-1">
+        <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs mt-1">
           <MapPin className="w-3 h-3 mr-0.5" />
           <span className="line-clamp-1">
             {hotel.location.soum || hotel.location.district || hotel.location.province_city}
@@ -174,7 +174,7 @@ function HotelSidebarCard({ hotel, isSelected, onClick, searchParams }: HotelSid
 
       {/* Favorite Button */}
       <button 
-        className="p-1 h-fit hover:bg-gray-100 rounded-full"
+        className="p-1 h-fit hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
         onClick={(e) => e.stopPropagation()}
       >
         <Heart className="w-4 h-4 text-gray-400" />
@@ -261,7 +261,7 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
 
   if (loadError) {
     return (
-      <div className="fixed inset-0 z-50 bg-white flex items-center justify-center">
+      <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 font-semibold mb-2">Google Maps ачаалахад алдаа гарлаа</p>
           <button onClick={onClose} className="text-primary hover:underline">
@@ -274,21 +274,21 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
 
   if (!isLoaded) {
     return (
-      <div className="fixed inset-0 z-50 bg-white flex items-center justify-center">
+      <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900 flex items-center justify-center">
         <div className="flex flex-col items-center gap-2">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          <p className="text-gray-600">{t('loading', 'Ачааллаж байна...')}</p>
+          <p className="text-gray-600 dark:text-gray-400">{t('loading', 'Ачааллаж байна...')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-white flex">
+    <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900 flex">
       {/* Sidebar with hotel list */}
-      <div className="w-[320px] h-full flex flex-col border-r border-gray-200 bg-gray-50">
+      <div className="w-[320px] h-full flex flex-col border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
         {/* Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-gray-200 bg-white">
+        <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
           <button
             onClick={onClose}
             className="flex items-center gap-1 text-primary hover:text-primary/80 font-medium text-sm"
@@ -311,7 +311,7 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
           ))}
           
           {hotelsWithCoords.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300" />
               <p>{t('noHotelsWithLocation', 'Байршилтай зочид буудал олдсонгүй')}</p>
             </div>
@@ -319,8 +319,8 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-gray-200 bg-white">
-          <p className="text-sm text-gray-600 text-center">
+        <div className="p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+          <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
             {hotelsWithCoords.length} {t('hotelsOnMap', 'зочид буудал газрын зураг дээр')}
           </p>
         </div>
@@ -361,14 +361,14 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
         {/* Close button on map */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50 transition-colors"
+          className="absolute top-4 right-4 p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         >
-          <X className="w-5 h-5 text-gray-600" />
+          <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
         </button>
 
         {/* Selected hotel preview card */}
         {selectedHotel && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[400px] max-w-[90%] bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[400px] max-w-[90%] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
             <HotelPreviewCard 
               hotel={selectedHotel.hotel} 
               pricing={selectedHotel.pricing}
@@ -434,12 +434,12 @@ function HotelPreviewCard({ hotel, pricing, searchParams, onClose }: HotelPrevie
       <div className="flex-1 p-3 relative">
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 p-1 hover:bg-gray-100 rounded-full"
+          className="absolute top-2 right-2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
         >
           <X className="w-4 h-4 text-gray-400" />
         </button>
 
-        <h4 className="font-semibold text-gray-900 pr-6 line-clamp-1">
+        <h4 className="font-semibold text-gray-900 dark:text-white pr-6 line-clamp-1">
           {hotel.property_name}
         </h4>
         
@@ -451,7 +451,7 @@ function HotelPreviewCard({ hotel, pricing, searchParams, onClose }: HotelPrevie
           </div>
         )}
 
-        <div className="flex items-center text-gray-500 text-xs mt-1">
+        <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs mt-1">
           <MapPin className="w-3 h-3 mr-0.5" />
           <span>{hotel.location.soum || hotel.location.district || hotel.location.province_city}</span>
         </div>
@@ -461,7 +461,7 @@ function HotelPreviewCard({ hotel, pricing, searchParams, onClose }: HotelPrevie
             <span className="text-primary font-bold">
               ₮{formatPrice(pricing.price)}
             </span>
-            <span className="text-xs text-gray-500 ml-1">
+            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
               / {t('perNight', 'шөнө')}
             </span>
           </div>

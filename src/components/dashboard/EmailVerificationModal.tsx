@@ -140,15 +140,15 @@ export default function EmailVerificationModal({ isOpen, onClose, onVerified }: 
       onClick={handleBackdropClick}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {t('dashboard.emailVerification')}
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition"
+            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -173,8 +173,8 @@ export default function EmailVerificationModal({ isOpen, onClose, onVerified }: 
                 </svg>
               </div>
               <div>
-                <p className="text-sm text-gray-600">{t('dashboard.sendCodeTo')}</p>
-                <p className="text-sm font-semibold text-gray-900 mt-1">{user?.email}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.sendCodeTo')}</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white mt-1">{user?.email}</p>
               </div>
               <button
                 onClick={handleSendOTP}
@@ -190,10 +190,10 @@ export default function EmailVerificationModal({ isOpen, onClose, onVerified }: 
           {step === 'verify' && (
             <div className="space-y-5">
               <div className="text-center">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {t('dashboard.enterCode')}
                 </p>
-                <p className="text-sm font-semibold text-gray-900 mt-1">{user?.email}</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white mt-1">{user?.email}</p>
                 {expiresIn > 0 && (
                   <p className="text-xs text-gray-400 mt-2">
                     {t('dashboard.codeExpires', { minutes: Math.ceil(expiresIn / 60) })}
@@ -213,7 +213,7 @@ export default function EmailVerificationModal({ isOpen, onClose, onVerified }: 
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value)}
                     onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="w-12 h-14 text-center text-xl font-semibold bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900"
+                    className="w-12 h-14 text-center text-xl font-semibold bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100"
                     disabled={isLoading}
                   />
                 ))}
@@ -234,7 +234,7 @@ export default function EmailVerificationModal({ isOpen, onClose, onVerified }: 
                   handleSendOTP();
                 }}
                 disabled={isLoading}
-                className="w-full text-sm text-gray-500 hover:text-gray-700 font-medium transition"
+                className="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 font-medium transition"
               >
                 {t('dashboard.resendCode')}
               </button>

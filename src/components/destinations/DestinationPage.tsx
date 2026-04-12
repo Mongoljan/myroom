@@ -123,7 +123,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
     priceRange[0] !== 0 || priceRange[1] !== 1000000;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
       <section className="relative py-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
         {/* Animated background orb */}
@@ -202,11 +202,11 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
               transition={{ duration: 0.5 }}
               className={`lg:w-64 ${showFilters ? 'block' : 'hidden lg:block'}`}
             >
-              <div className="bg-white rounded-xl border border-gray-200 p-5 sticky top-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 sticky top-4">
                 {/* Filter Header */}
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-2">
-                    <SlidersHorizontal className="w-4 h-4 text-gray-600" />
+                    <SlidersHorizontal className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     <h3 className={text.h4}>{t('filters.title', 'Шүүлтүүр')}</h3>
                   </div>
                   {hasActiveFilters && (
@@ -221,7 +221,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
 
                 {/* Price Range */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                     {t('filters.priceRange', 'Үнийн хязгаар')}
                   </label>
                   <div className="space-y-2">
@@ -234,9 +234,9 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                       onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
                       className="w-full"
                     />
-                    <div className="flex items-center justify-between text-xs text-gray-600">
+                    <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
                       <span>0₮</span>
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-gray-900 dark:text-white">
                         {priceRange[1].toLocaleString()}₮
                       </span>
                     </div>
@@ -245,7 +245,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
 
                 {/* Rating Filter */}
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                     {t('filters.rating', 'Үнэлгээ')}
                   </label>
                   <div className="space-y-2">
@@ -256,7 +256,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                         className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                           selectedRating === rating
                             ? 'bg-slate-50 text-slate-800 border border-slate-200'
-                            : 'hover:bg-gray-50 border border-transparent'
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-700 border border-transparent'
                         }`}
                       >
                         <span>{rating}+ ⭐</span>
@@ -267,7 +267,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
 
                 {/* Property Type */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                     {t('filters.propertyType', 'Буудлын төрөл')}
                   </label>
                   <div className="space-y-2">
@@ -278,7 +278,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                         className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                           selectedPropertyTypes.has(type)
                             ? 'bg-slate-50 text-slate-800 border border-slate-200'
-                            : 'hover:bg-gray-50 border border-transparent'
+                            : 'hover:bg-gray-50 dark:hover:bg-gray-700 border border-transparent'
                         }`}
                       >
                         <span className="capitalize">{t(`propertyType.${type}`, type)}</span>
@@ -295,7 +295,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
               <div className="lg:hidden mb-4">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-gray-200 text-sm font-medium"
+                  className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium dark:text-gray-300"
                 >
                   <Filter className="w-4 h-4" />
                   {t('filters.show', 'Шүүлтүүр')}
@@ -309,7 +309,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
               {isLoading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                   {[...Array(6)].map((_, i) => (
-                    <div key={i} className="bg-white rounded-xl border border-gray-200 animate-pulse">
+                    <div key={i} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 animate-pulse">
                       <div className="h-48 bg-gray-200 rounded-t-xl" />
                       <div className="p-4 space-y-3">
                         <div className="h-4 bg-gray-200 rounded w-3/4" />
@@ -344,10 +344,10 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                   ))}
                 </motion.div>
               ) : (
-                <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+                <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
                   <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                   <h3 className={text.h3 + " mb-2"}>{t('destination.noResults', 'Илэрц олдсонгүй')}</h3>
-                  <p className="text-gray-600 mb-4">
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
                     {t('destination.tryDifferentFilters', 'Өөр шүүлтүүр ашиглана уу')}
                   </p>
                   {hasActiveFilters && (

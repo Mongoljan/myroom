@@ -89,10 +89,10 @@ export default function WhyChooseUs() {
           transition={{ duration: 0.5 }}
           className="text-center mb-4"
         >
-          <h2 className={`${text.h2} text-gray-900 mb-1`}>
+          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-1`}>
             {t('features.title', 'Таны аялалыг тав тухтай болгох')}
           </h2>
-          <p className={`${text.caption} text-gray-600`}>{t('features.whyChooseUs', 'Яагаад бид вэ?')}</p>
+          <p className={`${text.caption} text-gray-600 dark:text-gray-400`}>{t('features.whyChooseUs', 'Яагаад бид вэ?')}</p>
         </motion.div>
 
         {/* Features Grid */}
@@ -115,7 +115,7 @@ export default function WhyChooseUs() {
               className="group relative"
             >
               {/* Card */}
-              <div className="relative h-full bg-white/80 backdrop-blur-xl rounded-xl border border-gray-200/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50 hover:border-gray-300/50">
+              <div className="relative h-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-300/50 dark:hover:border-gray-600/50">
 
                 {/* Gradient background on hover */}
                 <div className={`absolute inset-0 rounded-xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`} />
@@ -140,11 +140,11 @@ export default function WhyChooseUs() {
                 </motion.div>
 
                 {/* Content */}
-                <h3 className={`${text.h4} text-gray-900 mb-2 transition-colors`}>
+                <h3 className={`${text.h4} text-gray-900 dark:text-white mb-2 transition-colors`}>
                   {feature.title}
                 </h3>
 
-                <p className={`${text.bodySm} text-gray-600 leading-relaxed`}>
+                <p className={`${text.bodySm} text-gray-600 dark:text-gray-400 leading-relaxed`}>
                   {feature.description}
                 </p>
 

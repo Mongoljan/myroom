@@ -18,7 +18,7 @@ interface Section {
 
 // Skeleton component for the sidebar navigation
 const SidebarSkeleton = () => (
-  <div className="bg-white rounded-lg shadow-sm p-4 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
+  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
     <div className="h-6 bg-gray-200 rounded mb-4 w-3/4 animate-pulse"></div>
     <nav className="space-y-2">
       {[...Array(8)].map((_, i) => (
@@ -32,7 +32,7 @@ const SidebarSkeleton = () => (
 
 // Skeleton component for the main content
 const ContentSkeleton = () => (
-  <div className="bg-white rounded-lg shadow-sm p-6 lg:p-8">
+  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 lg:p-8">
     {[...Array(5)].map((_, sectionIndex) => (
       <section key={sectionIndex} className="mb-12 last:mb-0">
         <div className="h-8 bg-gray-200 rounded mb-4 w-3/4 animate-pulse"></div>
@@ -43,7 +43,7 @@ const ContentSkeleton = () => (
         </div>
         {[...Array(3)].map((_, clauseIndex) => (
           <div key={clauseIndex} className="mb-4 last:mb-0">
-            <div className="bg-gray-50 rounded-lg p-4 border-l-4 border-gray-200">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border-l-4 border-gray-200 dark:border-gray-700">
               <div className="flex">
                 <div className="h-4 bg-gray-200 rounded w-8 mr-2 animate-pulse"></div>
                 <div className="flex-1">
@@ -62,7 +62,7 @@ const ContentSkeleton = () => (
 
 // Header skeleton
 const HeaderSkeleton = () => (
-  <header className="bg-white py-8">
+  <header className="bg-white dark:bg-gray-900 py-8">
     <div className="container mx-auto px-4 flex items-center justify-between">
       <div className="flex-1" aria-hidden="true" />
       <div className="h-8 bg-gray-200 rounded w-64 mx-auto animate-pulse"></div>
@@ -145,7 +145,7 @@ export default function TermsPage() {
   // Show skeleton while translations are loading
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <HeaderSkeleton />
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -162,14 +162,14 @@ export default function TermsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Sidebar Navigation */}
           <aside className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-4 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
               <h2 className="font-semibold text-lg mb-4 text-gray-800">
                 {t('terms.title', 'Үйлчилгээний нөхцөл')}
               </h2>
@@ -182,7 +182,7 @@ export default function TermsPage() {
                       className={`w-full text-left px-3 py-2 rounded-md transition-all duration-200 flex items-center justify-between group ${
                         activeSection === String(section.id)
                           ? 'bg-slate-50 text-slate-900 font-medium border-l-4 border-slate-900 pl-2'
-                          : 'text-gray-700 hover:bg-gray-50 border-l-4 border-transparent'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-l-4 border-transparent'
                       }`}
                     >
                       <span className="text-sm">{section.title}</span>
@@ -201,11 +201,11 @@ export default function TermsPage() {
 
           {/* Main Content */}
           <main className="lg:col-span-3">
-            <h1 className="text-2xl font-medium text-center text-gray-900 flex-1">
+            <h1 className="text-2xl font-medium text-center text-gray-900 dark:text-white flex-1">
               {t('terms.title')}
             </h1>
             <div className="mt-3.5 mb-6 flex-1 flex justify-end">
-              <p className="text-gray-500 text-sm">{t('terms.date')}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('terms.date')}</p>
             </div>
             <div className="">
               {Array.isArray(sections) ? (
@@ -213,17 +213,17 @@ export default function TermsPage() {
                   <section
                     key={section.id}
                     id={`section-${section.id}`}
-                    className=" bg-white p-6 shadow-sm rounded-lg mb-4 last:mb-0 scroll-mt-24"
+                    className=" bg-white dark:bg-gray-800 p-6 shadow-sm rounded-lg mb-4 last:mb-0 scroll-mt-24"
                   >
                     {/* Section Title */}
-                    <h3 className="text-md font-bold text-gray-900 mb-4 pb-2 ">
+                    <h3 className="text-md font-bold text-gray-900 dark:text-white mb-4 pb-2 ">
                       {section.title}
                     </h3>
 
                     {/* Section Description */}
                     {section.description && (
                       <div className="prose max-w-none mb-6">
-                        <p className="text-gray-700 leading-relaxed whitespace-pre-line text-sm">
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-sm">
                           {section.description}
                         </p>
                       </div>
@@ -235,8 +235,8 @@ export default function TermsPage() {
                       section.clauses.map((clause: Clause) => (
                         <div key={clause.id} className="mb-4 last:mb-0">
                           <div className="pl-4">
-                            <p className="text-gray-700 leading-relaxed text-sm">
-                              <span className="font-semibold text-gray-900 mr-2">
+                            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm">
+                              <span className="font-semibold text-gray-900 dark:text-white mr-2">
                                 {clause.id}
                               </span>
                               {clause.content}
@@ -248,7 +248,7 @@ export default function TermsPage() {
                 ))
               ) : (
                 <div className="text-center py-12">
-                  <p className="text-gray-500">
+                  <p className="text-gray-500 dark:text-gray-400">
                     {t('terms.loadError', 'Terms sections could not be loaded.')}
                   </p>
                 </div>

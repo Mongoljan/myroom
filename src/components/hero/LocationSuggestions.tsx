@@ -86,7 +86,7 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -10, scale: 0.95 }}
       transition={{ duration: 0.15 }}
-      className="fixed bg-white rounded-xl shadow-2xl border border-gray-200 z-[9999] max-h-[400px] overflow-y-auto min-w-[320px] max-w-[500px]"
+      className="fixed bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-[9999] max-h-[400px] overflow-y-auto min-w-[320px] max-w-[500px]"
       style={{
         top: locationModalPosition.top,
         left: locationModalPosition.left,
@@ -94,13 +94,13 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
       }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
-        <h3 className="font-semibold text-gray-900">{t('search.chooseLocationTitle')}</h3>
+      <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-700">
+        <h3 className="font-semibold text-gray-900 dark:text-white">{t('search.chooseLocationTitle')}</h3>
         <button
           onClick={onClose}
-          className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
         >
-          <X className="w-4 h-4 text-gray-500" />
+          <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
         </button>
       </div>
 
@@ -109,14 +109,14 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
         {isLoadingSuggestions && (
           <div className="p-4 text-center">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-900 mx-auto"></div>
-            <p className="text-sm text-gray-500 mt-2">{t('common.searching')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{t('common.searching')}</p>
           </div>
         )}
 
         {/* Location suggestions */}
         {!isLoadingSuggestions && locationSuggestions.length > 0 && (
           <div className="space-y-1">
-            <p className="text-xs font-medium text-gray-500 px-3 py-2">{t('search.results')}</p>
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 px-3 py-2">{t('search.results')}</p>
             {locationSuggestions.map((suggestion, index) => (
               <motion.button
                 key={index}
@@ -126,8 +126,8 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
               >
                 <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">{suggestion.name}</p>
-                  <p className="text-sm text-gray-500 truncate">{suggestion.fullName}</p>
+                  <p className="font-medium text-gray-900 dark:text-white truncate">{suggestion.name}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{suggestion.fullName}</p>
                 </div>
               </motion.button>
             ))}
@@ -136,19 +136,19 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
 
         {/* Recent searches */}
         {!isLoadingSuggestions && recentSearches.length > 0 && (
-          <div className="space-y-1 mt-4 border-t border-gray-100 pt-4">
-            <p className="text-xs font-medium text-gray-500 px-3 py-2">{t('search.recentSearches')}</p>
+          <div className="space-y-1 mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
+            <p className="text-xs font-medium text-gray-500 dark:text-gray-400 px-3 py-2">{t('search.recentSearches')}</p>
             {recentSearches.slice(0, 3).map((search, index) => (
               <motion.button
                 key={index}
                 onClick={() => onRecentSearchSelect(search)}
-                className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-3"
+                className="w-full text-left p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors flex items-center gap-3"
                 whileHover={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}
               >
                 <Clock className="w-4 h-4 text-gray-400 flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">{search.location.name}</p>
-                  <p className="text-sm text-gray-500 truncate">
+                  <p className="font-medium text-gray-900 dark:text-white truncate">{search.location.name}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                     {search.checkIn} - {search.checkOut} • {search.guests.adults + search.guests.children} {t('hotel.guests').toLowerCase()}
                   </p>
                 </div>
@@ -161,7 +161,7 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
         {!isLoadingSuggestions && locationSuggestions.length === 0 && destination.length >= 2 && (
           <div className="p-4 text-center">
             <MapPin className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">{t('search.noResults')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('search.noResults')}</p>
             <p className="text-xs text-gray-400 mt-1">{t('search.tryAnotherKeyword')}</p>
           </div>
         )}

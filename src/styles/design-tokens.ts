@@ -32,10 +32,10 @@ export const ds = {
 
     // Background colors - Layered depth system
     bg: {
-      primary: 'bg-white',
+      primary: 'bg-white dark:bg-gray-800',
       secondary: 'bg-slate-50',            // Softer than gray
       tertiary: 'bg-slate-100',
-      elevated: 'bg-white',
+      elevated: 'bg-white dark:bg-gray-800',
       overlay: 'bg-slate-900/60',          // Softer overlay
       glass: 'bg-white/80',                // Glassmorphism
       mesh: 'bg-gradient-to-br from-slate-50/50 via-violet-50/30 to-cyan-50/50', // Mesh gradient
@@ -143,7 +143,7 @@ export const ds = {
     bodySm: 'text-sm leading-normal',           // 14px - Compact text
 
     // Caption & small text
-    caption: 'text-xs text-gray-500',           // 12px - Meta info, timestamps
+    caption: 'text-xs text-gray-500 dark:text-gray-400',           // 12px - Meta info, timestamps
 
     // Font weights
     weight: {
@@ -273,8 +273,8 @@ export const ds = {
   effects: {
     // Glassmorphism
     glass: {
-      light: 'bg-white/80 backdrop-blur-xl',
-      medium: 'bg-white/70 backdrop-blur-lg',
+      light: 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl',
+      medium: 'bg-white/70 dark:bg-gray-700/70 backdrop-blur-lg',
       dark: 'bg-gray-900/80 backdrop-blur-xl',
     },
 
@@ -305,9 +305,9 @@ export const ds = {
   components: {
     // Cards
     card: {
-      default: 'bg-white rounded-xl border border-slate-200 p-5 hover:shadow-lg hover:border-slate-300 transition-all duration-300',
-      elevated: 'bg-white rounded-xl border border-slate-200 p-5 shadow-md hover:shadow-xl transition-all duration-300',
-      glass: 'bg-white/80 backdrop-blur-xl rounded-xl border border-slate-200/50 p-5 hover:shadow-lg transition-all duration-300',
+      default: 'bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 hover:shadow-lg hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300',
+      elevated: 'bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5 shadow-md hover:shadow-xl transition-all duration-300',
+      glass: 'bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-xl border border-slate-200/50 dark:border-slate-700/50 p-5 hover:shadow-lg transition-all duration-300',
     },
 
     // 🎨 NEXT-GEN BUTTON STYLES - Beyond Gradients

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { ToastProvider } from "@/components/common/ToastContainer";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import Header1 from "@/components/header/Header1";
 import Footer from "@/components/layout/Footer";
 import "./globals.css";
@@ -88,24 +89,34 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Inline script runs before React hydrates to avoid flash of wrong theme */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');var s=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';var r=t||s;document.documentElement.classList.remove('light','dark');document.documentElement.classList.add(r);}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
       >
-        <AuthProvider>
-          <ToastProvider>
-            <I18nProvider>
-              <div className="print:hidden">
-                <Header1 />
-              </div>
-              <main className="">
-                {children}
-              </main>
-              <div className="print:hidden">
-                <Footer />
-              </div>
-            </I18nProvider>
-          </ToastProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ToastProvider>
+              <I18nProvider>
+                <div className="print:hidden">
+                  <Header1 />
+                </div>
+                <main className="">
+                  {children}
+                </main>
+                <div className="print:hidden">
+                  <Footer />
+                </div>
+              </I18nProvider>
+            </ToastProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -64,16 +64,16 @@ export default function OTPLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div>
-          <h2 className="text-3xl font-bold text-gray-900 text-center mb-2">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-2">
             {step === 'phone'
               ? t('AuthOTP.phoneLogin', 'Sign in with Phone')
               : t('AuthOTP.verifyCode', 'Verify OTP Code')}
           </h2>
-          <p className="text-sm text-gray-600 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
             {step === 'phone'
               ? t('AuthOTP.phoneSubtitle', 'We will send a verification code to your phone')
               : t('AuthOTP.codeExpires', `Code expires in ${Math.floor(expiresIn / 60)} minutes`)}
@@ -81,7 +81,7 @@ export default function OTPLoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8">
           {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -93,7 +93,7 @@ export default function OTPLoginPage() {
             <form className="space-y-6" onSubmit={handleSendOTP}>
               {/* Phone Number */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t('AuthOTP.phoneLabel', 'Phone Number')} *
                 </label>
                 <input
@@ -102,7 +102,7 @@ export default function OTPLoginPage() {
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                   placeholder={t('AuthOTP.phonePlaceholder', '99001122')}
                   disabled={isLoading}
                 />
@@ -111,7 +111,7 @@ export default function OTPLoginPage() {
               {/* Name Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t('AuthOTP.firstNameLabel', 'First Name')}
                   </label>
                   <input
@@ -119,12 +119,12 @@ export default function OTPLoginPage() {
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
+                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     disabled={isLoading}
                   />
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t('AuthOTP.lastNameLabel', 'Last Name')}
                   </label>
                   <input
@@ -132,13 +132,13 @@ export default function OTPLoginPage() {
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500"
+                    className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
                     disabled={isLoading}
                   />
                 </div>
               </div>
 
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 {t('AuthOTP.nameHint', 'Enter your name if you are a new user')}
               </p>
 
@@ -171,7 +171,7 @@ export default function OTPLoginPage() {
 
               {/* OTP Input */}
               <div>
-                <label htmlFor="otpCode" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="otpCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t('AuthOTP.codeLabel', `OTP code sent to ${phone}`)}
                 </label>
                 <input
@@ -180,7 +180,7 @@ export default function OTPLoginPage() {
                   required
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 placeholder-gray-500 text-center text-2xl tracking-widest"
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 text-center text-2xl tracking-widest"
                   placeholder="000000"
                   maxLength={6}
                   disabled={isLoading}
@@ -205,7 +205,7 @@ export default function OTPLoginPage() {
                   setError('');
                 }}
                 disabled={isLoading}
-                className="w-full text-sm text-gray-600 hover:text-gray-900 font-medium"
+                className="w-full text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
               >
                 {t('AuthOTP.back', 'Back')}
               </button>

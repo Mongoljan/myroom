@@ -51,9 +51,9 @@ const Toast = ({ id, type, title, message, duration = 5000, onClose }: ToastProp
           {icons[type]}
         </div>
         <div className="ml-3 flex-1">
-          <p className="text-sm font-medium text-gray-900">{title}</p>
+          <p className="text-sm font-medium text-gray-900 dark:text-white">{title}</p>
           {message && (
-            <p className="mt-1 text-sm text-gray-900">{message}</p>
+            <p className="mt-1 text-sm text-gray-900 dark:text-white">{message}</p>
           )}
         </div>
         <div className="ml-4 flex-shrink-0">
@@ -62,7 +62,7 @@ const Toast = ({ id, type, title, message, duration = 5000, onClose }: ToastProp
               setIsVisible(false);
               setTimeout(() => onClose(id), 300);
             }}
-            className="inline-flex text-gray-900 hover:text-gray-900 focus:outline-none"
+            className="inline-flex text-gray-900 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white focus:outline-none"
           >
             <X className="w-4 h-4" />
           </button>

@@ -4,21 +4,21 @@ export const SEARCH_DESIGN_SYSTEM = {
   // Typography Hierarchy
   TYPOGRAPHY: {
     // Hotel Name/Title
-    HOTEL_NAME: 'text-lg font-semibold text-gray-900',
-    HOTEL_NAME_SMALL: 'text-base font-semibold text-gray-900',
+    HOTEL_NAME: 'text-lg font-semibold text-gray-900 dark:text-white',
+    HOTEL_NAME_SMALL: 'text-base font-semibold text-gray-900 dark:text-white',
 
     // Descriptions
-    DESCRIPTION: 'text-sm text-gray-600',
-    DESCRIPTION_SMALL: 'text-xs text-gray-600',
+    DESCRIPTION: 'text-sm text-gray-600 dark:text-gray-300',
+    DESCRIPTION_SMALL: 'text-xs text-gray-600 dark:text-gray-400',
 
     // Prices
-    PRICE_PRIMARY: 'text-xl font-bold text-gray-900',
-    PRICE_SECONDARY: 'text-lg font-semibold text-gray-900',
-    PRICE_SMALL: 'text-sm font-semibold text-gray-900',
+    PRICE_PRIMARY: 'text-xl font-bold text-gray-900 dark:text-white',
+    PRICE_SECONDARY: 'text-lg font-semibold text-gray-900 dark:text-white',
+    PRICE_SMALL: 'text-sm font-semibold text-gray-900 dark:text-white',
 
     // Labels
-    LABEL: 'text-xs font-medium text-gray-700',
-    LABEL_MUTED: 'text-xs text-gray-500',
+    LABEL: 'text-xs font-medium text-gray-700 dark:text-gray-300',
+    LABEL_MUTED: 'text-xs text-gray-500 dark:text-gray-400',
 
     // Links
     LINK: 'text-xs text-primary hover:underline',
@@ -31,23 +31,23 @@ export const SEARCH_DESIGN_SYSTEM = {
   // Color Palette
   COLORS: {
     // Backgrounds
-    BG_WHITE: 'bg-white',
-    BG_GRAY_LIGHT: 'bg-gray-50',
-    BG_BLUE_LIGHT: 'bg-slate-50',
-    BG_GREEN_LIGHT: 'bg-green-50',
-    BG_RED_LIGHT: 'bg-red-50',
+    BG_WHITE: 'bg-white dark:bg-gray-800',
+    BG_GRAY_LIGHT: 'bg-gray-50 dark:bg-gray-700',
+    BG_BLUE_LIGHT: 'bg-slate-50 dark:bg-slate-800',
+    BG_GREEN_LIGHT: 'bg-green-50 dark:bg-green-900/20',
+    BG_RED_LIGHT: 'bg-red-50 dark:bg-red-900/20',
 
     // Text Colors
-    TEXT_PRIMARY: 'text-gray-900',
-    TEXT_SECONDARY: 'text-gray-600',
-    TEXT_MUTED: 'text-gray-500',
+    TEXT_PRIMARY: 'text-gray-900 dark:text-white',
+    TEXT_SECONDARY: 'text-gray-600 dark:text-gray-300',
+    TEXT_MUTED: 'text-gray-500 dark:text-gray-400',
     TEXT_BLUE: 'text-primary',
-    TEXT_GREEN: 'text-green-600',
-    TEXT_RED: 'text-red-600',
+    TEXT_GREEN: 'text-green-600 dark:text-green-400',
+    TEXT_RED: 'text-red-600 dark:text-red-400',
 
     // Borders
-    BORDER_DEFAULT: 'border-gray-200',
-    BORDER_HOVER: 'border-gray-300',
+    BORDER_DEFAULT: 'border-gray-200 dark:border-gray-700',
+    BORDER_HOVER: 'border-gray-300 dark:border-gray-600',
     BORDER_FOCUS: 'border-primary',
   },
 

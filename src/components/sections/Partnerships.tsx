@@ -27,7 +27,7 @@ export default function Partnerships() {
             transition={{ duration: 0.5 }}
             className="text-center mb-4"
           >
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
               {t('partnerships.title', 'Хамтрагч байгууллагууд')}
             </h2>
           </motion.div>
@@ -37,7 +37,7 @@ export default function Partnerships() {
             <div className="flex partnership-scroll whitespace-nowrap">
               {/* First set of logos */}
               {partners.map((partner, idx) => (
-                <div key={`first-${idx}`} className="flex-shrink-0 mx-6 flex items-center justify-center h-16 w-32 bg-gray-50/50 rounded-xl border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300">
+                <div key={`first-${idx}`} className="flex-shrink-0 mx-6 flex items-center justify-center h-16 w-32 bg-gray-50/50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 hover:shadow-md transition-all duration-300">
                   <Image
                     src={partner.logo}
                     alt={partner.name}
@@ -50,7 +50,7 @@ export default function Partnerships() {
               ))}
               {/* Second set for seamless loop */}
               {partners.map((partner, idx) => (
-                <div key={`second-${idx}`} className="flex-shrink-0 mx-6 flex items-center justify-center h-16 w-32 bg-gray-50/50 rounded-xl border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300">
+                <div key={`second-${idx}`} className="flex-shrink-0 mx-6 flex items-center justify-center h-16 w-32 bg-gray-50/50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 hover:shadow-md transition-all duration-300">
                   <Image
                     src={partner.logo}
                     alt={partner.name}
@@ -64,15 +64,15 @@ export default function Partnerships() {
             </div>
 
             {/* Enhanced gradient overlays */}
-            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-gray-50 dark:from-gray-900 via-gray-50/80 dark:via-gray-900/80 to-transparent pointer-events-none"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-50 dark:from-gray-900 via-gray-50/80 dark:via-gray-900/80 to-transparent pointer-events-none"></div>
           </div>
           
           {/* Trust badge */}
           {/* <div className="text-center mt-4">
-            <div className="inline-flex items-center px-6 py-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <div className="inline-flex items-center px-6 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
               <div className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse"></div>
-              <span className={`${TYPOGRAPHY.body.standard} text-gray-700 font-medium`}>
+              <span className={`${TYPOGRAPHY.body.standard} text-gray-700 dark:text-gray-300 font-medium`}>
                 {t('partnerships.trust', '50,000+ хэрэглэгчдийн итгэлийг хүлээн авсан')}
               </span>
             </div>

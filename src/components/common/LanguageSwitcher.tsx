@@ -145,12 +145,12 @@ export default function LanguageSwitcher() {
                 {/* Glow effect */}
                 <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-lg" />
                 
-                <div className="relative bg-white/98 backdrop-blur-sm border border-gray-200/50 rounded-2xl shadow-2xl overflow-hidden">
+                <div className="relative bg-white/98 dark:bg-gray-800/98 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-2xl shadow-2xl overflow-hidden">
                   {/* Header */}
-                  <div className="px-4 py-3 bg-gradient-to-r from-indigo-50/80 to-purple-50/80 border-b border-gray-200/30">
+                  <div className="px-4 py-3 bg-gradient-to-r from-indigo-50/80 to-purple-50/80 dark:from-indigo-900/30 dark:to-purple-900/30 border-b border-gray-200/30 dark:border-gray-700/30">
                     <div className="flex items-center space-x-2">
                       <Globe className="w-4 h-4 text-indigo-500" />
-                      <span className={`${TYPOGRAPHY.nav.secondary} text-gray-900`}>
+                      <span className={`${TYPOGRAPHY.nav.secondary} text-gray-900 dark:text-white`}>
                         {i18n.language === 'mn' ? 'Хэл сонгох' : 'Choose Language'}
                       </span>
                     </div>
@@ -176,7 +176,7 @@ export default function LanguageSwitcher() {
                           className={`group relative w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 ${
                             isActive 
                               ? 'bg-gradient-to-r from-indigo-50 to-purple-50 shadow-md' 
-                              : 'hover:bg-gray-50/80'
+                              : 'hover:bg-gray-50/80 dark:hover:bg-gray-700/80'
                           }`}
                         >
                           {/* Active indicator */}
@@ -199,14 +199,14 @@ export default function LanguageSwitcher() {
                             <div className={`${TYPOGRAPHY.body.standard} font-semibold transition-colors ${
                               isActive 
                                 ? 'text-indigo-700' 
-                                : 'text-gray-900 group-hover:text-gray-900'
+                                : 'text-gray-900 dark:text-white group-hover:text-gray-900 dark:group-hover:text-white'
                             }`}>
                               {language.name}
                             </div>
                             <div className={`${TYPOGRAPHY.body.caption} transition-colors ${
                               isActive 
                                 ? 'text-indigo-500' 
-                                : 'text-gray-900 group-hover:text-gray-800'
+                                : 'text-gray-900 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-gray-100'
                             }`}>
                               {language.code.toUpperCase()}
                             </div>

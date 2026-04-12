@@ -8,7 +8,7 @@ export function LoaderOne() {
   return (
     <div className="flex items-center justify-center">
       <motion.div
-        className="w-8 h-8 border-2 border-gray-300 border-t-slate-900 rounded-full"
+        className="w-8 h-8 border-2 border-gray-300 dark:border-gray-600 border-t-slate-900 dark:border-t-white rounded-full"
         animate={{ rotate: 360 }}
         transition={{
           duration: 1,
@@ -25,7 +25,7 @@ export function LoaderTwo() {
   return (
     <div className="flex items-center justify-center">
       <motion.div
-        className="w-6 h-6 border-2 border-gray-200 border-t-slate-800 rounded-full"
+        className="w-6 h-6 border-2 border-gray-200 dark:border-gray-600 border-t-slate-800 dark:border-t-white rounded-full"
         animate={{ rotate: 360 }}
         transition={{
           duration: 0.8,
@@ -85,7 +85,7 @@ export function LoaderFive({ text = "Loading...", className }: LoaderFiveProps) 
         }}
       />
       <motion.span
-        className="text-sm text-gray-600"
+        className="text-sm text-gray-600 dark:text-gray-400"
         initial={{ opacity: 0.7 }}
         animate={{ opacity: [0.7, 1, 0.7] }}
         transition={{

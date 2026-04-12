@@ -2,7 +2,7 @@
 
 export default function LoadingSkeleton() {
   return (
-    <div className="bg-white">
+    <div className="bg-white dark:bg-gray-900">
       {/* Header Skeleton - Material Texture */}
       <div className="relative bg-gradient-to-br from-slate-900 via-slate-900 to-slate-900 overflow-hidden">
         {/* Noise texture overlay */}
@@ -41,15 +41,15 @@ export default function LoadingSkeleton() {
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
           {/* Loading Filters Sidebar */}
           <div className="lg:w-80 flex-shrink-0">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
-              <div className="h-4 bg-gray-200/80 rounded mb-3 w-20 animate-pulse" />
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <div className="h-4 bg-gray-200/80 dark:bg-gray-700/80 rounded mb-3 w-20 animate-pulse" />
               <div className="space-y-3">
-                <div className="h-3 bg-gray-200/60 rounded w-full animate-pulse" />
-                <div className="h-6 bg-gray-200/80 rounded w-full animate-pulse" />
-                <div className="h-3 bg-gray-200/60 rounded w-3/4 animate-pulse" />
+                <div className="h-3 bg-gray-200/60 dark:bg-gray-600/60 rounded w-full animate-pulse" />
+                <div className="h-6 bg-gray-200/80 dark:bg-gray-700/80 rounded w-full animate-pulse" />
+                <div className="h-3 bg-gray-200/60 dark:bg-gray-600/60 rounded w-3/4 animate-pulse" />
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="h-6 bg-gray-200/80 rounded w-full animate-pulse" />
-                  <div className="h-6 bg-gray-200/80 rounded w-full animate-pulse" />
+                  <div className="h-6 bg-gray-200/80 dark:bg-gray-700/80 rounded w-full animate-pulse" />
+                  <div className="h-6 bg-gray-200/80 dark:bg-gray-700/80 rounded w-full animate-pulse" />
                 </div>
               </div>
             </div>
@@ -58,29 +58,29 @@ export default function LoadingSkeleton() {
           {/* Loading Main Content */}
           <div className="flex-1 min-w-0">
             {/* Loading Header */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-              <div className="h-6 bg-gray-200/80 rounded mb-3 w-48 animate-pulse" />
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6">
+              <div className="h-6 bg-gray-200/80 dark:bg-gray-700/80 rounded mb-3 w-48 animate-pulse" />
               <div className="flex gap-3 mb-3">
-                <div className="h-6 bg-gray-200/80 rounded w-28 animate-pulse" />
-                <div className="h-6 bg-gray-200/80 rounded w-20 animate-pulse" />
+                <div className="h-6 bg-gray-200/80 dark:bg-gray-700/80 rounded w-28 animate-pulse" />
+                <div className="h-6 bg-gray-200/80 dark:bg-gray-700/80 rounded w-20 animate-pulse" />
               </div>
-              <div className="h-3 bg-gray-200/60 rounded w-32 animate-pulse" />
+              <div className="h-3 bg-gray-200/60 dark:bg-gray-600/60 rounded w-32 animate-pulse" />
             </div>
 
             {/* Loading Hotel Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3 sm:gap-4">
               {[...Array(6)].map((_, index) => (
-                <div key={index} className="bg-white rounded-lg border border-gray-200 p-3">
-                  <div className="h-32 bg-gray-200/80 rounded mb-3 w-full animate-pulse" />
-                  <div className="h-4 bg-gray-200/80 rounded mb-2 w-3/4 animate-pulse" />
-                  <div className="h-3 bg-gray-200/60 rounded mb-2 w-1/2 animate-pulse" />
+                <div key={index} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
+                  <div className="h-32 bg-gray-200/80 dark:bg-gray-700/80 rounded mb-3 w-full animate-pulse" />
+                  <div className="h-4 bg-gray-200/80 dark:bg-gray-700/80 rounded mb-2 w-3/4 animate-pulse" />
+                  <div className="h-3 bg-gray-200/60 dark:bg-gray-600/60 rounded mb-2 w-1/2 animate-pulse" />
                   <div className="flex gap-1.5 mb-2">
-                    <div className="h-4 bg-gray-200/60 rounded w-12 animate-pulse" />
-                    <div className="h-4 bg-gray-200/60 rounded w-16 animate-pulse" />
+                    <div className="h-4 bg-gray-200/60 dark:bg-gray-600/60 rounded w-12 animate-pulse" />
+                    <div className="h-4 bg-gray-200/60 dark:bg-gray-600/60 rounded w-16 animate-pulse" />
                   </div>
                   <div className="flex justify-between items-center">
-                    <div className="h-4 bg-gray-200/80 rounded w-20 animate-pulse" />
-                    <div className="h-6 bg-gray-200/80 rounded w-16 animate-pulse" />
+                    <div className="h-4 bg-gray-200/80 dark:bg-gray-700/80 rounded w-20 animate-pulse" />
+                    <div className="h-6 bg-gray-200/80 dark:bg-gray-700/80 rounded w-16 animate-pulse" />
                   </div>
                 </div>
               ))}

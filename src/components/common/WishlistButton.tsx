@@ -64,7 +64,7 @@ export default function WishlistButton({ hotelId, className = '' }: WishlistButt
         p-2 rounded-full transition-all duration-200 
         ${isWishlisted 
           ? 'bg-red-50 text-red-500 hover:bg-red-100' 
-          : 'bg-white/80 text-gray-800 hover:bg-white hover:text-red-500'
+          : 'bg-white/80 dark:bg-gray-800/80 text-gray-800 dark:text-gray-200 hover:bg-white dark:hover:bg-gray-700 hover:text-red-500'
         }
         ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-110'}
         ${className}

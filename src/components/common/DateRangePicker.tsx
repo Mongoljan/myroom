@@ -235,13 +235,13 @@ export default function DateRangePicker({
                 e.stopPropagation();
                 prevMonth();
               }}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               type="button"
             >
-              <ChevronLeft className="w-4 h-4 text-gray-900" />
+              <ChevronLeft className="w-4 h-4 text-gray-900 dark:text-white" />
             </button>
           )}
-          <h3 className={`font-medium text-gray-900 text-xs ${monthOffset === 0 ? '' : 'ml-10'}`}>
+          <h3 className={`font-medium text-gray-900 dark:text-white text-xs ${monthOffset === 0 ? '' : 'ml-10'}`}>
             {monthName}
           </h3>
           {monthOffset === 1 && (
@@ -251,10 +251,10 @@ export default function DateRangePicker({
                 e.stopPropagation();
                 nextMonth();
               }}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               type="button"
             >
-              <ChevronRight className="w-4 h-4 text-gray-900" />
+              <ChevronRight className="w-4 h-4 text-gray-900 dark:text-white" />
             </button>
           )}
           {monthOffset === 0 && <div className="w-10" />}
@@ -270,7 +270,7 @@ export default function DateRangePicker({
             t('calendar.fri', 'Fr'),
             t('calendar.sat', 'Sa')
           ].map((day, index) => (
-            <div key={index} className="text-xs font-medium text-gray-900 text-center py-0.5">
+            <div key={index} className="text-xs font-medium text-gray-900 dark:text-white text-center py-0.5">
               {day}
             </div>
           ))}
@@ -317,11 +317,11 @@ export default function DateRangePicker({
             }
             // Priority 4: TODAY HIGHLIGHT (More Subtle)
             else if (isToday) {
-              buttonClass += ' text-gray-900 cursor-pointer rounded-md hover:bg-slate-100 relative';
+              buttonClass += ' text-gray-900 dark:text-white cursor-pointer rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 relative';
             }
             // Priority 5: NORMAL CURRENT MONTH DAYS
             else {
-              buttonClass += ' text-gray-900 cursor-pointer rounded-md hover:bg-slate-100';
+              buttonClass += ' text-gray-900 dark:text-white cursor-pointer rounded-md hover:bg-slate-100 dark:hover:bg-slate-700';
             }
 
             return (
@@ -358,7 +358,7 @@ export default function DateRangePicker({
   return (
     <div className="relative">
       {label && (
-        <label className="block text-sm font-medium text-gray-900 mb-2">
+        <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
           {label}
         </label>
       )}
@@ -376,24 +376,24 @@ export default function DateRangePicker({
         }}
         className={minimal 
           ? "w-full text-left border-none outline-none bg-transparent cursor-pointer"
-          : "w-full p-3 text-left bg-white border border-gray-200 rounded-xl hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-all duration-200 cursor-pointer"
+          : "w-full p-3 text-left bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 transition-all duration-200 cursor-pointer"
         }
       >
         {minimal ? (
           <span className={`text-md font-medium ${
-            checkIn || checkOut ? 'text-gray-900' : 'text-gray-400'
+            checkIn || checkOut ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'
           }`}>
             {formatDisplayDate()}
           </span>
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Calendar className="w-5 h-5 text-gray-900 mr-3" />
-              <span className={checkIn || checkOut ? 'text-gray-900 font-medium' : 'text-gray-400'}>
+              <Calendar className="w-5 h-5 text-gray-900 dark:text-white mr-3" />
+              <span className={checkIn || checkOut ? 'text-gray-900 dark:text-white font-medium' : 'text-gray-400 dark:text-gray-500'}>
                 {formatDisplayDate()}
               </span>
             </div>
-            <ChevronRight className={`w-5 h-5 text-gray-900 transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
+            <ChevronRight className={`w-5 h-5 text-gray-900 dark:text-white transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`} />
           </div>
         )}
       </button>
@@ -401,7 +401,7 @@ export default function DateRangePicker({
       {isOpen && typeof window !== 'undefined' && createPortal(
         <div 
           ref={pickerRef}
-          className="fixed bg-white border border-gray-200 rounded-xl z-[100000] p-4 w-[560px] max-w-[95vw]" 
+          className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl z-[100000] p-4 w-[560px] max-w-[95vw]" 
           style={{ 
             top: Math.max(8, modalPosition.top), 
             right: Math.max(8, modalPosition.right),

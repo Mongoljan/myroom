@@ -76,7 +76,9 @@ const resources = {
         selectCheckout: "Select check-out",
         done: "Done",
         notAvailable: "Not available",
-        checking: "Checking..."
+        checking: "Checking...",
+        toggleTheme: "Toggle theme",
+        you: "You"
       },
       calendar: {
         sun: "Su",
@@ -321,6 +323,39 @@ const resources = {
         changing: "Changing...",
         changeButton: "Change"
       },
+      reviews: {
+        title: "Reviews",
+        myReviews: "Your Reviews",
+        pendingReviews: "Pending Reviews",
+        noReviews: "No reviews yet.",
+        noPendingReviews: "No reviews pending.",
+        yourRating: "Your rating:",
+        writeReview: "Write Review",
+        rateExperience: "Please rate your experience",
+        whatDidYouLike: "What did you like?",
+        cleanliness: "Cleanliness",
+        location: "Location",
+        food: "Food",
+        service: "Service",
+        value: "Value",
+        comment: "Comment",
+        commentPlaceholder: "Write a comment",
+        submit: "Submit",
+        submitting: "Submitting...",
+        delete: "Delete",
+        bookingNumber: "Booking Number:",
+        date: "Date:",
+        completed: "Completed"
+      },
+      settings: {
+        title: "Settings",
+        languageCurrency: "Language / Currency",
+        language: "Language",
+        currency: "Currency",
+        theme: "Appearance",
+        darkMode: "Dark Mode",
+        darkModeDesc: "A more comfortable dark theme for your eyes"
+      },
       ProfileEmail: {
         title: "Email Address",
         verified: "Your email is verified",
@@ -509,10 +544,10 @@ const resources = {
         dining: "Dining",
         shopping: "Shopping",
         open_in_google_maps: "Open in Google Maps",
-        no_nearby_places: "No nearby places found"
+        no_nearby_places: "No nearby places found",
+        viewPhotos: "View photos"
       },
       search: {
-        location: "Location",
         locationPlaceholder: "Where are you going?",
         selectLocation: "Select a destination",
         property: "Hotel",
@@ -589,10 +624,15 @@ const resources = {
           popularPlaces: "Popular places",
           discounted: "Discounted",
           starsPlus: "{{rating}}+ stars"
-        }
+        },
+        transliterationMatches: "Including transliteration matches"
+      },
+      datePicker: {
+        month: "Month",
+        day: "Day",
+        year: "Year"
       },
       home: {
-        popularDestinationsTitle: "Popular destinations",
         popularDestinationsSubtitle: "Explore cities travelers love"
       },
       destinations: {
@@ -859,7 +899,9 @@ const resources = {
         loaded: "Loaded",
         roomsLoaded: "room(s), but none meet availability criteria.",
         tryDifferentDates: "Please try different dates or contact the hotel directly.",
-        totalPrice: "Total price"
+        totalPrice: "Total price",
+        bookRoom: "Book Room",
+        numberOfRooms: "Number of Rooms"
       },
       amenitiesLabels: {
         premiumService: "Premium service",
@@ -991,7 +1033,20 @@ const resources = {
         footerNote2: "We strive to make booking easier for you.",
         print: "Print",
         downloadPDF: "Download PDF",
-        backHome: "Back to Home"
+        backHome: "Back to Home",
+        checkIn: "Check-in",
+        checkOut: "Check-out",
+        night: "night",
+        nights: "nights",
+        noRoomsSelected: "No rooms selected",
+        quantity: "Quantity",
+        increaseQuantity: "Increase quantity",
+        maxRoomsAvailable: "Maximum {{count}} rooms available",
+        totalRooms: "Total Rooms",
+        room: "room",
+        rooms: "rooms",
+        bookRoom: "Book Room",
+        duration: "Duration"
       },
       terms: {
         title: "Terms of Service",
@@ -1449,7 +1504,9 @@ const resources = {
         selectCheckout: "Гарах өдөр сонгох",
         done: "Болсон",
         notAvailable: "Боломжгүй",
-        checking: "Шалгаж байна..."
+        checking: "Шалгаж байна...",
+        toggleTheme: "Загварыг солих",
+        you: "Та"
       },
       calendar: {
         sun: "Ня",
@@ -1719,6 +1776,39 @@ const resources = {
         changing: "Солиж байна...",
         changeButton: "Солих"
       },
+      reviews: {
+        title: "Сэтгэгдлүүд",
+        myReviews: "Таны үлдээсэн сэтгэгдэл",
+        pendingReviews: "Хүлээгдэж буй",
+        noReviews: "Үлдээсэн сэтгэгдэл байхгүй байна.",
+        noPendingReviews: "Үнэлгээг хүлээж буй захиалга байхгүй байна.",
+        yourRating: "Таны өгсөн үнэлгээ:",
+        writeReview: "Үнэлгээ өгөх",
+        rateExperience: "Та үнэлгээ өгнө үү.",
+        whatDidYouLike: "Танд юу нь хамгийн их таалагдсан бэ?",
+        cleanliness: "Цэвэрлэгээ",
+        location: "Байршил",
+        food: "Хоол",
+        service: "Үйлчилгээ",
+        value: "Үнэ цэнэ",
+        comment: "Сэтгэгдэл",
+        commentPlaceholder: "Сэтгэгдэл бичих",
+        submit: "Илгээх",
+        submitting: "Илгээж байна...",
+        delete: "Устгах",
+        bookingNumber: "Захиалгын дугаар:",
+        date: "Огноо:",
+        completed: "Биелсэн"
+      },
+      settings: {
+        title: "Тохиргоо",
+        languageCurrency: "Хэл / Валют",
+        language: "Хэл",
+        currency: "Валют",
+        theme: "Харагдах байдал",
+        darkMode: "Харанхуй горим",
+        darkModeDesc: "Нүдэнд илүү тав тухтай харанхуй загвар"
+      },
       ProfileEmail: {
         title: "Цахим шуудан",
         verified: "Таны цахим шуудан баталгаажсан байна",
@@ -1907,10 +1997,10 @@ const resources = {
         dining: "Хоол, ресторан",
         shopping: "Худалдаа",
         open_in_google_maps: "Google Maps-д нээх",
-        no_nearby_places: "Ойр орчмын газар олдсонгүй"
+        no_nearby_places: "Ойр орчмын газар олдсонгүй",
+        viewPhotos: "Зургуудыг харах"
       },
       search: {
-        location: "Байршил",
         locationPlaceholder: "Хаашаа явах вэ?",
         selectLocation: "Очих газраа сонгоно уу",
         property: "Зочид буудал",
@@ -1996,7 +2086,13 @@ const resources = {
           popularPlaces: "Алдартай газрууд",
           discounted: "Хямдралтай",
           starsPlus: "{{rating}}+ од"
-        }
+        },
+        transliterationMatches: "Транслитерацийн тохирлыг багтаасан"
+      },
+      datePicker: {
+        month: "Сар",
+        day: "Өдөр",
+        year: "Он"
       },
       tabs: {
         hotels: "Зочид буудал",
@@ -2248,7 +2344,9 @@ const resources = {
         loaded: "Ачааллагдсан",
         roomsLoaded: "өрөө(нүүд), гэхдээ хэн нь боломжит шалгуурыг хангахгүй байна.",
         tryDifferentDates: "Өөр огноо турших эсвэл зочид буудалтай шууд холбогдоно уу.",
-        totalPrice: "Нийт үнэ"
+        totalPrice: "Нийт үнэ",
+        bookRoom: "Өрөө захиалах",
+        numberOfRooms: "Өрөөний тоо"
       },
       amenitiesLabels: {
         premiumService: "Дээд зэрэглэлийн үйлчилгээ",
@@ -2380,7 +2478,20 @@ const resources = {
         footerNote2: "Бид та бүхэнд үйлчлэх зэргээ улам бүр хялбар болгохоор зорин ажиллаж байна.",
         print: "Хэвлэх",
         downloadPDF: "Татах",
-        backHome: "Буцах"
+        backHome: "Буцах",
+        checkIn: "Орох",
+        checkOut: "Гарах",
+        night: "шөнө",
+        nights: "шөнө",
+        noRoomsSelected: "Өрөө сонгогдоогүй байна",
+        quantity: "Тоо",
+        increaseQuantity: "Тоо нэмэх",
+        maxRoomsAvailable: "Хамгийн их {{count}} өрөө боломжтой",
+        totalRooms: "Нийт өрөөнүүд",
+        room: "өрөө",
+        rooms: "өрөөнүүд",
+        bookRoom: "Өрөө захиалах",
+        duration: "Хугацаа"
       },
       terms:{
         
