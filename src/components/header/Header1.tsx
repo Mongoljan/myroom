@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, Settings, ChevronDown, Moon, Sun } from "lucide-react";
+import { LogOut, Settings, ChevronDown, Moon, Sun, CalendarDays, Heart, Star, BookOpen } from "lucide-react";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 import { useAuth } from '@/contexts/AuthContext';
@@ -125,7 +125,7 @@ const Header1 = () => {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: -8, scale: 0.97 }}
                           transition={{ duration: 0.15 }}
-                          className="absolute right-0 mt-2 w-52 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-1.5 z-50"
+                          className="absolute right-0 mt-2 w-60 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-1.5 z-50"
                         >
                           {/* User Info */}
                           <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
@@ -133,16 +133,58 @@ const Header1 = () => {
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">{user.email}</p>
                           </div>
 
-                          <Link
-                            href="/profile"
-                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            onClick={() => setProfileMenuOpen(false)}
-                          >
-                            <Settings className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                            {t('navigation.profile')}
-                          </Link>
+                          {/* Account section */}
+                          <div className="py-1">
+                            <Link
+                              href="/profile"
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => setProfileMenuOpen(false)}
+                            >
+                              <Settings className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                              {t('navigation.profile')}
+                            </Link>
+                          </div>
 
-                          <div className="border-t border-gray-100 dark:border-gray-700 mt-1.5 pt-1.5">
+                          {/* Travel section */}
+                          <div className="border-t border-gray-100 dark:border-gray-700 py-1">
+                            <p className="px-4 pt-1.5 pb-0.5 text-[10px] font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500">
+                              {t('navigation.myTravel', 'Миний аялал')}
+                            </p>
+                            <Link
+                              href="/profile/bookings"
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => setProfileMenuOpen(false)}
+                            >
+                              <CalendarDays className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                              {t('navigation.myBookings', 'Захиалгууд')}
+                            </Link>
+                            <Link
+                              href="/profile/saved"
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => setProfileMenuOpen(false)}
+                            >
+                              <Heart className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                              {t('navigation.savedHotels', 'Хадгалсан буудлууд')}
+                            </Link>
+                            <Link
+                              href="/profile/reviews"
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => setProfileMenuOpen(false)}
+                            >
+                              <Star className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                              {t('navigation.myReviews', 'Үнэлгээнүүд')}
+                            </Link>
+                            <Link
+                              href="/booking/manage"
+                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                              onClick={() => setProfileMenuOpen(false)}
+                            >
+                              <BookOpen className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                              {t('navigation.manageBooking', 'Захиалга шалгах')}
+                            </Link>
+                          </div>
+
+                          <div className="border-t border-gray-100 dark:border-gray-700 py-1">
                             <button
                               onClick={handleLogout}
                               className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"

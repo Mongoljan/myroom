@@ -421,37 +421,20 @@ export default function ModernHero() {
             style={{ overflow: 'visible' }}
           >
             <motion.div
-              className="backdrop-blur-md bg-white/95 dark:bg-gray-800/95 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 relative"
+              className="backdrop-blur-md bg-white/95 dark:bg-gray-800/95 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 relative transition-[border-color,box-shadow] duration-300 hover:border-blue-400/60 dark:hover:border-blue-500/60 hover:shadow-[0_20px_25px_-5px_rgba(59,130,246,0.15),0_10px_10px_-5px_rgba(59,130,246,0.08)]"
               style={{
                 overflow: 'visible',
                 boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)"
               }}
-              whileHover={{
-                borderColor: "rgba(59, 130, 246, 0.5)",
-                boxShadow: "0 20px 25px -5px rgba(59, 130, 246, 0.15), 0 10px 10px -5px rgba(59, 130, 246, 0.1)"
-              }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
             >
-              {/* Animated border glow */}
-              <motion.div
-                className="absolute inset-0 rounded-2xl opacity-0"
-                whileHover={{ opacity: 1 }}
-                style={{
-                  background: "linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3), transparent)",
-                  padding: "1px",
-                }}
-                transition={{ duration: 0.3 }}
-              />
 
               <div className="relative bg-white dark:bg-gray-800 rounded-2xl" style={{ overflow: 'visible' }}>
                 <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200" style={{ overflow: 'visible' }}>
                 
                 {/* Location - Enhanced with modern styling */}
-                <motion.div
+                <div
                   ref={locationRef}
-                  className="flex-1 p-5 w-full relative group"
-                  whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
-                  transition={{ duration: 0.2 }}
+                  className="flex-1 p-5 w-full relative group hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors duration-200 rounded-l-2xl"
                 >
                   <div className="flex items-center gap-4">
                     <motion.div
@@ -493,7 +476,7 @@ export default function ModernHero() {
                     )}
                   </div>
 
-                  {/* Location Error Tooltip - Enhanced */}
+                  {/* Location Error Tooltip */}
                   <AnimatePresence>
                     {showLocationTooltip && (
                       <motion.div
@@ -510,7 +493,7 @@ export default function ModernHero() {
                     )}
                   </AnimatePresence>
 
-                </motion.div>
+                </div>
 
                 {/* Location Suggestions Dropdown */}
                 {showLocationSuggestions && typeof window !== 'undefined' && createPortal(
@@ -604,12 +587,8 @@ export default function ModernHero() {
                   document.body
                 )}
 
-                {/* Check-in Check-out - Enhanced */}
-                <motion.div
-                  className="lg:flex-1 p-5 w-full"
-                  whileHover={{ backgroundColor: "rgba(249, 250, 251, 0.5)" }}
-                  transition={{ duration: 0.2 }}
-                >
+                {/* Check-in Check-out */}
+                <div className="lg:flex-1 p-5 w-full hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors duration-200">
                   <div className="flex items-center gap-4">
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: -5 }}
@@ -633,9 +612,9 @@ export default function ModernHero() {
                       </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
 
-                {/* Guests - Enhanced with label */}
+                {/* Guests */}
                 <div className="lg:flex-1 w-full relative z-[1]">
                   <CustomGuestSelector
                     adults={adults}

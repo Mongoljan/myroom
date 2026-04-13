@@ -10,68 +10,23 @@ export default function FaqSection() {
   const [openItems, setOpenItems] = useState<number[]>([0]); // Allow multiple items to be open
   const [showAll, setShowAll] = useState(false); // Show more/less functionality
 
-  // Enhanced FAQ data with fallback - hotel booking focused
-  const defaultFaqs = [
-    {
-      q: "How do I make a hotel reservation?",
-      a: "Simply enter your destination, check-in and check-out dates, select number of guests, and browse available hotels. Click 'Book Now' on your preferred hotel."
-    },
-    {
-      q: "Can I cancel my booking?",
-      a: "Most bookings can be cancelled. Cancellation policies vary by hotel and rate type. Check your booking confirmation for specific terms."
-    },
-    {
-      q: "How do I pay for my reservation?",
-      a: "We accept major credit cards, debit cards, and other secure payment methods. Payment is processed securely through our booking system."
-    },
-    {
-      q: "What if I need to modify my booking?",
-      a: "You can modify your booking through our manage booking section or contact customer support. Changes may be subject to availability and hotel policies."
-    },
-    {
-      q: "How do I contact customer support?",
-      a: "Our customer support team is available 24/7 via phone, email, or live chat to assist you with any questions or concerns about your booking."
-    },
-    {
-      q: "What is your check-in and check-out time?",
-      a: "Standard check-in time is 3:00 PM and check-out is 11:00 AM. Some hotels may offer early check-in or late check-out based on availability."
-    },
-    {
-      q: "Do you offer free WiFi?",
-      a: "Most of our partner hotels offer complimentary WiFi. You can check the amenities section of each hotel for specific details."
-    },
-    {
-      q: "Can I book for a group or multiple rooms?",
-      a: "Yes, you can book multiple rooms by adjusting the room count in your search. For large groups (10+ rooms), contact our group booking specialists."
-    },
-    {
-      q: "What if the hotel price changes after I book?",
-      a: "Once your booking is confirmed and paid, the price is locked in. You won't be charged more even if prices increase later."
-    },
-    {
-      q: "How do I add special requests to my booking?",
-      a: "During the booking process, you can add special requests such as late check-in, room preferences, or dietary requirements in the special requests section."
-    }
-  ];
-
-  // Build FAQ array from translation resources directly
-  const faqs = [];
+  // Build FAQ array from translation resources only (no hardcoded fallback)
+  const faqs: { q: string; a: string }[] = [];
   const currentLanguage = i18n.language || 'mn';
-  
+
   // Access i18n resources directly for complex objects
   const resources = i18n.getResourceBundle(currentLanguage, 'translation');
-  
+
   if (resources?.faq) {
-    // Load all available FAQs, not just first 5
     for (let i = 1; i <= 20; i++) {
       const faqItem = resources.faq[`q${i}`];
       if (faqItem && typeof faqItem === 'object' && 'q' in faqItem && 'a' in faqItem) {
-        faqs.push(faqItem);
+        faqs.push(faqItem as { q: string; a: string });
       }
     }
   }
-  
-  const allFaqs = faqs.length > 0 ? faqs : defaultFaqs;
+
+  const allFaqs = faqs;
   const firstFiveFaqs = allFaqs.slice(0, 5);
   const remainingFaqs = allFaqs.slice(5);
 
@@ -138,11 +93,8 @@ export default function FaqSection() {
             {firstFiveFaqs.map((faq, idx) => {
               const isOpen = openItems.includes(idx);
               
-              // Debug: Check if FAQ has content
-              if (!faq || !faq.q || !faq.a) {
-                console.warn(`FAQ at index ${idx} missing content:`, faq);
-                return null;
-              }
+              // Skip items with missing content
+              if (!faq || !faq.q || !faq.a) return null;
               
               return (
                 <motion.div
