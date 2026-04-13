@@ -361,7 +361,7 @@ function GalleryModal({ images, hotelName, open, onOpenChange, initialIndex }: G
                   <button
                     key={img.url + i}
                     onClick={() => setIdx(i)}
-                    className={`relative w-16 h-12 rounded-md overflow-hidden border-2 transition-all shrink-0 ${`
+                    className={`relative w-16 h-12 rounded-md overflow-hidden border-2 transition-all shrink-0 ${
                       i === idx
                         ? 'border-slate-900 dark:border-slate-100 opacity-100'
                         : 'border-transparent opacity-60 hover:opacity-100'
