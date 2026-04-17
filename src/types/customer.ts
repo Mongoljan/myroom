@@ -185,6 +185,63 @@ export interface CustomerCouponsResponse {
   coupons: Coupon[];
 }
 
+// Wishlist
+export interface HotelDetail {
+  id: number;
+  PropertyName: string;
+  CompanyName: string;
+  location: {
+    province_city: string;
+    soum: string;
+    district: string | null;
+  };
+  star_rating: number | null;
+  avg_rating: number | null;
+  review_count: number;
+  min_price: number | null;
+  profile_image: string | null;
+  property_type: string | null;
+}
+
+export interface WishlistItem {
+  id: number;
+  hotel: HotelDetail;
+  created_at: string;
+}
+
+export interface WishlistCreateRequest {
+  hotel_id: number;
+}
+
+export interface WishlistCreateResponse {
+  message: string;
+  wishlist_id: number;
+}
+
+export interface WishlistListResponse {
+  wishlists: WishlistItem[];
+}
+
+// Customer Settings
+export type Currency = 'MNT' | 'USD' | 'EUR' | 'CNY';
+export type Language = 'mn' | 'en' | 'zh';
+
+export interface CustomerSettingsResponse {
+  currency: Currency;
+  language: Language;
+  email_booking_confirmed: boolean;
+  email_unsubscribe: boolean;
+  notification_enabled: boolean;
+}
+
+export interface CustomerSettingsUpdateRequest {
+  currency?: Currency;
+  language?: Language;
+  email_booking_confirmed?: boolean;
+  email_unsubscribe?: boolean;
+  notification_enabled?: boolean;
+}
+
 // Generic responses
 export interface MessageResponse {
   message: string;

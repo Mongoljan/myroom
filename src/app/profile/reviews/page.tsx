@@ -238,77 +238,110 @@ export default function ReviewsPage() {
         {/* ── My Reviews ── */}
         {!isLoading && activeTab === 'my' && (
           reviews.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-10">{t('reviews.noReviews', 'No reviews yet.')}</p>
+            <div className="text-center py-12">
+              <Star className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                {t('reviews.noReviewsTitle', 'No reviews yet')}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                {t('reviews.noReviews', 'Complete a booking to write your first review!')}
+              </p>
+            </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {reviews.map((review) => (
-                <div key={review.id} className="border border-gray-200 dark:border-gray-700 rounded-xl p-4 bg-white dark:bg-gray-800/60">
-                  {/* Reviewer header */}
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-gray-900 dark:bg-gray-600 flex items-center justify-center text-white text-sm font-semibold">
-                        {user?.first_name?.charAt(0).toUpperCase() ?? '?'}
+                <div key={review.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                  {/* Review header */}
+                  <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                          {user?.first_name?.charAt(0).toUpperCase() ?? '?'}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-gray-100">
+                            {user?.first_name} {user?.last_name}
+                          </p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {new Date(review.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{t('common.you', 'You')}</p>
-                        <p className="text-xs text-gray-400">{formatDate(review.created_at)}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">{t('reviews.yourRating', 'Your rating:')}</span>
-                      <div className="flex gap-0.5 ml-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            size={13}
-                            className={
-                              i < review.rating
-                                ? 'text-yellow-400 fill-yellow-400'
-                                : 'text-gray-200 fill-gray-200'
-                            }
-                          />
-                        ))}
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-600 dark:text-gray-400 mr-1">
+                          {t('reviews.yourRating', 'Your rating:')}
+                        </span>
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              size={16}
+                              className={
+                                i < review.rating
+                                  ? 'text-yellow-400 fill-yellow-400'
+                                  : 'text-gray-200 dark:text-gray-600 fill-gray-200 dark:fill-gray-600'
+                              }
+                            />
+                          ))}
+                        </div>
+                        <span className="ml-2 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-full">
+                          {review.rating}/5
+                        </span>
                       </div>
                     </div>
                   </div>
 
-                  {review.comment && (
-                    <p className="mt-3 text-sm text-gray-600 dark:text-gray-400">{review.comment}</p>
-                  )}
+                  <div className="p-6">
+                    {/* Review comment */}
+                    {review.comment && (
+                      <blockquote className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border-l-4 border-blue-500">
+                        <p className="text-gray-700 dark:text-gray-300 italic">
+                          &ldquo;{review.comment}&rdquo;
+                        </p>
+                      </blockquote>
+                    )}
 
-                  {/* Hotel card */}
-                  {(() => {
-                    const hotel = hotels.get(review.hotel);
-                    return (
-                      <div className="mt-3 border border-gray-100 dark:border-gray-700 rounded-lg p-3 flex gap-3 items-center bg-gray-50 dark:bg-gray-700/50">
-                        {hotel?.profile_image ? (
-                          <img
-                            src={HotelService.getHotelImageUrl(hotel.profile_image) || ''}
-                            alt={hotel.PropertyName}
-                            className="w-12 h-12 rounded-lg object-cover shrink-0"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-lg bg-gray-200 dark:bg-gray-600 shrink-0 flex items-center justify-center">
-                            <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                          </div>
-                        )}
-                        <div className="flex-1">
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {hotel?.PropertyName || `Hotel #${review.hotel}`}
-                          </p>
-                          {hotel?.location && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{hotel.location}</p>
+                    {/* Hotel card */}
+                    {(() => {
+                      const hotel = hotels.get(review.hotel);
+                      return (
+                        <div className="flex gap-4 items-center p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600">
+                          {hotel?.profile_image ? (
+                            <img
+                              src={HotelService.getHotelImageUrl(hotel.profile_image) || ''}
+                              alt={hotel.PropertyName}
+                              className="w-16 h-16 rounded-xl object-cover"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
+                              <MapPin className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                            </div>
                           )}
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs text-white bg-green-500 px-1.5 py-0.5 rounded font-medium">
-                              {review.rating}/5
-                            </span>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+                              {hotel?.PropertyName || `Hotel #${review.hotel}`}
+                            </h4>
+                            {hotel?.location && (
+                              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                <MapPin className="w-4 h-4 inline mr-1" />
+                                {hotel.location}
+                              </p>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-medium rounded-full">
+                                {t('reviews.reviewed', 'Reviewed')}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })()}
+                      );
+                    })()}
+                  </div>
                 </div>
               ))}
             </div>
@@ -318,53 +351,104 @@ export default function ReviewsPage() {
         {/* ── Pending Reviews ── */}
         {!isLoading && activeTab === 'pending' && (
           pendingBookings.length === 0 ? (
-            <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-10">{t('reviews.noPendingReviews', 'No reviews pending.')}</p>
+            <div className="text-center py-12">
+              <Star className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                {t('reviews.noPendingTitle', 'All caught up!')}
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400">
+                {t('reviews.noPendingReviews', 'No reviews pending. Complete more bookings to share your experiences!')}
+              </p>
+            </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {pendingBookings.map((booking) => (
-                <div key={booking.id} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden dark:bg-gray-800">
-                  <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-100 dark:border-gray-600 text-sm text-gray-500 dark:text-gray-400">
-                    <span>{t('reviews.bookingNumber', 'Booking Number:')} <span className="text-gray-800 dark:text-gray-200 font-medium">{booking.booking_code}</span></span>
-                    <span>{t('reviews.date', 'Date:')} {formatDate(booking.created_at?.slice(0, 10))}</span>
-                    <span className="text-gray-500 dark:text-gray-400">{t('reviews.completed', 'Completed')}</span>
-                  </div>
-                  <div className="flex items-start gap-4 p-4">
-                    {(() => {
-                      const hotel = hotels.get(booking.hotel);
-                      return hotel?.profile_image ? (
-                        <img
-                          src={HotelService.getHotelImageUrl(hotel.profile_image) || ''}
-                          alt={hotel.PropertyName}
-                          className="w-14 h-14 rounded-lg object-cover shrink-0"
-                          loading="lazy"
-                        />
-                      ) : (
-                          <div className="w-14 h-14 bg-gray-200 dark:bg-gray-600 rounded-lg shrink-0 flex items-center justify-center">
-                          <MapPin className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                <div key={booking.id} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                  {/* Header with booking info */}
+                  <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            {t('reviews.bookingNumber', 'Booking:')}
+                          </span>
+                          <span className="font-mono font-semibold text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 px-2 py-1 rounded">
+                            {booking.booking_code}
+                          </span>
                         </div>
-                      );
-                    })()}
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{booking.hotel_name}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{booking.room_type}</p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {formatDate(booking.check_in)} – {formatDate(booking.check_out)}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-end gap-3 shrink-0">
-                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {booking.total_price.toLocaleString('mn-MN')} ₮
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600 dark:text-gray-400">
+                            {t('reviews.completedOn', 'Completed:')}
+                          </span>
+                          <span className="text-gray-900 dark:text-gray-100 font-medium">
+                            {new Date(booking.created_at?.slice(0, 10)).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium rounded-full">
+                        {t('reviews.completed', 'Completed')}
                       </span>
-                      <div className="flex gap-2">
-                        <button className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                          {t('reviews.delete', 'Delete')}
-                        </button>
-                        <button
-                          onClick={() => { setReviewTarget(booking); setSubmitError(''); }}
-                          className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs transition"
-                        >
-                          {t('reviews.writeReview', 'Write Review')}
-                        </button>
+                    </div>
+                  </div>
+
+                  <div className="p-6">
+                    <div className="flex items-start gap-6">
+                      {/* Hotel image */}
+                      {(() => {
+                        const hotel = hotels.get(booking.hotel);
+                        return hotel?.profile_image ? (
+                          <img
+                            src={HotelService.getHotelImageUrl(hotel.profile_image) || ''}
+                            alt={hotel.PropertyName}
+                            className="w-20 h-20 rounded-xl object-cover"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 rounded-xl flex items-center justify-center">
+                            <MapPin className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                          </div>
+                        );
+                      })()}
+
+                      {/* Hotel and booking details */}
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                          {booking.hotel_name}
+                        </h3>
+                        <div className="space-y-2 mb-4">
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <span className="font-medium">Room:</span>
+                            <span>{booking.room_type}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <span className="font-medium">Stay:</span>
+                            <span>{formatDate(booking.check_in)} – {formatDate(booking.check_out)}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Price and actions */}
+                      <div className="text-right">
+                        <div className="mb-4">
+                          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                            {booking.total_price.toLocaleString('mn-MN')} ₮
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {t('reviews.totalPaid', 'Total paid')}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <button
+                            onClick={() => { setReviewTarget(booking); setSubmitError(''); }}
+                            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                          >
+                            <Star className="w-4 h-4" />
+                            {t('reviews.writeReview', 'Write Review')}
+                          </button>
+                          <button className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg text-sm transition-colors">
+                            {t('reviews.skip', 'Skip')}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -377,73 +461,129 @@ export default function ReviewsPage() {
 
       {/* ── Write Review Modal ── */}
       {reviewTarget && (
-        <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-end sm:justify-end z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 w-full max-w-xs shadow-xl">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">{t('reviews.rateExperience', 'Please rate your experience')}</h2>
-              <button onClick={() => setReviewTarget(null)} className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
-                <X size={18} />
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-md mx-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {t('reviews.rateExperience', 'Rate Your Experience')}
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {reviewTarget.hotel_name}
+                </p>
+              </div>
+              <button 
+                onClick={() => setReviewTarget(null)} 
+                className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmitReview}>
+            {/* Modal Content */}
+            <form onSubmit={handleSubmitReview} className="p-6">
               {/* Emoji rating */}
-              <div className="flex justify-between mb-4">
-                {EMOJI_RATINGS.map((emoji, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => setEmojiRating(i + 1)}
-                    className={`text-2xl w-10 h-10 rounded-full transition flex items-center justify-center ${
-                      emojiRating === i + 1
-                        ? 'bg-yellow-100 ring-2 ring-yellow-400 scale-110'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    {emoji}
-                  </button>
-                ))}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  {t('reviews.overallRating', 'Overall Rating')}
+                </label>
+                <div className="flex justify-center gap-2">
+                  {EMOJI_RATINGS.map((emoji, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setEmojiRating(i + 1)}
+                      className={`text-3xl w-12 h-12 rounded-full transition-all duration-200 flex items-center justify-center ${
+                        emojiRating === i + 1
+                          ? 'bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500 scale-110 shadow-lg'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-105'
+                      }`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex justify-center mt-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {emojiRating}/5 {t('reviews.stars', 'stars')}
+                  </span>
+                </div>
               </div>
 
               {/* Like tags */}
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('reviews.whatDidYouLike', 'What did you like?')}</p>
-              <div className="flex flex-wrap gap-1.5 mb-3">
-                {LIKE_TAGS.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleTag(tag)}
-                    className={`px-3 py-1 rounded-full text-xs border transition ${
-                      likedTags.includes(tag)
-                        ? 'bg-blue-50 border-blue-400 text-blue-600'
-                        : 'border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-400'
-                    }`}
-                  >
-                    {t(`reviews.${tag}`, tag)}
-                  </button>
-                ))}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  {t('reviews.whatDidYouLike', 'What did you like?')} 
+                  <span className="text-gray-500 dark:text-gray-400 font-normal">
+                    {t('reviews.optional', '(Optional)')}
+                  </span>
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {LIKE_TAGS.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleTag(tag)}
+                      className={`px-3 py-2 rounded-lg text-sm border transition-all duration-200 ${
+                        likedTags.includes(tag)
+                          ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300 shadow-md'
+                          : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      {t(`reviews.${tag}`, tag)}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Comment */}
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder={t('reviews.commentPlaceholder', 'Write a comment')}
-                rows={3}
-                className="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-700 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition mb-3"
-              />
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  {t('reviews.additionalComments', 'Additional Comments')}
+                  <span className="text-gray-500 dark:text-gray-400 font-normal">
+                    {t('reviews.optional', '(Optional)')}
+                  </span>
+                </label>
+                <textarea
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder={t('reviews.commentPlaceholder', 'Share your experience...')}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                />
+              </div>
 
               {submitError && (
-                <p className="text-xs text-red-500 mb-2">{submitError}</p>
+                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+                  <p className="text-sm text-red-600 dark:text-red-400">{submitError}</p>
+                </div>
               )}
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
-              >
-                {isSubmitting ? t('reviews.submitting', 'Submitting...') : t('reviews.submit', 'Submit')}
-              </button>
+              {/* Actions */}
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setReviewTarget(null)}
+                  className="flex-1 py-3 px-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                >
+                  {t('common.cancel', 'Cancel')}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors disabled:cursor-not-allowed flex items-center justify-center"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                      {t('reviews.submitting', 'Submitting...')}
+                    </>
+                  ) : (
+                    t('reviews.submit', 'Submit Review')
+                  )}
+                </button>
+              </div>
             </form>
           </div>
         </div>

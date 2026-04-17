@@ -1,15 +1,18 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { ChevronLeft, ChevronRight, Heart, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
 import { HotelImages } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { WishlistHeartOverlay } from '@/components/wishlist/WishlistHeart';
+import { useAuthenticatedUser } from '@/hooks/useCustomer';
 
 interface HotelImageGalleryProps {
   images: HotelImages;
   hotelName: string;
+  hotelId?: number;
   viewMode: 'list' | 'grid';
   className?: string;
 }
@@ -17,12 +20,13 @@ interface HotelImageGalleryProps {
 export default function HotelImageGallery({
   images,
   hotelName,
+  hotelId,
   viewMode,
   className = "",
 }: HotelImageGalleryProps) {
   const { t } = useHydratedTranslation();
+  const { isAuthenticated } = useAuthenticatedUser();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   // Per-image error tracking — one broken URL won't kill the whole gallery
   const [errorSet, setErrorSet] = useState<Set<number>>(new Set());
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,11 +76,6 @@ export default function HotelImageGallery({
     );
   };
 
-  const toggleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
-  };
 
   const safeIndex = Math.min(currentImageIndex, Math.max(0, validImages.length - 1));
   const hasMultipleImages = validImages.length > 1;
@@ -84,20 +83,9 @@ export default function HotelImageGallery({
 
   // ── Shared sub-components ────────────────────────────────────────────────
 
-  const WishlistBtn = (
-    <button
-      onClick={toggleWishlist}
-      className="absolute top-2.5 right-2.5 z-10 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-2 shadow-md transition-colors group/heart"
-    >
-      <Heart
-        className={`w-4 h-4 transition-all ${
-          isWishlisted
-            ? 'text-red-500 fill-red-500'
-            : 'text-slate-600 group-hover/heart:text-red-500'
-        }`}
-      />
-    </button>
-  );
+  const WishlistBtn = isAuthenticated && hotelId ? (
+    <WishlistHeartOverlay hotelId={hotelId} />
+  ) : null;
 
   const ViewPhotosBtn = (
     <button
@@ -295,8 +283,16 @@ function GalleryModal({ images, hotelName, open, onOpenChange, initialIndex }: G
   const [idx, setIdx] = useState(initialIndex);
   const hasMultiple = images.length > 1;
 
-  const prev = () => setIdx((p) => (p === 0 ? images.length - 1 : p - 1));
-  const next = () => setIdx((p) => (p + 1) % images.length);
+  const prev = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    setIdx((p) => (p === 0 ? images.length - 1 : p - 1));
+  };
+  const next = (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    setIdx((p) => (p + 1) % images.length);
+  };
 
   const handleOpenChange = (v: boolean) => {
     if (v) setIdx(initialIndex);
@@ -305,7 +301,13 @@ function GalleryModal({ images, hotelName, open, onOpenChange, initialIndex }: G
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-6xl w-[95vw] p-0 border border-slate-200 dark:border-slate-700 bg-white dark:bg-gray-900 shadow-2xl rounded-2xl overflow-hidden">
+      <DialogContent
+        className="max-w-6xl w-[95vw] p-0 border border-slate-200 dark:border-slate-700 bg-white dark:bg-gray-900 shadow-2xl rounded-2xl overflow-hidden"
+        onClick={(e: React.MouseEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
         <DialogTitle className="sr-only">{hotelName} photos</DialogTitle>
         <div className="flex flex-col h-[85vh]">
           {/* Header */}
@@ -360,7 +362,11 @@ function GalleryModal({ images, hotelName, open, onOpenChange, initialIndex }: G
                 {images.map((img, i) => (
                   <button
                     key={img.url + i}
-                    onClick={() => setIdx(i)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIdx(i);
+                    }}
                     className={`relative w-16 h-12 rounded-md overflow-hidden border-2 transition-all shrink-0 ${
                       i === idx
                         ? 'border-slate-900 dark:border-slate-100 opacity-100'

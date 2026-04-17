@@ -17,6 +17,8 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { PropertyBasicInfo, ConfirmAddress, PropertyImage, AdditionalInfo, PropertyDetails, Facility, SearchHotelResult } from '@/types/api';
 import { Train, Plane, Landmark, Utensils as RestaurantIcon, ShoppingBag, Building2 } from 'lucide-react';
+import WishlistHeart from '@/components/wishlist/WishlistHeart';
+import { useAuthenticatedUser } from '@/hooks/useCustomer';
 
 interface EnhancedHotelDetailProps {
   hotel: SearchHotelResult;
@@ -24,6 +26,7 @@ interface EnhancedHotelDetailProps {
 
 export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps) {
   const { t } = useHydratedTranslation();
+  const { isAuthenticated } = useAuthenticatedUser();
   const router = useRouter();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
@@ -425,6 +428,14 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                   <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                 ))}
               </div>
+              {/* Wishlist Heart for authenticated users */}
+              {isAuthenticated && (
+                <WishlistHeart
+                  hotelId={hotel.hotel_id}
+                  size={24}
+                  tooltipPosition="right"
+                />
+              )}
             </div>
 
             {/* City, Province and View on Map on same line */}

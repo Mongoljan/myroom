@@ -2,79 +2,77 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Heart, Star } from 'lucide-react';
-
-interface SavedHotel {
-  id: number;
-  name: string;
-  city: string;
-  district: string;
-  stars: number;
-  rating: number;
-  reviewCount: number;
-  price: number;
-  originalPrice?: number;
-  discount?: number;
-  nights: number;
-  available: boolean;
-  amenity?: string;
-  remainingRooms?: number;
-  slug?: string;
-}
-
-const SAVED_KEY = 'myroom_saved_hotels';
-
-function loadSaved(): SavedHotel[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
-  } catch {
-    return [];
-  }
-}
-
-function removeSaved(id: number) {
-  const current = loadSaved();
-  localStorage.setItem(SAVED_KEY, JSON.stringify(current.filter((h) => h.id !== id)));
-}
+import { Heart, Star, MapPin, Trash2, RefreshCw } from 'lucide-react';
+import { useWishlist, useAuthenticatedUser } from '@/hooks/useCustomer';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { WishlistItem } from '@/types/customer';
+import { motion } from 'framer-motion';
 
 export default function SavedPage() {
-  const [hotels, setHotels] = useState<SavedHotel[]>([]);
-  const [activeCity, setActiveCity] = useState<string>('');
+  const { t } = useHydratedTranslation();
+  const { token, isAuthenticated } = useAuthenticatedUser();
+  const { wishlist, loading, refresh, removeHotel } = useWishlist(token || undefined);
+  const [removingIds, setRemovingIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
-    const saved = loadSaved();
-    setHotels(saved);
-    if (saved.length > 0) setActiveCity(saved[0].city);
-  }, []);
+    if (!isAuthenticated) {
+      // Redirect to login if not authenticated
+      window.location.href = '/login';
+    }
+  }, [isAuthenticated]);
 
-  const cities = Array.from(new Set(hotels.map((h) => h.city)));
-  const filtered = activeCity ? hotels.filter((h) => h.city === activeCity) : hotels;
+  const handleRemove = async (hotelId: number) => {
+    if (!token) return;
 
-  const cityCount = (city: string) => hotels.filter((h) => h.city === city).length;
-
-  const handleRemove = (id: number) => {
-    removeSaved(id);
-    setHotels(loadSaved());
+    setRemovingIds(prev => new Set(prev).add(hotelId));
+    try {
+      const result = await removeHotel(hotelId);
+      if (!result.success) {
+        console.error('Failed to remove from wishlist:', result.message);
+      }
+    } catch (error) {
+      console.error('Error removing from wishlist:', error);
+    } finally {
+      setRemovingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(hotelId);
+        return newSet;
+      });
+    }
   };
 
-  const formatPrice = (p: number) => p.toLocaleString('mn-MN') + ' ₮';
+  const formatPrice = (price: number | null) => {
+    if (!price) return t('common.priceNotAvailable', 'Price not available');
+    return new Intl.NumberFormat('mn-MN').format(price) + '₮';
+  };
 
-  if (hotels.length === 0) {
+  if (!isAuthenticated) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
-        <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Хадгалсан</h1>
-        </div>
-        <div className="py-16 flex flex-col items-center gap-3 text-gray-400">
-          <Heart size={40} className="text-gray-200" />
-          <p className="text-sm">Хадгалсан буудал байхгүй байна.</p>
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <Heart className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+          <p className="text-gray-500 dark:text-gray-400 mb-4">
+            {t('saved.loginRequired', 'Please log in to view your saved hotels')}
+          </p>
           <Link
-            href="/search"
-            className="mt-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition"
+            href="/login"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Буудал хайх
+            {t('auth.login', 'Log In')}
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-96">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
+          <p className="text-gray-500 dark:text-gray-400">
+            {t('saved.loading', 'Loading your saved hotels...')}
+          </p>
         </div>
       </div>
     );
@@ -82,108 +80,157 @@ export default function SavedPage() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-      <div className="px-6 pt-6 pb-0">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-5">Хадгалсан</h1>
-
-        {/* City tabs */}
-        <div className="flex gap-1 overflow-x-auto border-b border-gray-100 dark:border-gray-700 pb-0.5 mb-5">
-          {cities.map((city) => (
-            <button
-              key={city}
-              onClick={() => setActiveCity(city)}
-              className={`px-4 py-2 text-sm whitespace-nowrap transition border-b-2 -mb-0.5 ${
-                activeCity === city
-                  ? 'border-blue-600 text-blue-600 font-medium'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
-              }`}
-            >
-              {city}({cityCount(city)})
-            </button>
-          ))}
+      <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              {t('saved.title', 'Saved Hotels')}
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {wishlist.length} {t('saved.hotelsCount', 'hotels saved')}
+            </p>
+          </div>
+          <button
+            onClick={refresh}
+            disabled={loading}
+            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+          >
+            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+          </button>
         </div>
       </div>
 
-      {/* Hotel grid */}
-      <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((hotel) => (
-          <div key={hotel.id} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden group">
-            {/* Image area */}
-              <div className="relative h-40 bg-gray-100 dark:bg-gray-700">
-                <button
-                  onClick={() => handleRemove(hotel.id)}
-                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white dark:bg-gray-700 shadow flex items-center justify-center z-10 hover:bg-red-50 dark:hover:bg-red-900/30 transition">
-                <Heart size={16} className="text-red-500 fill-red-500" />
-              </button>
-            </div>
-
-            {/* Info */}
-            <div className="p-3">
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{hotel.name}</h3>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                {hotel.city}, {hotel.district}
-              </p>
-
-              {/* Stars */}
-              <div className="flex items-center gap-0.5 mt-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    size={11}
-                    className={i < hotel.stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}
-                  />
-                ))}
-              </div>
-
-              {/* Rating */}
-              <div className="flex items-center gap-1.5 mt-1.5">
-                <span className="text-xs font-semibold text-blue-600">{hotel.rating}/5</span>
-                <span className="text-xs text-gray-400">{hotel.reviewCount} сэтгэгдэл</span>
-              </div>
-
-              {hotel.amenity && (
-                <p className="text-xs text-green-600 mt-1">{hotel.amenity}</p>
-              )}
-
-              {/* Price */}
-              <div className="mt-2">
-                {!hotel.available ? (
-                  <p className="text-xs text-red-500">
-                    Сайт дээрх бүх өрөө зарагдаж дууссан байна.
-                  </p>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-2">
-                      {hotel.originalPrice && (
-                        <span className="text-xs text-gray-400 line-through">
-                          {formatPrice(hotel.originalPrice)}
-                        </span>
-                      )}
-                      {hotel.discount && (
-                        <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded font-medium">
-                          -{hotel.discount}%
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-sm font-bold text-blue-600 mt-0.5">
-                      {formatPrice(hotel.price)}
-                    </div>
-                    <p className="text-xs text-gray-400">
-                      Нийт үнэ: {formatPrice(hotel.price * hotel.nights)}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      1 өрөө x {hotel.nights} шөнө (НӨАТ багтсан)
-                    </p>
-                    {hotel.remainingRooms && (
-                      <p className="text-xs text-red-500 font-medium mt-0.5">
-                        Сүүлийн {hotel.remainingRooms} өрөө
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
+      <div className="p-6">
+        {wishlist.length === 0 ? (
+          <div className="text-center py-12">
+            <Heart className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+              {t('saved.empty.title', 'No saved hotels yet')}
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
+              {t('saved.empty.description', 'Start exploring and save your favorite hotels!')}
+            </p>
+            <Link
+              href="/search"
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {t('saved.empty.browseHotels', 'Browse Hotels')}
+            </Link>
           </div>
-        ))}
+        ) : (
+          <div className="grid gap-4">
+            {wishlist.map((item: WishlistItem) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-start gap-4">
+                  {/* Hotel Image */}
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
+                    <img
+                      src={item.hotel.profile_image || '/placeholder-hotel.jpg'}
+                      alt={item.hotel.PropertyName}
+                      className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder-hotel.jpg';
+                      }}
+                    />
+                  </div>
+
+                  {/* Hotel Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1 truncate">
+                          {item.hotel.PropertyName}
+                        </h3>
+                        
+                        {item.hotel.CompanyName && (
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                            {item.hotel.CompanyName}
+                          </p>
+                        )}
+
+                        <div className="flex items-center gap-2 mb-2">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
+                            {item.hotel.location.province_city}
+                            {item.hotel.location.soum && `, ${item.hotel.location.soum}`}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                          {item.hotel.star_rating && (
+                            <div className="flex items-center gap-1">
+                              {Array.from({ length: item.hotel.star_rating }).map((_, i) => (
+                                <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                              ))}
+                            </div>
+                          )}
+                          
+                          {item.hotel.avg_rating && (
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {item.hotel.avg_rating}
+                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                ({item.hotel.review_count} {t('common.reviews', 'reviews')})
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-start gap-2">
+                        {item.hotel.min_price && (
+                          <div className="text-right">
+                            <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                              {formatPrice(item.hotel.min_price)}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                              {t('common.perNight', 'per night')}
+                            </div>
+                          </div>
+                        )}
+
+                        <button
+                          onClick={() => handleRemove(item.hotel.id)}
+                          disabled={removingIds.has(item.hotel.id)}
+                          className="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors disabled:opacity-50"
+                          title={t('saved.remove', 'Remove from saved')}
+                        >
+                          {removingIds.has(item.hotel.id) ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {t('saved.addedOn', 'Added on')} {new Date(item.created_at).toLocaleDateString()}
+                        </span>
+                        <Link
+                          href={`/hotel/${item.hotel.id}`}
+                          className="inline-flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          {t('common.viewDetails', 'View Details')}
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

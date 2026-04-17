@@ -19,6 +19,13 @@ import {
   CreateReviewResponse,
   CustomerReviewsResponse,
   CustomerCouponsResponse,
+  WishlistCreateRequest,
+  WishlistCreateResponse,
+  WishlistListResponse,
+  CustomerSettingsResponse,
+  CustomerSettingsUpdateRequest,
+  Currency,
+  Language,
   MessageResponse,
 } from '@/types/customer';
 
@@ -341,6 +348,76 @@ export class CustomerService {
   static async getCoupons(token: string): Promise<CustomerCouponsResponse> {
     const url = this.addTokenToUrl('/coupons/', token);
     return this.request<CustomerCouponsResponse>(url);
+  }
+
+  // ============================================================
+  // Wishlist
+  // ============================================================
+
+  /**
+   * Get user's wishlist
+   * GET /api/customers/wishlist/
+   */
+  static async getWishlist(token: string): Promise<WishlistListResponse> {
+    const url = this.addTokenToUrl('/wishlist/', token);
+    return this.request<WishlistListResponse>(url);
+  }
+
+  /**
+   * Add hotel to wishlist
+   * POST /api/customers/wishlist/
+   */
+  static async addToWishlist(
+    token: string,
+    data: WishlistCreateRequest
+  ): Promise<WishlistCreateResponse> {
+    const url = this.addTokenToUrl('/wishlist/', token);
+    return this.request<WishlistCreateResponse>(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  /**
+   * Remove hotel from wishlist
+   * DELETE /api/customers/wishlist/{hotel_id}/
+   */
+  static async removeFromWishlist(
+    token: string,
+    hotelId: number
+  ): Promise<MessageResponse> {
+    const url = this.addTokenToUrl(`/wishlist/${hotelId}/`, token);
+    return this.request<MessageResponse>(url, {
+      method: 'DELETE',
+    });
+  }
+
+  // ============================================================
+  // Settings
+  // ============================================================
+
+  /**
+   * Get user's settings
+   * GET /api/customers/settings/
+   */
+  static async getSettings(token: string): Promise<CustomerSettingsResponse> {
+    const url = this.addTokenToUrl('/settings/', token);
+    return this.request<CustomerSettingsResponse>(url);
+  }
+
+  /**
+   * Update user's settings
+   * PATCH /api/customers/settings/
+   */
+  static async updateSettings(
+    token: string,
+    settings: CustomerSettingsUpdateRequest
+  ): Promise<{ message: string; settings: CustomerSettingsResponse }> {
+    const url = this.addTokenToUrl('/settings/', token);
+    return this.request(url, {
+      method: 'PATCH',
+      body: JSON.stringify(settings),
+    });
   }
 
   // ============================================================

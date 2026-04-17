@@ -296,6 +296,7 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
               <HotelImageGallery
                 images={hotel.images}
                 hotelName={hotel.property_name}
+                hotelId={hotel.hotel_id}
                 viewMode="list"
                 className="w-full h-full"
               />
