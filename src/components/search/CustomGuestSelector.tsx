@@ -36,7 +36,7 @@ export default function CustomGuestSelector({
   const [localRooms, setLocalRooms] = useState(rooms);
 
   // Debounce timer ref - reduced delay for better UX
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Simplified position calculation with performance optimization
   const calculatePosition = useCallback(() => {
