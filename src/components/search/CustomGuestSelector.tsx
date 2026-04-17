@@ -47,7 +47,7 @@ export default function CustomGuestSelector({
     const padding = 16;
     
     let top = rect.bottom + 8;
-    let left = Math.max(padding, Math.min(rect.left, window.innerWidth - modalWidth - padding));
+    const left = Math.max(padding, Math.min(rect.left, window.innerWidth - modalWidth - padding));
     
     // Simple bottom check without complex height calculations
     if (top > window.innerHeight * 0.7) {
