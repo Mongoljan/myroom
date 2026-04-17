@@ -161,21 +161,55 @@ export const getWishlistCount = async (token: string): Promise<number> => {
   }
 };
 
+// Define generic hotel input type for wishlist formatting
+interface GenericHotelInput {
+  id?: number;
+  pk?: number;
+  PropertyName?: string;
+  name?: string;
+  CompanyName?: string;
+  company_name?: string;
+  location?: {
+    province_city?: string;
+    soum?: string;
+    district?: string | null;
+  } | string;
+  star_rating?: string | null;
+  avg_rating?: number | null;
+  rating?: number;
+  review_count?: number;
+  reviews_count?: number;
+  min_price?: number | null;
+  price?: number;
+  profile_image?: string | null;
+  image?: string;
+  images?: Array<{ image?: string }> | { 0?: { image?: string } };
+  property_type?: string | null;
+  type?: string;
+  [key: string]: unknown;
+}
+
 /**
  * Convert HotelDetail from search results to wishlist format
  * This helps when adding hotels from search results to wishlist
  */
-export const formatHotelForWishlist = (hotel: any): HotelDetail => {
+export const formatHotelForWishlist = (hotel: GenericHotelInput): HotelDetail => {
   return {
-    id: hotel.id || hotel.pk,
-    PropertyName: hotel.PropertyName || hotel.name,
+    id: hotel.id || hotel.pk || 0,
+    PropertyName: hotel.PropertyName || hotel.name || 'Unknown Hotel',
     CompanyName: hotel.CompanyName || hotel.company_name || '',
     location: {
-      province_city: hotel.location?.province_city || hotel.location || '',
-      soum: hotel.location?.soum || '',
-      district: hotel.location?.district || null
+      province_city: typeof hotel.location === 'object' 
+        ? hotel.location?.province_city || '' 
+        : (hotel.location || ''),
+      soum: typeof hotel.location === 'object' 
+        ? hotel.location?.soum || '' 
+        : '',
+      district: typeof hotel.location === 'object' 
+        ? hotel.location?.district || null 
+        : null
     },
-    star_rating: hotel.star_rating || null,
+    star_rating: hotel.star_rating ? Number(hotel.star_rating) : null,
     avg_rating: hotel.avg_rating || hotel.rating || null,
     review_count: hotel.review_count || hotel.reviews_count || 0,
     min_price: hotel.min_price || hotel.price || null,

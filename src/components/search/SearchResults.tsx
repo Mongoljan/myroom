@@ -504,8 +504,8 @@ export default function SearchResults() {
       } else if (typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)) {
         // New format: object with counts - filter if any bed type has count > 0
         const activeBedTypes = Object.entries(filters.bedTypes)
-          .filter(([_, count]) => count > 0)
-          .map(([bedType, _]) => bedType);
+          .filter(([, count]) => count > 0)
+          .map(([bedType]) => bedType);
 
         if (activeBedTypes.length > 0) {
           filtered = filtered.filter(hotel => {

@@ -41,18 +41,47 @@ export interface NormalizedHotel {
   google_map?: string;
 }
 
+// Define types for room data
+export interface RoomData {
+  final_price?: number;
+  base_price?: number;
+  price_per_night_final?: number;
+  images?: Array<{ url: string; description?: string }>;
+  [key: string]: unknown;
+}
+
 export interface NormalizedSearchResult {
   hotel: NormalizedHotel;
-  cheapest_room?: any;
+  cheapest_room?: RoomData;
   nights?: number;
   rooms_possible?: number;
   min_estimated_total?: number;
 }
 
+// Define search API input types
+interface SearchApiInput {
+  hotel_id: number;
+  property_name: string;
+  location?: {
+    province_city?: string;
+    soum?: string;
+    district?: string | null;
+  };
+  rating_stars?: { id: number; label: string; value: string };
+  min_estimated_total?: number;
+  images?: { cover?: string; gallery?: Array<{ url: string; description: string }> };
+  general_facilities?: string[];
+  google_map?: string;
+  cheapest_room?: RoomData;
+  nights?: number;
+  rooms_possible?: number;
+  [key: string]: unknown;
+}
+
 /**
  * Normalize hotel data from Search API format to standard format
  */
-export function normalizeSearchHotel(searchResult: any): NormalizedSearchResult {
+export function normalizeSearchHotel(searchResult: SearchApiInput): NormalizedSearchResult {
   const hotel: NormalizedHotel = {
     id: searchResult.hotel_id,
     PropertyName: searchResult.property_name,
@@ -82,17 +111,35 @@ export function normalizeSearchHotel(searchResult: any): NormalizedSearchResult 
   };
 }
 
+// Define suggested API input types
+interface SuggestedApiInput {
+  hotel: {
+    pk: number;
+    PropertyName: string;
+    CompanyName?: string;
+    location?: string | {
+      province_city?: string;
+      soum?: string;
+      district?: string | null;
+    };
+    property_type?: string | number;
+    [key: string]: unknown;
+  };
+  cheapest_room?: RoomData;
+  [key: string]: unknown;
+}
+
 /**
  * Normalize hotel data from Suggested Hotels API format to standard format
  */
-export function normalizeSuggestedHotel(suggestedResult: any): NormalizedSearchResult {
+export function normalizeSuggestedHotel(suggestedResult: SuggestedApiInput): NormalizedSearchResult {
   const hotelData = suggestedResult.hotel;
   
   // Handle location data - suggested API might have string location or no location
   let location = {
-    province_city: undefined,
-    soum: undefined,
-    district: undefined
+    province_city: undefined as string | undefined,
+    soum: undefined as string | undefined,
+    district: undefined as string | undefined | null
   };
   
   if (hotelData.location) {
@@ -136,30 +183,53 @@ export function normalizeSuggestedHotel(suggestedResult: any): NormalizedSearchR
 /**
  * Normalize hotel data from Wishlist API format (already in correct format)
  */
-export function normalizeWishlistHotel(wishlistHotel: any): NormalizedHotel {
+export function normalizeWishlistHotel(wishlistHotel: NormalizedHotel): NormalizedHotel {
   // Wishlist API already uses the correct format, just pass through
   return wishlistHotel;
+}
+
+// Define generic hotel data type for extraction functions
+interface GenericHotelData {
+  id?: number;
+  hotel_id?: number;
+  pk?: number;
+  [key: string]: unknown;
 }
 
 /**
  * Extract hotel ID from various API response formats
  */
-export function extractHotelId(hotelData: any): number {
+export function extractHotelId(hotelData: GenericHotelData): number {
   // Try different possible ID field names
   return hotelData.id || hotelData.hotel_id || hotelData.pk || 0;
+}
+
+interface HotelNameData {
+  PropertyName?: string;
+  property_name?: string;
+  [key: string]: unknown;
 }
 
 /**
  * Extract hotel name from various API response formats
  */
-export function extractHotelName(hotelData: any): string {
+export function extractHotelName(hotelData: HotelNameData): string {
   return hotelData.PropertyName || hotelData.property_name || 'Unknown Hotel';
+}
+
+interface HotelLocationData {
+  location?: string | {
+    province_city?: string;
+    soum?: string;
+    district?: string | null;
+  };
+  [key: string]: unknown;
 }
 
 /**
  * Extract hotel location from various API response formats
  */
-export function extractHotelLocation(hotelData: any): string {
+export function extractHotelLocation(hotelData: HotelLocationData): string {
   if (hotelData.location) {
     if (typeof hotelData.location === 'string') {
       return hotelData.location;
@@ -176,10 +246,19 @@ export function extractHotelLocation(hotelData: any): string {
   return 'Location not specified';
 }
 
+interface HotelImageData {
+  images?: {
+    cover?: string;
+    gallery?: Array<{ url: string; description?: string }>;
+  };
+  profile_image?: string;
+  [key: string]: unknown;
+}
+
 /**
  * Extract hotel image URL from various API response formats
  */
-export function extractHotelImage(hotelData: any): string {
+export function extractHotelImage(hotelData: HotelImageData): string {
   // Try different possible image field structures
   if (hotelData.images?.cover) {
     return hotelData.images.cover;
@@ -204,10 +283,20 @@ export function extractHotelImage(hotelData: any): string {
   return fallbacks[hotelId % fallbacks.length];
 }
 
+interface HotelPriceData {
+  min_price?: number;
+  min_estimated_total?: number;
+  cheapest_room?: {
+    final_price?: number;
+    price_per_night_final?: number;
+  };
+  [key: string]: unknown;
+}
+
 /**
  * Extract minimum price from various API response formats
  */
-export function extractMinPrice(hotelData: any): number | null {
+export function extractMinPrice(hotelData: HotelPriceData): number | null {
   return hotelData.min_price || 
          hotelData.min_estimated_total || 
          hotelData.cheapest_room?.final_price || 
@@ -218,13 +307,13 @@ export function extractMinPrice(hotelData: any): number | null {
 /**
  * Batch normalize search results
  */
-export function normalizeSearchResults(results: any[]): NormalizedSearchResult[] {
+export function normalizeSearchResults(results: SearchApiInput[]): NormalizedSearchResult[] {
   return results.map(normalizeSearchHotel);
 }
 
 /**
  * Batch normalize suggested hotel results
  */
-export function normalizeSuggestedResults(results: any[]): NormalizedSearchResult[] {
+export function normalizeSuggestedResults(results: SuggestedApiInput[]): NormalizedSearchResult[] {
   return results.map(normalizeSuggestedHotel);
 }

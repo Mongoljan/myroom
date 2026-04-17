@@ -43,11 +43,11 @@ export async function debugRecommendedHotelsAPI(
       const room = item.cheapest_room;
       
       return {
-        id: hotel.id, // Updated to use normalized id field
+        id: hotel.pk, // Using pk since that's the actual field from suggested API
         name: hotel.PropertyName, // Updated to use normalized PropertyName
         location: typeof hotel.location === 'string' 
           ? hotel.location 
-          : hotel.location?.province_city || 'Unknown location', // Handle both string and object
+          : (hotel.location as { province_city?: string })?.province_city || 'Unknown location', // Handle both string and object
         hasRoom: !!room,
         roomPrice: room?.final_price || room?.base_price,
         hasImages: !!(room?.images && room.images.length > 0),
@@ -122,6 +122,7 @@ export async function debugAllRecommendedTabs(): Promise<Record<string, Recommen
 
 // Test function that can be called from browser console
 if (typeof window !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).debugRecommendedHotels = {
     testTab: debugRecommendedHotelsAPI,
     testAllTabs: debugAllRecommendedTabs,

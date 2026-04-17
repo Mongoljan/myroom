@@ -60,8 +60,10 @@ export default function SearchResultsHeader({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   totalCount,
   sortBy,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   viewMode,
   onSort,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onViewModeChange,
   onShowMapView,
   filters,

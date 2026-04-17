@@ -32,8 +32,7 @@ export const getDefaultSettings = (): CustomerSettingsResponse => {
     language: 'mn',
     email_booking_confirmed: true,
     email_unsubscribe: false,
-    notification_enabled: true,
-    updated_at: new Date().toISOString()
+    notification_enabled: true
   };
 };
 

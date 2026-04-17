@@ -7,7 +7,7 @@ import { ApiService } from '@/services/api';
 
 export interface SearchDebugInfo {
   apiUrl: string;
-  params: Record<string, any>;
+  params: Record<string, unknown>;
   responseCount: number;
   actualResults: number;
   filteredResults: number;
@@ -88,7 +88,7 @@ export async function debugSearchAPI(searchParams: URLSearchParams): Promise<Sea
         issues.push('Missing rating_stars');
       }
 
-      const isValid = hotel && hotel.hotel_id && hotel.property_name && hotel.location && hotel.rating_stars;
+      const isValid = !!(hotel && hotel.hotel_id && hotel.property_name && hotel.location && hotel.rating_stars);
       
       return {
         id: hotel?.hotel_id || 0,
@@ -146,6 +146,7 @@ export async function analyzeSearchFromUrl(url: string): Promise<SearchDebugInfo
 
 // Test function that can be called from browser console
 if (typeof window !== 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).debugHotelSearch = {
     searchFromParams: debugSearchAPI,
     searchFromUrl: analyzeSearchFromUrl,

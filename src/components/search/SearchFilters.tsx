@@ -5,7 +5,7 @@ import {
   Star, Wifi, Car, Utensils, Users, Dumbbell, Waves, Building, Clock, X, Building2,
   Coffee, Bath, Cigarette, TreePine, Sun, Gamepad2, Gift, Plane, Wrench,
   ShoppingBag, Phone, Wind, Baby, PawPrint, Accessibility,
-  Briefcase, Coffee as CafeIcon, Volume2, Soup, Bed, MapPin
+  Briefcase, Coffee as CafeIcon, Volume2, Soup, Bed
 } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 // import FilterSummary from './FilterSummary';

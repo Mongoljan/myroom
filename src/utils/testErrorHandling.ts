@@ -13,10 +13,10 @@ export const testErrorHandling = async () => {
       password: 'wrongpassword'
     });
   } catch (error) {
-    console.log('Error caught successfully:', error.message);
+    console.log('Error caught successfully:', error instanceof Error ? error.message : String(error));
     
     // Should now show: "Имэйл эсвэл нууц үг буруу." instead of JSON object
-    return error.message;
+    return error instanceof Error ? error.message : String(error);
   }
 };
 

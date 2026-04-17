@@ -51,6 +51,7 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
   if (!isAuthenticated || !user) return null;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const isPersonalInfoActive = personalInfoLinks.some((l) => l.href === pathname);
 
   return (
