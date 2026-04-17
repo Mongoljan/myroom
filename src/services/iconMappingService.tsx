@@ -34,7 +34,11 @@ import {
   Flower2,
   SprayCan,
   Scissors,
-  Heater
+  Heater,
+  Package,
+  Lock,
+  DoorClosed,
+  GlassWater
 } from 'lucide-react';
 
 export class IconMappingService {
@@ -91,8 +95,15 @@ export class IconMappingService {
         46: <Bed className="w-3 h-3 text-green-600" />, // Feather pillow
         47: <Bed className="w-3 h-3 text-green-600" />, // Non-feather pillow
         48: <Wifi className="w-3 h-3 text-green-600" />, // Wifi
+        // New facilities (ID 49+)
+        49: <Package className="w-3 h-3 text-green-600" />, // Amenity set
+        50: <Zap className="w-3 h-3 text-green-600" />, // Electric kettle
+        51: <GlassWater className="w-3 h-3 text-green-600" />, // Mini bar
+        52: <Utensils className="w-3 h-3 text-green-600" />, // Mini dining
+        53: <Lock className="w-3 h-3 text-green-600" />, // Safety box
+        54: <DoorClosed className="w-3 h-3 text-green-600" />, // Closet room
       };
-      
+
       if (iconMap[facilityId]) {
         return iconMap[facilityId];
       }
@@ -106,6 +117,13 @@ export class IconMappingService {
       if (nameLower.includes('wifi') || nameLower.includes('интернэт')) return <Wifi className="w-3 h-3 text-green-600" />;
       if (nameLower.includes('air condition') || nameLower.includes('агааржуулагч')) return <Wind className="w-3 h-3 text-green-600" />;
       if (nameLower.includes('desk') || nameLower.includes('ширээ')) return <Monitor className="w-3 h-3 text-green-600" />;
+      // New facility type checks
+      if (nameLower.includes('amenity') || nameLower.includes('ариун цэврийн')) return <Package className="w-3 h-3 text-green-600" />;
+      if (nameLower.includes('kettle') || nameLower.includes('буцалгагч')) return <Zap className="w-3 h-3 text-green-600" />;
+      if (nameLower.includes('mini bar') || nameLower.includes('мини бар')) return <GlassWater className="w-3 h-3 text-green-600" />;
+      if (nameLower.includes('microwave') || nameLower.includes('микро')) return <Microwave className="w-3 h-3 text-green-600" />;
+      if (nameLower.includes('safety box') || nameLower.includes('сейф')) return <Lock className="w-3 h-3 text-green-600" />;
+      if (nameLower.includes('closet') || nameLower.includes('шүүгээ')) return <DoorClosed className="w-3 h-3 text-green-600" />;
     }
     
     return <Star className="w-3 h-3 text-green-600" />;

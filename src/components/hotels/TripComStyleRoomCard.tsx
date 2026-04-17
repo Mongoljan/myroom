@@ -187,7 +187,7 @@ export default function TripComStyleRoomCard({
           {/* Middle: Room Details */}
           <div className="flex-1 space-y-3">
             {/* Bed Type Info */}
-            <div className="text-sm text-gray-700 dark:text-gray-300">
+            <div className="text-sm font-bold text-gray-700 dark:text-gray-300">
               <strong>1 {room.bedTypeName || t('roomCard.bed', 'ор')}</strong>
               {room.room_size && (
                 <span className="text-gray-500 dark:text-gray-400"> ({room.room_size}м x {room.room_size}м)</span>

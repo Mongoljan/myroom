@@ -218,7 +218,7 @@ export default function SavedPage() {
                           {t('saved.addedOn', 'Added on')} {new Date(item.created_at).toLocaleDateString()}
                         </span>
                         <Link
-                          href={`/hotel/${item.hotel.id}`}
+                          href={`/hotel/${item.hotel.id}?from=profile-saved`}
                           className="inline-flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                         >
                           {t('common.viewDetails', 'View Details')}

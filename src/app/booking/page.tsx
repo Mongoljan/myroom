@@ -311,7 +311,7 @@ function BookingContent() {
                   <div className="flex">
                     <span className="text-gray-600 dark:text-gray-400 w-32">{t('bookingExtra.guests', 'Зочид')}</span>
                     <span className="text-gray-900 dark:text-white">
-                      {rooms.reduce((sum, room) => sum + room.room_count, 0)} том хүн, 2 хүүхэд
+                      <span className="font-bold text-lg">{rooms.reduce((sum, room) => sum + room.room_count, 0)}</span> том хүн, <span className="font-bold text-lg">2</span> хүүхэд
                     </span>
                   </div>
                   <div className="flex">

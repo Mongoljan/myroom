@@ -56,21 +56,27 @@ export default function HotelImageGallery({
   const validImages = normalizedImages.filter((_, i) => !errorSet.has(i));
 
   const openModalAt = (index: number, e?: React.MouseEvent) => {
-    e?.preventDefault();
-    e?.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setModalImageIndex(index);
     setIsModalOpen(true);
   };
 
   const nextImage = (e?: React.MouseEvent) => {
-    e?.preventDefault();
-    e?.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setCurrentImageIndex((prev) => (prev + 1) % validImages.length);
   };
 
   const prevImage = (e?: React.MouseEvent) => {
-    e?.preventDefault();
-    e?.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setCurrentImageIndex((prev) =>
       prev === 0 ? validImages.length - 1 : prev - 1
     );
@@ -284,13 +290,17 @@ function GalleryModal({ images, hotelName, open, onOpenChange, initialIndex }: G
   const hasMultiple = images.length > 1;
 
   const prev = (e?: React.MouseEvent) => {
-    e?.preventDefault();
-    e?.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setIdx((p) => (p === 0 ? images.length - 1 : p - 1));
   };
   const next = (e?: React.MouseEvent) => {
-    e?.preventDefault();
-    e?.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setIdx((p) => (p + 1) % images.length);
   };
 

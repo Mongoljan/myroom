@@ -123,10 +123,11 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
   ];
 
   const BED_TYPES = [
-    { id: 'single', label: t('filters.bedTypes.single', 'Single Bed') },
-    { id: 'double', label: t('filters.bedTypes.double', 'Double Bed') },
-    { id: 'queen', label: t('filters.bedTypes.queen', 'Queen Bed') },
-    { id: 'king', label: t('filters.bedTypes.king', 'King Bed') }
+    { id: 'single', label: t('filters.bedTypes.single', 'Single Bed (90×200 cm)'), size: '90×200 cm' },
+    { id: 'twin', label: t('filters.bedTypes.twin', 'Twin Bed (2×90×200 cm)'), size: '2×90×200 cm' },
+    { id: 'double', label: t('filters.bedTypes.double', 'Double Bed (140×200 cm)'), size: '140×200 cm' },
+    { id: 'queen', label: t('filters.bedTypes.queen', 'Queen Bed (160×200 cm)'), size: '160×200 cm' },
+    { id: 'king', label: t('filters.bedTypes.king', 'King Bed (180×200 cm)'), size: '180×200 cm' }
   ];
 
   const POPULAR_PLACES = [
@@ -143,7 +144,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     priceRange: [0, 1000000], // Dynamic range based on actual data
     roomFeatures: [],
     generalServices: [],
-    bedTypes: { single: 0, double: 0, queen: 0, king: 0 }, // Counter-based bed types
+    bedTypes: { single: 0, twin: 0, double: 0, queen: 0, king: 0 }, // Counter-based bed types with sizes
     popularPlaces: [],
     discounted: false,
     starRating: [],
@@ -496,12 +497,12 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           onClearAll={handleClearAllFilters}
         /> */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
 
           {/* Recent Filters Section */}
           {recentFilters.length > 0 && (
             <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.usedByYou')}</h4>
+              <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.usedByYou')}</h4>
               <div className="space-y-1">
                 {recentFilters.map((recentFilter) => (
                   <button
@@ -523,7 +524,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           <>
             {/* 1. Property Categories */}
             <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelType')}</h4>
+              <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelType')}</h4>
               <div className="space-y-1">
                 {PROPERTY_CATEGORIES.map((category) => {
                   const isSelected = filters.popularSearches?.includes(category.id) || false;
@@ -542,7 +543,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                         })}
                         className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                       />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{category.label}</span>
+                      <span className="text-base text-gray-700 dark:text-gray-300">{category.label}</span>
                     </label>
                   );
                 })}
@@ -551,7 +552,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
 
             {/* 2. Popular Searches */}
             <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.popularSearches')}</h4>
+              <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.popularSearches')}</h4>
               <div className="space-y-1">
                 {POPULAR_SEARCHES.map((search) => {
                   // For 5star, check if starRating includes 5
@@ -587,7 +588,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                         }}
                         className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                       />
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{search.label}</span>
+                      <span className="text-base text-gray-700 dark:text-gray-300">{search.label}</span>
                     </label>
                   );
                 })}
@@ -597,7 +598,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {/* 3. Price Range */}
             <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.price')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.price')}</h4>
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   ₮{filters.priceRange[0].toLocaleString()}-{filters.priceRange[1].toLocaleString()}
                 </span>
@@ -644,7 +645,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
 
             {/* 4. Hotel Star Rating (буудлын зэрэглэл) */}
             <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelStarRating')}</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelStarRating')}</h4>
               <div className="flex gap-1.5 justify-between">
                 {[1, 2, 3, 4, 5].map((stars) => {
                   const isSelected = filters.starRating?.includes(stars) || false;
@@ -689,7 +690,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {/* 5. Room Features */}
             {roomFeatureFacilities.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.roomFeatures')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.roomFeatures')}</h4>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {roomFeatureFacilities.map((facility) => {
                     const isSelected = filters.roomFeatures?.includes(facility.id) || false;
@@ -721,7 +722,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.roomFeatures')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.roomFeatures')}</h4>
                 <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
@@ -729,7 +730,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {/* 6. General Services */}
             {generalServiceFacilities.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.generalServices')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.generalServices')}</h4>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {generalServiceFacilities.map((facility) => {
                     const isSelected = filters.generalServices?.includes(facility.id) || false;
@@ -761,14 +762,14 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.generalServices')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.generalServices')}</h4>
                 <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
 
             {/* 7. Bed Types */}
             <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.bedType')}</h4>
+              <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.bedType')}</h4>
               <div className="space-y-1.5">
                 {BED_TYPES.map((bed) => {
                   const bedTypesObj = typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)
@@ -779,11 +780,14 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                   return (
                     <div
                       key={bed.id}
-                      className="flex items-center justify-between p-1.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                      className="flex items-center justify-between p-2.5 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
                     >
-                      <div className="flex items-center gap-1.5">
-                        <Bed className="w-3 h-3 text-gray-600 dark:text-gray-400" />
-                        <span className="text-xs text-gray-700 dark:text-gray-300">{bed.label}</span>
+                      <div className="flex items-center gap-2">
+                        <Bed className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-800 dark:text-gray-200">{bed.label.replace(/\s+\(.*\)/, '')}</span>
+                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{bed.size}</span>
+                      </div>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
@@ -817,7 +821,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
 
             {/* 8. Popular Places */}
             <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.popularPlaces')}</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.popularPlaces')}</h4>
               <div className="space-y-1">
                 {POPULAR_PLACES.map((place) => {
                   const isSelected = filters.popularPlaces?.includes(place.id) || false;
@@ -845,7 +849,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
 
             {/* 9. Discounted */}
             <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.discounted')}</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.discounted')}</h4>
               <label className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                 <input
                   type="checkbox"
@@ -859,7 +863,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {/* 10. Guest Rating (зочдын үнэлгээ) - Compact version */}
             {apiData?.ratings && apiData.ratings.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.guestRating')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.guestRating')}</h4>
                 <div className="grid grid-cols-5 gap-1">
                   {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
                     const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
@@ -891,7 +895,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.guestRating')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.guestRating')}</h4>
                 <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
@@ -899,7 +903,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             {/* 11. Outdoor Areas */}
             {outdoorFacilities.length > 0 ? (
               <div className="space-y-2">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.outdoorArea')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.outdoorArea')}</h4>
                 <div className="space-y-1">
                   {outdoorFacilities.map((facility) => {
                     const isSelected = filters.outdoorAreas?.includes(facility.id) || false;
@@ -931,7 +935,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('search.filtersSection.outdoorArea')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.outdoorArea')}</h4>
                 <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}

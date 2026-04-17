@@ -28,9 +28,9 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const { t } = useHydratedTranslation();
   const { isAuthenticated } = useAuthenticatedUser();
   const router = useRouter();
+  // State variables for component functionality
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-  const [modalImageIndex, setModalImageIndex] = useState(0);
   const [basicInfo, setBasicInfo] = useState<PropertyBasicInfo | null>(null);
   const [address, setAddress] = useState<ConfirmAddress | null>(null);
   const [propertyImages, setPropertyImages] = useState<PropertyImage[]>([]);
@@ -284,7 +284,6 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       setCurrentImageIndex((prev) => 
         prev === allImages.length - 1 ? 0 : prev + 1
       );
-      setModalImageIndex((prev) => prev === allImages.length - 1 ? 0 : prev + 1);
     }
   };
 
@@ -293,13 +292,11 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       setCurrentImageIndex((prev) => 
         prev === 0 ? allImages.length - 1 : prev - 1
       );
-      setModalImageIndex((prev) => prev === 0 ? allImages.length - 1 : prev - 1);
     }
   };
 
   const openGalleryAt = (index: number) => {
     setCurrentImageIndex(index);
-    setModalImageIndex(index);
     setIsGalleryOpen(true);
   };
 
@@ -344,11 +341,20 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
     return places;
   };
 
-  // Handle back navigation
+  // Handle back navigation with improved logic for profile/saved page
   const handleBack = () => {
-    if (window.history.length > 1) {
+    // Check URL params to see if user came from specific page
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromParam = urlParams.get('from');
+    
+    if (fromParam === 'profile-saved') {
+      // Navigate back to saved hotels page
+      router.push('/profile/saved');
+    } else if (window.history.length > 1) {
+      // Use browser back if there's history
       router.back();
     } else {
+      // Fallback to home page
       router.push('/');
     }
   };
@@ -619,7 +625,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-gray-900/95">
                 <div className="text-sm font-semibold truncate text-slate-900 dark:text-white">{hotelName}</div>
                 <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-                  <span>{modalImageIndex + 1} / {allImages.length}</span>
+                  <span>{currentImageIndex + 1} / {allImages.length}</span>
                   <DialogClose asChild>
                     <button className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors" aria-label="Close">
                       <X className="w-4 h-4 text-slate-700 dark:text-slate-300" />
@@ -629,9 +635,9 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
               </div>
 
               <div className="relative flex-1 bg-white dark:bg-gray-900">
-                {allImages[modalImageIndex]?.url && (
+                {allImages[currentImageIndex]?.url && (
                   <SafeImage
-                    src={allImages[modalImageIndex].url}
+                    src={allImages[currentImageIndex].url}
                     alt={hotelName || 'Hotel'}
                     fill
                     className="object-contain"
@@ -641,14 +647,14 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                 {allImages.length > 1 && (
                   <>
                     <button
-                      onClick={() => setModalImageIndex(modalImageIndex === 0 ? allImages.length - 1 : modalImageIndex - 1)}
+                      onClick={prevImage}
                       className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-800 dark:text-slate-200 rounded-full p-3 shadow-lg"
                       aria-label="Previous image"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
-                      onClick={() => setModalImageIndex((modalImageIndex + 1) % allImages.length)}
+                      onClick={nextImage}
                       className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-800 dark:text-slate-200 rounded-full p-3 shadow-lg"
                       aria-label="Next image"
                     >
@@ -664,9 +670,9 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                     {allImages.map((img, index) => (
                       <button
                         key={img.url + index}
-                        onClick={() => setModalImageIndex(index)}
+                        onClick={() => setCurrentImageIndex(index)}
                         className={`relative w-20 h-14 rounded-md overflow-hidden border ${
-                          index === modalImageIndex ? 'border-slate-900' : 'border-slate-200'
+                          index === currentImageIndex ? 'border-slate-900' : 'border-slate-200'
                         }`}
                       >
                         <SafeImage

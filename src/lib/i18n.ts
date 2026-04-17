@@ -619,7 +619,7 @@ const resources = {
           roomFeatures: "Room features",
           generalServices: "General services",
           guestRating: "Guest rating",
-          outdoorArea: "Outdoor area",
+          outdoorArea: "Additional facilities",
           bedType: "Bed type",
           popularPlaces: "Popular places",
           discounted: "Discounted",
@@ -733,10 +733,11 @@ const resources = {
           wifiIncluded: "Wi-Fi Included"
         },
         bedTypes: {
-          single: "Single Bed",
-          double: "Double Bed",
-          queen: "Queen Bed",
-          king: "King Bed"
+          single: "Single Bed (90×200 cm)",
+          twin: "Twin Bed (2×90×200 cm)",
+          double: "Double Bed (140×200 cm)",
+          queen: "Queen Bed (160×200 cm)",
+          king: "King Bed (180×200 cm)"
         },
         places: {
           center: "City Center",
@@ -2081,7 +2082,7 @@ const resources = {
           roomFeatures: "Өрөөний онцлог зүйлс",
           generalServices: "Ерөнхий үйлчилгээ",
           guestRating: "Зочдын үнэлгээ",
-          outdoorArea: "Гадаах талбай",
+          outdoorArea: "Нэмэлт байгууламж",
           bedType: "Орны төрөл",
           popularPlaces: "Алдартай газрууд",
           discounted: "Хямдралтай",
@@ -2183,10 +2184,11 @@ const resources = {
           wifiIncluded: "Wi-Fi багтсан"
         },
         bedTypes: {
-          single: "Ганц ор",
-          double: "Давхар ор",
-          queen: "Хатан ор",
-          king: "Хаан ор"
+          single: "Ганц ор (90×200 см)",
+          twin: "Хос ор (2×90×200 см)",
+          double: "Давхар ор (140×200 см)",
+          queen: "Хатан ор (160×200 см)",
+          king: "Хаан ор (180×200 см)"
         },
         places: {
           center: "Төв хэсэг",

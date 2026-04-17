@@ -120,18 +120,20 @@ export default function RoomCard({
           <div className="flex flex-wrap gap-3">
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <Home className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              <span className="text-sm text-gray-700 dark:text-gray-300">{Number(room.room_size) || 0} м²</span>
+              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{Number(room.room_size) || 0} м²</span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
               <span className="text-sm text-gray-700 dark:text-gray-300">
-                {room.adultQty} {t('roomCard.adults', 'насанд хүрэгчид')}
-                {room.childQty > 0 && `, ${room.childQty} ${t('roomCard.children', 'хүүхэд')}`}
+                <span className="font-bold text-lg text-blue-600 dark:text-blue-400">{room.adultQty}</span> {t('roomCard.adults', 'насанд хүрэгчид')}
+                {room.childQty > 0 && (
+                  <>, <span className="font-bold text-lg text-green-600 dark:text-green-400">{room.childQty}</span> {t('roomCard.children', 'хүүхэд')}</>
+                )}
               </span>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 rounded-lg">
               {getBedIcon()}
-              <span className="text-sm text-gray-700 dark:text-gray-300">{room.bedTypeName || t('roomCard.standardBed', 'Стандарт ор')}</span>
+              <span className="text-sm font-bold text-purple-600 dark:text-purple-400">{room.bedTypeName || t('roomCard.standardBed', 'Стандарт ор')}</span>
             </div>
           </div>
 
