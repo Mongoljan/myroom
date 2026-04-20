@@ -694,41 +694,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             </div>
           </div>
 
-          {/* Box 2: Special Features (Онцлох шинж чанарууд) */}
-          {/* <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-              <Star className="w-4 h-4 text-yellow-500" />
-              {t('hotelDetails.specialFeatures', 'Онцлох шинж чанарууд')}
-            </h3>
-            <div className="flex flex-wrap gap-1.5">
-              {hotel.general_facilities?.slice(0, 3).map((facility, index) => {
-                // Handle facility as string or number (same logic as main section)
-                const facilityKey = String(facility);
-                const isId = !isNaN(Number(facility));
-                const facilityId = isId ? Number(facility) : null;
-                let facilityName = facilityKey;
-                
-                if (facilityId && facilitiesMap.has(facilityId)) {
-                  const facilityData = facilitiesMap.get(facilityId);
-                  facilityName = facilityData?.name_mn || facilityData?.name_en || facilityKey;
-                }
-                
-                return (
-                  <span key={index} className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 text-xs rounded-full border border-yellow-200 dark:border-yellow-700">
-                    {facilityId ? getFacilityIconById(facilityId) : getFacilityIcon(facilityKey)}
-                    {facilityName}
-                  </span>
-                );
-              }) || []}
-              {(!hotel.general_facilities || hotel.general_facilities.length === 0) && (
-                <span className="text-xs text-gray-500 dark:text-gray-400 italic">
-                  {t('hotelDetails.noSpecialFeatures', 'Мэдээлэл байхгүй байна')}
-                </span>
-              )}
-            </div>
-          </div> */}
-
-          {/* Box 3: Surroundings */}
+          {/* Box 2: Surroundings */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
             <div className="flex items-center gap-2 mb-2">
               <MapPin className="w-4 h-4 text-blue-600" />
@@ -764,7 +730,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             )}
           </div>
 
-          {/* Box 4: Property Highlights */}
+          {/* Box 3: Property Highlights */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.propertyHighlights', 'Property highlights')}</h4>
             <div className="space-y-1">

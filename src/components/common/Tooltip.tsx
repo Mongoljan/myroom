@@ -44,7 +44,7 @@ export default function Tooltip({ content, children, show = false, position = 't
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.15 }}
-            className={`absolute z-50 ${positionClasses[position]}`}
+            className={`absolute z-40 ${positionClasses[position]}`}
           >
             <div className="bg-gray-900 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap max-w-xs">
               {content}

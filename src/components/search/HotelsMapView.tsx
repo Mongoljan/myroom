@@ -261,7 +261,7 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
 
   if (loadError) {
     return (
-      <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900 flex items-center justify-center">
+      <div className="fixed inset-0 z-40 bg-white dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 font-semibold mb-2">Google Maps ачаалахад алдаа гарлаа</p>
           <button onClick={onClose} className="text-primary hover:underline">

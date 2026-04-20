@@ -313,7 +313,7 @@ export default function AceternityHero() {
 
                     {/* Location Error Tooltip */}
                     {showLocationTooltip && (
-                      <div className="absolute top-full left-0 mt-2 z-50 animate-fade-in">
+                      <div className="absolute top-full left-0 mt-2 z-40 animate-fade-in">
                         <div className="bg-red-500 text-white text-xs px-3 py-2 rounded-lg shadow-lg relative">
                           <div className="absolute -top-1 left-8 w-2 h-2 bg-red-500 transform rotate-45"></div>
                           <span>{t('search.selectLocation', 'Байршил сонгоно уу')}</span>

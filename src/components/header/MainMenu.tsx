@@ -46,7 +46,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ style = "" }) => {
           <ChevronDown className="w-4 h-4" />
         </button>
         {activeDropdown === 'articles' && (
-          <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2 min-w-[180px] z-50">
+          <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2 min-w-[180px] z-40">
             {articlesItems.map((item) => (
               <Link
                 key={item.href}
@@ -71,7 +71,7 @@ const MainMenu: React.FC<MainMenuProps> = ({ style = "" }) => {
           <ChevronDown className="w-4 h-4" />
         </button>
         {activeDropdown === 'advice' && (
-          <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2 min-w-[180px] z-50">
+          <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 shadow-lg rounded-lg py-2 min-w-[180px] z-40">
             {adviceItems.map((item) => (
               <Link
                 key={item.href}

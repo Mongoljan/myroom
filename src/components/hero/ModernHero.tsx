@@ -483,7 +483,7 @@ export default function ModernHero() {
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        className="absolute top-full left-0 mt-2 z-50"
+                        className="absolute top-full left-0 mt-2 z-40"
                       >
                         <div className="bg-red-500 text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-lg relative">
                           <div className="absolute -top-1 left-8 w-2 h-2 bg-red-500 transform rotate-45"></div>
@@ -503,7 +503,7 @@ export default function ModernHero() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="fixed bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 z-[100000] max-h-96 overflow-y-auto w-[400px] max-w-[90vw]"
+                      className="fixed bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 z-40 max-h-96 overflow-y-auto w-[400px] max-w-[90vw]"
                       style={{ 
                         top: Math.max(8, locationModalPosition.top),
                         left: Math.max(8, Math.min(locationModalPosition.left, window.innerWidth - 416)),

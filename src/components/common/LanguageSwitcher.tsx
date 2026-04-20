@@ -109,7 +109,7 @@ export default function LanguageSwitcher() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[9998] bg-transparent"
+              className="fixed inset-0 z-30 bg-transparent"
               onClick={() => setIsOpen(false)}
             />
             
@@ -139,7 +139,7 @@ export default function LanguageSwitcher() {
                 stiffness: 300,
                 duration: 0.3
               }}
-              className="absolute right-0 mt-3 w-64 z-[9999]"
+              className="absolute right-0 mt-3 w-64 z-40"
             >
               <div className="relative">
                 {/* Glow effect */}

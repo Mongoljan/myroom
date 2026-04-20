@@ -82,23 +82,23 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
         </h2>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Check-in / Check-out */}
-        <div className="px-6 py-5">
-          <div className="flex gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
+          <div className="flex gap-3">
             <div className="flex-shrink-0 mt-0.5">
-              <Calendar className="w-5 h-5 text-gray-900 dark:text-gray-200" />
+              <Calendar className="w-4 h-4 text-gray-900 dark:text-gray-200" />
             </div>
             <div className="flex-1">
-              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white mb-3">
+              <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
                 {t('houseRules.checkInOut', 'Орох цаг / Гарах цаг')}
               </h3>
-              <div className="space-y-1.5">
-                <div className="text-[15px] text-gray-700 dark:text-gray-300">
+              <div className="space-y-1">
+                <div className="text-[13px] text-gray-700 dark:text-gray-300">
                   <span>{t('houseRules.checkIn', 'Орох цаг:')}</span>{' '}
                   <span className="text-gray-900 dark:text-white">{formatTime(policy.check_in_from)}</span>
                 </div>
-                <div className="text-[15px] text-gray-700 dark:text-gray-300">
+                <div className="text-[13px] text-gray-700 dark:text-gray-300">
                   <span>{t('houseRules.checkOut', 'Гарах цаг:')}</span>{' '}
                   <span className="text-gray-900 dark:text-white">{formatTime(policy.check_out_from)}</span>
                 </div>
@@ -109,16 +109,16 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
 
         {/* Parking/Deposit */}
         {policy.parking_situation && (
-          <div className="px-6 py-5">
-            <div className="flex gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
+            <div className="flex gap-3">
               <div className="flex-shrink-0 mt-0.5">
-                <Car className="w-5 h-5 text-gray-900 dark:text-gray-200" />
+                <Car className="w-4 h-4 text-gray-900 dark:text-gray-200" />
               </div>
               <div className="flex-1">
-                <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
                   {t('houseRules.parking', 'Зогсоол')}
                 </h3>
-                <div className="text-[15px] text-gray-700 dark:text-gray-300">
+                <div className="text-[13px] text-gray-700 dark:text-gray-300">
                   {policy.parking_situation}
                 </div>
               </div>
@@ -127,36 +127,36 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
         )}
 
         {/* Cancellation Policy */}
-        <div className="px-6 py-5">
-          <div className="flex gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
+          <div className="flex gap-3">
             <div className="flex-shrink-0 mt-0.5">
-              <Info className="w-5 h-5 text-gray-900 dark:text-gray-200" />
+              <Info className="w-4 h-4 text-gray-900 dark:text-gray-200" />
             </div>
             <div className="flex-1">
-              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white mb-3">
+              <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
                 {t('houseRules.cancellation', 'Цуцлалтын нөхцөл')}
               </h3>
-              <div className="space-y-2">
-                <div className="text-[15px] text-gray-700 dark:text-gray-300">
+              <div className="space-y-1">
+                <div className="text-[13px] text-gray-700 dark:text-gray-300">
                   <span className="font-medium">{t('houseRules.cancelTime', 'Цуцлах хугацаа:')}</span>{' '}
                   {formatTime(policy.cancellation_fee.cancel_time)}
                 </div>
-                <div className="text-[15px] text-gray-700 dark:text-gray-300">
+                <div className="text-[13px] text-gray-700 dark:text-gray-300">
                   <span className="font-medium">{t('houseRules.beforeCancelTime', 'Цуцлах хугацааны өмнө:')}</span>{' '}
                   {policy.cancellation_fee.before_fee}%
                 </div>
-                <div className="text-[15px] text-gray-700 dark:text-gray-300">
+                <div className="text-[13px] text-gray-700 dark:text-gray-300">
                   <span className="font-medium">{t('houseRules.afterCancelTime', 'Цуцлах хугацааны дараа:')}</span>{' '}
                   {policy.cancellation_fee.after_fee}%
                 </div>
                 {policy.cancellation_fee.beforeManyRoom_fee && (
-                  <div className="text-[15px] text-gray-700 dark:text-gray-300">
+                  <div className="text-[13px] text-gray-700 dark:text-gray-300">
                     <span className="font-medium">{t('houseRules.beforeManyRooms', 'Олон өрөө цуцлах (өмнө):')}</span>{' '}
                     {policy.cancellation_fee.beforeManyRoom_fee}%
                   </div>
                 )}
                 {policy.cancellation_fee.afterManyRoom_fee && (
-                  <div className="text-[15px] text-gray-700 dark:text-gray-300">
+                  <div className="text-[13px] text-gray-700 dark:text-gray-300">
                     <span className="font-medium">{t('houseRules.afterManyRooms', 'Олон өрөө цуцлах (дараа):')}</span>{' '}
                     {policy.cancellation_fee.afterManyRoom_fee}%
                   </div>
@@ -167,16 +167,16 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
         </div>
 
         {/* Children Policy */}
-        <div className="px-6 py-5">
-          <div className="flex gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
+          <div className="flex gap-3">
             <div className="flex-shrink-0 mt-0.5">
-              <Baby className="w-5 h-5 text-gray-900 dark:text-gray-200" />
+              <Baby className="w-4 h-4 text-gray-900 dark:text-gray-200" />
             </div>
             <div className="flex-1">
-              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white mb-3">
+              <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
                 {t('houseRules.children', 'Хүүхэд')}
               </h3>
-              <div className="text-[15px] text-gray-700 dark:text-gray-300">
+              <div className="text-[13px] text-gray-700 dark:text-gray-300">
                 {policy.allow_children
                   ? t('houseRules.childrenAllowed', 'Хүүхэдтэй зочдыг хүлээн авдаг')
                   : t('houseRules.childrenNotAllowed', 'Хүүхэдтэй зочдыг хүлээн авдаггүй')
@@ -187,16 +187,16 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
         </div>
 
         {/* Pets Policy */}
-        <div className="px-6 py-5">
-          <div className="flex gap-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
+          <div className="flex gap-3">
             <div className="flex-shrink-0 mt-0.5">
-              <PawPrint className="w-5 h-5 text-gray-900 dark:text-gray-200" />
+              <PawPrint className="w-4 h-4 text-gray-900 dark:text-gray-200" />
             </div>
             <div className="flex-1">
-              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white mb-3">
+              <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
                 {t('houseRules.pets', 'Тэжээвэр амьтан')}
               </h3>
-              <div className="text-[15px] text-gray-700 dark:text-gray-300">
+              <div className="text-[13px] text-gray-700 dark:text-gray-300">
                 {policy.allow_pets
                   ? t('houseRules.petsAllowed', 'Тэжээвэр амьтантай зочдыг хүлээн авдаг')
                   : t('houseRules.petsNotAllowed', 'Тэжээвэр амьтан авчрахыг зөвшөөрдөггүй')
@@ -208,16 +208,16 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
 
         {/* Breakfast Policy */}
         {policy.breakfast_policy && (
-          <div className="px-6 py-5">
-            <div className="flex gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
+            <div className="flex gap-3">
               <div className="flex-shrink-0 mt-0.5">
-                <Coffee className="w-5 h-5 text-gray-900 dark:text-gray-200" />
+                <Coffee className="w-4 h-4 text-gray-900 dark:text-gray-200" />
               </div>
               <div className="flex-1">
-                <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white mb-3">
+                <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
                   {t('houseRules.breakfast', 'Өглөөний цай')}
                 </h3>
-                <div className="text-[15px] text-gray-700 dark:text-gray-300">
+                <div className="text-[13px] text-gray-700 dark:text-gray-300">
                   {typeof policy.breakfast_policy === 'string' 
                     ? policy.breakfast_policy 
                     : policy.breakfast_policy.status 

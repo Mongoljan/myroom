@@ -30,7 +30,7 @@ interface HotelAmenitiesProps {
 }
 
 // Category mapping - categorize facilities by type
-const categorizeAmenities = (items: string[]) => {
+const categorizeAmenities = (items: string[]): [string, string[]][] => {
   const categories: Record<string, string[]> = {
     'Bathroom': [],
     'Media & Technology': [],
@@ -128,7 +128,7 @@ export default function HotelAmenities({ amenities, facilities }: HotelAmenities
   return (
     <div className="bg-white dark:bg-transparent">
       {/* Top highlighted amenities - inline with icons */}
-      <div className="mb-10 pb-8 border-b border-gray-200 dark:border-gray-700">
+      {/* <div className="mb-10 pb-8 border-b border-gray-200 dark:border-gray-700">
         <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-5">
           {t('amenities.popular', 'Онцлох нь:')}
         </h3>
@@ -140,22 +140,22 @@ export default function HotelAmenities({ amenities, facilities }: HotelAmenities
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Categorized facilities */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-10">
-        {categorizedAmenities.map(([category, categoryItems]) => {
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
+        {categorizedAmenities.map(([category, categoryItems]: [string, string[]]) => {
           const IconComponent = categoryIcons[category];
           return (
             <div key={category}>
-              <div className="flex items-center gap-3 mb-5">
-                <IconComponent className="w-5 h-5 text-gray-700 dark:text-gray-400 flex-shrink-0" />
-                <h4 className="text-[16px] font-semibold text-gray-900 dark:text-white">{category}</h4>
+              <div className="flex items-center gap-2.5 mb-3">
+                <IconComponent className="w-4 h-4 text-gray-700 dark:text-gray-400 shrink-0" />
+                <h4 className="text-[15px] font-semibold text-gray-900 dark:text-white">{category}</h4>
               </div>
-              <ul className="space-y-3 pl-0">
-                {categoryItems.map((item, index) => (
-                  <li key={index} className="flex items-start gap-2.5 text-[15px] text-gray-700 dark:text-gray-300">
-                    <Check className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+              <ul className="space-y-2 pl-0">
+                {categoryItems.map((item: string, index: number) => (
+                  <li key={index} className="flex items-start gap-2 text-[14px] text-gray-700 dark:text-gray-300">
+                    <Check className="w-3.5 h-3.5 text-gray-400 mt-0.5 shrink-0" />
                     <span className="leading-relaxed">{item}</span>
                   </li>
                 ))}

@@ -20,7 +20,6 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
     { id: 'house-rules', label: t('hotel.houseRules', 'Дотоод журам') },
     { id: 'reviews', label: t('hotel.reviews', 'Шүүмж, үнэлгээ') },
     { id: 'facilities', label: t('hotel.facilities', 'Үйлчилгээ') },
-    { id: 'faq', label: t('hotel.faq', 'Түгээмэл асуулт') },
   ], [t]);
 
   useEffect(() => {

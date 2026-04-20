@@ -86,7 +86,7 @@ export default function WishlistHeart({
       : t('wishlist.addToWishlist', 'Буудал хадгалах');
 
   const getTooltipClasses = () => {
-    const baseClasses = "absolute z-50 px-2 py-1 text-xs bg-gray-800 text-white rounded shadow-lg whitespace-nowrap pointer-events-none";
+    const baseClasses = "absolute z-40 px-2 py-1 text-xs bg-gray-800 text-white rounded shadow-lg whitespace-nowrap pointer-events-none";
     
     switch (tooltipPosition) {
       case 'top':

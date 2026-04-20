@@ -67,7 +67,7 @@ export default function ApiDebug() {
   if (!debugInfo) return <div className="p-4 bg-yellow-100">Loading debug info...</div>;
 
   return (
-    <div className="fixed bottom-4 right-4 max-w-md p-4 bg-black text-white text-xs rounded-lg shadow-lg z-50 max-h-96 overflow-auto">
+    <div className="fixed bottom-4 right-4 max-w-md p-4 bg-black text-white text-xs rounded-lg shadow-lg z-30 max-h-96 overflow-auto">
       <h3 className="font-bold mb-2">🔍 API Debug Info</h3>
       <pre className="whitespace-pre-wrap">{JSON.stringify(debugInfo, null, 2)}</pre>
     </div>

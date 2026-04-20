@@ -29,7 +29,7 @@ const CurrencyMegaMenu: React.FC<CurrencyMegaMenuProps> = ({ textClass = "" }) =
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 min-w-[150px]">
+        <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-40 min-w-[150px]">
           {currencies.map((currency) => (
             <button
               key={currency.code}

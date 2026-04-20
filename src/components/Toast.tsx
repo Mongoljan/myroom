@@ -50,7 +50,7 @@ export default function Toast({ message, type = 'info', duration = 5000, onClose
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg max-w-md ${
+      className={`fixed top-4 right-4 z-[70] flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg max-w-md ${
         styles[type]
       } ${isExiting ? 'animate-slide-out-right' : 'animate-slide-in-right'}`}
     >

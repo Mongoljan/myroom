@@ -193,7 +193,7 @@ export default function ModernSearchBar() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 z-50 mt-2 max-h-80 overflow-y-auto"
+                  className="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 z-40 mt-2 max-h-80 overflow-y-auto"
                 >
                   <div className="p-4">
                     <div className={`${TYPOGRAPHY.form.label} text-gray-900 dark:text-white mb-3`}>
@@ -272,7 +272,7 @@ export default function ModernSearchBar() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                  className="fixed inset-0 bg-black/50 flex items-center justify-center z-40 p-4"
                   onClick={() => setShowDatePicker(false)}
                 >
                   <div 

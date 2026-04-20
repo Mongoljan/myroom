@@ -78,7 +78,12 @@ const resources = {
         notAvailable: "Not available",
         checking: "Checking...",
         toggleTheme: "Toggle theme",
-        you: "You"
+        you: "You",
+        priceNotAvailable: "Price not available",
+        locationUnknown: "Location unknown",
+        reviews: "reviews",
+        perNight: "per night",
+        viewDetails: "View Details"
       },
       calendar: {
         sun: "Su",
@@ -437,6 +442,18 @@ const resources = {
         resendCode: "Resend Code",
         emailVerified: "Email verified successfully!",
         close: "Close"
+      },
+      saved: {
+        title: "Saved Hotels",
+        hotelsCount: "hotels saved",
+        loading: "Loading your saved hotels...",
+        remove: "Remove from saved",
+        addedOn: "Added on",
+        empty: {
+          title: "No saved hotels yet",
+          description: "Start exploring and save your favorite hotels!",
+          browseHotels: "Browse Hotels"
+        }
       },
       hotel: {
         title: "Total results",
@@ -1507,7 +1524,12 @@ const resources = {
         notAvailable: "Боломжгүй",
         checking: "Шалгаж байна...",
         toggleTheme: "Загварыг солих",
-        you: "Та"
+        you: "Та",
+        priceNotAvailable: "Үнэ тодорхойгүй",
+        locationUnknown: "Байршил тодорхойгүй",
+        reviews: "сэтгэгдэл",
+        perNight: "шөнөд",
+        viewDetails: "Дэлгэрэнгүй харах"
       },
       calendar: {
         sun: "Ня",
@@ -1891,6 +1913,18 @@ const resources = {
         resendCode: "Код дахин илгээх",
         emailVerified: "Имэйл амжилттай баталгаажлаа!",
         close: "Хаах"
+      },
+      saved: {
+        title: "Хадгалсан зочид буудлууд",
+        hotelsCount: "зочид буудал хадгалсан",
+        loading: "Хадгалсан зочид буудлуудыг ачааллаж байна...",
+        remove: "Хадгалсанаас хасах",
+        addedOn: "Нэмсэн огноо",
+        empty: {
+          title: "Одоогоор хадгалсан зочид буудал байхгүй байна",
+          description: "Судлаж эхэлж, дуртай зочид буудлуудаа хадгалаарай!",
+          browseHotels: "Зочид буудал харах"
+        }
       },
       hotel: {
         title: "Нийт илэрц",
@@ -2339,7 +2373,7 @@ const resources = {
       },
       hotelRooms: {
         availableRooms: "Боломжтой өрөөнүүд",
-        checkInDate: "Буух огноо",
+        checkInDate: "Орох огноо",
         checkOutDate: "Гарах огноо",
         pricesPerNight: "Үнэ нь нэг шөнөөр тооцогдоно",
         noRoomsAvailable: "Боломжтой өрөө байхгүй байна",

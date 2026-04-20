@@ -7,7 +7,6 @@ import HotelAmenities from '@/components/hotels/HotelAmenities';
 import SimilarHotels from '@/components/hotels/SimilarHotels';
 import ImprovedHotelRoomsSection from '@/components/hotels/ImprovedHotelRoomsSection';
 import HotelSubNav from '@/components/hotels/HotelSubNav';
-import HotelFAQ from '@/components/hotels/HotelFAQ';
 import HotelHouseRules from '@/components/hotels/HotelHouseRules';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -82,16 +81,6 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
           <div id="facilities" className="">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{t('hotelDetails.facilities', 'Үйлчилгээ')}</h2>
             <HotelAmenities facilities={hotel.general_facilities} />
-          </div>
-
-          {/* FAQ Section */}
-          <div id="faq" className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('hotelDetails.faq', 'Түгээмэл асуулт')}</h2>
-            <HotelFAQ
-              hotelName={hotel.property_name}
-              hotelFacilities={hotel.general_facilities}
-              hotelRating={parseFloat(hotel.rating_stars?.value || '0') || 0}
-            />
           </div>
         </div>
 
