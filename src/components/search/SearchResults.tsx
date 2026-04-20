@@ -3,19 +3,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import BookingStyleHotelCard from './BookingStyleHotelCard';
-import SearchFilters from './SearchFilters';
 import { ApiService } from '@/services/api';
 import { SearchResponse, SearchHotelResult } from '@/types/api';
 import SearchHeader from './SearchHeader';
 import SearchResultsHeader from './SearchResultsHeader';
-import MobileFilterControls from './MobileFilterControls';
+import SearchFilters from './SearchFilters';
 import NoResultsState from './NoResultsState';
 import PaginationControls from './PaginationControls';
 import { HotelSearchSpinner } from '@/components/ui/magic-spinner';
 import HotelsMapView from './HotelsMapView';
-import MiniMapPreview from './MiniMapPreview';
 
-// Import the full CombinedApiData interface to match SearchFilters expectations
 interface PropertyType {
   id: number;
   name_en: string;
@@ -54,15 +51,12 @@ interface CombinedApiData {
 
 interface FilterState {
   propertyTypes: number[];
-  popularSearches: string[];
-  priceRange: [number, number];
   roomFeatures: number[];
   generalServices: number[];
-  bedTypes: string[] | Record<string, number>; // Support both old string[] and new Record<string, number>
-  popularPlaces: string[];
-  discounted: boolean;
   starRating: number[];
   outdoorAreas: number[];
+  priceRange: [number, number];
+  discounted: boolean;
   facilities: string[];
   roomTypes: string[];
 }
@@ -86,29 +80,25 @@ export default function SearchResults() {
   const searchParams = useSearchParams();
   const [hotels, setHotels] = useState<SearchHotelResult[]>([]);
   const [filteredHotels, setFilteredHotels] = useState<SearchHotelResult[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showFilters, setShowFilters] = useState(true);
-  const [showMapView, setShowMapView] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-  const [sortBy, setSortBy] = useState('price_low');
   const [apiData, setApiData] = useState<CombinedApiData | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isHeaderSticky, setIsHeaderSticky] = useState(false);
-  const [nameSearchQuery, setNameSearchQuery] = useState('');
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: [],
-    popularSearches: [],
-    priceRange: [0, 1000000], // Dynamic range based on actual data
     roomFeatures: [],
     generalServices: [],
-    bedTypes: [],
-    popularPlaces: [],
-    discounted: false,
     starRating: [],
     outdoorAreas: [],
+    priceRange: [0, 1000000] as [number, number],
+    discounted: false,
     facilities: [],
     roomTypes: []
   });
+  const [loading, setLoading] = useState(true);
+  const [showMapView, setShowMapView] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  const [sortBy, setSortBy] = useState('price_low');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isHeaderSticky, setIsHeaderSticky] = useState(false);
+  const [nameSearchQuery, setNameSearchQuery] = useState('');
 
   // Helper function to get price from cheapest_room (handles different API response formats)
   const getRoomPrice = (room: SearchHotelResult['cheapest_room']): number => {
@@ -126,25 +116,25 @@ export default function SearchResults() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Load hotels from API or mock data
+  // Load hotels from API
   useEffect(() => {
     const loadHotels = async () => {
       setLoading(true);
 
-      // Load API data for filters using proper ApiService
       try {
-        const combinedData = await ApiService.getCombinedData();
-        setApiData({
-          property_types: combinedData.property_types || [],
-          facilities: combinedData.facilities || [],
-          ratings: combinedData.ratings || [],
-          province: combinedData.province || [],
-          accessibility_features: combinedData.accessibility_features || []
-        });
-      } catch (error) {
-        console.warn('Failed to load combined API data:', error);
-      }
-      try {
+        // Load combined API data for backend functionality
+        const loadApiData = async () => {
+          try {
+            const apiDataResponse = await ApiService.getCombinedData();
+            setApiData(apiDataResponse);
+          } catch (error) {
+            console.error('Error loading API data:', error);
+          }
+        };
+
+        // Start loading API data in parallel
+        loadApiData();
+
         const today = new Date().toISOString().split('T')[0];
         const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
@@ -243,97 +233,130 @@ export default function SearchResults() {
     loadHotels();
   }, [searchParams]);
 
-  // Calculate filter counts for display (like booking.com)
-  const getFilterCounts = useCallback(() => {
-    const counts: Record<string, number> = {};
+  // Handle sorting
+  const handleSort = (newSortBy: string) => {
+    setSortBy(newSortBy);
+    const sorted = [...hotels];
+    
+    switch (newSortBy) {
+      case 'price_low':
+        sorted.sort((a, b) => getRoomPrice(a.cheapest_room) - getRoomPrice(b.cheapest_room));
+        break;
+      case 'price_high':
+        sorted.sort((a, b) => getRoomPrice(b.cheapest_room) - getRoomPrice(a.cheapest_room));
+        break;
+      case 'rating':
+        sorted.sort((a, b) => {
+          const aRating = parseFloat(a.rating_stars.value.toString()) || 0;
+          const bRating = parseFloat(b.rating_stars.value.toString()) || 0;
+          return bRating - aRating;
+        });
+        break;
+      case 'name':
+        sorted.sort((a, b) => a.property_name.localeCompare(b.property_name));
+        break;
+      default:
+        // Keep original order
+        break;
+    }
+    
+    setFilteredHotels(sorted);
+  };
 
-    if (!apiData?.facilities || hotels.length === 0) {
-      return counts;
+  const handleFilterChange = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    // Apply filters to hotels
+    let filtered = hotels;
+    
+    // Filter by property types (API-driven)
+    if (newFilters.propertyTypes && newFilters.propertyTypes.length > 0) {
+      // This would need the property_type_id field in hotel data to work properly
+      // For now, we'll skip this filter since the field might not be available
     }
 
-    // Count facilities across all hotels
-    apiData.facilities.forEach(facility => {
-      counts[`facility_${facility.id}`] = hotels.filter(hotel =>
-        hotel.general_facilities.some(hf =>
-          hf.toLowerCase().includes(facility.name_en.toLowerCase())
-        )
-      ).length;
-    });
-
-    // Count price ranges
-    const priceRanges = [
-      { key: 'price_0_50000', min: 0, max: 50000 },
-      { key: 'price_50000_100000', min: 50000, max: 100000 },
-      { key: 'price_100000_200000', min: 100000, max: 200000 },
-      { key: 'price_200000_300000', min: 200000, max: 300000 },
-      { key: 'price_300000_500000', min: 300000, max: 500000 },
-      { key: 'price_500000_plus', min: 500000, max: 1000000 },
-    ];
-
-    priceRanges.forEach(range => {
-      counts[range.key] = hotels.filter(hotel => {
+    // Filter by price range
+    if (newFilters.priceRange[0] !== 0 || newFilters.priceRange[1] !== 1000000) {
+      filtered = filtered.filter(hotel => {
+        if (!hotel.cheapest_room) return true;
         const price = getRoomPrice(hotel.cheapest_room);
-        return price >= range.min && price <= range.max;
-      }).length;
-    });
-
-    // Count star ratings
-    if (apiData.ratings) {
-      apiData.ratings.forEach(rating => {
-        const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
-        if (stars > 0) {
-          counts[`rating_${stars}`] = hotels.filter(hotel => {
-            const hotelStars = parseInt(hotel.rating_stars.value.match(/\d+/)?.[0] || '0');
-            return hotelStars === stars;
-          }).length;
-        }
+        return price >= newFilters.priceRange[0] && price <= newFilters.priceRange[1];
       });
     }
 
-    // Count property types - infer from property names or add logic
-    if (apiData.property_types) {
-      apiData.property_types.forEach(type => {
-        // Count by property type - for now, assume all are hotels
-        // TODO: Add property_type_id to hotel data for accurate counting
-        if (type.name_en === 'Hotel') {
-          counts[`property_${type.id}`] = hotels.filter(hotel =>
-            hotel.property_name.toLowerCase().includes('hotel')
-          ).length;
-        } else if (type.name_en === 'Apartment') {
-          counts[`property_${type.id}`] = hotels.filter(hotel =>
-            hotel.property_name.toLowerCase().includes('apartment')
-          ).length;
-        } else if (type.name_en === 'GuestHouse') {
-          counts[`property_${type.id}`] = hotels.filter(hotel =>
-            hotel.property_name.toLowerCase().includes('guesthouse') ||
-            hotel.property_name.toLowerCase().includes('guest house')
-          ).length;
-        } else {
-          counts[`property_${type.id}`] = 0;
-        }
+    // Filter by star rating (API-driven)
+    if (newFilters.starRating && newFilters.starRating.length > 0) {
+      filtered = filtered.filter(hotel => {
+        const stars = parseInt(hotel.rating_stars.value.match(/\d+/)?.[0] || '0');
+        return newFilters.starRating.includes(stars);
       });
     }
 
-    // Count room types from cheapest_room.room_type_label
-    const roomTypes = [...new Set(hotels.map(h => h.cheapest_room?.room_type_label).filter(Boolean))];
-    roomTypes.forEach(roomType => {
-      counts[`room_type_${roomType}`] = hotels.filter(hotel =>
-        hotel.cheapest_room?.room_type_label === roomType
-      ).length;
-    });
+    // Filter by room features (API-driven using facility IDs)
+    if (newFilters.roomFeatures && newFilters.roomFeatures.length > 0) {
+      filtered = filtered.filter(hotel => {
+        const selectedFeatureNames = newFilters.roomFeatures.map(id => {
+          const facility = apiData?.facilities?.find(f => f.id === id);
+          return facility?.name_en || '';
+        }).filter(name => name);
 
-    // Count bed types from cheapest_room.room_category_label
-    const bedTypes = [...new Set(hotels.map(h => h.cheapest_room?.room_category_label).filter(Boolean))];
-    bedTypes.forEach(bedType => {
-      counts[`bed_type_${bedType}`] = hotels.filter(hotel =>
-        hotel.cheapest_room?.room_category_label === bedType
-      ).length;
-    });
+        return selectedFeatureNames.some(featureName =>
+          hotel.general_facilities.some(facility =>
+            facility.toLowerCase().includes(featureName.toLowerCase())
+          )
+        );
+      });
+    }
 
-    return counts;
-  }, [hotels, apiData]);
+    // Filter by general services (API-driven using facility IDs)
+    if (newFilters.generalServices && newFilters.generalServices.length > 0) {
+      filtered = filtered.filter(hotel => {
+        const selectedServiceNames = newFilters.generalServices.map(id => {
+          const facility = apiData?.facilities?.find(f => f.id === id);
+          return facility?.name_en || '';
+        }).filter(name => name);
 
-  const filterCounts = getFilterCounts();
+        return selectedServiceNames.some(serviceName =>
+          hotel.general_facilities.some(facility =>
+            facility.toLowerCase().includes(serviceName.toLowerCase())
+          )
+        );
+      });
+    }
+
+    // Filter by outdoor areas (API-driven using facility IDs)  
+    if (newFilters.outdoorAreas && newFilters.outdoorAreas.length > 0) {
+      filtered = filtered.filter(hotel => {
+        const selectedOutdoorNames = newFilters.outdoorAreas.map(id => {
+          const facility = apiData?.facilities?.find(f => f.id === id);
+          return facility?.name_en || '';
+        }).filter(name => name);
+
+        return selectedOutdoorNames.some(outdoorName =>
+          hotel.general_facilities.some(facility =>
+            facility.toLowerCase().includes(outdoorName.toLowerCase())
+          )
+        );
+      });
+    }
+
+    // Apply name search at the end
+    filtered = applyNameSearch(filtered);
+    setFilteredHotels(filtered);
+  };
+
+  // Handle name search
+  const handleSearchByName = useCallback((query: string) => {
+    setNameSearchQuery(query);
+    if (!query.trim()) {
+      setFilteredHotels(hotels);
+      return;
+    }
+    
+    const filtered = hotels.filter(hotel =>
+      hotel.property_name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredHotels(filtered);
+  }, [hotels]);
 
   // Latin to Cyrillic character mapping for Mongolian
   const latinToCyrillic: Record<string, string> = {
@@ -395,242 +418,6 @@ export default function SearchResults() {
     });
   };
 
-  const handleFilterChange = (newFilters: FilterState) => {
-    // Update the filters state
-    setFilters(newFilters);
-
-    // Apply filters to hotels
-    const filters = newFilters;
-    // First filter out hotels without available room prices (but only if filters are actually applied)
-    // If no active filters, show all hotels
-    const hasActiveFilters =
-      (filters.propertyTypes && filters.propertyTypes.length > 0) ||
-      (filters.popularSearches && filters.popularSearches.length > 0) ||
-      (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 1000000) ||
-      (filters.roomFeatures && filters.roomFeatures.length > 0) ||
-      (filters.generalServices && filters.generalServices.length > 0) ||
-      (filters.bedTypes && filters.bedTypes.length > 0) ||
-      (filters.popularPlaces && filters.popularPlaces.length > 0) ||
-      filters.discounted ||
-      (filters.starRating && filters.starRating.length > 0) ||
-      (filters.outdoorAreas && filters.outdoorAreas.length > 0) ||
-      (filters.facilities && filters.facilities.length > 0) ||
-      (filters.roomTypes && filters.roomTypes.length > 0);
-
-    let filtered = hotels;
-    
-    // Only apply room price filter if we're actually filtering by price or other room-related criteria
-    if (hasActiveFilters && (filters.priceRange[0] !== 0 || filters.priceRange[1] !== 1000000 || filters.bedTypes.length > 0 || filters.roomTypes.length > 0)) {
-      filtered = hotels.filter(hotel => {
-        // Only include hotels that have room pricing information
-        if (!hotel.cheapest_room) return false;
-        const room = hotel.cheapest_room;
-        return (
-          (room.price_per_night && room.price_per_night > 0) ||
-          (room.price_per_night_adjusted && room.price_per_night_adjusted > 0) ||
-          (room.price_per_night_raw && room.price_per_night_raw > 0)
-        );
-      });
-    }
-
-    // Filter by property types
-    if (filters.propertyTypes && filters.propertyTypes.length > 0) {
-      // Note: Property type filtering would need property_type_id field from API
-      // For now, we'll skip this filter since the field is not available in current hotel data
-    }
-
-    // Filter by popular searches
-    if (filters.popularSearches && filters.popularSearches.length > 0) {
-      // Note: This would need to be implemented based on hotel features
-    }
-
-    // Filter by price range
-    filtered = filtered.filter(hotel => {
-      if (!hotel.cheapest_room) return true;
-      const price = getRoomPrice(hotel.cheapest_room);
-      return price >= filters.priceRange[0] && price <= filters.priceRange[1];
-    });
-
-    // Filter by room features (using facility IDs)
-    if (filters.roomFeatures && filters.roomFeatures.length > 0) {
-      filtered = filtered.filter(hotel => {
-        // Map facility IDs to facility names using apiData
-        const selectedFeatureNames = filters.roomFeatures.map(id => {
-          const facility = apiData?.facilities?.find(f => f.id === id);
-          return facility?.name_en || '';
-        }).filter(name => name);
-
-        // Check if hotel has any of the selected room features
-        return selectedFeatureNames.some(featureName =>
-          hotel.general_facilities.some(facility =>
-            facility.toLowerCase().includes(featureName.toLowerCase())
-          )
-        );
-      });
-    }
-
-    // Filter by general services (using facility IDs)
-    if (filters.generalServices && filters.generalServices.length > 0) {
-      filtered = filtered.filter(hotel => {
-        // Map facility IDs to facility names using apiData
-        const selectedServiceNames = filters.generalServices.map(id => {
-          const facility = apiData?.facilities?.find(f => f.id === id);
-          return facility?.name_en || '';
-        }).filter(name => name);
-
-        // Check if hotel has any of the selected general services
-        return selectedServiceNames.some(serviceName =>
-          hotel.general_facilities.some(facility =>
-            facility.toLowerCase().includes(serviceName.toLowerCase())
-          )
-        );
-      });
-    }
-
-    // Filter by bed types
-    if (filters.bedTypes) {
-      if (Array.isArray(filters.bedTypes) && filters.bedTypes.length > 0) {
-        // Old format: array of bed type strings
-        const bedTypesArray = filters.bedTypes as string[];
-        filtered = filtered.filter(hotel => {
-          if (!hotel.cheapest_room) return false;
-          const roomCategory = hotel.cheapest_room.room_category_label.toLowerCase();
-          return bedTypesArray.some((bedType: string) => {
-            const bedTypeLower = bedType.toLowerCase();
-            return roomCategory.includes(bedTypeLower) ||
-                   roomCategory.includes(bedTypeLower.replace(' ор', '').replace('ор', ''));
-          });
-        });
-      } else if (typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)) {
-        // New format: object with counts - filter if any bed type has count > 0
-        const activeBedTypes = Object.entries(filters.bedTypes)
-          .filter(([, count]) => count > 0)
-          .map(([bedType]) => bedType);
-
-        if (activeBedTypes.length > 0) {
-          filtered = filtered.filter(hotel => {
-            if (!hotel.cheapest_room) return false;
-            const roomCategory = hotel.cheapest_room.room_category_label.toLowerCase();
-            return activeBedTypes.some(bedType => {
-              const bedTypeLower = bedType.toLowerCase();
-              return roomCategory.includes(bedTypeLower) ||
-                     roomCategory.includes(bedTypeLower.replace(' ор', '').replace('ор', ''));
-            });
-          });
-        }
-      }
-    }
-
-    // Filter by popular places
-    if (filters.popularPlaces && filters.popularPlaces.length > 0) {
-      filtered = filtered.filter(hotel => {
-        const location = hotel.location;
-        return filters.popularPlaces.some(place => {
-          return location.province_city?.toLowerCase().includes(place.toLowerCase()) ||
-                 location.soum?.toLowerCase().includes(place.toLowerCase()) ||
-                 location.district?.toLowerCase().includes(place.toLowerCase());
-        });
-      });
-    }
-
-    // Filter by discounted
-    if (filters.discounted) {
-      // Note: This would need to be implemented based on pricing/discount data
-    }
-
-    // Filter by star rating
-    if (filters.starRating && filters.starRating.length > 0) {
-      filtered = filtered.filter(hotel => {
-        const stars = parseInt(hotel.rating_stars.value.match(/\d+/)?.[0] || '0');
-        return filters.starRating.includes(stars);
-      });
-    }
-
-    // Filter by outdoor areas (using facility IDs)
-    if (filters.outdoorAreas && filters.outdoorAreas.length > 0) {
-      filtered = filtered.filter(hotel => {
-        // Map facility IDs to facility names using apiData
-        const selectedOutdoorNames = filters.outdoorAreas.map(id => {
-          const facility = apiData?.facilities?.find(f => f.id === id);
-          return facility?.name_en || '';
-        }).filter(name => name);
-
-        // Check if hotel has any of the selected outdoor areas
-        return selectedOutdoorNames.some(outdoorName =>
-          hotel.general_facilities.some(facility =>
-            facility.toLowerCase().includes(outdoorName.toLowerCase())
-          )
-        );
-      });
-    }
-
-    // Filter by facilities (legacy support)
-    if (filters.facilities.length > 0) {
-      filtered = filtered.filter(hotel => {
-        return filters.facilities.every(facility =>
-          hotel.general_facilities.includes(facility)
-        );
-      });
-    }
-
-    // Filter by room types (legacy support)
-    if (filters.roomTypes.length > 0) {
-      filtered = filtered.filter(hotel => {
-        if (!hotel.cheapest_room) return false;
-        return filters.roomTypes.some(roomType =>
-          hotel.cheapest_room!.room_type_label.includes(roomType)
-        );
-      });
-    }
-
-    // Apply name search filter at the end
-    filtered = applyNameSearch(filtered);
-
-    setFilteredHotels(filtered);
-  };
-
-  const handleSort = (sortValue: string) => {
-    setSortBy(sortValue);
-    const sorted = [...filteredHotels];
-
-    switch (sortValue) {
-      case 'price_low':
-        sorted.sort((a, b) => {
-          const priceA = getRoomPrice(a.cheapest_room);
-          const priceB = getRoomPrice(b.cheapest_room);
-          return priceA - priceB;
-        });
-        break;
-      case 'price_high':
-        sorted.sort((a, b) => {
-          const priceA = getRoomPrice(a.cheapest_room);
-          const priceB = getRoomPrice(b.cheapest_room);
-          return priceB - priceA;
-        });
-        break;
-      case 'rating':
-        sorted.sort((a, b) => {
-          const ratingA = parseInt(a.rating_stars.value.match(/\d+/)?.[0] || '0');
-          const ratingB = parseInt(b.rating_stars.value.match(/\d+/)?.[0] || '0');
-          return ratingB - ratingA;
-        });
-        break;
-      case 'name':
-        sorted.sort((a, b) => a.property_name.localeCompare(b.property_name));
-        break;
-      default:
-        break;
-    }
-
-    setFilteredHotels(sorted);
-  };
-
-  const handleSearchByName = (searchQuery: string) => {
-    setNameSearchQuery(searchQuery);
-    // Re-apply filters with the new search query
-    handleFilterChange(filters);
-  };
-
   const searchLocation = searchParams.get('location') || '';
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
@@ -655,46 +442,21 @@ export default function SearchResults() {
       {/* Main Results Container */}
       <div className="">
         <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-3">
-          <div className="flex flex-col lg:flex-row gap-3">
-            {/* Filters Sidebar with Sticky Behavior */}
-            <aside className="w-full lg:w-72 flex-shrink-0">
-              {/* Mobile Filter Controls */}
-              <div className="lg:hidden">
-                <MobileFilterControls
-                  filters={filters}
-                  sortBy={sortBy}
-                  viewMode={viewMode}
-                  onShowFilters={() => setShowFilters(true)}
-                  onSort={handleSort}
-                  onViewModeChange={setViewMode}
-                  onShowMapView={() => setShowMapView(true)}
-                />
-              </div>
-
-              {/* Desktop Filters - Sticky with Independent Scroll */}
-              <div className="hidden lg:block sticky top-[72px] max-h-[calc(100vh-88px)] overflow-y-auto custom-scrollbar">
-                {/* Mini Map Preview */}
-                <div className="mb-3">
-                  <MiniMapPreview
-                    hotels={filteredHotels}
-                    onShowFullMap={() => setShowMapView(true)}
-                  />
-                </div>
-
-                <SearchFilters
-                  isOpen={true}
-                  onClose={() => {}}
-                  onFilterChange={handleFilterChange}
-                  embedded={true}
-                  apiData={apiData}
-                  filters={filters}
-                  filterCounts={filterCounts}
-                />
-              </div>
-            </aside>
-
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Sidebar - Desktop only */}
+            <div className="hidden lg:block lg:w-80 shrink-0">
+              <SearchFilters
+                isOpen={true}
+                onClose={() => {}}
+                onFilterChange={handleFilterChange}
+                embedded={true}
+                apiData={apiData}
+                filters={filters}
+              />
+            </div>
+            
             {/* Main Content */}
-            <div className="flex-1 min-w-0 ">
+            <div className="flex-1 min-w-0">
               <SearchResultsHeader
                 searchLocation={searchLocation}
                 checkIn={checkIn}
@@ -710,88 +472,6 @@ export default function SearchResults() {
                 onViewModeChange={setViewMode}
                 onShowMapView={() => setShowMapView(true)}
                 onSearchByName={handleSearchByName}
-                filters={filters}
-                apiData={apiData}
-                onRemoveFilter={(filterType, value) => {
-                  // Handle filter removal
-                  const newFilters = { ...filters };
-
-                  switch (filterType) {
-                    case 'propertyTypes':
-                      newFilters.propertyTypes = (filters.propertyTypes || []).filter(id => id !== value);
-                      break;
-                    case 'popularSearches':
-                      newFilters.popularSearches = (filters.popularSearches || []).filter(search => search !== value);
-                      break;
-                    case 'priceRange':
-                      newFilters.priceRange = [0, 1000000];
-                      break;
-                    case 'roomFeatures':
-                      newFilters.roomFeatures = (filters.roomFeatures || []).filter(id => id !== value);
-                      break;
-                    case 'generalServices':
-                      newFilters.generalServices = (filters.generalServices || []).filter(id => id !== value);
-                      break;
-                    case 'bedTypes':
-                      if (typeof filters.bedTypes === 'object' && !Array.isArray(filters.bedTypes)) {
-                        // New format: reset the specific bed type counter to 0
-                        const updatedBedTypes = { ...filters.bedTypes };
-                        if (typeof value === 'string' && value in updatedBedTypes) {
-                          updatedBedTypes[value as keyof typeof updatedBedTypes] = 0;
-                        }
-                        newFilters.bedTypes = updatedBedTypes;
-                      } else if (Array.isArray(filters.bedTypes)) {
-                        // Old format: remove from array
-                        newFilters.bedTypes = filters.bedTypes.filter(bed => bed !== value);
-                      }
-                      break;
-                    case 'popularPlaces':
-                      newFilters.popularPlaces = (filters.popularPlaces || []).filter(place => place !== value);
-                      break;
-                    case 'discounted':
-                      newFilters.discounted = false;
-                      break;
-                    case 'starRating':
-                      if (typeof value === 'number') {
-                        newFilters.starRating = (filters.starRating || []).filter(rating => rating !== value);
-                      }
-                      break;
-                    case 'outdoorAreas':
-                      newFilters.outdoorAreas = (filters.outdoorAreas || []).filter(id => id !== value);
-                      break;
-                    case 'facilities':
-                      if (typeof value === 'string') {
-                        newFilters.facilities = (filters.facilities || []).filter(facility => facility !== value);
-                      }
-                      break;
-                    case 'roomTypes':
-                      if (typeof value === 'string') {
-                        newFilters.roomTypes = (filters.roomTypes || []).filter(roomType => roomType !== value);
-                      }
-                      break;
-                  }
-
-                  setFilters(newFilters);
-                  handleFilterChange(newFilters);
-                }}
-                onClearAllFilters={() => {
-                  const clearedFilters = {
-                    propertyTypes: [],
-                    popularSearches: [],
-                    priceRange: [0, 1000000] as [number, number],
-                    roomFeatures: [],
-                    generalServices: [],
-                    bedTypes: { single: 0, double: 0, queen: 0, king: 0 },
-                    popularPlaces: [],
-                    discounted: false,
-                    starRating: [],
-                    outdoorAreas: [],
-                    facilities: [],
-                    roomTypes: []
-                  };
-                  setFilters(clearedFilters);
-                  handleFilterChange(clearedFilters);
-                }}
               />
               <div className="h-2"></div>
 
@@ -846,18 +526,6 @@ export default function SearchResults() {
               )}
             </div>
           </div>
-        </div>
-
-        {/* Mobile Filters Modal Only */}
-        <div className="lg:hidden">
-          <SearchFilters
-            isOpen={showFilters}
-            onClose={() => setShowFilters(false)}
-            onFilterChange={handleFilterChange}
-            apiData={apiData}
-            filters={filters}
-            filterCounts={filterCounts}
-          />
         </div>
       </div>
 

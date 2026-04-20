@@ -48,29 +48,22 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       try {
         setLoading(true);
 
-        // Fetch all hotel detail APIs and combined data for facility names
+        // Only fetch essential data that's not already in hotel object
+        // Remove redundant API calls - use existing hotel data
         const [
-          basicInfoData,
-          addressData,
-          imagesData,
-          propertyDetailsData,
           combinedData = { facilities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] }
         ] = await Promise.all([
-          ApiService.getPropertyBasicInfo(hotel.hotel_id).catch(e => { console.warn('Basic info failed:', e); return []; }),
-          ApiService.getConfirmAddress(hotel.hotel_id).catch(e => { console.warn('Address failed:', e); return []; }),
-          ApiService.getPropertyImages(hotel.hotel_id).catch(e => { console.warn('Images failed:', e); return []; }),
-          ApiService.getPropertyDetails(hotel.hotel_id).catch(e => { console.warn('Property details failed:', e); return []; }),
           ApiService.getCombinedData().catch(e => {
             console.warn('Combined data failed:', e);
             return { facilities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] };
           })
         ]);
 
-        // Set data from arrays (APIs return arrays with single items)
-        setBasicInfo(basicInfoData[0] || null);
-        setAddress(addressData[0] || null);
-        setPropertyImages(imagesData);
-        setPropertyDetails(propertyDetailsData[0] || null);
+        // Use hotel object data instead of additional API calls
+        setBasicInfo(null); // Use hotel.property_name instead
+        setAddress(null); // Use hotel.location instead  
+        setPropertyImages([]); // Use hotel.images instead
+        setPropertyDetails(null);
 
         // Create facilities map for quick lookup
         const facMap = new Map<number, Facility>();
@@ -92,15 +85,8 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
         });
         setSoumMap(soumMapTemp);
 
-        // Fetch additional info if available
-        if (propertyDetailsData[0]?.Additional_Information) {
-          try {
-            const additionalData = await ApiService.getAdditionalInfo(propertyDetailsData[0].Additional_Information);
-            setAdditionalInfo(additionalData);
-          } catch (error) {
-            console.warn('Additional info failed:', error);
-          }
-        }
+        // Use hotel description or set to basic info
+        setAdditionalInfo(null);
       } catch (error) {
         console.error('Failed to fetch hotel details:', error);
       } finally {
@@ -270,13 +256,13 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
     return <Building className="w-5 h-5 text-gray-600 dark:text-gray-400" />;
   };
 
-  // Combine original gallery with API images
+  // Use hotel object images directly - no need for additional API call
   const allImages = [
+    { url: typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url || '', description: 'Cover' }, 
     ...hotel.images.gallery,
-    ...propertyImages.map(img => ({ url: img.image, description: img.description }))
   ].filter((img, index, self) => 
-    // Remove duplicates by URL
-    self.findIndex(i => i.url === img.url) === index
+    // Remove duplicates by URL and filter out empty URLs
+    img.url && self.findIndex(i => i.url === img.url) === index
   );
 
   const nextImage = () => {
@@ -300,9 +286,9 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
     setIsGalleryOpen(true);
   };
 
-  // Use API data for hotel name if available
-  const hotelName = basicInfo?.property_name_en || basicInfo?.property_name_mn || hotel.property_name;
-  const starRating = basicInfo?.star_rating || getStarRating(hotel.rating_stars.value);
+  // Use hotel object data directly
+  const hotelName = hotel.property_name;
+  const starRating = getStarRating(hotel.rating_stars?.value || 0);
 
   // Generate nearby places based on location
   const getNearbyPlaces = (): NearbyPlace[] => {
@@ -410,7 +396,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
   const priceInfo = getCheapestPrice();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Back Button */}
       <button
         onClick={handleBack}
@@ -421,13 +407,13 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       </button>
 
       {/* Hotel Header Section */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Hotel Name with Star Rating, Location, and View on Map */}
-        <div className="flex items-start justify-between gap-6">
+        <div className="flex items-start justify-between gap-4">
           {/* Left: Hotel Name with Star Rating and Location */}
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{hotelName}</h1>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{hotelName}</h1>
               {/* Star Rating next to name */}
               <div className="flex items-center gap-1">
                 {[...Array(starRating)].map((_, i) => (
@@ -440,7 +426,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
 
             {/* City, Province and View on Map on same line */}
             <div className="flex items-center gap-3">
-              <span className="text-gray-700 dark:text-gray-300">
+              <span className="text-gray-700 dark:text-gray-300 text-sm">
                 {hotel.location.province_city}{hotel.location.soum && `, ${hotel.location.soum}`}
               </span>
               {hotel.google_map && (
@@ -459,7 +445,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
           </div>
 
           {/* Right: Price and Book Button on same line */}
-          <div className="flex items-center gap-4 flex-shrink-0">
+          <div className="flex items-center gap-3 flex-shrink-0">
      
                           {priceInfo && isAuthenticated && (
                 <WishlistHeart
@@ -472,25 +458,25 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             {/* Price Info */}
             {priceInfo && (
               <div className="flex flex-col items-end gap-0.5">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <span className="text-sm text-gray-600 dark:text-gray-400">{t('hotelDetails.startingPrice', 'Эхлэх үнэ')}:</span>
                   {priceInfo.discount && priceInfo.original && (
                     <>
-                      <span className="text-base text-gray-500 dark:text-gray-400 line-through">
+                      <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
                         ₮{priceInfo.original.toLocaleString()}
                       </span>
-                      <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-semibold rounded">
+                      <span className="px-1.5 py-0.5 bg-red-500 text-white text-xs font-semibold rounded">
                         -{priceInfo.discount}%
                       </span>
                     </>
                   )}
-                  <span className="text-xl font-bold text-slate-900 dark:text-white">
+                  <span className="text-lg font-bold text-slate-900 dark:text-white">
                     ₮{priceInfo.current.toLocaleString()}
                   </span>
                   <span className="text-sm text-gray-600 dark:text-gray-400">/{t('hotelDetails.night', 'шөнө')}</span>
                 </div>
                 {hotel.cheapest_room && hotel.cheapest_room.nights > 1 && (
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
                     {t('hotelDetails.totalForStay', 'Нийт')} {hotel.cheapest_room.nights} {t('hotelDetails.nights', 'шөнө')}: <span className="font-semibold text-gray-700 dark:text-gray-300">₮{hotel.cheapest_room.estimated_total_for_requested_rooms.toLocaleString()}</span>
                   </span>
                 )}
@@ -500,7 +486,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             {/* Book Button */}
             <button
               onClick={scrollToRooms}
-              className="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg transition-colors shadow-sm whitespace-nowrap"
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg transition-colors shadow-sm whitespace-nowrap text-sm"
             >
               {t('hotelDetails.book', 'Захиалах')}
             </button>
@@ -508,11 +494,11 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
         </div>
       </div>
 
-      {/* Image Gallery and Info Sidebar - Figma Design Layout */}
-      <div className="flex gap-4">
+      {/* Image Gallery and Info Sidebar - Compact Layout */}
+      <div className="flex gap-3">
         {/* Left: Images Section */}
         <div className="flex-1">
-          <div className="flex gap-1 h-[400px]">
+          <div className="flex gap-1 h-[350px]">
             {/* Main Large Image - Left side */}
             <div className="w-[55%] relative">
               <div className="relative bg-gray-100 dark:bg-gray-700 overflow-hidden rounded-l-xl h-full">
@@ -533,17 +519,17 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                   <>
                     <button
                       onClick={prevImage}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-2 shadow-lg transition-all"
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-lg transition-all"
                       aria-label="Previous image"
                     >
-                      <ChevronLeft className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                      <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                     </button>
                     <button
                       onClick={nextImage}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-2 shadow-lg transition-all"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-lg transition-all"
                       aria-label="Next image"
                     >
-                      <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                      <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                     </button>
                   </>
                 )}
@@ -592,11 +578,11 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
 
           {/* Thumbnail Row */}
           {allImages.filter(img => img.url).length > 5 && (
-            <div className="flex gap-1 mt-2">
+            <div className="flex gap-1 mt-1">
               {allImages.filter(img => img.url).slice(0, 7).map((image, index) => (
                 <div
                   key={index}
-                  className={`relative h-16 flex-1 cursor-pointer bg-gray-100 dark:bg-gray-700 overflow-hidden rounded-lg group ${currentImageIndex === index ? 'ring-2 ring-blue-600' : ''}`}
+                  className={`relative h-12 flex-1 cursor-pointer bg-gray-100 dark:bg-gray-700 overflow-hidden rounded-md group ${currentImageIndex === index ? 'ring-2 ring-blue-600' : ''}`}
                   onClick={() => openGalleryAt(index)}
                 >
                   <SafeImage
@@ -683,186 +669,131 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
           </DialogContent>
         </Dialog>
 
-        {/* Right: Info Sidebar */}
-        <div className="w-[300px] flex-shrink-0">
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
-            {/* Rating Section */}
-            <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-3">
-                <div className="bg-blue-600 text-white px-3 py-2 rounded-lg">
-                  <span className="text-xl font-bold">4.7</span>
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-gray-900 dark:text-white">{t('hotelDetails.exceptional', 'Exceptional')}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">3014 {t('hotelDetails.reviews', 'reviews')}</div>
-                </div>
+        {/* Right: Info Sidebar - Separate Distinct Boxes */}
+        <div className="w-[280px] flex-shrink-0 space-y-3">
+          {/* Box 1: Star Rating */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+            <div className="flex items-center gap-2.5">
+              <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg">
+                <span className="text-lg font-bold">
+                  {hotel.rating_stars?.value ? parseFloat(hotel.rating_stars.value).toFixed(1) : '4.7'}
+                </span>
               </div>
-              <div className="mt-3 flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                <span className="text-green-600">✓</span>
-                <span>{t('hotelDetails.highlyRated', 'Highly rated by guests')} — 86% {t('hotelDetails.wouldRecommend', 'would recommend')}</span>
+              <div>
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {hotel.rating_stars?.label || t('hotelDetails.exceptional', 'Exceptional')}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  3014 {t('hotelDetails.reviews', 'reviews')}
+                </div>
               </div>
             </div>
-
-            {/* Tags Section */}
-            <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-              <div className="flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full border border-gray-200 dark:border-gray-600">
-                  <Coffee className="w-3.5 h-3.5" />
-                  {t('hotelDetails.breakfast', 'Breakfast')} 25
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full border border-gray-200 dark:border-gray-600">
-                  <Wifi className="w-3.5 h-3.5" />
-                  WiFi 14
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full border border-gray-200 dark:border-gray-600">
-                  <Utensils className="w-3.5 h-3.5" />
-                  {t('hotelDetails.foodDining', 'Food & Dining')} 67
-                </span>
-              </div>
+            <div className="mt-2 flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
+              <span className="text-green-600">✓</span>
+              <span>{t('hotelDetails.highlyRated', 'Highly rated by guests')} — 86% {t('hotelDetails.wouldRecommend', 'would recommend')}</span>
             </div>
+          </div>
 
-            {/* Location / Surroundings Section */}
-            <div className="p-4 border-b border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-2 mb-3">
-                <MapPin className="w-5 h-5 text-blue-600" />
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                  {t('hotelDetails.locationInfo', 'Байршлын мэдээлэл')}
-                </h3>
-              </div>
-              
-              <div className="space-y-2.5">
-                {/* Province/City */}
-                {address?.province_city && provinceMap.get(address.province_city) && (
-                  <div className="flex items-start gap-2">
-                    <Building className="w-4 h-4 text-gray-400 mt-0.5" />
-                    <div className="flex-1">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('hotelDetails.provinceCity', 'Хот/Аймаг')}</div>
-                      <div className="text-sm text-gray-900 dark:text-white">{provinceMap.get(address.province_city)}</div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Soum/District */}
-                {(address?.soum ? soumMap.get(address.soum) : address?.district) && (
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
-                    <div className="flex-1">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('hotelDetails.soumDistrict', 'Дүүрэг/Сум')}</div>
-                      <div className="text-sm text-gray-900 dark:text-white">
-                        {address?.soum ? soumMap.get(address.soum) : address?.district}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Total Floors */}
-                {address?.total_floor_number && (
-                  <div className="flex items-start gap-2">
-                    <Layers className="w-4 h-4 text-gray-400 mt-0.5" />
-                    <div className="flex-1">
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{t('hotelDetails.totalFloors', 'Давхрын тоо')}</div>
-                      <div className="text-sm text-gray-900 dark:text-white">
-                        {address.total_floor_number} {t('hotelDetails.floors', 'давхар')}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* View on map link */}
-              {hotel.google_map && (
-                <button
-                  onClick={() => setShowMapModal(true)}
-                  className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium inline-block"
-                >
-                  {t('hotelDetails.viewOnMap', 'View on map')}
-                </button>
+          {/* Box 2: Special Features (Онцлох шинж чанарууд) */}
+          {/* <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+              <Star className="w-4 h-4 text-yellow-500" />
+              {t('hotelDetails.specialFeatures', 'Онцлох шинж чанарууд')}
+            </h3>
+            <div className="flex flex-wrap gap-1.5">
+              {hotel.general_facilities?.slice(0, 3).map((facility, index) => {
+                // Handle facility as string or number (same logic as main section)
+                const facilityKey = String(facility);
+                const isId = !isNaN(Number(facility));
+                const facilityId = isId ? Number(facility) : null;
+                let facilityName = facilityKey;
+                
+                if (facilityId && facilitiesMap.has(facilityId)) {
+                  const facilityData = facilitiesMap.get(facilityId);
+                  facilityName = facilityData?.name_mn || facilityData?.name_en || facilityKey;
+                }
+                
+                return (
+                  <span key={index} className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 text-xs rounded-full border border-yellow-200 dark:border-yellow-700">
+                    {facilityId ? getFacilityIconById(facilityId) : getFacilityIcon(facilityKey)}
+                    {facilityName}
+                  </span>
+                );
+              }) || []}
+              {(!hotel.general_facilities || hotel.general_facilities.length === 0) && (
+                <span className="text-xs text-gray-500 dark:text-gray-400 italic">
+                  {t('hotelDetails.noSpecialFeatures', 'Мэдээлэл байхгүй байна')}
+                </span>
               )}
             </div>
+          </div> */}
 
-            {/* Property Highlights */}
-            <div className="p-4">
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.propertyHighlights', 'Property highlights')}</h4>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <MapPin className="w-4 h-4 text-gray-400" />
+          {/* Box 3: Surroundings */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <MapPin className="w-4 h-4 text-blue-600" />
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                {t('hotelDetails.surroundings', 'Surroundings')}
+              </h3>
+            </div>
+            
+            <div className="space-y-1.5">
+              {/* Compact location info */}
+              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <Plane className="w-3 h-3" />
+                <span>Airport: Buyant-Ukhaa International Air... (9.2 miles)</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <Train className="w-3 h-3" />
+                <span>Train: Ulaanbaatar(2.0 miles)</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <Landmark className="w-3 h-3" />
+                <span>Landmarks: Choijin Lama Temple Museum(750 ft)</span>
+              </div>
+            </div>
+
+            {/* View on map link */}
+            {hotel.google_map && (
+              <button
+                onClick={() => setShowMapModal(true)}
+                className="mt-2 text-blue-600 hover:text-blue-700 text-xs font-medium"
+              >
+                {t('hotelDetails.viewOnMap', 'View on map')}
+              </button>
+            )}
+          </div>
+
+          {/* Box 4: Property Highlights */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.propertyHighlights', 'Property highlights')}</h4>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <MapPin className="w-3 h-3 text-gray-400" />
                 <span>{t('hotelDetails.inCityCenter', 'In')} {hotel.location.province_city || 'City'} {t('hotelDetails.center', 'Centre')}</span>
               </div>
+              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <Car className="w-3 h-3 text-gray-400" />
+                <span>Airport transfer</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <Clock className="w-3 h-3 text-gray-400" />
+                <span>Front desk [24-hour]</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Description Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 mt-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('hotelDetails.aboutProperty', 'Зочид буудлын тухай')}</h2>
+      {/* Description Section - Compact */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mt-3">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
 
         <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-          {additionalInfo?.About || t('hotelDetails.defaultDescription', { hotelName, city: hotel.location.province_city || '' })}
+          {t('hotelDetails.defaultDescription', { hotelName, city: hotel.location.province_city || '' })}
         </p>
 
-        {basicInfo && (
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-              {/* Total Rooms */}
-              <div className="flex items-start gap-2">
-                <Building className="w-4 h-4 text-gray-400 mt-0.5" />
-                <div>
-                  <div className="text-gray-500 dark:text-gray-400">{t('hotelDetails.totalRooms', 'Нийт өрөө')}</div>
-                  <div className="font-medium text-gray-900 dark:text-white">{basicInfo.total_hotel_rooms} {t('hotelDetails.rooms', 'өрөө')}</div>
-                </div>
-              </div>
-
-              {basicInfo.part_of_group && (
-                <div className="flex items-start gap-2">
-                  <Building className="w-4 h-4 text-gray-400 mt-0.5" />
-                  <div>
-                    <div className="text-gray-500 dark:text-gray-400">{t('hotelDetails.hotelGroup', 'Сүлжээ')}</div>
-                    <div className="font-medium text-gray-900 dark:text-white">{basicInfo.group_name || t('hotelDetails.yes', 'Тийм')}</div>
-                  </div>
-                </div>
-              )}
-
-              {new Date(basicInfo.start_date).getFullYear() && (
-                <div className="flex items-start gap-2">
-                  <Clock className="w-4 h-4 text-gray-400 mt-0.5" />
-                  <div>
-                    <div className="text-gray-500 dark:text-gray-400">{t('hotelDetails.operatingSince', 'Үйл ажиллагаа эхэлсэн')}</div>
-                    <div className="font-medium text-gray-900 dark:text-white">{new Date(basicInfo.start_date).getFullYear()}</div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Facilities Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('popular_amenities', 'Үндсэн тохижилт')}</h3>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {hotel.general_facilities.map((facility, index) => {
-            // Check if facility is a number (ID) or string (name)
-            const isId = typeof facility === 'number' || !isNaN(Number(facility));
-            const facilityId = isId ? Number(facility) : null;
-
-            // Get facility name from map or use the string value
-            let facilityName = facility;
-            if (facilityId && facilitiesMap.has(facilityId)) {
-              const facilityData = facilitiesMap.get(facilityId);
-              facilityName = facilityData?.name_en || facilityData?.name_mn || facility;
-            }
-
-            return (
-              <div key={index} className="flex items-center gap-2.5 p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                <div className="flex-shrink-0">
-                  {facilityId ? getFacilityIconById(facilityId) : getFacilityIcon(String(facility))}
-                </div>
-                <span className="text-gray-700 dark:text-gray-300 text-sm">{facilityName}</span>
-              </div>
-            );
-          })}
-        </div>
+        {/* Additional hotel info can be added here if available in hotel object */}
       </div>
       
       {loading && (
