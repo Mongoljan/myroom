@@ -59,7 +59,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                     soum: ''
                   },
                   images: {
-                    cover: item.cheapest_room?.images?.[0]?.image || '/placeholder-hotel.jpg',
+                    cover: item.cheapest_room?.images?.[0]?.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format',
                     gallery: item.cheapest_room?.images?.map(img => ({ url: img.image, description: img.description })) || []
                   },
                   rating_stars: { value: '0', label: '' },
@@ -176,7 +176,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                 <SafeImage
                   src={hotel.images?.cover ?
                     (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover.url) :
-                    '/placeholder-hotel.jpg'
+                    'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop&auto=format'
                   }
                   alt={hotel.property_name || 'Hotel'}
                   fill

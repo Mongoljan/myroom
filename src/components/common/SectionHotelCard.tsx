@@ -6,6 +6,7 @@ import { MapPin } from 'lucide-react';
 import { text } from '@/styles/design-system';
 import SafeImage from '@/components/common/SafeImage';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import WishlistHeart from '@/components/wishlist/WishlistHeart';
 
 interface SectionHotelCardProps {
   id: string;
@@ -93,6 +94,17 @@ export default function SectionHotelCard({
               </span>
             </div>
           )}
+
+          {/* Wishlist Heart - Top Right */}
+          <div className="absolute top-2 right-2 z-10">
+            <WishlistHeart 
+              hotelId={parseInt(id)}
+              size={24}
+              className="bg-white/80 backdrop-blur-sm hover:bg-white/90 rounded-full"
+              showTooltip={true}
+              tooltipPosition="left"
+            />
+          </div>
         </div>
 
         {/* Hotel Info */}

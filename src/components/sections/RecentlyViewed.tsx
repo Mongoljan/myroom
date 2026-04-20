@@ -91,12 +91,14 @@ export default function RecentlyViewed() {
           return {
             id: item.id,
             name: hotel.property_name,
-            location: `${hotel.location.province_city}, ${hotel.location.soum}`,
-            rating: parseFloat(hotel.rating_stars.value) || 4.0,
+            location: hotel.location?.province_city && hotel.location?.soum 
+              ? `${hotel.location.province_city}, ${hotel.location.soum}`
+              : hotel.location?.province_city || t('common.locationUnknown', 'Location unknown'),
+            rating: parseFloat(hotel.rating_stars?.value) || 4.0,
             price: hotel.cheapest_room?.price_per_night || 0,
             image: getHotelImage(hotel),
             badge,
-            rating_label: hotel.rating_stars.label
+            rating_label: hotel.rating_stars?.label || t('hotel.rating', 'Rating')
           };
         });
         setRecentHotels(hotels);

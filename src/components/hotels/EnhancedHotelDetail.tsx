@@ -435,13 +435,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                 ))}
               </div>
               {/* Wishlist Heart for authenticated users */}
-              {isAuthenticated && (
-                <WishlistHeart
-                  hotelId={hotel.hotel_id}
-                  size={24}
-                  tooltipPosition="right"
-                />
-              )}
+   
             </div>
 
             {/* City, Province and View on Map on same line */}
@@ -466,16 +460,15 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
 
           {/* Right: Price and Book Button on same line */}
           <div className="flex items-center gap-4 flex-shrink-0">
-            {/* Heart icon for saving */}
-            {priceInfo && (
-              <button
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-                aria-label="Save hotel"
-              >
-                <Heart className="w-6 h-6 text-gray-400 hover:text-red-500 transition-colors" />
-              </button>
-            )}
-
+     
+                          {priceInfo && isAuthenticated && (
+                <WishlistHeart
+                  hotelId={hotel.hotel_id}
+                  size={24}
+                  tooltipPosition="right"
+                />
+              )}
+      
             {/* Price Info */}
             {priceInfo && (
               <div className="flex flex-col items-end gap-0.5">
@@ -529,7 +522,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
                   onClick={() => openGalleryAt(currentImageIndex)}
                 >
                   <SafeImage
-                    src={allImages[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url) || '/placeholder-hotel.jpg'}
+                    src={allImages[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url) || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop&auto=format'}
                     alt={hotelName || 'Hotel'}
                     fill
                     className="object-cover"

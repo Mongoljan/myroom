@@ -263,7 +263,7 @@ export default function RecommendedHotels() {
                 key={hotel.hotel.pk}
                 id={hotel.hotel.pk.toString()}
                 name={hotel.hotel.PropertyName}
-                location={hotel.hotel.location}
+                location={hotel.hotel.location || t('common.locationUnknown', 'Location unknown')}
                 rating={0}
                 ratingLabel={null}
                 price={hotel.cheapest_room?.final_price || hotel.cheapest_room?.base_price || 0}

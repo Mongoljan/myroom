@@ -3,23 +3,17 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Heart, Star, MapPin, Trash2, RefreshCw } from 'lucide-react';
-import { useWishlist, useAuthenticatedUser } from '@/hooks/useCustomer';
+import { useWishlist } from '@/hooks/useCustomer';
+import { useAuth } from '@/contexts/AuthContext';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { WishlistItem } from '@/types/customer';
 import { motion } from 'framer-motion';
 
 export default function SavedPage() {
   const { t } = useHydratedTranslation();
-  const { token, isAuthenticated } = useAuthenticatedUser();
+  const { token, isAuthenticated } = useAuth();
   const { wishlist, loading, refresh, removeHotel } = useWishlist(token || undefined);
   const [removingIds, setRemovingIds] = useState<Set<number>>(new Set());
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      // Redirect to login if not authenticated
-      window.location.href = '/login';
-    }
-  }, [isAuthenticated]);
 
   const handleRemove = async (hotelId: number) => {
     if (!token) return;
@@ -45,25 +39,6 @@ export default function SavedPage() {
     if (!price) return t('common.priceNotAvailable', 'Price not available');
     return new Intl.NumberFormat('mn-MN').format(price) + '₮';
   };
-
-  if (!isAuthenticated) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="text-center">
-          <Heart className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-500 dark:text-gray-400 mb-4">
-            {t('saved.loginRequired', 'Please log in to view your saved hotels')}
-          </p>
-          <Link
-            href="/login"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            {t('auth.login', 'Log In')}
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return (
@@ -131,12 +106,12 @@ export default function SavedPage() {
                   {/* Hotel Image */}
                   <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
                     <img
-                      src={item.hotel.profile_image || '/placeholder-hotel.jpg'}
+                      src={item.hotel.profile_image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format'}
                       alt={item.hotel.PropertyName}
                       className="w-full h-full object-cover rounded-lg"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-hotel.jpg';
+                        target.src = 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&auto=format';
                       }}
                     />
                   </div>
@@ -158,8 +133,8 @@ export default function SavedPage() {
                         <div className="flex items-center gap-2 mb-2">
                           <MapPin className="w-4 h-4 text-gray-400" />
                           <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {item.hotel.location.province_city}
-                            {item.hotel.location.soum && `, ${item.hotel.location.soum}`}
+                            {item.hotel.location?.province_city || t('common.locationUnknown', 'Location unknown')}
+                            {item.hotel.location?.soum && `, ${item.hotel.location.soum}`}
                           </span>
                         </div>
 
