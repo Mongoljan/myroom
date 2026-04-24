@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Image from 'next/image';
 
 interface SafeImageProps {
@@ -12,11 +12,24 @@ interface SafeImageProps {
   blurDataURL?: string;
 }
 
-export default function SafeImage({ 
-  src, 
-  alt, 
-  fill = false, 
-  className = '', 
+const MEDIA_BASE_URL =
+  process.env.NEXT_PUBLIC_MEDIA_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  'https://dev.kacc.mn';
+
+function getFullImageUrl(imageSrc: string): string {
+  if (!imageSrc) return '/images/hotel-placeholder.jpg';
+  if (imageSrc.startsWith('http://') || imageSrc.startsWith('https://')) return imageSrc;
+  if (imageSrc.startsWith('/media/') || imageSrc.startsWith('/img/')) return `${MEDIA_BASE_URL}${imageSrc}`;
+  if (imageSrc.startsWith('/images/')) return imageSrc;
+  return imageSrc;
+}
+
+export default function SafeImage({
+  src,
+  alt,
+  fill = false,
+  className = '',
   placeholder,
   blurDataURL
 }: SafeImageProps) {
@@ -27,30 +40,10 @@ export default function SafeImage({
     setHasError(true);
   };
 
-  // Convert relative URLs to full URLs
-  const getFullImageUrl = (imageSrc: string) => {
-    if (!imageSrc) return '/images/hotel-placeholder.jpg';
-    
-    // If it's already a full URL, return as-is
-    if (imageSrc.startsWith('http://') || imageSrc.startsWith('https://')) {
-      return imageSrc;
-    }
-    
-    // If it's a relative path starting with /media/, convert to full URL
-    if (imageSrc.startsWith('/media/') || imageSrc.startsWith('/img/')) {
-      return `https://dev.kacc.mn${imageSrc}`;
-    }
-    
-    // If it's a local path (for placeholders), return as-is
-    if (imageSrc.startsWith('/images/')) {
-      return imageSrc;
-    }
-    
-    // Default fallback
-    return imageSrc;
-  };
-
-  const finalImageSrc = hasError ? '/images/hotel-placeholder.jpg' : getFullImageUrl(src);
+  const finalImageSrc = useMemo(
+    () => (hasError ? '/images/hotel-placeholder.jpg' : getFullImageUrl(src)),
+    [hasError, src]
+  );
 
   return (
     <Image

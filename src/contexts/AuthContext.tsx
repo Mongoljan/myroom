@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useMemo, useState, useEffect, ReactNode } from 'react';
 import { CustomerService } from '@/services/customerApi';
 import { CustomerProfile } from '@/types/customer';
 
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       const response = await CustomerService.login({ email, password });
       CustomerService.saveToken(response.token);
@@ -64,9 +64,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Login failed:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const register = async (data: {
+  const register = useCallback(async (data: {
     first_name: string;
     last_name: string;
     email: string;
@@ -88,9 +88,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Registration failed:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       if (token) {
         await CustomerService.logout(token);
@@ -102,9 +102,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setToken(null);
     }
-  };
+  }, [token]);
 
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     if (token) {
       try {
         const profile = await CustomerService.getProfile(token);
@@ -113,21 +113,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error('Failed to refresh profile:', error);
       }
     }
-  };
+  }, [token]);
+
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      isLoading,
+      isAuthenticated: !!user && !!token,
+      login,
+      register,
+      logout,
+      refreshProfile,
+    }),
+    [user, token, isLoading, login, register, logout, refreshProfile]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        isLoading,
-        isAuthenticated: !!user && !!token,
-        login,
-        register,
-        logout,
-        refreshProfile,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

@@ -91,6 +91,7 @@ const categorizeAmenities = (items: string[]): [string, string[]][] => {
       categories['Other'].push(item);
     }
   });
+  
 
   // Remove empty categories
   return Object.entries(categories).filter(([_, items]) => items.length > 0);

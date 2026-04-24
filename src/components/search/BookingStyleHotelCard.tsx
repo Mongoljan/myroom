@@ -4,7 +4,7 @@ import { Star, MapPin, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed, B
 import { FaChild } from 'react-icons/fa';
 import { SearchHotelResult, AdditionalInfo, PropertyDetails, RoomPrice, Room } from '@/types/api';
 import { SEARCH_DESIGN_SYSTEM } from '@/styles/search-design-system';
-import { useState, useEffect } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -17,19 +17,7 @@ interface HotelCardProps {
   viewMode?: 'grid' | 'list';
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _facilityIcons: { [key: string]: React.ReactNode } = {
-  'Free Wi-Fi': <Wifi className="w-3 h-3 text-green-600" />,
-  'Free WiFi': <Wifi className="w-3 h-3 text-green-600" />,
-  'Parking': <Car className="w-3 h-3 text-primary" />,
-  'Restaurant': <Utensils className="w-3 h-3 text-orange-600" />,
-  'Room Service': <Users className="w-3 h-3 text-purple-600" />,
-  'Fitness Center': <Dumbbell className="w-3 h-3 text-red-600" />,
-  '24-hour Front Desk': <Clock className="w-3 h-3 text-gray-600 dark:text-gray-400" />,
-  'Pool': <Users className="w-3 h-3 text-cyan-600" />,
-};
-
-export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: HotelCardProps) {
+function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: HotelCardProps) {
   const { t } = useHydratedTranslation();
   const [propertyDetails, setPropertyDetails] = useState<PropertyDetails | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -645,3 +633,5 @@ export default function BookingStyleHotelCard({ hotel, searchParams, viewMode = 
     </>
   );
 }
+
+export default memo(BookingStyleHotelCard);

@@ -84,6 +84,7 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
           </div>
         </div>
 
+
         {/* Similar Hotels */}
         <div className="mt-8">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('hotelDetails.similarHotels', 'Төстэй зочид буудлууд')}</h2>
