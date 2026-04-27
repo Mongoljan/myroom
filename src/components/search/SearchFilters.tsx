@@ -58,19 +58,22 @@ interface AccessibilityFeature {
 // Combined API Response Structure
 interface CombinedApiData {
   property_types: PropertyType[];         // Available accommodation types
-  facilities: Facility[];                 // All available facilities and services
+  facilities: Facility[];                 // General facilities (group 1)
+  additionalFacilities: Facility[];       // Additional facilities (group 2)
+  activities: Facility[];                 // Activities (group 3)
   ratings: Rating[];                      // Star rating levels
   province: Province[];                   // Available provinces/locations
-  accessibility_features: AccessibilityFeature[]; // Accessibility options
+  accessibility_features: AccessibilityFeature[]; // Accessibility options (group 4)
   // Note: soum and languages data is also available but not used in filters currently
 }
 
 interface FilterState {
   propertyTypes: number[];
-  roomFeatures: number[];
-  generalServices: number[];
+  roomFeatures: number[];        // Group 1: General facilities
+  generalServices: number[];     // Group 2: Additional facilities
+  outdoorAreas: number[];        // Group 3: Activities
+  accessibilityFeatures: number[]; // Group 4: Accessibility features
   starRating: number[];
-  outdoorAreas: number[];
   priceRange: [number, number];
   discounted: boolean;
   facilities: string[];
@@ -87,6 +90,10 @@ interface SearchFiltersProps {
   filterCounts?: Record<string, number>;
   /** Min/Max price across current search results, used for the budget slider. */
   priceBounds?: [number, number];
+  /** Number of hotels with a discounted cheapest room */
+  discountedCount?: number;
+  /** Number of hotels in the current results, used to gate the price slider. */
+  totalResults?: number;
 }
 
 const STORAGE_KEY = 'hotel_search_filters';
@@ -102,7 +109,7 @@ interface RecentFilter {
   timestamp: number;
 }
 
-export default function SearchFilters({ isOpen, onClose, onFilterChange, embedded = false, apiData, filters: externalFilters, filterCounts = {}, priceBounds }: SearchFiltersProps) {
+export default function SearchFilters({ isOpen, onClose, onFilterChange, embedded = false, apiData, filters: externalFilters, filterCounts = {}, priceBounds, discountedCount = 0, totalResults = 0 }: SearchFiltersProps) {
   const { t } = useHydratedTranslation();
 
   // Remove hardcoded categories - keeping only API-driven filters
@@ -117,6 +124,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     discounted: false,
     starRating: [],
     outdoorAreas: [],
+    accessibilityFeatures: [],
     facilities: [],
     roomTypes: []
   });
@@ -198,7 +206,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
       !filterState.discounted &&
       filterState.starRating.length === 0 &&
       filterState.outdoorAreas.length === 0 &&
-      filterState.facilities.length === 0 &&
+      (filterState.accessibilityFeatures?.length ?? 0) === 0 &&
       filterState.facilities.length === 0 &&
       filterState.roomTypes.length === 0
     );
@@ -264,15 +272,16 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
   }, []); // Only run once on mount
 
   // Save filters to localStorage whenever they change
-  const updateFilters = useCallback((newFilters: Partial<FilterState>) => {
+  const updateFilters = useCallback((newFilters: Partial<FilterState>, options: { saveRecent?: boolean } = {}) => {
+    const { saveRecent = true } = options;
     const updatedFilters = { ...filters, ...newFilters };
     setFilters(updatedFilters);
     onFilterChange(updatedFilters);
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedFilters));
-      // Also save to recent filters when user makes changes
-      saveToRecentFilters(updatedFilters);
+      // Only save to recent for committed changes (skip intermediate slider drags)
+      if (saveRecent) saveToRecentFilters(updatedFilters);
     } catch (error) {
       console.warn('Failed to save filters:', error);
     }
@@ -335,6 +344,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
       discounted: false,
       starRating: [],
       outdoorAreas: [],
+      accessibilityFeatures: [],
       facilities: [],
       roomTypes: []
     };
@@ -348,13 +358,15 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     }
   }, [onFilterChange]);
 
-  // Helper function to get icon for facility - much more specific and relevant icons
-  // Get general service facilities based on comprehensive analysis
-  const generalServiceFacilities = apiData?.facilities || [];
-  
-  // Room features and outdoor facilities - use API data without hardcoded filtering
+  // Map each filter group to its OWN API array (matches Hotel_front 6PropertyDetails groups)
+  // Group 1 — General facilities  -> apiData.facilities
+  // Group 2 — Additional facilities -> apiData.additionalFacilities
+  // Group 3 — Activities          -> apiData.activities
+  // Group 4 — Accessibility       -> apiData.accessibility_features
   const roomFeatureFacilities = apiData?.facilities || [];
-  const outdoorFacilities = apiData?.facilities || [];
+  const generalServiceFacilities = apiData?.additionalFacilities || [];
+  const outdoorFacilities = apiData?.activities || [];
+  const accessibilityFacilities = apiData?.accessibility_features || [];
 
   if (embedded) {
     return (
@@ -386,8 +398,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
             </div>
           )}
 
-          {/* Budget — derived from current search results */}
-          {priceBounds && priceBounds[1] > priceBounds[0] && (
+          {/* Budget — derived from current search results (only if we have enough hotels with prices) */}
+          {priceBounds && priceBounds[1] > priceBounds[0] && totalResults >= 3 && (
             <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
               <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.budget') || 'Төсөв'}</h4>
               <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
@@ -400,7 +412,10 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 max={priceBounds[1]}
                 step={Math.max(1000, Math.round((priceBounds[1] - priceBounds[0]) / 100))}
                 value={filters.priceRange?.[1] ?? priceBounds[1]}
-                onChange={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt(e.target.value, 10)] })}
+                onChange={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt(e.target.value, 10)] }, { saveRecent: false })}
+                onMouseUp={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
+                onTouchEnd={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
+                onKeyUp={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
                 className="w-full accent-primary-600"
               />
               <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-500">
@@ -414,12 +429,65 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           <div className="text-xs text-gray-500 dark:text-gray-400">{t('search.filtersSection.loading')}</div>
         ) : (
           <>
+            {/* Discounted only */}
+            {discountedCount > 0 && (
+              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.discounted}
+                    onChange={(e) => updateFilters({ discounted: e.target.checked })}
+                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                  />
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex-1">
+                    {t('search.filtersSection.discounted')}
+                  </span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">({discountedCount})</span>
+                </label>
+              </div>
+            )}
+
+            {/* Property type */}
+            {apiData?.property_types && apiData.property_types.length > 0 && (
+              <CollapsibleFilterSection
+                title={t('search.filtersSection.hotelType')}
+                itemCount={apiData.property_types.length}
+                initialShowCount={4}
+              >
+                {apiData.property_types.map((pt) => {
+                  const isSelected = filters.propertyTypes?.includes(pt.id) || false;
+                  return (
+                    <label
+                      key={pt.id}
+                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => updateFilters({
+                          propertyTypes: isSelected
+                            ? (filters.propertyTypes || []).filter(id => id !== pt.id)
+                            : [...(filters.propertyTypes || []), pt.id]
+                        })}
+                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{pt.name_mn}</span>
+                      {filterCounts[`propertyType_${pt.id}`] !== undefined && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          ({filterCounts[`propertyType_${pt.id}`]})
+                        </span>
+                      )}
+                    </label>
+                  );
+                })}
+              </CollapsibleFilterSection>
+            )}
 
 
-            {/* 5. Room Features */}
+            {/* 5. General facilities (Group 1 — matches Hotel_front step 6) */}
             {roomFeatureFacilities.length > 0 ? (
               <CollapsibleFilterSection
-                title={t('search.filtersSection.roomFeatures')}
+                title={t('search.filtersSection.generalFacilities')}
                 itemCount={roomFeatureFacilities.length}
                 initialShowCount={4}
               >
@@ -452,15 +520,15 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </CollapsibleFilterSection>
             ) : (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.roomFeatures')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.generalFacilities')}</h4>
                 <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
 
-            {/* 6. General Services */}
+            {/* 6. Additional facilities (Group 2) */}
             {generalServiceFacilities.length > 0 ? (
               <CollapsibleFilterSection
-                title={t('search.filtersSection.generalServices')}
+                title={t('search.filtersSection.additionalFacilities')}
                 itemCount={generalServiceFacilities.length}
                 initialShowCount={5}
               >
@@ -493,15 +561,15 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </CollapsibleFilterSection>
             ) : (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.generalServices')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.additionalFacilities')}</h4>
                 <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
 
-            {/* 10. Guest Rating (зочдын үнэлгээ) - Compact version */}
+            {/* 10. Hotel star rating (property stars from rating_stars) */}
             {apiData?.ratings && apiData.ratings.length > 0 ? (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.guestRating')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelStars') || t('search.filtersSection.guestRating')}</h4>
                 <div className="grid grid-cols-5 gap-1">
                   {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
                     const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
@@ -533,18 +601,17 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </div>
             ) : (
               <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.guestRating')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelStars') || t('search.filtersSection.guestRating')}</h4>
                 <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
             )}
 
-            {/* 11. Outdoor Areas */}
+            {/* 11. Activities (Group 3) */}
             {outdoorFacilities.length > 0 ? (
               <CollapsibleFilterSection
-                title={t('search.filtersSection.outdoorArea')}
+                title={t('search.filtersSection.activities')}
                 itemCount={outdoorFacilities.length}
                 initialShowCount={3}
-                className="border-b-0"
               >
                 {outdoorFacilities.map((facility) => {
                   const isSelected = filters.outdoorAreas?.includes(facility.id) || false;
@@ -575,9 +642,46 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               </CollapsibleFilterSection>
             ) : (
               <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.outdoorArea')}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.activities')}</h4>
                 <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
+            )}
+
+            {/* 12. Accessibility features (Group 4) */}
+            {accessibilityFacilities.length > 0 && (
+              <CollapsibleFilterSection
+                title={t('search.filtersSection.accessibility')}
+                itemCount={accessibilityFacilities.length}
+                initialShowCount={3}
+                className="border-b-0"
+              >
+                {accessibilityFacilities.map((facility) => {
+                  const isSelected = filters.accessibilityFeatures?.includes(facility.id) || false;
+                  return (
+                    <label
+                      key={facility.id}
+                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => updateFilters({
+                          accessibilityFeatures: isSelected
+                            ? (filters.accessibilityFeatures || []).filter(id => id !== facility.id)
+                            : [...(filters.accessibilityFeatures || []), facility.id]
+                        })}
+                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      />
+                      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
+                      {filterCounts[`accessibility_${facility.id}`] !== undefined && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          ({filterCounts[`accessibility_${facility.id}`]})
+                        </span>
+                      )}
+                    </label>
+                  );
+                })}
+              </CollapsibleFilterSection>
             )}
           </>
         )}

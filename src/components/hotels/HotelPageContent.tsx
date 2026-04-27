@@ -80,7 +80,12 @@ export default function HotelPageContent({ hotel, searchParams }: HotelPageConte
           {/* Facilities Section */}
           <div id="facilities" className="">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{t('hotelDetails.facilities', 'Үйлчилгээ')}</h2>
-            <HotelAmenities facilities={hotel.general_facilities} />
+            <HotelAmenities
+              generalFacilities={hotel.general_facilities}
+              additionalFacilities={hotel.additional_facilities}
+              activities={hotel.activities}
+              accessibilityFeatures={hotel.accessibility_features}
+            />
           </div>
         </div>
 

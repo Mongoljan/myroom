@@ -51,11 +51,11 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
         // Only fetch essential data that's not already in hotel object
         // Remove redundant API calls - use existing hotel data
         const [
-          combinedData = { facilities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] }
+          combinedData = { facilities: [], additionalFacilities: [], activities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] }
         ] = await Promise.all([
           ApiService.getCombinedData().catch(e => {
             console.warn('Combined data failed:', e);
-            return { facilities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] };
+            return { facilities: [], additionalFacilities: [], activities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] };
           })
         ]);
 
@@ -671,28 +671,25 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
 
         {/* Right: Info Sidebar - Separate Distinct Boxes */}
         <div className="w-[280px] flex-shrink-0 space-y-3">
-          {/* Box 1: Star Rating */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
-            <div className="flex items-center gap-2.5">
-              <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg">
-                <span className="text-lg font-bold">
-                  {hotel.rating_stars?.value ? parseFloat(hotel.rating_stars.value).toFixed(1) : '4.7'}
-                </span>
-              </div>
-              <div>
-                <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                  {hotel.rating_stars?.label || t('hotelDetails.exceptional', 'Exceptional')}
+          {/* Box 1: Star Rating — only render if API actually returns a rating */}
+          {hotel.rating_stars?.value && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+              <div className="flex items-center gap-2.5">
+                <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg">
+                  <span className="text-lg font-bold">
+                    {parseFloat(hotel.rating_stars.value).toFixed(1)}
+                  </span>
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  3014 {t('hotelDetails.reviews', 'reviews')}
-                </div>
+                {hotel.rating_stars.label && (
+                  <div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {hotel.rating_stars.label}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-            <div className="mt-2 flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-              <span className="text-green-600">✓</span>
-              <span>{t('hotelDetails.highlyRated', 'Highly rated by guests')} — 86% {t('hotelDetails.wouldRecommend', 'would recommend')}</span>
-            </div>
-          </div>
+          )}
 
           {/* Box 2: Surroundings */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">

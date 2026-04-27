@@ -12,6 +12,7 @@ import NoResultsState from './NoResultsState';
 import PaginationControls from './PaginationControls';
 import { HotelSearchSpinner } from '@/components/ui/magic-spinner';
 import HotelsMapView from './HotelsMapView';
+import HotelsMapPreview from './HotelsMapPreview';
 import { getFacilityName } from '@/utils/facilities';
 import { deriveFacets } from '@/utils/searchFacets';
 
@@ -46,6 +47,8 @@ interface AccessibilityFeature {
 interface CombinedApiData {
   property_types: PropertyType[];
   facilities: Facility[];
+  additionalFacilities: Facility[];
+  activities: Facility[];
   ratings: Rating[];
   province: Province[];
   accessibility_features: AccessibilityFeature[];
@@ -57,6 +60,7 @@ interface FilterState {
   generalServices: number[];
   starRating: number[];
   outdoorAreas: number[];
+  accessibilityFeatures: number[];
   priceRange: [number, number];
   discounted: boolean;
   facilities: string[];
@@ -89,6 +93,7 @@ export default function SearchResults() {
     generalServices: [],
     starRating: [],
     outdoorAreas: [],
+    accessibilityFeatures: [],
     priceRange: [0, 1000000] as [number, number],
     discounted: false,
     facilities: [],
@@ -270,10 +275,31 @@ export default function SearchResults() {
     // Apply filters to hotels
     let filtered = hotels;
     
-    // Filter by property types (API-driven)
+    // Filter by property types (using property_type field)
     if (newFilters.propertyTypes && newFilters.propertyTypes.length > 0) {
-      // This would need the property_type_id field in hotel data to work properly
-      // For now, we'll skip this filter since the field might not be available
+      const selectedTypes = newFilters.propertyTypes
+        .map(id => apiData?.property_types?.find(pt => pt.id === id))
+        .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
+      filtered = filtered.filter(hotel => {
+        const t = (hotel.property_type || '').toLowerCase();
+        if (!t) return false;
+        return selectedTypes.some(pt => {
+          const en = (pt.name_en || '').toLowerCase();
+          const mn = (pt.name_mn || '').toLowerCase();
+          return (en && (t.includes(en) || en.includes(t))) || (mn && (t.includes(mn) || mn.includes(t)));
+        });
+      });
+    }
+
+    // Discounted only
+    if (newFilters.discounted) {
+      filtered = filtered.filter(hotel => {
+        const r = hotel.cheapest_room;
+        if (!r) return false;
+        const raw = r.price_per_night_raw || r.price_per_night || 0;
+        const adj = r.price_per_night_adjusted || r.price_per_night || 0;
+        return raw > 0 && adj > 0 && raw > adj;
+      });
     }
 
     // Filter by price range
@@ -293,52 +319,54 @@ export default function SearchResults() {
       });
     }
 
-    // Filter by room features (API-driven using facility IDs)
+    // Helper: check whether a hotel has a given facility option, matching
+    // by ID first (reliable), then falling back to name substring match.
+    const hotelHasFacility = (
+      hotel: SearchHotelResult,
+      option: { id: number; name_en?: string; name_mn?: string }
+    ): boolean => {
+      const targetEn = (option.name_en || '').toLowerCase();
+      const targetMn = (option.name_mn || '').toLowerCase();
+      return (hotel.general_facilities || []).some((f) => {
+        if (typeof f === 'object' && f && typeof f.id === 'number' && f.id === option.id) return true;
+        const en = getFacilityName(f, 'en').toLowerCase();
+        const mn = getFacilityName(f, 'mn').toLowerCase();
+        if (targetEn && en && (en.includes(targetEn) || targetEn.includes(en))) return true;
+        if (targetMn && mn && (mn.includes(targetMn) || targetMn.includes(mn))) return true;
+        return false;
+      });
+    };
+
+    // Filter by room features (= General facilities, group 1)
     if (newFilters.roomFeatures && newFilters.roomFeatures.length > 0) {
-      filtered = filtered.filter(hotel => {
-        const selectedFeatureNames = newFilters.roomFeatures.map(id => {
-          const facility = apiData?.facilities?.find(f => f.id === id);
-          return facility?.name_en || '';
-        }).filter(name => name);
-
-        return selectedFeatureNames.some(featureName =>
-          hotel.general_facilities.some(facility =>
-            getFacilityName(facility, 'en').toLowerCase().includes(featureName.toLowerCase())
-          )
-        );
-      });
+      const opts = newFilters.roomFeatures
+        .map(id => apiData?.facilities?.find(f => f.id === id))
+        .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
+      filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
     }
 
-    // Filter by general services (API-driven using facility IDs)
+    // Filter by general services (= Additional facilities, group 2)
     if (newFilters.generalServices && newFilters.generalServices.length > 0) {
-      filtered = filtered.filter(hotel => {
-        const selectedServiceNames = newFilters.generalServices.map(id => {
-          const facility = apiData?.facilities?.find(f => f.id === id);
-          return facility?.name_en || '';
-        }).filter(name => name);
-
-        return selectedServiceNames.some(serviceName =>
-          hotel.general_facilities.some(facility =>
-            getFacilityName(facility, 'en').toLowerCase().includes(serviceName.toLowerCase())
-          )
-        );
-      });
+      const opts = newFilters.generalServices
+        .map(id => apiData?.additionalFacilities?.find(f => f.id === id))
+        .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
+      filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
     }
 
-    // Filter by outdoor areas (API-driven using facility IDs)  
+    // Filter by outdoor areas (= Activities, group 3)
     if (newFilters.outdoorAreas && newFilters.outdoorAreas.length > 0) {
-      filtered = filtered.filter(hotel => {
-        const selectedOutdoorNames = newFilters.outdoorAreas.map(id => {
-          const facility = apiData?.facilities?.find(f => f.id === id);
-          return facility?.name_en || '';
-        }).filter(name => name);
+      const opts = newFilters.outdoorAreas
+        .map(id => apiData?.activities?.find(f => f.id === id))
+        .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
+      filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
+    }
 
-        return selectedOutdoorNames.some(outdoorName =>
-          hotel.general_facilities.some(facility =>
-            getFacilityName(facility, 'en').toLowerCase().includes(outdoorName.toLowerCase())
-          )
-        );
-      });
+    // Filter by accessibility features (group 4)
+    if (newFilters.accessibilityFeatures && newFilters.accessibilityFeatures.length > 0) {
+      const opts = newFilters.accessibilityFeatures
+        .map(id => apiData?.accessibility_features?.find(f => f.id === id))
+        .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
+      filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
     }
 
     // Apply name search at the end
@@ -450,7 +478,15 @@ export default function SearchResults() {
         <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-3">
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Sidebar - Desktop only */}
-            <div className="hidden lg:block lg:w-80 shrink-0">
+            <div className="hidden lg:block lg:w-80 shrink-0 space-y-3">
+              {/* Inline map preview above filters */}
+              {filteredHotels.length > 0 && (
+                <HotelsMapPreview
+                  hotels={filteredHotels}
+                  onExpand={() => setShowMapView(true)}
+                  height={220}
+                />
+              )}
               <SearchFilters
                 isOpen={true}
                 onClose={() => {}}
@@ -460,6 +496,8 @@ export default function SearchResults() {
                 filters={filters}
                 filterCounts={facets.filterCounts}
                 priceBounds={[facets.priceMin, facets.priceMax]}
+                discountedCount={facets.discountedCount}
+                totalResults={hotels.length}
               />
             </div>
             

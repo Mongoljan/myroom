@@ -70,15 +70,15 @@ export interface HotelRoom {
   room_category: number;
   room_size: string;
   bed_type?: number;
-  bed_details?: Array<{ bed_type: number; quantity: number }>;
+  bed_details?: Array<{ id?: number; bed_type?: number; name?: string; quantity: number }>;
   is_Bathroom: boolean;
-  room_Facilities: number[];
-  bathroom_Items: number[];
-  free_Toiletries: number[];
-  food_And_Drink: number[];
+  room_Facilities: Array<number | RoomFacility>;
+  bathroom_Items: Array<number | BathroomItem>;
+  free_Toiletries: Array<number | FreeToiletries>;
+  food_And_Drink: Array<number | FoodAndDrink>;
   adultQty: number;
   childQty: number;
-  outdoor_And_View: number[];
+  outdoor_And_View: Array<number | OutdoorAndView>;
   number_of_rooms: number;
   number_of_rooms_to_sell: number;
   room_Description: string;
@@ -225,28 +225,45 @@ class HotelRoomsService {
 
   private enrichRoomData(room: HotelRoom, allData: AllRoomData): EnrichedHotelRoom {
     const roomType = allData.room_types.find(rt => rt.id === room.room_type);
-    const bedType = allData.bed_types.find(bt => bt.id === room.bed_type);
     const roomCategory = allData.room_category.find(rc => rc.id === room.room_category);
 
-    const facilitiesDetails = room.room_Facilities
-      .map(id => allData.room_facilities.find(rf => rf.id === id))
-      .filter(Boolean) as RoomFacility[];
+    // bed_details from /roomsInHotels/ ships objects with { id, name, quantity }.
+    // Older shape has { bed_type, quantity } and a top-level bed_type number.
+    let bedTypeName = 'Unknown';
+    let normalizedBedDetails = room.bed_details;
+    if (room.bed_details && room.bed_details.length > 0) {
+      normalizedBedDetails = room.bed_details.map(b => ({
+        ...b,
+        name: b.name || allData.bed_types.find(bt => bt.id === (b.bed_type ?? b.id))?.name || '',
+      }));
+      bedTypeName = normalizedBedDetails
+        .map(b => (b.name ? (b.quantity > 1 ? `${b.quantity}× ${b.name}` : b.name) : null))
+        .filter(Boolean)
+        .join(', ') || 'Unknown';
+    } else if (room.bed_type) {
+      bedTypeName = allData.bed_types.find(bt => bt.id === room.bed_type)?.name || 'Unknown';
+    }
 
-    const bathroomItemsDetails = room.bathroom_Items
-      .map(id => allData.bathroom_items.find(bi => bi.id === id))
-      .filter(Boolean) as BathroomItem[];
+    const resolve = <T extends { id: number; name_en: string; name_mn: string }>(
+      list: Array<number | T> | undefined,
+      lookup: T[]
+    ): T[] => {
+      if (!Array.isArray(list)) return [];
+      return list
+        .map(entry => {
+          if (typeof entry === 'number') return lookup.find(x => x.id === entry);
+          if (entry && typeof entry === 'object' && 'name_en' in entry) return entry as T;
+          if (entry && typeof entry === 'object' && 'id' in entry) return lookup.find(x => x.id === (entry as { id: number }).id);
+          return undefined;
+        })
+        .filter(Boolean) as T[];
+    };
 
-    const freeToiletriesDetails = room.free_Toiletries
-      .map(id => allData.free_toiletries.find(ft => ft.id === id))
-      .filter(Boolean) as FreeToiletries[];
-
-    const foodAndDrinkDetails = room.food_And_Drink
-      .map(id => allData.food_and_drink.find(fd => fd.id === id))
-      .filter(Boolean) as FoodAndDrink[];
-
-    const outdoorAndViewDetails = room.outdoor_And_View
-      .map(id => allData.outdoor_and_view.find(ov => ov.id === id))
-      .filter(Boolean) as OutdoorAndView[];
+    const facilitiesDetails = resolve<RoomFacility>(room.room_Facilities, allData.room_facilities);
+    const bathroomItemsDetails = resolve<BathroomItem>(room.bathroom_Items, allData.bathroom_items);
+    const freeToiletriesDetails = resolve<FreeToiletries>(room.free_Toiletries, allData.free_toiletries);
+    const foodAndDrinkDetails = resolve<FoodAndDrink>(room.food_And_Drink, allData.food_and_drink);
+    const outdoorAndViewDetails = resolve<OutdoorAndView>(room.outdoor_And_View, allData.outdoor_and_view);
 
     // Check if room has valid pricing based on price_breakdown
     // A room is valid if it has a price_breakdown with final_customer_price > 0
@@ -257,8 +274,9 @@ class HotelRoomsService {
 
     return {
       ...room,
+      bed_details: normalizedBedDetails,
       roomTypeName: roomType?.name || 'Unknown',
-      bedTypeName: bedType?.name || 'Unknown',
+      bedTypeName,
       roomCategoryName: roomCategory?.name || 'Unknown',
       facilitiesDetails,
       bathroomItemsDetails,

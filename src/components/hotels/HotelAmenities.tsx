@@ -1,176 +1,185 @@
 'use client';
 
-import {
-  Wifi,
-  Car,
-  Utensils,
-  Waves,
-  Dumbbell,
-  Sparkles,
-  Coffee,
-  Shield,
-  Wind,
-  Tv,
-  Phone,
-  Users,
-  Bath,
-  Droplet,
-  Radio,
-  Flame,
-  UtensilsCrossed,
-  Shirt,
-  Building,
-  Check
-} from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Building2, Sparkles, Activity, Accessibility, Check, Star } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { ApiService } from '@/services/api';
+import type { CombinedData, HotelFacility } from '@/types/api';
 
 interface HotelAmenitiesProps {
-  amenities?: import('@/types/api').HotelFacility[];
-  facilities?: import('@/types/api').HotelFacility[];
+  generalFacilities?: HotelFacility[];
+  additionalFacilities?: HotelFacility[];
+  activities?: HotelFacility[];
+  accessibilityFeatures?: HotelFacility[];
+  /** @deprecated use generalFacilities */
+  facilities?: HotelFacility[];
+  /** @deprecated use generalFacilities */
+  amenities?: HotelFacility[];
 }
 
-// Category mapping - categorize facilities by type
-const categorizeAmenities = (items: string[]): [string, string[]][] => {
-  const categories: Record<string, string[]> = {
-    'Bathroom': [],
-    'Media & Technology': [],
-    'Safety & security': [],
-    'Food & Drink': [],
-    'Bedroom': [],
-    'Reception services': [],
-    'Cleaning services': [],
-    'General': [],
-    'Other': []
-  };
+type ApiFacility = { id: number; name_en: string; name_mn: string };
 
-  items.forEach(item => {
-    const lowerItem = item.toLowerCase();
+type GroupKey = 'general' | 'additional' | 'activities' | 'accessibility';
 
-    // Bathroom
-    if (lowerItem.includes('towel') || lowerItem.includes('bath') || lowerItem.includes('shower') ||
-        lowerItem.includes('toilet') || lowerItem.includes('hairdryer') || lowerItem.includes('free toiletries')) {
-      categories['Bathroom'].push(item);
-    }
-    // Media & Technology
-    else if (lowerItem.includes('tv') || lowerItem.includes('television') || lowerItem.includes('satellite') ||
-             lowerItem.includes('radio') || lowerItem.includes('telephone') || lowerItem.includes('phone')) {
-      categories['Media & Technology'].push(item);
-    }
-    // Safety & security
-    else if (lowerItem.includes('fire') || lowerItem.includes('security') || lowerItem.includes('cctv') ||
-             lowerItem.includes('smoke') || lowerItem.includes('extinguisher')) {
-      categories['Safety & security'].push(item);
-    }
-    // Food & Drink
-    else if (lowerItem.includes('breakfast') || lowerItem.includes('restaurant') || lowerItem.includes('bar') ||
-             lowerItem.includes('meal') || lowerItem.includes('coffee') || lowerItem.includes('tea')) {
-      categories['Food & Drink'].push(item);
-    }
-    // Bedroom
-    else if (lowerItem.includes('linen') || lowerItem.includes('wardrobe') || lowerItem.includes('closet')) {
-      categories['Bedroom'].push(item);
-    }
-    // Reception services
-    else if (lowerItem.includes('invoice') || lowerItem.includes('check-in') || lowerItem.includes('check-out') ||
-             lowerItem.includes('luggage') || lowerItem.includes('front desk')) {
-      categories['Reception services'].push(item);
-    }
-    // Cleaning services
-    else if (lowerItem.includes('housekeeping') || lowerItem.includes('cleaning') || lowerItem.includes('laundry') ||
-             lowerItem.includes('dry cleaning')) {
-      categories['Cleaning services'].push(item);
-    }
-    // General
-    else if (lowerItem.includes('non-smoking') || lowerItem.includes('hypoallergenic') || lowerItem.includes('wake') ||
-             lowerItem.includes('heating') || lowerItem.includes('carpeted') || lowerItem.includes('lift') ||
-             lowerItem.includes('elevator') || lowerItem.includes('fan') || lowerItem.includes('family') ||
-             lowerItem.includes('disabled') || lowerItem.includes('ironing') || lowerItem.includes('room service')) {
-      categories['General'].push(item);
-    }
-    else {
-      categories['Other'].push(item);
-    }
-  });
-  
-
-  // Remove empty categories
-  return Object.entries(categories).filter(([_, items]) => items.length > 0);
+type Group = {
+  key: GroupKey;
+  title: string;
+  Icon: React.ElementType;
+  items: { label: string; isHighlight: boolean }[];
 };
 
-const categoryIcons: Record<string, React.ElementType> = {
-  'Bathroom': Bath,
-  'Media & Technology': Tv,
-  'Safety & security': Shield,
-  'Food & Drink': UtensilsCrossed,
-  'Bedroom': Building,
-  'Reception services': Users,
-  'Cleaning services': Sparkles,
-  'General': Check,
-  'Other': Shield
-};
+function resolveItem(
+  facility: HotelFacility,
+  locale: 'en' | 'mn',
+  canonical: Map<number, ApiFacility>
+): { id: number | null; label: string; isHighlight: boolean } {
+  if (typeof facility === 'string') {
+    return { id: null, label: facility, isHighlight: false };
+  }
+  if (facility && typeof facility === 'object') {
+    const id = typeof facility.id === 'number' ? facility.id : null;
+    const isHighlight = facility.is_highlight === true;
+    let label =
+      (locale === 'mn' ? facility.name_mn : facility.name_en) ||
+      facility.name_en ||
+      facility.name_mn ||
+      '';
+    if (id !== null && canonical.has(id)) {
+      const c = canonical.get(id)!;
+      label = locale === 'mn' ? c.name_mn || label : c.name_en || label;
+    }
+    return { id, label, isHighlight };
+  }
+  return { id: null, label: '', isHighlight: false };
+}
 
-export default function HotelAmenities({ amenities, facilities }: HotelAmenitiesProps) {
-  const { t } = useHydratedTranslation();
+export default function HotelAmenities({
+  generalFacilities,
+  additionalFacilities,
+  activities,
+  accessibilityFeatures,
+  facilities,
+  amenities,
+}: HotelAmenitiesProps) {
+  const { t, i18n } = useHydratedTranslation();
+  const locale: 'en' | 'mn' = i18n?.language?.startsWith('en') ? 'en' : 'mn';
+  const [combined, setCombined] = useState<CombinedData | null>(null);
 
-  // Use facilities if provided, otherwise use amenities, fallback to empty array
-  const rawItems = facilities || amenities || [];
-  const items = rawItems
-    .map((item) =>
-      typeof item === 'string'
-        ? item
-        : item?.name_mn || item?.name_en || ''
-    )
-    .filter((s): s is string => Boolean(s));
+  useEffect(() => {
+    let cancelled = false;
+    ApiService.getCombinedData()
+      .then((data) => { if (!cancelled) setCombined(data); })
+      .catch(() => { /* ignore — fall back to whatever names the hotel object has */ });
+    return () => { cancelled = true; };
+  }, []);
 
-  // If no amenities/facilities, don't render anything
-  if (items.length === 0) {
+  const sources = useMemo(() => ({
+    general: generalFacilities ?? facilities ?? amenities ?? [],
+    additional: additionalFacilities ?? [],
+    activities: activities ?? [],
+    accessibility: accessibilityFeatures ?? [],
+  }), [generalFacilities, additionalFacilities, activities, accessibilityFeatures, facilities, amenities]);
+
+  const { groups, highlights } = useMemo<{ groups: Group[]; highlights: string[] }>(() => {
+    const canonicalMaps: Record<GroupKey, Map<number, ApiFacility>> = {
+      general: new Map(),
+      additional: new Map(),
+      activities: new Map(),
+      accessibility: new Map(),
+    };
+    if (combined) {
+      (combined.facilities || []).forEach(f => canonicalMaps.general.set(f.id, f));
+      (combined.additionalFacilities || []).forEach(f => canonicalMaps.additional.set(f.id, f));
+      (combined.activities || []).forEach(f => canonicalMaps.activities.set(f.id, f));
+      (combined.accessibility_features || []).forEach(f => canonicalMaps.accessibility.set(f.id, f));
+    }
+
+    const groupDefs: Group[] = [
+      { key: 'general',       title: t('hotelDetails.facilityGroups.general',       'Ерөнхий байгууламж'), Icon: Building2,    items: [] },
+      { key: 'additional',    title: t('hotelDetails.facilityGroups.additional',    'Нэмэлт байгууламж'),  Icon: Sparkles,     items: [] },
+      { key: 'activities',    title: t('hotelDetails.facilityGroups.activities',    'Үйл ажиллагаа'),      Icon: Activity,     items: [] },
+      { key: 'accessibility', title: t('hotelDetails.facilityGroups.accessibility', 'Хүртээмжтэй өрөө'),   Icon: Accessibility, items: [] },
+    ];
+
+    const highlightItems: string[] = [];
+    const highlightSeen = new Set<string>();
+
+    for (const g of groupDefs) {
+      const seen = new Set<string>();
+      for (const fac of sources[g.key]) {
+        const { id, label, isHighlight } = resolveItem(fac, locale, canonicalMaps[g.key]);
+        if (!label) continue;
+        const dedupeKey = id !== null ? `id:${id}` : `nm:${label.toLowerCase()}`;
+        if (seen.has(dedupeKey)) continue;
+        seen.add(dedupeKey);
+        g.items.push({ label, isHighlight });
+        if (isHighlight && !highlightSeen.has(dedupeKey)) {
+          highlightSeen.add(dedupeKey);
+          highlightItems.push(label);
+        }
+      }
+    }
+
+    return { groups: groupDefs.filter(g => g.items.length > 0), highlights: highlightItems };
+  }, [sources, combined, locale, t]);
+
+  const totalCount = groups.reduce((acc, g) => acc + g.items.length, 0);
+  if (totalCount === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500 dark:text-gray-400">{t('hotel.noAmenities', 'Мэдээлэл байхгүй байна')}</p>
+        <p className="text-gray-500 dark:text-gray-400">
+          {t('hotel.noAmenities', 'Мэдээлэл байхгүй байна')}
+        </p>
       </div>
     );
   }
 
-  const categorizedAmenities = categorizeAmenities(items);
-
   return (
-    <div className="bg-white dark:bg-transparent">
-      {/* Top highlighted amenities - inline with icons */}
-      {/* <div className="mb-10 pb-8 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-5">
-          {t('amenities.popular', 'Онцлох нь:')}
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-8 gap-y-4">
-          {items.slice(0, 10).map((item, index) => (
-            <div key={index} className="flex items-center gap-2.5 text-[15px] text-gray-700 dark:text-gray-300">
-              <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
-              <span>{item}</span>
-            </div>
-          ))}
+    <div className="bg-white dark:bg-transparent space-y-8">
+      {highlights.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2.5 mb-3">
+            <Star className="w-4 h-4 text-amber-500 fill-amber-400 shrink-0" />
+            <h4 className="text-[15px] font-semibold text-gray-900 dark:text-white">
+              {t('hotelDetails.facilityGroups.highlights', 'Онцлох нь')}
+            </h4>
+            <span className="text-xs text-gray-500 dark:text-gray-400">({highlights.length})</span>
+          </div>
+          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-2 pl-0">
+            {highlights.map((item, index) => (
+              <li
+                key={`hl-${index}`}
+                className="flex items-start gap-2 text-[14px] text-gray-700 dark:text-gray-300"
+              >
+                <Check className="w-3.5 h-3.5 text-green-600 mt-0.5 shrink-0" />
+                <span className="leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-      </div> */}
+      )}
 
-      {/* Categorized facilities */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-6">
-        {categorizedAmenities.map(([category, categoryItems]: [string, string[]]) => {
-          const IconComponent = categoryIcons[category];
-          return (
-            <div key={category}>
-              <div className="flex items-center gap-2.5 mb-3">
-                <IconComponent className="w-4 h-4 text-gray-700 dark:text-gray-400 shrink-0" />
-                <h4 className="text-[15px] font-semibold text-gray-900 dark:text-white">{category}</h4>
-              </div>
-              <ul className="space-y-2 pl-0">
-                {categoryItems.map((item: string, index: number) => (
-                  <li key={index} className="flex items-start gap-2 text-[14px] text-gray-700 dark:text-gray-300">
-                    <Check className="w-3.5 h-3.5 text-gray-400 mt-0.5 shrink-0" />
-                    <span className="leading-relaxed">{item}</span>
-                  </li>
-                ))}
-              </ul>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-6">
+        {groups.map(({ key, title, Icon, items }) => (
+          <div key={key}>
+            <div className="flex items-center gap-2.5 mb-3">
+              <Icon className="w-4 h-4 text-gray-700 dark:text-gray-400 shrink-0" />
+              <h4 className="text-[15px] font-semibold text-gray-900 dark:text-white">{title}</h4>
+              <span className="text-xs text-gray-500 dark:text-gray-400">({items.length})</span>
             </div>
-          );
-        })}
+            <ul className="space-y-2 pl-0">
+              {items.map((item, index) => (
+                <li
+                  key={`${key}-${index}`}
+                  className="flex items-start gap-2 text-[14px] text-gray-700 dark:text-gray-300"
+                >
+                  <Check className="w-3.5 h-3.5 text-green-600 mt-0.5 shrink-0" />
+                  <span className="leading-relaxed">{item.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
   );

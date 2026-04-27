@@ -211,12 +211,8 @@ export default function TripComStyleRoomCard({
               )}
             </div>
 
-            {/* Compact bed and occupancy info */}
-            <div className="mt-1 flex items-center justify-between text-xs text-gray-700 dark:text-gray-300">
-              <div className="flex items-center gap-1">
-                {getBedIcon()}
-                <span className="text-xs">1 {room.bedTypeName?.split(' ')[0] || 'bed'}</span>
-              </div>
+            {/* Compact occupancy icons under image */}
+            <div className="mt-1 flex items-center justify-end">
               <div className="flex items-center gap-0.5">
                 {renderPersonIcons()}
               </div>
@@ -224,14 +220,34 @@ export default function TripComStyleRoomCard({
           </div>
 
           {/* Middle: Room Details - Compact */}
-          <div className="flex-1 space-y-1.5">
-            {/* Bed Type Info - Compact */}
+          <div className="flex-1 min-w-0 space-y-2">
+            {/* Guests + size */}
             <div className="text-sm text-gray-700 dark:text-gray-300">
-              <span className="font-medium">{room.adultQty + room.childQty} guests</span>
-              {room.room_size && (
-                <span className="text-gray-500 dark:text-gray-400 text-xs ml-1">({room.room_size}m²)</span>
+              <span className="font-medium">{room.adultQty + room.childQty} {t('roomCard.guests', 'guests')}</span>
+              {room.room_size && Number(room.room_size) > 0 && (
+                <span className="text-gray-500 dark:text-gray-400 text-xs ml-1">({Number(room.room_size)}m²)</span>
               )}
             </div>
+
+            {/* Bed details - one row per bed type */}
+            {Array.isArray(room.bed_details) && room.bed_details.length > 0 ? (
+              <div className="flex flex-col gap-1">
+                {room.bed_details.map((bed, idx) => (
+                  <div key={idx} className="flex items-center gap-1.5 text-sm text-gray-800 dark:text-gray-200">
+                    <BedDouble className="w-4 h-4 text-gray-500 shrink-0" />
+                    <span className="font-medium">
+                      {bed.quantity > 1 ? `${bed.quantity}× ` : ''}
+                      {bed.name || t('roomCard.standardBed', 'Стандарт ор')}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : room.bedTypeName && room.bedTypeName !== 'Unknown' ? (
+              <div className="flex items-center gap-1.5 text-sm text-gray-800 dark:text-gray-200">
+                <BedDouble className="w-4 h-4 text-gray-500 shrink-0" />
+                <span className="font-medium">{room.bedTypeName}</span>
+              </div>
+            ) : null}
 
             {/* Amenities - Compact, horizontal layout */}
             <div className="flex flex-wrap gap-x-3 gap-y-1">

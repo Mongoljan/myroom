@@ -241,6 +241,8 @@ export interface Soum {
 
 export interface CombinedData {
   facilities: Facility[];
+  additionalFacilities: Facility[];
+  activities: Facility[];
   province: Province[];
   soum: Soum[];
   property_types: Array<{
@@ -333,6 +335,9 @@ export interface SearchHotelResult {
   rating_stars: RatingStars;
   google_map: string;
   general_facilities: HotelFacility[];
+  additional_facilities?: HotelFacility[];
+  activities?: HotelFacility[];
+  accessibility_features?: HotelFacility[];
   property_type?: string; // Optional: property type (hotel, apartment, guesthouse)
 }
 
