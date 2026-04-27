@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import BookingStyleHotelCard from './BookingStyleHotelCard';
 import { ApiService } from '@/services/api';
@@ -13,6 +13,7 @@ import PaginationControls from './PaginationControls';
 import { HotelSearchSpinner } from '@/components/ui/magic-spinner';
 import HotelsMapView from './HotelsMapView';
 import { getFacilityName } from '@/utils/facilities';
+import { deriveFacets } from '@/utils/searchFacets';
 
 interface PropertyType {
   id: number;
@@ -423,6 +424,10 @@ export default function SearchResults() {
   const checkIn = searchParams.get('check_in') || '';
   const checkOut = searchParams.get('check_out') || '';
 
+  // Derive available filter facets from current search results so the
+  // sidebar only shows options that exist in this result set, with counts.
+  const facets = useMemo(() => deriveFacets(hotels, apiData), [hotels, apiData]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-900">
@@ -451,8 +456,10 @@ export default function SearchResults() {
                 onClose={() => {}}
                 onFilterChange={handleFilterChange}
                 embedded={true}
-                apiData={apiData}
+                apiData={facets.narrowedApiData}
                 filters={filters}
+                filterCounts={facets.filterCounts}
+                priceBounds={[facets.priceMin, facets.priceMax]}
               />
             </div>
             

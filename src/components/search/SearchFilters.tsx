@@ -85,6 +85,8 @@ interface SearchFiltersProps {
   apiData?: CombinedApiData | null;
   filters?: FilterState;
   filterCounts?: Record<string, number>;
+  /** Min/Max price across current search results, used for the budget slider. */
+  priceBounds?: [number, number];
 }
 
 const STORAGE_KEY = 'hotel_search_filters';
@@ -100,7 +102,7 @@ interface RecentFilter {
   timestamp: number;
 }
 
-export default function SearchFilters({ isOpen, onClose, onFilterChange, embedded = false, apiData, filters: externalFilters, filterCounts = {} }: SearchFiltersProps) {
+export default function SearchFilters({ isOpen, onClose, onFilterChange, embedded = false, apiData, filters: externalFilters, filterCounts = {}, priceBounds }: SearchFiltersProps) {
   const { t } = useHydratedTranslation();
 
   // Remove hardcoded categories - keeping only API-driven filters
@@ -380,6 +382,30 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                     <span className="text-gray-700 dark:text-gray-300 flex-1 truncate">{recentFilter.label}</span>
                   </button>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Budget — derived from current search results */}
+          {priceBounds && priceBounds[1] > priceBounds[0] && (
+            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.budget') || 'Төсөв'}</h4>
+              <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                <span>₮{Math.round((filters.priceRange?.[0] ?? priceBounds[0]) / 1000)}K</span>
+                <span>₮{Math.round((filters.priceRange?.[1] ?? priceBounds[1]) / 1000)}K</span>
+              </div>
+              <input
+                type="range"
+                min={priceBounds[0]}
+                max={priceBounds[1]}
+                step={Math.max(1000, Math.round((priceBounds[1] - priceBounds[0]) / 100))}
+                value={filters.priceRange?.[1] ?? priceBounds[1]}
+                onChange={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt(e.target.value, 10)] })}
+                className="w-full accent-primary-600"
+              />
+              <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-500">
+                <span>Доод: ₮{Math.round(priceBounds[0] / 1000)}K</span>
+                <span>Дээд: ₮{Math.round(priceBounds[1] / 1000)}K</span>
               </div>
             </div>
           )}
