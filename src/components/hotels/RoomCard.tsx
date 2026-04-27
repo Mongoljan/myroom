@@ -86,7 +86,7 @@ export default function RoomCard({
           </h3>
           {room.number_of_rooms_to_sell > 0 && room.number_of_rooms_to_sell <= 5 && (
             <span className="text-xs font-semibold text-red-600 dark:text-red-400">
-              {t('roomCard.lastRooms', 'Сүүлийн {{count}} өрөө', { count: room.number_of_rooms_to_sell })}
+              {t('roomCard.lastRooms', { count: room.number_of_rooms_to_sell, defaultValue: 'Сүүлийн {{count}} өрөө' })}
             </span>
           )}
         </div>
@@ -280,7 +280,7 @@ export default function RoomCard({
 
             {remainingQuantity > 0 && remainingQuantity <= 3 && (
               <p className="text-[11px] text-orange-600 mt-1.5 font-medium">
-                {t('roomCard.onlyLeft', 'Зөвхөн {{count}} өрөө үлдсэн', { count: remainingQuantity })}
+                {t('roomCard.onlyLeft', { count: remainingQuantity, defaultValue: 'Зөвхөн {{count}} өрөө үлдсэн' })}
               </p>
             )}
           </div>
