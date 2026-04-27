@@ -1,0 +1,25 @@
+{
+  "name": "MyRoom - Зочид буудал захиалгын платформ",
+  "short_name": "MyRoom",
+  "description": "Дэлхийн өнцөг булан бүрээс зочид буудал олж, шууд захиалга хийгээрэй.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "lang": "mn-MN",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/img/general/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

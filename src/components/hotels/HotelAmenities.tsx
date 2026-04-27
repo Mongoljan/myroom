@@ -25,8 +25,8 @@ import {
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface HotelAmenitiesProps {
-  amenities?: string[];
-  facilities?: string[];
+  amenities?: import('@/types/api').HotelFacility[];
+  facilities?: import('@/types/api').HotelFacility[];
 }
 
 // Category mapping - categorize facilities by type
@@ -113,7 +113,14 @@ export default function HotelAmenities({ amenities, facilities }: HotelAmenities
   const { t } = useHydratedTranslation();
 
   // Use facilities if provided, otherwise use amenities, fallback to empty array
-  const items = facilities || amenities || [];
+  const rawItems = facilities || amenities || [];
+  const items = rawItems
+    .map((item) =>
+      typeof item === 'string'
+        ? item
+        : item?.name_mn || item?.name_en || ''
+    )
+    .filter((s): s is string => Boolean(s));
 
   // If no amenities/facilities, don't render anything
   if (items.length === 0) {

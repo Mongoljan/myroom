@@ -12,6 +12,7 @@ import NoResultsState from './NoResultsState';
 import PaginationControls from './PaginationControls';
 import { HotelSearchSpinner } from '@/components/ui/magic-spinner';
 import HotelsMapView from './HotelsMapView';
+import { getFacilityName } from '@/utils/facilities';
 
 interface PropertyType {
   id: number;
@@ -301,7 +302,7 @@ export default function SearchResults() {
 
         return selectedFeatureNames.some(featureName =>
           hotel.general_facilities.some(facility =>
-            facility.toLowerCase().includes(featureName.toLowerCase())
+            getFacilityName(facility, 'en').toLowerCase().includes(featureName.toLowerCase())
           )
         );
       });
@@ -317,7 +318,7 @@ export default function SearchResults() {
 
         return selectedServiceNames.some(serviceName =>
           hotel.general_facilities.some(facility =>
-            facility.toLowerCase().includes(serviceName.toLowerCase())
+            getFacilityName(facility, 'en').toLowerCase().includes(serviceName.toLowerCase())
           )
         );
       });
@@ -333,7 +334,7 @@ export default function SearchResults() {
 
         return selectedOutdoorNames.some(outdoorName =>
           hotel.general_facilities.some(facility =>
-            facility.toLowerCase().includes(outdoorName.toLowerCase())
+            getFacilityName(facility, 'en').toLowerCase().includes(outdoorName.toLowerCase())
           )
         );
       });

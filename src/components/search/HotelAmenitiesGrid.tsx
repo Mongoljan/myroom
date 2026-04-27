@@ -3,9 +3,11 @@
 import { motion } from 'framer-motion';
 import { Wifi, Car, Utensils, Users, Dumbbell, Waves, Bath, Coffee, Shield, Star, Clock, MapPin } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import type { HotelFacility } from '@/types/api';
+import { getFacilityName } from '@/utils/facilities';
 
 interface HotelAmenitiesGridProps {
-  amenities: string[];
+  amenities: HotelFacility[];
   viewMode: 'list' | 'grid';
   className?: string;
 }
@@ -47,10 +49,11 @@ export default function HotelAmenitiesGrid({
     return IconComponent;
   };
 
-  const displayAmenities = viewMode === 'list' ? amenities.slice(0, 6) : amenities.slice(0, 4);
-  const remainingCount = amenities.length - displayAmenities.length;
+  const amenityNames = amenities.map((a) => getFacilityName(a)).filter(Boolean);
+  const displayAmenities = viewMode === 'list' ? amenityNames.slice(0, 6) : amenityNames.slice(0, 4);
+  const remainingCount = amenityNames.length - displayAmenities.length;
 
-  if (amenities.length === 0) {
+  if (amenityNames.length === 0) {
     return null;
   }
 
@@ -104,7 +107,7 @@ export default function HotelAmenitiesGrid({
       </div>
 
       {/* Additional info for list view */}
-      {viewMode === 'list' && amenities.length > 0 && (
+      {viewMode === 'list' && amenityNames.length > 0 && (
         <div className="mt-3 pt-3 border-t border-slate-100">
           <div className="text-xs text-slate-600">
             <div className="flex items-center gap-1 mb-1">
@@ -122,7 +125,7 @@ export default function HotelAmenitiesGrid({
       {/* Popular amenities highlight for grid view */}
       {viewMode === 'grid' && (
         <div className="mt-2 text-xs text-slate-500">
-          {amenities.includes('Wi-Fi') && amenities.includes('Зогсоол') ? (
+          {amenityNames.includes('Wi-Fi') && amenityNames.includes('Зогсоол') ? (
             <div className="flex items-center gap-1">
               <Star className="w-3 h-3 text-yellow-500" />
               <span>{t('amenitiesLabels.popularChoice')}</span>

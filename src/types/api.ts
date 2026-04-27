@@ -312,6 +312,15 @@ export interface RatingStars {
   value: string;
 }
 
+export interface FacilityObject {
+  id: number;
+  name_en?: string;
+  name_mn?: string;
+  is_highlight?: boolean;
+}
+
+export type HotelFacility = string | FacilityObject;
+
 export interface SearchHotelResult {
   hotel_id: number;
   property_name: string;
@@ -323,7 +332,7 @@ export interface SearchHotelResult {
   images: HotelImages;
   rating_stars: RatingStars;
   google_map: string;
-  general_facilities: string[];
+  general_facilities: HotelFacility[];
   property_type?: string; // Optional: property type (hotel, apartment, guesthouse)
 }
 

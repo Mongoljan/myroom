@@ -10,6 +10,7 @@ import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import GoogleMapModal from '@/components/common/GoogleMapModal';
 import HotelImageGallery from './HotelImageGallery';
+import { getFacilityName, getFacilityKey } from '@/utils/facilities';
 
 interface HotelCardProps {
   hotel: SearchHotelResult;
@@ -388,8 +389,8 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                   <div className="mb-1.5">
                     <div className="flex flex-wrap gap-1 max-h-[28px] overflow-hidden">
                       {hotel.general_facilities.slice(0, 3).map((facility, index) => (
-                        <span key={index} className="inline-flex items-center text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 truncate max-w-[120px]">
-                          {facility}
+                        <span key={getFacilityKey(facility, index)} className="inline-flex items-center text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 truncate max-w-[120px]">
+                          {getFacilityName(facility)}
                         </span>
                       ))}
                       {hotel.general_facilities.length > 3 && (
@@ -436,10 +437,10 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                               {hotel.general_facilities.map((facility, index) => (
                                 <div
-                                  key={index}
+                                  key={getFacilityKey(facility, index)}
                                   className="flex items-center text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 rounded px-3 py-2 border border-gray-200 dark:border-gray-600"
                                 >
-                                  {facility}
+                                  {getFacilityName(facility)}
                                 </div>
                               ))}
                             </div>
@@ -575,8 +576,8 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
           {hotel.general_facilities && hotel.general_facilities.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2">
               {hotel.general_facilities.slice(0, 2).map((facility, index) => (
-                <span key={index} className={`${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.DESCRIPTION_SMALL} ${SEARCH_DESIGN_SYSTEM.COLORS.BG_GRAY_LIGHT} ${SEARCH_DESIGN_SYSTEM.RADIUS.SMALL} px-1 py-0.5`}>
-                  {facility}
+                <span key={getFacilityKey(facility, index)} className={`${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.DESCRIPTION_SMALL} ${SEARCH_DESIGN_SYSTEM.COLORS.BG_GRAY_LIGHT} ${SEARCH_DESIGN_SYSTEM.RADIUS.SMALL} px-1 py-0.5`}>
+                  {getFacilityName(facility)}
                 </span>
               ))}
             </div>
