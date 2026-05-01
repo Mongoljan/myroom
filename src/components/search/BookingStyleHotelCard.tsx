@@ -299,7 +299,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
               <div className="flex justify-between items-start mb-1">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
+                    <h3 className="text-h3 font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
                       {hotel.property_name}
                     </h3>
                     {stars > 0 && (
@@ -416,7 +416,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                           onClick={(e) => e.stopPropagation()}
                         >
                             <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            <h3 className="text-h3 font-semibold text-gray-900 dark:text-white">
                               {t('hotel.allFacilities', 'Бүх тохижилт')}
                             </h3>
                             <button
@@ -464,12 +464,12 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                             </div>
                           </div>
                           {/* Discounted Price Per Night - Bold */}
-                          <div className="text-xl font-bold text-gray-900 dark:text-white text-end">
+                          <div className="text-h2 font-bold text-gray-900 dark:text-white text-end">
                             {formatPrice(pricingInfo.pricePerNight)} ₮
                           </div>
                         </div>
                       ) : (
-                        <div className="text-xl font-bold text-gray-900 dark:text-white text-end">
+                        <div className="text-h2 font-bold text-gray-900 dark:text-white text-end">
                           {formatPrice(pricingInfo.pricePerNight)} ₮
                         </div>
                       )}

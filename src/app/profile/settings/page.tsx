@@ -127,7 +127,7 @@ export default function SettingsPage() {
       <div className="px-6 py-5">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            <h1 className="text-h2 font-semibold text-gray-900 dark:text-gray-100">
               {t('settings.title', 'Settings')}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">

@@ -68,10 +68,10 @@ export default function HotelPricingSection({
       {/* Pricing */}
       <div className="space-y-2 mb-4">
         <div className="flex items-baseline gap-2">
-          <span className="text-2xl font-bold text-slate-900 dark:text-white">
+          <span className="text-h1 font-bold text-slate-900 dark:text-white">
             {formatPrice(cheapestRoom.price_per_night)}
           </span>
-          <span className="text-sm text-slate-600 dark:text-slate-400">/ {t('hotel.night')}</span>
+          <span className="text-body-md text-slate-600 dark:text-slate-400">/ {t('hotel.night')}</span>
         </div>
 
         {cheapestRoom.nights > 1 && (

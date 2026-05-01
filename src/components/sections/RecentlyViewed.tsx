@@ -130,7 +130,7 @@ export default function RecentlyViewed() {
   }
 
   return (
-    <section className="py-6">
+    <section className="py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -139,8 +139,8 @@ export default function RecentlyViewed() {
           className="mb-4"
         >
           <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-0.5">{t('hotel.recentlyViewed')}</h2>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
+            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1">{t('hotel.recentlyViewed')}</h2>
+            <p className="text-caption text-gray-500 dark:text-gray-400">
               {t('hotel.recentlyViewedCount', { count: recentHotels.length })}
             </p>
           </div>

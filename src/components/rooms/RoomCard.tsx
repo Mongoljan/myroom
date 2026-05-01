@@ -167,7 +167,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
       <div className="p-6 space-y-4">
         {/* Header */}
         <div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+          <h3 className="text-h3 font-semibold text-gray-900 dark:text-white mb-1">
             {room.room_Description}
           </h3>
           <div className="flex items-center gap-4 text-sm text-slate-900 mb-2 font-medium">
@@ -241,7 +241,7 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
         {/* Pricing and Booking */}
         <div className="border-t pt-4 flex items-center justify-between">
           <div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="text-h1 font-bold text-gray-900 dark:text-white">
               {basePrice > 0 ? formatCurrency(basePrice) : ''}
             </div>
             <div className="text-sm text-gray-800">{t('hotel.perNight', 'per night')}</div>

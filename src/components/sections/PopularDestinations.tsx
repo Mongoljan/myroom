@@ -21,17 +21,17 @@ export default function PopularDestinations() {
   ];
 
   return (
-    <section className="py-6">
+    <section className="py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-4"
+          className="mb-6"
         >
-          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-1`}>{t('home.popularDestinationsTitle')}</h2>
-          <p className={`${text.caption} text-gray-600 dark:text-gray-400`}>{t('home.popularDestinationsSubtitle')}</p>
+          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-2`}>{t('home.popularDestinationsTitle')}</h2>
+          <p className={`${text.bodyMd} text-gray-500 dark:text-gray-400`}>{t('home.popularDestinationsSubtitle')}</p>
         </motion.div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">

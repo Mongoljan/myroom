@@ -60,7 +60,7 @@ export default function BookingSummary({
 
       <div className="text-center mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
         <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('bookingExtra.totalPrice')}</div>
-        <div className="text-2xl font-bold text-gray-900 dark:text-white">₮{totalPriceWithNights.toLocaleString()}</div>
+        <div className="text-h1 font-bold text-gray-900 dark:text-white">₮{totalPriceWithNights.toLocaleString()}</div>
         <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           ₮{totalPrice.toLocaleString()} × {nights} {nights !== 1 ? t('bookingExtra.nights') : t('bookingExtra.night')}
         </div>

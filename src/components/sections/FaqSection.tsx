@@ -1,6 +1,7 @@
 "use client";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
+import { text } from '@/styles/design-system';
 import { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Plus, Minus, ChevronDown } from 'lucide-react';
@@ -68,16 +69,16 @@ export default function FaqSection() {
   };
 
   return (
-    <section className="py-6">
+    <section className="py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          className="text-center mb-4"
+          className="text-center mb-6"
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
           viewport={{ once: true }}
         >
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-2`}>
             {t('faq.title', 'Frequently Asked Questions')}
           </h2>
         </motion.div>

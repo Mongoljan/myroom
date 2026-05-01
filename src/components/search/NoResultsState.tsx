@@ -19,7 +19,7 @@ export default function NoResultsState({ searchParams }: NoResultsStateProps) {
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-slate-50 dark:bg-slate-800 rounded-full -z-10 animate-pulse"></div>
         </div>
 
-        <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-h1 font-bold text-gray-900 dark:text-white mb-4">
           {t('hotel.noResults')}
         </h3>
 

@@ -62,7 +62,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white text-center mb-2">
+          <h2 className="text-h1 font-bold text-gray-900 dark:text-white text-center mb-2">
             {t('AuthLogin.signIn', 'Sign in to your account')}
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 text-center">

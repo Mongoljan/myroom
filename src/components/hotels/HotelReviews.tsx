@@ -48,11 +48,11 @@ export default function HotelReviews({ rating, reviewCount }: Omit<HotelReviewsP
     <div className="space-y-6">
       {/* Reviews Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">{t('hotel.reviews', 'Reviews')}</h2>
+        <h2 className="text-h2 font-semibold">{t('hotel.reviews', 'Reviews')}</h2>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
             <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-            <span className="text-xl font-bold">{rating}</span>
+            <span className="text-h2 font-bold">{rating}</span>
           </div>
           <div className="text-gray-800 dark:text-gray-300">
             <span className="font-medium">{getRatingText(rating)}</span>

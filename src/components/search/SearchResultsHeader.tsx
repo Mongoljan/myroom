@@ -88,9 +88,9 @@ export default function SearchResultsHeader({
           <div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 ">
             <div className="flex-1">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+              <h1 className="text-h2 font-bold text-gray-900 dark:text-white mb-1">
                 {searchLocation ? `${searchLocation}` : t('hotel.title')}:
-                <span className="text-xl font-bold text-gray-900 dark:text-white"> {filteredCount}</span>
+                <span className="text-h2 font-bold text-gray-900 dark:text-white"> {filteredCount}</span>
               </h1>
 
               {/* Show on Map Button */}

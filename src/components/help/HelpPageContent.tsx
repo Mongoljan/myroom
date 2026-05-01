@@ -150,7 +150,7 @@ export default function HelpPageContent() {
             transition={{ duration: 0.5 }}
             className="text-center mb-6"
           >
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1">
               Түгээмэл асуултууд
             </h2>
             <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>
@@ -307,7 +307,7 @@ export default function HelpPageContent() {
             transition={{ duration: 0.5 }}
             className="text-center mb-6"
           >
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1">
               Видео заавар
             </h2>
             <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>
@@ -356,7 +356,7 @@ export default function HelpPageContent() {
             <div className="absolute inset-0 bg-gradient-to-br from-slate-500/5 via-teal-500/5 to-slate-500/5 -z-10" />
 
             <div className="text-center mb-6">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+              <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1">
                 Холбоо барих
               </h2>
               <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>

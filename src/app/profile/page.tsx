@@ -90,7 +90,7 @@ export default function ProfilePage() {
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
       {/* Header */}
       <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{t('Profile.title', 'Таны профайл')}</h1>
+        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white">{t('Profile.title', 'Таны профайл')}</h1>
         {lastModified && (
           <p className="text-sm text-gray-400 mt-0.5">{t('Profile.lastModified', 'Сүүлд өөрчилсөн')}: {lastModified}</p>
         )}

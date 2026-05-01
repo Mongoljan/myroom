@@ -66,7 +66,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
         className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6"
       >
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">{t('booking.manage.changeDatesTitle', 'Өдөр солих')}</h3>
+          <h3 className="text-h2 font-bold text-gray-900 dark:text-white">{t('booking.manage.changeDatesTitle', 'Өдөр солих')}</h3>
           <button
             onClick={onClose}
             className="text-gray-900 dark:text-white hover:text-gray-800 text-2xl"
@@ -249,7 +249,7 @@ export default function ManageBookingContent() {
         >
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+            <h1 className="text-h1 font-bold text-gray-900 dark:text-white mb-2">
               {t('booking.manage.title', 'Захиалгаа удирдах')}
             </h1>
             <p className="text-gray-800">
@@ -326,7 +326,7 @@ export default function ManageBookingContent() {
               {/* Summary */}
               <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('booking.manage.bookingSummary', 'Захиалгын тойм')}</h2>
+                  <h2 className="text-h2 font-bold text-gray-900 dark:text-white">{t('booking.manage.bookingSummary', 'Захиалгын тойм')}</h2>
                   <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(bookingData.status)}`}>
                     {getStatusIcon(bookingData.status)}
                     {bookingData.status.charAt(0).toUpperCase() + bookingData.status.slice(1)}
@@ -401,7 +401,7 @@ export default function ManageBookingContent() {
 
               {/* Individual Bookings */}
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('booking.manage.roomReservations', 'Өрөөний захиалга')}</h2>
+                <h2 className="text-h2 font-bold text-gray-900 dark:text-white">{t('booking.manage.roomReservations', 'Өрөөний захиалга')}</h2>
                 {bookingData.bookings.map((booking, index) => (
                   <motion.div
                     key={booking.id}
@@ -431,7 +431,7 @@ export default function ManageBookingContent() {
                           </div>
                         </div>
 
-                        <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                        <div className="text-h3 font-semibold text-gray-900 dark:text-white">
                           {formatCurrency(booking.total_price)}
                         </div>
                       </div>

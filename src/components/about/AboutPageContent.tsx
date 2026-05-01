@@ -105,7 +105,7 @@ export default function AboutPageContent() {
                     <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-slate-900 mb-6">
                       <Icon className="w-6 h-6 text-white" />
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 leading-snug">
+                    <h3 className="text-h3 font-bold text-gray-900 dark:text-white mb-3 leading-snug">
                       {feature.title}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -173,7 +173,7 @@ export default function AboutPageContent() {
                       <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/10 mb-3">
                         <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
+                      <div className="text-h1 font-bold text-white mb-1">{stat.value}</div>
                       <div className="text-sm text-gray-400">{stat.label}</div>
                     </motion.div>
                   );

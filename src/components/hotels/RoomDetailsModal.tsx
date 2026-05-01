@@ -83,7 +83,7 @@ export default function RoomDetailsModal({ open, onOpenChange, room }: RoomDetai
           {/* Header */}
           <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-slate-200 dark:border-slate-700">
             <div className="min-w-0">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white truncate">{room.roomTypeName}</h2>
+              <h2 className="text-h3 font-bold text-gray-900 dark:text-white truncate">{room.roomTypeName}</h2>
               {room.roomCategoryName && room.roomCategoryName !== 'Unknown' && (
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{room.roomCategoryName}</p>
               )}

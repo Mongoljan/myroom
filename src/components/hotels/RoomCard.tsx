@@ -243,7 +243,7 @@ export default function RoomCard({
             )}
             {priceOptions ? (
               <div className="flex items-baseline gap-1.5">
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                <span className="text-h1 font-bold text-gray-900 dark:text-white">
                   ₮{priceOptions.basePrice.toLocaleString()}
                 </span>
                 <span className="text-sm text-gray-500 dark:text-gray-400">/ {t('roomCard.night', 'шөнө')}</span>

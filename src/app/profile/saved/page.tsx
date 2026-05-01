@@ -56,7 +56,7 @@ export default function SavedPage() {
       <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            <h1 className="text-h2 font-semibold text-gray-900 dark:text-gray-100">
               {t('saved.title', 'Saved Hotels')}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -161,7 +161,7 @@ export default function SavedPage() {
                       <div className="flex items-start gap-2">
                         {item.hotel.min_price && (
                           <div className="text-right">
-                            <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                            <div className="text-h3 font-semibold text-gray-900 dark:text-gray-100">
                               {formatPrice(item.hotel.min_price)}
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">

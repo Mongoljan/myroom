@@ -26,7 +26,7 @@ function StatCard({ icon, label, value, trend, trendUp }: StatCardProps) {
         )}
       </div>
       <div className="mt-3">
-        <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
+        <p className="text-h1 font-bold text-gray-900 dark:text-white">{value}</p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{label}</p>
       </div>
     </div>

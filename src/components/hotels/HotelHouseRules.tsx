@@ -38,7 +38,7 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
     return (
       <section id="house-rules" className="">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-h2 font-semibold text-gray-900 dark:text-white">
             {t('houseRules.title', 'Дотоод журам')}
           </h2>
         </div>
@@ -54,7 +54,7 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
     return (
       <section id="house-rules" className="">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-h2 font-semibold text-gray-900 dark:text-white">
             {t('houseRules.title', 'Дотоод журам')}
           </h2>
         </div>
@@ -76,7 +76,7 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
   return (
     <section id="house-rules" className="">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+        <h2 className="text-h2 font-semibold text-gray-900 dark:text-white">
           {t('houseRules.title', 'Дотоод журам')}
         </h2>
       </div>

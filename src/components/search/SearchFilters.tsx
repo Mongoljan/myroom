@@ -122,7 +122,7 @@ export default function SearchFilters({
     return (
       <>
         <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
+          <h3 className="text-h3 font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
 
           {/* Active filter chips */}
           {activeFilterChips.length > 0 && (
@@ -541,7 +541,7 @@ export default function SearchFilters({
         <div className="fixed top-0 left-0 h-full w-80 bg-white dark:bg-gray-800 shadow-xl overflow-y-auto">
           <div className="p-4">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h2>
+              <h2 className="text-h3 font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h2>
               <button
                 onClick={onClose}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"

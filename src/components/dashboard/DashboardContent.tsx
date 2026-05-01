@@ -39,7 +39,7 @@ export default function DashboardContent() {
               <p className="text-xs font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500 mb-2">
                 Самбар
               </p>
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+              <h1 className="text-h1 font-bold tracking-tight text-gray-900 dark:text-white">
                 Сайн байна уу, {user.first_name || 'Хэрэглэгч'}
               </h1>
               {!user.is_verified && (

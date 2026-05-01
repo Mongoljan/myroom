@@ -55,7 +55,7 @@ export default function PromoPage() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="px-6 pt-6 pb-0">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-5">Промо код</h1>
+        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white mb-5">Промо код</h1>
 
         {/* Add promo input */}
         <form onSubmit={handleAdd} className="flex gap-2 mb-5 max-w-lg">

@@ -138,7 +138,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
   if (loading) {
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('similarHotels.title')}</h2>
+        <h2 className="text-h2 font-semibold text-gray-900 dark:text-white">{t('similarHotels.title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, index) => (
             <div key={index} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse">
@@ -164,7 +164,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('similarHotels.title')}</h2>
+      <h2 className="text-h2 font-semibold text-gray-900 dark:text-white">{t('similarHotels.title')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {uniqueHotels.map((hotel, index) => (
           <Link key={`${hotel.hotel_id}-${index}`} href={`/hotel/${hotel.hotel_id}`}>

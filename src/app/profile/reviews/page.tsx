@@ -191,7 +191,7 @@ export default function ReviewsPage() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="px-6 pt-6 pb-0">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-5">{t('reviews.title', 'Сэтгэгдлүүд')}</h1>
+        <h1 className="text-h2 font-semibold text-gray-900 dark:text-gray-100 mb-5">{t('reviews.title', 'Сэтгэгдлүүд')}</h1>
 
         {/* Tabs */}
         <div className="flex gap-0 border-b border-gray-100 dark:border-gray-700">
@@ -400,7 +400,7 @@ export default function ReviewsPage() {
 
                       {/* Hotel and booking details */}
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                        <h3 className="text-h3 font-semibold text-gray-900 dark:text-white mb-2">
                           {booking.hotel_name}
                         </h3>
                         <div className="space-y-2 mb-4">
@@ -418,7 +418,7 @@ export default function ReviewsPage() {
                       {/* Price and actions */}
                       <div className="text-right">
                         <div className="mb-4">
-                          <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                          <div className="text-h1 font-bold text-gray-900 dark:text-white">
                             {booking.total_price.toLocaleString('mn-MN')} ₮
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -454,7 +454,7 @@ export default function ReviewsPage() {
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <h2 className="text-h3 font-semibold text-gray-900 dark:text-white">
                   {t('reviews.rateExperience', 'Rate Your Experience')}
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">

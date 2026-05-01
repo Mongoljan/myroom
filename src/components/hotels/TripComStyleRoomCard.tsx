@@ -284,7 +284,7 @@ export default function TripComStyleRoomCard({
 
               {/* Current Price Per Night - Compact */}
               <div className="text-right">
-                <div className="text-lg font-bold text-gray-900 dark:text-white">
+                <div className="text-h3 font-bold text-gray-900 dark:text-white">
                   ₮{priceOptions.basePrice.toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">

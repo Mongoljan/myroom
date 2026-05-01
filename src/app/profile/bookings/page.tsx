@@ -87,7 +87,7 @@ export default function BookingsPage() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="px-6 pt-6 pb-0">
-        <h1 className="text-xl font-semibold text-gray-900 dark:text-white mb-5">Захиалгын түүх</h1>
+        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white mb-5">Захиалгын түүх</h1>
 
         {/* Status tabs */}
         <div className="flex gap-1 overflow-x-auto">

@@ -96,7 +96,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
         <div className="space-y-6">
           {/* Rooms Section */}
           <div id="rooms" className="">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{t('hotelDetails.selectRoom', 'Өрөө сонгох')}</h2>
+            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-4">{t('hotelDetails.selectRoom', 'Өрөө сонгох')}</h2>
             <ImprovedHotelRoomsSection
               hotelId={hotel.hotel_id}
               hotelName={hotel.property_name}
@@ -112,7 +112,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
 
           {/* Facilities Section */}
           <div id="facilities" className="">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">{t('hotelDetails.facilities', 'Үйлчилгээ')}</h2>
+            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-4">{t('hotelDetails.facilities', 'Үйлчилгээ')}</h2>
             <HotelAmenities
               generalFacilities={generalFacilities}
               additionalFacilities={additionalFacilities}
@@ -125,7 +125,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
 
         {/* Similar Hotels */}
         <div className="mt-8">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{t('hotelDetails.similarHotels', 'Төстэй зочид буудлууд')}</h2>
+          <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-4">{t('hotelDetails.similarHotels', 'Төстәй зочид буудлууд')}</h2>
           <SimilarHotels currentHotelId={hotel.hotel_id.toString()} />
         </div>
       </div>

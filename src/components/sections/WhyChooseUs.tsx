@@ -69,7 +69,7 @@ export default function WhyChooseUs() {
   return (
     <section
       ref={containerRef}
-      className="relative py-6 overflow-hidden"
+      className="relative py-10 overflow-hidden"
     > 
       {/* Background gradient blur effects */}
       <div className="absolute inset-0 -z-10">
@@ -87,9 +87,9 @@ export default function WhyChooseUs() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-4"
+          className="text-center mb-6"
         >
-          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-1`}>
+          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-2`}>
             {t('features.title', 'Таны аялалыг тав тухтай болгох')}
           </h2>
           <p className={`${text.caption} text-gray-600 dark:text-gray-400`}>{t('features.whyChooseUs', 'Яагаад бид вэ?')}</p>

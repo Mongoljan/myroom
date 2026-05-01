@@ -143,7 +143,7 @@ export default function EmailVerificationModal({ isOpen, onClose, onVerified }: 
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-h3 font-semibold text-gray-900 dark:text-white">
             {t('dashboard.emailVerification')}
           </h2>
           <button

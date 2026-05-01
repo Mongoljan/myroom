@@ -444,7 +444,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           {/* Left: Hotel Name with Star Rating and Location */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{hotelName}</h1>
+              <h1 className="text-h1 font-bold text-gray-900 dark:text-white">{hotelName}</h1>
               {/* Star Rating next to name */}
               <div className="flex items-center gap-1">
                 {[...Array(starRating)].map((_, i) => (
@@ -501,7 +501,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                       </span>
                     </>
                   )}
-                  <span className="text-lg font-bold text-slate-900 dark:text-white">
+                  <span className="text-h3 font-bold text-slate-900 dark:text-white">
                     ₮{priceInfo.current.toLocaleString()}
                   </span>
                   <span className="text-sm text-gray-600 dark:text-gray-400">/{t('hotelDetails.night', 'шөнө')}</span>
@@ -707,7 +707,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg">
-                  <span className="text-lg font-bold">
+                  <span className="text-h3 font-bold">
                     {parseFloat(hotel.rating_stars.value).toFixed(1)}
                   </span>
                 </div>
@@ -731,7 +731,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
               </h3>
             </div>
             <div className="flex items-center gap-2">
-              <div className="text-2xl font-bold text-gray-300 dark:text-gray-600">—</div>
+              <div className="text-h1 font-bold text-gray-300 dark:text-gray-600">—</div>
               <div className="text-sm text-gray-400 dark:text-gray-500">{t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}</div>
             </div>
           </div>
@@ -800,7 +800,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
         {additionalInfo?.About && (
           <div className="flex-1 min-w-0 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex flex-col">
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
+              <h2 className="text-h3 font-semibold text-gray-900 dark:text-white">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
               <button
                 onClick={() => setShowAboutModal(true)}
                 className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium shrink-0 ml-4"
@@ -873,7 +873,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
       })()}
       <Dialog open={showAboutModal} onOpenChange={setShowAboutModal}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+          <DialogTitle className="text-h3 font-semibold text-gray-900 dark:text-white mb-1">
             {t('hotelDetails.aboutProperty', 'Тухай')}
           </DialogTitle>
           {basicInfo && (

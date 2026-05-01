@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { text } from '@/styles/design-system';
 
 const partners = [
   { name: "Partner 1", logo: "/img/clients/1.svg" },
@@ -18,16 +19,16 @@ export default function Partnerships() {
 
   return (
     <>
-      <section className="py-6 relative">
+        <section className="py-10 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-4"
+            className="text-center mb-6"
           >
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+            <h2 className={`${text.h2} text-gray-900 dark:text-white`}>
               {t('partnerships.title', 'Хамтрагч байгууллагууд')}
             </h2>
           </motion.div>

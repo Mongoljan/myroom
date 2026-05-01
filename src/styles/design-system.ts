@@ -375,27 +375,46 @@ export const DESIGN_SYSTEM = {
 // ============================================
 
 /**
- * Combines typography classes for easy use
+ * MYROOM TEXT UTILITIES — the single source-of-truth for typography classes.
+ *
+ * All sizes map to CSS custom properties defined in design-tokens.css via the
+ * @theme block in globals.css, so editing --ds-h2 etc. cascades everywhere.
+ *
+ * Hierarchy:
+ *   display  → 32px  hero headlines
+ *   h1       → 26px  page-level title (hotel detail page name, etc.)
+ *   h2       → 20px  section headings (Санал болгох, Алдартай байршлүүд…)
+ *   h3       → 17px  card / modal headings
+ *   h4       → 15px  small headings, secondary labels
+ *   body-lg  → 15px  lead / important body copy
+ *   body-md  → 14px  standard body text
+ *   caption  → 13px  meta info, location labels
+ *   label    → 12px  badges, tags, tiny UI text
  */
 export const text = {
-  // Display
-  displayLg: `${DESIGN_SYSTEM.typography.scale.display.large.size} ${DESIGN_SYSTEM.typography.scale.display.large.lineHeight} ${DESIGN_SYSTEM.typography.scale.display.large.weight} ${DESIGN_SYSTEM.typography.scale.display.large.letterSpacing}`,
-  displayMd: `${DESIGN_SYSTEM.typography.scale.display.medium.size} ${DESIGN_SYSTEM.typography.scale.display.medium.lineHeight} ${DESIGN_SYSTEM.typography.scale.display.medium.weight} ${DESIGN_SYSTEM.typography.scale.display.medium.letterSpacing}`,
-  displaySm: `${DESIGN_SYSTEM.typography.scale.display.small.size} ${DESIGN_SYSTEM.typography.scale.display.small.lineHeight} ${DESIGN_SYSTEM.typography.scale.display.small.weight} ${DESIGN_SYSTEM.typography.scale.display.small.letterSpacing}`,
+  // ─── Display (hero only) ────────────────────────────────────────
+  displayLg: 'text-4xl sm:text-5xl font-bold tracking-tight leading-none',
+  displayMd: 'text-3xl sm:text-4xl font-bold tracking-tight leading-tight',
+  displaySm: 'text-display font-bold tracking-tight leading-tight',
 
-  // Headings
-  h1: `${DESIGN_SYSTEM.typography.scale.heading.h1.size} ${DESIGN_SYSTEM.typography.scale.heading.h1.lineHeight} ${DESIGN_SYSTEM.typography.scale.heading.h1.weight} ${DESIGN_SYSTEM.typography.scale.heading.h1.letterSpacing}`,
-  h2: `${DESIGN_SYSTEM.typography.scale.heading.h2.size} ${DESIGN_SYSTEM.typography.scale.heading.h2.lineHeight} ${DESIGN_SYSTEM.typography.scale.heading.h2.weight} ${DESIGN_SYSTEM.typography.scale.heading.h2.letterSpacing}`,
-  h3: `${DESIGN_SYSTEM.typography.scale.heading.h3.size} ${DESIGN_SYSTEM.typography.scale.heading.h3.lineHeight} ${DESIGN_SYSTEM.typography.scale.heading.h3.weight}`,
-  h4: `${DESIGN_SYSTEM.typography.scale.heading.h4.size} ${DESIGN_SYSTEM.typography.scale.heading.h4.lineHeight} ${DESIGN_SYSTEM.typography.scale.heading.h4.weight}`,
+  // ─── Standard heading hierarchy ─────────────────────────────────
+  /** Page-level title — hotel name on detail page, search result count */
+  h1: 'text-h1 font-bold leading-tight tracking-tight',
+  /** Section headings — all home-page sections must use this */
+  h2: 'text-h2 font-semibold leading-snug tracking-tight',
+  /** Card / modal headings */
+  h3: 'text-h3 font-semibold leading-snug',
+  /** Small headings, card labels */
+  h4: 'text-h4 font-medium leading-normal',
 
-  // Body
-  bodyLg: `${DESIGN_SYSTEM.typography.scale.body.large.size} ${DESIGN_SYSTEM.typography.scale.body.large.lineHeight}`,
-  bodyMd: `${DESIGN_SYSTEM.typography.scale.body.medium.size} ${DESIGN_SYSTEM.typography.scale.body.medium.lineHeight}`,
-  bodySm: `${DESIGN_SYSTEM.typography.scale.body.small.size} ${DESIGN_SYSTEM.typography.scale.body.small.lineHeight}`,
+  // ─── Body text ──────────────────────────────────────────────────
+  bodyLg: 'text-body-lg leading-relaxed',
+  bodyMd: 'text-body-md leading-relaxed',
+  bodySm: 'text-body-md leading-normal',
 
-  // Caption
-  caption: `${DESIGN_SYSTEM.typography.scale.caption.size} ${DESIGN_SYSTEM.typography.scale.caption.lineHeight}`,
+  // ─── Small / meta text ──────────────────────────────────────────
+  caption: 'text-caption leading-normal',
+  label:   'text-label font-medium',
 };
 
 export default DESIGN_SYSTEM;

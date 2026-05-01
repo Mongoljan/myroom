@@ -50,8 +50,8 @@ export default function HotelInfo({
       <div>
         <motion.h3
           whileHover={{ scale: 1.01 }}
-          className={`font-bold text-slate-900 dark:text-white leading-tight line-clamp-2 ${
-            viewMode === 'list' ? 'text-xl mb-2' : 'text-lg mb-2'
+          className={`font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 mb-1.5 ${
+            viewMode === 'list' ? 'text-h2' : 'text-h3'
           }`}
         >
           {name}

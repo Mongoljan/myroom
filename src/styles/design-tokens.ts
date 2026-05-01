@@ -131,19 +131,19 @@ export const ds = {
     displayMd: text.displayMd,
     displaySm: text.displaySm,
 
-    // Headings (Modern: smaller, tighter)
-    h1: 'text-2xl font-bold tracking-tight',    // 24px - Page titles
-    h2: 'text-xl font-bold tracking-tight',     // 20px - Section headers
-    h3: 'text-lg font-semibold',                // 18px - Sub-sections
-    h4: 'text-base font-semibold',              // 16px - Card titles
+    // Headings — use CSS custom property utilities defined in @theme
+    h1: 'text-h1 font-bold tracking-tight',     // 26px - Page titles
+    h2: 'text-h2 font-semibold tracking-tight', // 20px - Section headers
+    h3: 'text-h3 font-semibold',                // 17px - Sub-sections
+    h4: 'text-h4 font-medium',                  // 15px - Card titles
 
-    // Body text (Shadcn standard: 14px-16px)
-    bodyLg: 'text-base leading-relaxed',        // 16px - Comfortable reading
-    bodyMd: 'text-sm leading-relaxed',          // 14px - Standard body (Shadcn default)
-    bodySm: 'text-sm leading-normal',           // 14px - Compact text
+    // Body text
+    bodyLg: 'text-body-lg leading-relaxed',     // 15px - Lead text
+    bodyMd: 'text-body-md leading-relaxed',     // 14px - Standard body
+    bodySm: 'text-body-md leading-normal',      // 14px - Compact text
 
     // Caption & small text
-    caption: 'text-xs text-gray-500 dark:text-gray-400',           // 12px - Meta info, timestamps
+    caption: 'text-caption text-gray-500 dark:text-gray-400',      // 13px - Meta info
 
     // Font weights
     weight: {

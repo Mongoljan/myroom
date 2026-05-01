@@ -235,7 +235,7 @@ function BookingContent() {
           >
             {/* Success Header */}
             <div className="bg-white dark:bg-gray-800 border-b-2 border-gray-900 dark:border-gray-400 px-6 py-6">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white text-center mb-1">
+              <h1 className="text-h2 font-bold text-gray-900 dark:text-white text-center mb-1">
                 {t('bookingExtra.confirmationTitle', 'Таны захиалга амжилттай баталгаажлаа. Баярлалаа.')}
               </h1>
               <p className="text-xs text-gray-600 dark:text-gray-400 text-center">
@@ -487,7 +487,7 @@ function BookingContent() {
             <ArrowLeft className="w-5 h-5" />
             {t('common.back')}
           </button>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('booking.confirmBooking')}</h1>
+          <h1 className="text-h1 font-bold text-gray-900 dark:text-white">{t('booking.confirmBooking')}</h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">{hotelName}</p>
         </div>
       </div>
@@ -501,7 +501,7 @@ function BookingContent() {
               animate={{ opacity: 1, y: 0 }}
               className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
             >
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">{t('booking.guestDetails')}</h2>
+              <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-6">{t('booking.guestDetails')}</h2>
 
               {bookingError && (
                 <motion.div
@@ -593,7 +593,7 @@ function BookingContent() {
               transition={{ delay: 0.1 }}
               className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8"
             >
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('bookingExtra.detailsTitle')}</h3>
+              <h3 className="text-h3 font-semibold text-gray-900 dark:text-white mb-4">{t('bookingExtra.detailsTitle')}</h3>
 
               {/* Date Info - Display Only */}
               <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
@@ -660,8 +660,8 @@ function BookingContent() {
               {/* Total */}
               <div className="border-t dark:border-gray-700 pt-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-gray-900 dark:text-white">{t('bookingExtra.totalPrice')}</span>
-                  <span className="text-xl font-bold text-slate-900">₮{totalPrice.toLocaleString()}</span>
+                  <span className="text-h3 font-semibold text-gray-900 dark:text-white">{t('bookingExtra.totalPrice')}</span>
+                  <span className="text-h2 font-bold text-slate-900">₮{totalPrice.toLocaleString()}</span>
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('bookingExtra.taxesIncluded')}</div>
               </div>

@@ -76,7 +76,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
               <span className="text-2xl">✅</span>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{t('booking.confirmed', 'Захиалга баталгаажлаа!')}</h3>
+            <h3 className="text-h1 font-bold text-gray-900 dark:text-white">{t('booking.confirmed', 'Захиалга баталгаажлаа!')}</h3>
             <div className="space-y-2 text-sm">
               <p><span className="font-medium">{t('booking.bookingCode', 'Захиалгын код')}:</span> {bookingResult.booking_code}</p>
               <p><span className="font-medium">{t('booking.pinCode', 'PIN код')}:</span> {bookingResult.pin_code}</p>
@@ -111,7 +111,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
       >
         <div className="p-6 border-b">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{t('hotelRooms.bookRoom', 'Book Room')} {room.room_number}</h2>
+            <h2 className="text-h2 font-bold text-gray-900 dark:text-white">{t('hotelRooms.bookRoom', 'Book Room')} {room.room_number}</h2>
             <button
               onClick={onClose}
               className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 text-2xl"
@@ -309,7 +309,7 @@ function HotelRoomsContent() {
             
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 className="text-h1 font-bold text-gray-900 dark:text-white mb-2">
                   {t('hotelRooms.availableRooms', 'Боломжтой өрөөнүүд')}
                 </h1>
                 {checkIn && checkOut && (
