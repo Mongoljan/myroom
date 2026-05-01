@@ -42,6 +42,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   const [provinceMap, setProvinceMap] = useState<Map<number, string>>(new Map());
   const [soumMap, setSoumMap] = useState<Map<number, string>>(new Map());
   const [showMapModal, setShowMapModal] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   useEffect(() => {
     const fetchHotelDetails = async () => {
@@ -701,10 +702,10 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
         </Dialog>
 
         {/* Right: Info Sidebar - Separate Distinct Boxes */}
-        <div className="w-[280px] flex-shrink-0 flex flex-col gap-3 h-[420px]">
+        <div className="w-70 shrink-0 flex flex-col gap-3 h-105">
           {/* Box 1: Star Rating — only show search-API rating when no authoritative basicInfo.star_rating is available */}
           {!basicInfo?.star_rating && hotel.rating_stars?.value && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-shrink-0">
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg">
                   <span className="text-lg font-bold">
@@ -722,87 +723,149 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             </div>
           )}
 
+          {/* Box 1.5: Guest Rating placeholder — shown always (data coming soon) */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 shrink-0">
+            <div className="flex items-center gap-2 mb-1">
+              <Star className="w-4 h-4 text-yellow-400" />
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                {t('hotelDetails.guestRating', 'Зочдын үнэлгээ')}
+              </h3>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-2xl font-bold text-gray-300 dark:text-gray-600">—</div>
+              <div className="text-xs text-gray-400 dark:text-gray-500">{t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}</div>
+            </div>
+          </div>
+
           {/* Box 2: Surroundings */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-blue-600" />
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                {t('hotelDetails.surroundings', 'Surroundings')}
+                {t('hotelDetails.surroundings', 'Орчин тойрон')}
               </h3>
             </div>
             
-            <div className="space-y-1.5">
-              {/* Compact location info */}
-              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                <Plane className="w-3 h-3" />
-                <span>Airport: Buyant-Ukhaa International Air... (9.2 miles)</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                <Train className="w-3 h-3" />
-                <span>Train: Ulaanbaatar(2.0 miles)</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                <Landmark className="w-3 h-3" />
-                <span>Landmarks: Choijin Lama Temple Museum(750 ft)</span>
-              </div>
+            <div className="space-y-2.5">
+              {getNearbyPlaces().filter(p => p.category === 'transport').slice(0, 2).map((place, i) => (
+                <div key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                  {i === 0 ? <Plane className="w-3 h-3 mt-0.5 flex-shrink-0" /> : <Train className="w-3 h-3 mt-0.5 flex-shrink-0" />}
+                  <span className="leading-snug">{place.name} <span className="text-gray-400">— {place.distance}</span></span>
+                </div>
+              ))}
+              {getNearbyPlaces().filter(p => p.category === 'landmarks').slice(0, 1).map((place, i) => (
+                <div key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                  <Landmark className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                  <span className="leading-snug">{place.name} <span className="text-gray-400">— {place.distance}</span></span>
+                </div>
+              ))}
             </div>
 
             {/* View on map link */}
             {hotel.google_map && (
               <button
                 onClick={() => setShowMapModal(true)}
-                className="mt-2 text-blue-600 hover:text-blue-700 text-xs font-medium"
+                className="mt-3 text-blue-600 hover:text-blue-700 text-xs font-medium"
               >
-                {t('hotelDetails.viewOnMap', 'View on map')}
+                {t('hotelDetails.viewOnMap', 'Газрын зураг дээр харах')}
               </button>
             )}
           </div>
 
           {/* Box 3: Property Highlights */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.propertyHighlights', 'Буудлын онцлогууд')}</h4>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                <MapPin className="w-3 h-3 text-gray-400" />
-                <span>{t('hotelDetails.inCityCenter', 'In')} {hotel.location.province_city || 'City'} {t('hotelDetails.center', 'Centre')}</span>
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">{t('hotelDetails.propertyHighlights', 'Буудлын онцлогууд')}</h4>
+            <div className="space-y-2.5">
+              <div className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <MapPin className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
+                <span>{hotel.location.province_city || 'City'} {t('hotelDetails.center', 'төвд')}</span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                <Car className="w-3 h-3 text-gray-400" />
-                <span>Airport transfer</span>
+              <div className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <Car className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
+                <span>{t('hotelDetails.airportTransfer', 'Нисэх онгоцны буудлын трансфер')}</span>
               </div>
-              <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                <Clock className="w-3 h-3 text-gray-400" />
-                <span>Front desk [24-hour]</span>
+              <div className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <Clock className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
+                <span>{t('hotelDetails.frontDesk24h', '24 цагийн хүлээн авалт')}</span>
               </div>
             </div>
           </div>
 
-          {/* Box 4: YouTube Video - fills remaining sidebar space */}
-          {youtubeEmbedUrl && (
-            <div className="bg-black rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden flex-1 min-h-0">
-              <div className="relative w-full h-full">
-                <iframe
-                  src={youtubeEmbedUrl}
-                  title={`${hotelName} video`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0 w-full h-full"
-                />
-              </div>
-            </div>
-          )}
+          {/* Box 4: YouTube Video removed from sidebar — shown next to About text below */}
         </div>
       </div>
 
-      {/* Description Section - only shown when About text is available */}
-      {additionalInfo?.About && (
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mt-3">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
-        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
-          {additionalInfo.About}
-        </p>
+      {/* Description + Video Section — separate cards side by side */}
+      {(additionalInfo?.About || youtubeEmbedUrl) && (
+      <div className="flex gap-4 mt-3 items-stretch">
+        {additionalInfo?.About && (
+          <div className="flex-1 min-w-0 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex flex-col">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
+              <button
+                onClick={() => setShowAboutModal(true)}
+                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium shrink-0 ml-4"
+              >
+                {t('hotelDetails.showAll', 'Бүгдийг харах')}
+              </button>
+            </div>
+            {/* Operation stats */}
+            {basicInfo && (
+              <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs text-gray-500 dark:text-gray-400">
+                {basicInfo.start_date && (
+                  <span>🏢 {t('hotelDetails.operatingSince', 'Үйл ажиллагаа эхэлсэн')}: {new Date(basicInfo.start_date).getFullYear()}</span>
+                )}
+                {basicInfo.total_hotel_rooms > 0 && (
+                  <span>🛏 {t('hotelDetails.totalRooms', 'Нийт өрөө')}: {basicInfo.total_hotel_rooms}</span>
+                )}
+                {basicInfo.part_of_group && basicInfo.group_name && (
+                  <span>🌐 {t('hotelDetails.partOfGroup', 'Сүлжээний нэг хэсэг')}: {basicInfo.group_name}</span>
+                )}
+              </div>
+            )}
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4 flex-1">
+              {additionalInfo.About}
+            </p>
+          </div>
+        )}
+        {youtubeEmbedUrl && (
+          <div className="shrink-0 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700" style={{ width: '288px', aspectRatio: '16/9' }}>
+            <iframe
+              src={youtubeEmbedUrl}
+              title={`${hotelName} video`}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full"
+            />
+          </div>
+        )}
       </div>
       )}
+
+      {/* About Hotel Full Text Modal */}
+      <Dialog open={showAboutModal} onOpenChange={setShowAboutModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+            {t('hotelDetails.aboutProperty', 'Тухай')}
+          </DialogTitle>
+          {basicInfo && (
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4 text-xs text-gray-500 dark:text-gray-400">
+              {basicInfo.start_date && (
+                <span>🏢 {t('hotelDetails.operatingSince', 'Үйл ажиллагаа эхэлсэн')}: {new Date(basicInfo.start_date).getFullYear()}</span>
+              )}
+              {basicInfo.total_hotel_rooms > 0 && (
+                <span>🛏 {t('hotelDetails.totalRooms', 'Нийт өрөө')}: {basicInfo.total_hotel_rooms}</span>
+              )}
+              {basicInfo.part_of_group && basicInfo.group_name && (
+                <span>🌐 {t('hotelDetails.partOfGroup', 'Сүлжээний нэг хэсэг')}: {basicInfo.group_name}</span>
+              )}
+            </div>
+          )}
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+            {additionalInfo?.About}
+          </p>
+        </DialogContent>
+      </Dialog>
       
       {loading && (
         <div className="flex items-center justify-center py-8">

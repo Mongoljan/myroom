@@ -210,7 +210,7 @@ export class LocationService {
     });
   }
 
-  // Get popular locations (provinces with highest property count)
+  // Get popular locations (provinces + top soums by property count)
   async getPopularLocations(): Promise<LocationSuggestion[]> {
     try {
       const response = await fetch('https://dev.kacc.mn/api/locations/suggest/');
@@ -219,20 +219,41 @@ export class LocationService {
       }
 
       const data: LocationResponse = await response.json();
-      
-      return data.provinces
+
+      const provinces: LocationSuggestion[] = data.provinces
+        .filter(p => p.property_count > 0)
         .sort((a, b) => b.property_count - a.property_count)
-        .slice(0, 5)
+        .slice(0, 3)
         .map(province => ({
           id: `province-${province.id}`,
           name: province.name,
           fullName: province.name,
           type: 'province' as const,
           property_count: province.property_count,
-          originalData: {
-            province_id: province.id
-          }
+          originalData: { province_id: province.id }
         }));
+
+      // Fill remaining slots with top soums (districts) by property count
+      const soums: LocationSuggestion[] = (data.soums || [])
+        .filter(s => s.property_count > 0)
+        .sort((a, b) => b.property_count - a.property_count)
+        .slice(0, Math.max(2, 5 - provinces.length))
+        .map(soum => ({
+          id: `soum-${soum.id}`,
+          name: soum.name,
+          fullName: `${soum.name}, ${soum.province_name}`,
+          type: 'soum' as const,
+          property_count: soum.property_count,
+          originalData: { province_id: soum.province_id, soum_id: soum.id }
+        }));
+
+      // Deduplicate and return up to 5
+      const seen = new Set<string>();
+      return [...provinces, ...soums].filter(s => {
+        if (seen.has(s.fullName)) return false;
+        seen.add(s.fullName);
+        return true;
+      }).slice(0, 5);
     } catch (error) {
       console.error('Error fetching popular locations:', error);
       return [];

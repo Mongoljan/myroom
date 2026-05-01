@@ -35,7 +35,7 @@ export default function CollapsibleFilterSection({
   const displayedChildren = showAll ? childrenArray : childrenArray.slice(0, initialShowCount);
 
   return (
-    <div className={`space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3 ${className}`}>
+    <div className={`space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3 ${className}`}>
       {/* Section Header */}
       <div className="flex items-center justify-between w-full">
         <button
@@ -82,12 +82,12 @@ export default function CollapsibleFilterSection({
             >
               {showAll ? (
                 <>
-                  Show less
+                  Цөөн харах
                   <ChevronUp className="w-3 h-3" />
                 </>
               ) : (
                 <>
-                  Show all {childrenArray.length}
+                  Бүгдийг харах ({childrenArray.length})
                   <ChevronDown className="w-3 h-3" />
                 </>
               )}

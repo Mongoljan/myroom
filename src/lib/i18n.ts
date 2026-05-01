@@ -628,7 +628,7 @@ const resources = {
         simpleSearch: "Simple search",
         filtersSection: {
           title: "Filters",
-          usedByYou: "Your filters",
+          usedByYou: "Last used filters",
           loading: "Loading filters...",
           hotelType: "Property Type",
           popularSearches: "Popular searches",
@@ -640,6 +640,8 @@ const resources = {
           additionalFacilities: "Additional facilities",
           activities: "Activities",
           accessibility: "Accessibility",
+          neighbourhood: "Neighbourhood",
+          landmarks: "Landmarks",
           guestRating: "Guest rating",
           hotelStars: "Hotel stars",
           outdoorArea: "Additional facilities",
@@ -901,6 +903,7 @@ const resources = {
         rooms: "rooms",
         total: "Total",
         onlyLeft: "Only {{count}} left!",
+        onlyRoomsLeft: "Only {{count}} left!",
         adult: "adult",
         adults: "adults",
         child: "child",
@@ -984,7 +987,14 @@ const resources = {
         center: "Center",
         totalRooms: "Total Rooms",
         operatingSince: "Operating since",
-        photos: "photos"
+        photos: "photos",
+        surroundings: "Surroundings",
+        showAll: "Show all",
+        airportTransfer: "Airport transfer",
+        frontDesk24h: "24-hour front desk",
+        partOfGroup: "Part of group",
+        guestRating: "Guest rating",
+        noRatingsYet: "No ratings yet"
       },
       houseRules: {
         title: "House Rules",
@@ -2106,7 +2116,7 @@ const resources = {
         simpleSearch: "Энгийн хайлт",
         filtersSection: {
           title: "Шүүлтүүр",
-          usedByYou: "Таны ашигласан",
+          usedByYou: "Сүүлд хайсан шүүлтүүр",
           loading: "Шүүлтүүр ачааллаж байна...",
           hotelType: "Үл хөдлөх хөрөнгийн төрөл",
           propertyCategories: {
@@ -2127,6 +2137,8 @@ const resources = {
           additionalFacilities: "Нэмэлт байгууламж",
           activities: "Үйл ажиллагаа",
           accessibility: "Хүртээмжитэй өрөө",
+          neighbourhood: "Хороолол",
+          landmarks: "Гол газрууд",
           guestRating: "Зочдын үнэлгээ",
           hotelStars: "Буудлын зэрэглэл",
           outdoorArea: "Нэмэлт байгууламж",
@@ -2371,6 +2383,7 @@ const resources = {
         rooms: "өрөө",
         total: "Нийт",
         onlyLeft: "Зөвхөн {{count}} үлдлээ!",
+        onlyRoomsLeft: "Зөвхөн {{count}} үлдлээ!",
         adult: "том хүн",
         adults: "том хүн",
         child: "хүүхэд",
@@ -2454,7 +2467,14 @@ const resources = {
         center: "төвд",
         totalRooms: "Нийт өрөө",
         operatingSince: "Үйл ажиллагаа эхэлсэн",
-        photos: "зураг"
+        photos: "зураг",
+        surroundings: "Орчин тойрон",
+        showAll: "Бүгдийг харах",
+        airportTransfer: "Нисэх онгоцны буудлын трансфер",
+        frontDesk24h: "24 цагийн хүлээн авалт",
+        partOfGroup: "Сүлжээний нэг хэсэг",
+        guestRating: "Зочдын үнэлгээ",
+        noRatingsYet: "Үнэлгээ байхгүй"
       },
       houseRules: {
         title: "Дотоод журам",

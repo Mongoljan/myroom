@@ -9,7 +9,20 @@ import {
 } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import CollapsibleFilterSection from './CollapsibleFilterSection';
-// import FilterSummary from './FilterSummary';
+import { SearchHotelResult } from '@/types/api';
+
+// ------- Hardcoded landmark data (UB) -------
+// When backend adds geo-data to hotels, replace with distance-radius filtering.
+export const UB_LANDMARKS = [
+  { id: 'sukhbaatar_square',  name_mn: 'Сүхбаатарын талбай',       districts: ['Сүхбаатар'] },
+  { id: 'chinggis_statue',    name_mn: 'Чингис хааны хөшөө',        districts: ['Сүхбаатар'] },
+  { id: 'intellectual_museum',name_mn: 'Оюуны өв музей',             districts: ['Сүхбаатар'] },
+  { id: 'bogd_khan_palace',   name_mn: 'Богд хааны ордон',           districts: ['Хан-Уул'] },
+  { id: 'zaisan',             name_mn: 'Зайсан цамхаг',              districts: ['Хан-Уул'] },
+  { id: 'gandan',             name_mn: 'Гандантэгчинлэн хийд',       districts: ['Баянгол'] },
+  { id: 'naran_tuul',         name_mn: 'Нараантуул зах',             districts: ['Баянзүрх', 'Баянгол'] },
+  { id: 'state_store',        name_mn: 'Их дэлгүүр',                 districts: ['Сүхбаатар'] },
+];;
 
 /**
  * API DATA INTERFACES AND DOCUMENTATION
@@ -78,6 +91,8 @@ interface FilterState {
   discounted: boolean;
   facilities: string[];
   roomTypes: string[];
+  neighbourhood: string[];       // Selected soum/district names
+  landmark: string[];            // Selected landmark IDs
 }
 
 interface SearchFiltersProps {
@@ -94,10 +109,13 @@ interface SearchFiltersProps {
   discountedCount?: number;
   /** Number of hotels in the current results, used to gate the price slider. */
   totalResults?: number;
+  /** All hotels from the search result — used to derive neighbourhood options. */
+  hotels?: SearchHotelResult[];
 }
 
 const STORAGE_KEY = 'hotel_search_filters';
 const RECENT_FILTERS_KEY = 'hotel_recent_filters';
+const RECENT_INDIVIDUAL_KEY = 'hotel_recent_individual_filters';
 
 // Static data for features not available in API yet - moved to translation files
 // These will be dynamically generated from translations in the component
@@ -109,7 +127,15 @@ interface RecentFilter {
   timestamp: number;
 }
 
-export default function SearchFilters({ isOpen, onClose, onFilterChange, embedded = false, apiData, filters: externalFilters, filterCounts = {}, priceBounds, discountedCount = 0, totalResults = 0 }: SearchFiltersProps) {
+interface RecentIndividualFilter {
+  id: string;    // e.g. 'starRating_5', 'roomFeature_3', 'discounted'
+  type: string;  // 'starRating' | 'propertyTypes' | 'roomFeatures' | 'generalServices' | 'outdoorAreas' | 'discounted' | 'neighbourhood' | 'landmark'
+  value: string | number | boolean;
+  label: string;
+  timestamp: number;
+}
+
+export default function SearchFilters({ isOpen, onClose, onFilterChange, embedded = false, apiData, filters: externalFilters, filterCounts = {}, priceBounds, discountedCount = 0, totalResults = 0, hotels = [] }: SearchFiltersProps) {
   const { t } = useHydratedTranslation();
 
   // Remove hardcoded categories - keeping only API-driven filters
@@ -118,7 +144,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
 
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: [],
-    priceRange: [0, 1000000], // Dynamic range based on actual data
+    priceRange: [0, 99_000_000], // Dynamic range based on actual data; sentinel > any real hotel price
     roomFeatures: [],
     generalServices: [],
     discounted: false,
@@ -126,9 +152,12 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     outdoorAreas: [],
     accessibilityFeatures: [],
     facilities: [],
-    roomTypes: []
+    roomTypes: [],
+    neighbourhood: [],
+    landmark: [],
   });
   const [recentFilters, setRecentFilters] = useState<RecentFilter[]>([]);
+  const [recentIndividualFilters, setRecentIndividualFilters] = useState<RecentIndividualFilter[]>([]);
 
   // API data is now received as prop, no need for local loading
   const loadingApi = !apiData;
@@ -166,8 +195,9 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
       if (typeNames.length > 0) parts.push(typeNames.join(', '));
     }
 
-    if (filterState.priceRange[0] !== 0 || filterState.priceRange[1] !== 1000000) {
-      parts.push(`₮${filterState.priceRange[0]/1000}K-${filterState.priceRange[1]/1000}K`);
+    if (filterState.priceRange[0] !== 0 || filterState.priceRange[1] !== 99_000_000) {
+      const fmt = (n: number) => new Intl.NumberFormat('en-US').format(n);
+      parts.push(`₮${fmt(filterState.priceRange[0])}-${fmt(filterState.priceRange[1])}`);
     }
 
     if (filterState.starRating.length > 0) {
@@ -200,7 +230,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     const isDefault = (
       filterState.propertyTypes.length === 0 &&
       filterState.priceRange[0] === 0 &&
-      filterState.priceRange[1] === 1000000 &&
+      filterState.priceRange[1] === 99_000_000 &&
       filterState.roomFeatures.length === 0 &&
       filterState.generalServices.length === 0 &&
       !filterState.discounted &&
@@ -208,7 +238,9 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
       filterState.outdoorAreas.length === 0 &&
       (filterState.accessibilityFeatures?.length ?? 0) === 0 &&
       filterState.facilities.length === 0 &&
-      filterState.roomTypes.length === 0
+      filterState.roomTypes.length === 0 &&
+      (filterState.neighbourhood?.length ?? 0) === 0 &&
+      (filterState.landmark?.length ?? 0) === 0
     );
 
     if (isDefault) return;
@@ -249,6 +281,33 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     }
   }, [onFilterChange]);
 
+  // Load individual recent filters from localStorage
+  const loadIndividualFilters = useCallback(() => {
+    try {
+      const saved = localStorage.getItem(RECENT_INDIVIDUAL_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as RecentIndividualFilter[];
+        setRecentIndividualFilters(parsed.slice(0, 5));
+      }
+    } catch (error) {
+      console.warn('Failed to load individual filters:', error);
+    }
+  }, []);
+
+  // Save a single individual filter item (most-recent first, max 5)
+  const saveIndividualFilter = useCallback((item: RecentIndividualFilter) => {
+    try {
+      setRecentIndividualFilters(prev => {
+        const filtered = prev.filter(x => x.id !== item.id);
+        const updated = [item, ...filtered].slice(0, 5);
+        localStorage.setItem(RECENT_INDIVIDUAL_KEY, JSON.stringify(updated));
+        return updated;
+      });
+    } catch (error) {
+      console.warn('Failed to save individual filter:', error);
+    }
+  }, []);
+
   useEffect(() => {
     const loadSavedFilters = () => {
       try {
@@ -266,8 +325,9 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     // Always load from localStorage on initial mount, regardless of external filters
     // This ensures filters persist across sessions
     loadSavedFilters();
-    // Also load recent filters
+    // Also load recent filters and individual filters
     loadRecentFilters();
+    loadIndividualFilters();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Only run once on mount
 
@@ -280,12 +340,33 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedFilters));
-      // Only save to recent for committed changes (skip intermediate slider drags)
-      if (saveRecent) saveToRecentFilters(updatedFilters);
+      if (saveRecent) {
+        saveToRecentFilters(updatedFilters);
+        // Track individual filter additions for "Саяхны шүүлтүүр"
+        const ts = Date.now();
+        const track = (id: string, type: string, value: string | number | boolean, label: string) =>
+          saveIndividualFilter({ id, type, value, label, timestamp: ts });
+        (updatedFilters.starRating || []).filter(s => !(filters.starRating || []).includes(s))
+          .forEach(s => track(`starRating_${s}`, 'starRating', s, `${s}★`));
+        (updatedFilters.propertyTypes || []).filter(id => !(filters.propertyTypes || []).includes(id))
+          .forEach(id => { const pt = apiData?.property_types.find(p => p.id === id); if (pt) track(`propertyType_${id}`, 'propertyTypes', id, pt.name_mn); });
+        if (updatedFilters.discounted && !filters.discounted)
+          track('discounted', 'discounted', true, 'Хямдралтай');
+        (updatedFilters.roomFeatures || []).filter(id => !(filters.roomFeatures || []).includes(id))
+          .forEach(id => { const f = apiData?.facilities?.find(x => x.id === id); if (f) track(`roomFeature_${id}`, 'roomFeatures', id, f.name_mn); });
+        (updatedFilters.generalServices || []).filter(id => !(filters.generalServices || []).includes(id))
+          .forEach(id => { const f = apiData?.additionalFacilities?.find(x => x.id === id); if (f) track(`genService_${id}`, 'generalServices', id, f.name_mn); });
+        (updatedFilters.outdoorAreas || []).filter(id => !(filters.outdoorAreas || []).includes(id))
+          .forEach(id => { const f = apiData?.activities?.find(x => x.id === id); if (f) track(`outdoor_${id}`, 'outdoorAreas', id, f.name_mn); });
+        (updatedFilters.neighbourhood || []).filter(n => !(filters.neighbourhood || []).includes(n))
+          .forEach(n => track(`neighbourhood_${n}`, 'neighbourhood', n, n));
+        (updatedFilters.landmark || []).filter(l => !(filters.landmark || []).includes(l))
+          .forEach(l => { const lm = UB_LANDMARKS.find(x => x.id === l); if (lm) track(`landmark_${l}`, 'landmark', l, lm.name_mn); });
+      }
     } catch (error) {
       console.warn('Failed to save filters:', error);
     }
-  }, [filters, onFilterChange, saveToRecentFilters]);
+  }, [filters, onFilterChange, saveToRecentFilters, saveIndividualFilter, apiData]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleRemoveFilter = useCallback((filterType: string, value?: string | number) => {
@@ -296,7 +377,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
         });
         break;
       case 'priceRange':
-        updateFilters({ priceRange: [0, 1000000] });
+        updateFilters({ priceRange: [0, 99_000_000] });
         break;
       case 'roomFeatures':
         updateFilters({
@@ -331,6 +412,16 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           roomTypes: (filters.roomTypes || []).filter(roomType => roomType !== value)
         });
         break;
+      case 'neighbourhood':
+        updateFilters({
+          neighbourhood: (filters.neighbourhood || []).filter(n => n !== value)
+        });
+        break;
+      case 'landmark':
+        updateFilters({
+          landmark: (filters.landmark || []).filter(l => l !== value)
+        });
+        break;
     }
   }, [filters, updateFilters]);
 
@@ -338,7 +429,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
   const handleClearAllFilters = useCallback(() => {
     const defaultFilters = {
       propertyTypes: [],
-      priceRange: [0, 1000000] as [number, number],
+      priceRange: [0, 99_000_000] as [number, number],
       roomFeatures: [],
       generalServices: [],
       discounted: false,
@@ -346,7 +437,9 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
       outdoorAreas: [],
       accessibilityFeatures: [],
       facilities: [],
-      roomTypes: []
+      roomTypes: [],
+      neighbourhood: [],
+      landmark: [],
     };
     setFilters(defaultFilters);
     onFilterChange(defaultFilters);
@@ -357,6 +450,37 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
       console.warn('Failed to clear saved filters:', error);
     }
   }, [onFilterChange]);
+
+  // Check if a recent individual filter item is currently active in the filter state
+  const isItemActive = useCallback((item: RecentIndividualFilter): boolean => {
+    switch (item.type) {
+      case 'starRating': return (filters.starRating || []).includes(item.value as number);
+      case 'propertyTypes': return (filters.propertyTypes || []).includes(item.value as number);
+      case 'discounted': return filters.discounted;
+      case 'roomFeatures': return (filters.roomFeatures || []).includes(item.value as number);
+      case 'generalServices': return (filters.generalServices || []).includes(item.value as number);
+      case 'outdoorAreas': return (filters.outdoorAreas || []).includes(item.value as number);
+      case 'accessibilityFeatures': return (filters.accessibilityFeatures || []).includes(item.value as number);
+      case 'neighbourhood': return (filters.neighbourhood || []).includes(item.value as string);
+      case 'landmark': return (filters.landmark || []).includes(item.value as string);
+      default: return false;
+    }
+  }, [filters]);
+
+  // Toggle a recent individual filter on/off
+  const toggleRecentFilter = useCallback((item: RecentIndividualFilter) => {
+    const active = isItemActive(item);
+    switch (item.type) {
+      case 'starRating': { const v = item.value as number; updateFilters({ starRating: active ? (filters.starRating || []).filter(s => s !== v) : [...(filters.starRating || []), v] }, { saveRecent: false }); break; }
+      case 'propertyTypes': { const v = item.value as number; updateFilters({ propertyTypes: active ? (filters.propertyTypes || []).filter(id => id !== v) : [...(filters.propertyTypes || []), v] }, { saveRecent: false }); break; }
+      case 'discounted': updateFilters({ discounted: !active }, { saveRecent: false }); break;
+      case 'roomFeatures': { const v = item.value as number; updateFilters({ roomFeatures: active ? (filters.roomFeatures || []).filter(id => id !== v) : [...(filters.roomFeatures || []), v] }, { saveRecent: false }); break; }
+      case 'generalServices': { const v = item.value as number; updateFilters({ generalServices: active ? (filters.generalServices || []).filter(id => id !== v) : [...(filters.generalServices || []), v] }, { saveRecent: false }); break; }
+      case 'outdoorAreas': { const v = item.value as number; updateFilters({ outdoorAreas: active ? (filters.outdoorAreas || []).filter(id => id !== v) : [...(filters.outdoorAreas || []), v] }, { saveRecent: false }); break; }
+      case 'neighbourhood': { const v = item.value as string; updateFilters({ neighbourhood: active ? (filters.neighbourhood || []).filter(n => n !== v) : [...(filters.neighbourhood || []), v] }, { saveRecent: false }); break; }
+      case 'landmark': { const v = item.value as string; updateFilters({ landmark: active ? (filters.landmark || []).filter(l => l !== v) : [...(filters.landmark || []), v] }, { saveRecent: false }); break; }
+    }
+  }, [filters, isItemActive, updateFilters]);
 
   // Map each filter group to its OWN API array (matches Hotel_front 6PropertyDetails groups)
   // Group 1 — General facilities  -> apiData.facilities
@@ -398,7 +522,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
   // Price range
   if (priceBounds && filters.priceRange[1] < priceBounds[1]) {
     activeFilterChips.push({
-      label: `≤₮${Math.round(filters.priceRange[1] / 1000)}K`,
+      label: `≤₮${new Intl.NumberFormat('en-US').format(filters.priceRange[1])}`,
       onRemove: () => updateFilters({ priceRange: [priceBounds[0], priceBounds[1]] })
     });
   }
@@ -427,6 +551,31 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     if (fac) activeFilterChips.push({ label: fac.name_mn, onRemove: () => updateFilters({ accessibilityFeatures: (filters.accessibilityFeatures || []).filter(i => i !== id) }) });
   });
 
+  // Neighbourhood chips
+  (filters.neighbourhood || []).forEach(name => {
+    activeFilterChips.push({ label: name, onRemove: () => updateFilters({ neighbourhood: (filters.neighbourhood || []).filter(n => n !== name) }) });
+  });
+
+  // Landmark chips
+  (filters.landmark || []).forEach(id => {
+    const lm = UB_LANDMARKS.find(l => l.id === id);
+    if (lm) activeFilterChips.push({ label: lm.name_mn, onRemove: () => updateFilters({ landmark: (filters.landmark || []).filter(l => l !== id) }) });
+  });
+
+  // Derive unique soum/district options from all hotels (sorted by hotel count desc)
+  const neighbourhoodOptions: { name: string; count: number }[] = (() => {
+    const counts = new Map<string, number>();
+    for (const h of hotels) {
+      const loc = h.location?.soum || h.location?.district;
+      if (loc && loc.trim()) {
+        counts.set(loc.trim(), (counts.get(loc.trim()) || 0) + 1);
+      }
+    }
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  })();
+
   if (embedded) {
     return (
       <>
@@ -439,7 +588,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               {activeFilterChips.slice(0, 5).map((chip, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-xs font-medium border border-primary-200 dark:border-primary-700"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300 text-xs font-medium border border-gray-200 dark:border-gray-600"
                 >
                   <span className="max-w-22.5 truncate">{chip.label}</span>
                   <button
@@ -455,329 +604,358 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
               )}
               <button
                 onClick={handleClearAllFilters}
-                className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 self-center ml-auto"
+                className="text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 self-center ml-auto underline"
               >
                 {t('search.filtersSection.clearAll') || 'Бүгдийг арилгах'}
               </button>
             </div>
           )}
 
-          {/* Recent Filters Section */}
-          {recentFilters.length > 0 && (
-            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.usedByYou')}</h4>
-              <div className="space-y-1">
-                {recentFilters.map((recentFilter) => (
-                  <button
-                    key={recentFilter.id}
-                    onClick={() => applyRecentFilter(recentFilter)}
-                    className="flex items-center w-full p-1.5 rounded-md border border-gray-200 dark:border-gray-700 hover:border-primary-300 hover:bg-primary-50 dark:bg-gray-800 dark:text-gray-300 text-xs transition-colors text-left"
-                  >
-                    <Clock className="w-3 h-3 mr-1.5 text-gray-500 dark:text-gray-400" />
-                    <span className="text-gray-700 dark:text-gray-300 flex-1 truncate">{recentFilter.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+          {/* ── Саяхны шүүлтүүр — individual filter checkboxes (last 5) ── */}
+          {recentIndividualFilters.length > 0 && (
+            <CollapsibleFilterSection
+              title={t('search.filtersSection.usedByYou') || 'Саяхны шүүлтүүр'}
+              itemCount={recentIndividualFilters.length}
+              initialShowCount={5}
+              selectedCount={recentIndividualFilters.filter(item => isItemActive(item)).length}
+              onClear={() => {
+                setRecentIndividualFilters([]);
+                try { localStorage.removeItem(RECENT_INDIVIDUAL_KEY); } catch { /* ignore */ }
+              }}
+            >
+              {recentIndividualFilters.map((item) => {
+                const isActive = isItemActive(item);
+                return (
+                  <label key={item.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isActive}
+                      onChange={() => toggleRecentFilter(item)}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.label}</span>
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
           )}
 
-          {/* Budget — derived from current search results (only if we have enough hotels with prices) */}
-          {priceBounds && priceBounds[1] > priceBounds[0] && totalResults >= 3 && (
-            <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.budget') || 'Төсөв'}</h4>
-              <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-                <span>₮{Math.round((filters.priceRange?.[0] ?? priceBounds[0]) / 1000)}K</span>
-                <span>₮{Math.round((filters.priceRange?.[1] ?? priceBounds[1]) / 1000)}K</span>
-              </div>
-              <input
-                type="range"
-                min={priceBounds[0]}
-                max={priceBounds[1]}
-                step={Math.max(1000, Math.round((priceBounds[1] - priceBounds[0]) / 100))}
-                value={filters.priceRange?.[1] ?? priceBounds[1]}
-                onChange={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt(e.target.value, 10)] }, { saveRecent: false })}
-                onMouseUp={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
-                onTouchEnd={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
-                onKeyUp={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
-                className="w-full accent-primary-600"
-              />
-              <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-500">
-                <span>Доод: ₮{Math.round(priceBounds[0] / 1000)}K</span>
-                <span>Дээд: ₮{Math.round(priceBounds[1] / 1000)}K</span>
-              </div>
-            </div>
+          {/* ── 1. Property type — only types present in results (all 14 as fallback if field absent) ── */}
+          {apiData?.property_types && apiData.property_types.length > 0 && (
+            <CollapsibleFilterSection
+              title={t('search.filtersSection.hotelType')}
+              itemCount={apiData.property_types.length}
+              initialShowCount={5}
+              selectedCount={(filters.propertyTypes || []).length}
+              onClear={() => updateFilters({ propertyTypes: [] })}
+            >
+              {apiData.property_types.map((pt) => {
+                const isSelected = filters.propertyTypes?.includes(pt.id) || false;
+                const count = filterCounts[`propertyType_${pt.id}`];
+                return (
+                  <label key={pt.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ propertyTypes: isSelected ? (filters.propertyTypes || []).filter(id => id !== pt.id) : [...(filters.propertyTypes || []), pt.id] })}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{pt.name_mn}</span>
+                    {count !== undefined && count > 0 && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>
+                    )}
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
           )}
 
-        {loadingApi ? (
-          <div className="text-xs text-gray-500 dark:text-gray-400">{t('search.filtersSection.loading')}</div>
-        ) : (
-          <>
-            {/* Discounted only */}
-            {discountedCount > 0 && (
-              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={filters.discounted}
-                    onChange={(e) => updateFilters({ discounted: e.target.checked })}
-                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
-                  />
-                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex-1">
-                    {t('search.filtersSection.discounted')}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">({discountedCount})</span>
-                </label>
-              </div>
-            )}
-
-            {/* Property type */}
-            {apiData?.property_types && apiData.property_types.length > 0 && (
-              <CollapsibleFilterSection
-                title={t('search.filtersSection.hotelType')}
-                itemCount={apiData.property_types.length}
-                initialShowCount={4}
-                selectedCount={(filters.propertyTypes || []).length}
-                onClear={() => updateFilters({ propertyTypes: [] })}
-              >
-                {apiData.property_types.map((pt) => {
-                  const isSelected = filters.propertyTypes?.includes(pt.id) || false;
-                  return (
-                    <label
-                      key={pt.id}
-                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => updateFilters({
-                          propertyTypes: isSelected
-                            ? (filters.propertyTypes || []).filter(id => id !== pt.id)
-                            : [...(filters.propertyTypes || []), pt.id]
-                        })}
-                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
-                      />
-                      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{pt.name_mn}</span>
-                      {filterCounts[`propertyType_${pt.id}`] !== undefined && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          ({filterCounts[`propertyType_${pt.id}`]})
-                        </span>
-                      )}
-                    </label>
-                  );
-                })}
-              </CollapsibleFilterSection>
-            )}
-
-
-            {/* 5. General facilities (Group 1 — matches Hotel_front step 6) */}
-            {roomFeatureFacilities.length > 0 ? (
-              <CollapsibleFilterSection
-                title={t('search.filtersSection.generalFacilities')}
-                itemCount={roomFeatureFacilities.length}
-                initialShowCount={4}
-                selectedCount={(filters.roomFeatures || []).length}
-                onClear={() => updateFilters({ roomFeatures: [] })}
-              >
-                {roomFeatureFacilities.map((facility) => {
+          {/* ── 2. Popular filters — top-covered facilities as quick-picks ── */}
+          {(() => {
+            const popularFacs = roomFeatureFacilities
+              .filter(f => (filterCounts[`facility_${f.id}`] || 0) > 0)
+              .sort((a, b) => (filterCounts[`facility_${b.id}`] || 0) - (filterCounts[`facility_${a.id}`] || 0))
+              .slice(0, 4);
+            if (popularFacs.length === 0) return null;
+            return (
+              <div className="space-y-1.5 border-b border-gray-200 dark:border-gray-600 pb-3">
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.popularSearches') || 'Түгээмэл шүүлтүүр'}</h4>
+                {popularFacs.map((facility) => {
                   const isSelected = filters.roomFeatures?.includes(facility.id) || false;
                   return (
-                    <label
-                      key={facility.id}
-                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
-                    >
+                    <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                       <input
                         type="checkbox"
                         checked={isSelected}
-                        onChange={() => updateFilters({
-                          roomFeatures: isSelected
-                            ? (filters.roomFeatures || []).filter(id => id !== facility.id)
-                            : [...(filters.roomFeatures || []), facility.id]
-                        })}
+                        onChange={() => updateFilters({ roomFeatures: isSelected ? (filters.roomFeatures || []).filter(id => id !== facility.id) : [...(filters.roomFeatures || []), facility.id] })}
                         className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                       />
                       <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                       {filterCounts[`facility_${facility.id}`] !== undefined && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          ({filterCounts[`facility_${facility.id}`]})
-                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">({filterCounts[`facility_${facility.id}`]})</span>
                       )}
                     </label>
                   );
                 })}
-              </CollapsibleFilterSection>
-            ) : (
-              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.generalFacilities')}</h4>
-                <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
-            )}
+            );
+          })()}
 
-            {/* 6. Additional facilities (Group 2) */}
-            {generalServiceFacilities.length > 0 ? (
-              <CollapsibleFilterSection
-                title={t('search.filtersSection.additionalFacilities')}
-                itemCount={generalServiceFacilities.length}
-                initialShowCount={5}
-                selectedCount={(filters.generalServices || []).length}
-                onClear={() => updateFilters({ generalServices: [] })}
-              >
-                {generalServiceFacilities.map((facility) => {
-                  const isSelected = filters.generalServices?.includes(facility.id) || false;
+          {/* ── 3. Budget — derived from current search results ── */}
+          {priceBounds && priceBounds[1] > priceBounds[0] && totalResults >= 1 && (
+            <div className="space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.budget') || 'Төсөв'}</h4>
+              {(() => {
+                const sliderMax = Math.min(filters.priceRange?.[1] ?? priceBounds[1], priceBounds[1]);
+                const fmt = (n: number) => '₮' + new Intl.NumberFormat('en-US').format(n);
+                return (
+                  <>
+                    <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                      <span>{fmt(priceBounds[0])}</span>
+                      <span>{fmt(sliderMax)}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min={priceBounds[0]}
+                      max={priceBounds[1]}
+                      step={Math.max(1000, Math.round((priceBounds[1] - priceBounds[0]) / 100))}
+                      value={sliderMax}
+                      onChange={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt(e.target.value, 10)] }, { saveRecent: false })}
+                      onMouseUp={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
+                      onTouchEnd={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
+                      onKeyUp={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
+                      className="w-full accent-primary-600"
+                    />
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* ── 4. Room facilities (Group 1: general_facilities) ── */}
+          {roomFeatureFacilities.length > 0 && (
+            <CollapsibleFilterSection
+              title={t('search.filtersSection.generalFacilities')}
+              itemCount={roomFeatureFacilities.length}
+              initialShowCount={4}
+              selectedCount={(filters.roomFeatures || []).length}
+              onClear={() => updateFilters({ roomFeatures: [] })}
+            >
+              {roomFeatureFacilities.map((facility) => {
+                const isSelected = filters.roomFeatures?.includes(facility.id) || false;
+                return (
+                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ roomFeatures: isSelected ? (filters.roomFeatures || []).filter(id => id !== facility.id) : [...(filters.roomFeatures || []), facility.id] })}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
+                    {filterCounts[`facility_${facility.id}`] !== undefined && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">({filterCounts[`facility_${facility.id}`]})</span>
+                    )}
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
+          )}
+
+          {/* ── 5. Property facilities (Group 2: additional_facilities) ── */}
+          {generalServiceFacilities.length > 0 && (
+            <CollapsibleFilterSection
+              title={t('search.filtersSection.additionalFacilities')}
+              itemCount={generalServiceFacilities.length}
+              initialShowCount={5}
+              selectedCount={(filters.generalServices || []).length}
+              onClear={() => updateFilters({ generalServices: [] })}
+            >
+              {generalServiceFacilities.map((facility) => {
+                const isSelected = filters.generalServices?.includes(facility.id) || false;
+                return (
+                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ generalServices: isSelected ? (filters.generalServices || []).filter(id => id !== facility.id) : [...(filters.generalServices || []), facility.id] })}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
+                    {filterCounts[`facility_${facility.id}`] !== undefined && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">({filterCounts[`facility_${facility.id}`]})</span>
+                    )}
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
+          )}
+
+          {/* ── 7. Property accessibility (Group 4) ── */}
+          {accessibilityFacilities.length > 0 && (
+            <CollapsibleFilterSection
+              title={t('search.filtersSection.accessibility')}
+              itemCount={accessibilityFacilities.length}
+              initialShowCount={3}
+              selectedCount={(filters.accessibilityFeatures || []).length}
+              onClear={() => updateFilters({ accessibilityFeatures: [] })}
+            >
+              {accessibilityFacilities.map((facility) => {
+                const isSelected = filters.accessibilityFeatures?.includes(facility.id) || false;
+                return (
+                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ accessibilityFeatures: isSelected ? (filters.accessibilityFeatures || []).filter(id => id !== facility.id) : [...(filters.accessibilityFeatures || []), facility.id] })}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
+                    {filterCounts[`accessibility_${facility.id}`] !== undefined && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">({filterCounts[`accessibility_${facility.id}`]})</span>
+                    )}
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
+          )}
+
+          {/* ── 9. Neighbourhood — derived from hotels in current results ── */}
+          {neighbourhoodOptions.length > 0 && (
+            <CollapsibleFilterSection
+              title={t('search.filtersSection.neighbourhood') || 'Хороолол'}
+              itemCount={neighbourhoodOptions.length}
+              initialShowCount={5}
+              selectedCount={(filters.neighbourhood || []).length}
+              onClear={() => updateFilters({ neighbourhood: [] })}
+            >
+              {neighbourhoodOptions.map(({ name, count }) => {
+                const isSelected = (filters.neighbourhood || []).includes(name);
+                return (
+                  <label key={name} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ neighbourhood: isSelected ? (filters.neighbourhood || []).filter(n => n !== name) : [...(filters.neighbourhood || []), name] })}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{name}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">{count}</span>
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
+          )}
+
+          {/* ── 9b. Landmarks — popular UB landmarks ── */}
+          {UB_LANDMARKS.length > 0 && (
+            <CollapsibleFilterSection
+              title={t('search.filtersSection.landmarks') || 'Гол газрууд'}
+              itemCount={UB_LANDMARKS.length}
+              initialShowCount={5}
+              selectedCount={(filters.landmark || []).length}
+              onClear={() => updateFilters({ landmark: [] })}
+            >
+              {UB_LANDMARKS.map((lm) => {
+                const count = hotels.filter(h => {
+                  const d = (h.location?.soum || h.location?.district || '').toLowerCase();
+                  return lm.districts.some(ld => d.includes(ld.toLowerCase()));
+                }).length;
+                const isSelected = (filters.landmark || []).includes(lm.id);
+                return (
+                  <label key={lm.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ landmark: isSelected ? (filters.landmark || []).filter(l => l !== lm.id) : [...(filters.landmark || []), lm.id] })}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{lm.name_mn}</span>
+                    {count > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{count}</span>}
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
+          )}
+
+          {/* ── 10. Discount ── */}
+          {discountedCount > 0 && (
+            <div className="space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={filters.discounted}
+                  onChange={(e) => updateFilters({ discounted: e.target.checked })}
+                  className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                />
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex-1">
+                  {t('search.filtersSection.discounted')}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">({discountedCount})</span>
+              </label>
+            </div>
+          )}
+
+          {/* ── 11. Star rating ── */}
+          {apiData?.ratings && apiData.ratings.length > 0 && (
+            <div className="space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3">
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelStars')}</h4>
+              <div className="grid grid-cols-5 gap-1">
+                {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
+                  const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
+                  if (stars === 0) return null;
+                  const isSelected = filters.starRating?.includes(stars) || false;
                   return (
-                    <label
-                      key={facility.id}
-                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
+                    <button
+                      key={rating.id}
+                      onClick={() => updateFilters({ starRating: isSelected ? (filters.starRating || []).filter(s => s !== stars) : [...(filters.starRating || []), stars] })}
+                      className={`p-1.5 rounded-md border text-xs transition-all flex flex-col items-center justify-center ${
+                        isSelected ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300'
+                      }`}
                     >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => updateFilters({
-                          generalServices: isSelected
-                            ? (filters.generalServices || []).filter(id => id !== facility.id)
-                            : [...(filters.generalServices || []), facility.id]
-                        })}
-                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
-                      />
-                      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
-                      {filterCounts[`facility_${facility.id}`] !== undefined && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          ({filterCounts[`facility_${facility.id}`]})
-                        </span>
+                      <Star className={`w-3 h-3 mb-0.5 ${isSelected ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
+                      <span className="font-medium text-[10px]">{stars}+</span>
+                      {filterCounts[`rating_${stars}`] !== undefined && (
+                        <span className="text-[9px] text-gray-500 dark:text-gray-400">({filterCounts[`rating_${stars}`]})</span>
                       )}
-                    </label>
+                    </button>
                   );
                 })}
-              </CollapsibleFilterSection>
-            ) : (
-              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.additionalFacilities')}</h4>
-                <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
               </div>
-            )}
+            </div>
+          )}
 
-            {/* 10. Hotel star rating (property stars from rating_stars) */}
-            {apiData?.ratings && apiData.ratings.length > 0 ? (
-              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelStars') || t('search.filtersSection.guestRating')}</h4>
-                <div className="grid grid-cols-5 gap-1">
-                  {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
-                    const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
-                    if (stars === 0) return null;
-                    const isSelected = filters.starRating?.includes(stars) || false;
-                    return (
-                      <button
-                        key={rating.id}
-                        onClick={() => updateFilters({
-                          starRating: isSelected
-                            ? (filters.starRating || []).filter(s => s !== stars)
-                            : [...(filters.starRating || []), stars]
-                        })}
-                        className={`p-1.5 rounded-md border text-xs transition-all flex flex-col items-center justify-center ${
-                          isSelected
-                            ? 'border-primary-500 bg-primary-50 text-primary-700'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300'
-                        }`}
-                      >
-                        <Star className={`w-3 h-3 mb-0.5 ${isSelected ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
-                        <span className="font-medium text-[10px]">{stars}+</span>
-                        {filterCounts[`rating_${stars}`] !== undefined && (
-                          <span className="text-[9px] text-gray-500 dark:text-gray-400">({filterCounts[`rating_${stars}`]})</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelStars') || t('search.filtersSection.guestRating')}</h4>
-                <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
-              </div>
-            )}
+          {/* ── 13. Fun things to do / Activities (Group 3) ── */}
+          {outdoorFacilities.length > 0 && (
+            <CollapsibleFilterSection
+              title={t('search.filtersSection.activities')}
+              itemCount={outdoorFacilities.length}
+              initialShowCount={3}
+              selectedCount={(filters.outdoorAreas || []).length}
+              onClear={() => updateFilters({ outdoorAreas: [] })}
+            >
+              {outdoorFacilities.map((facility) => {
+                const isSelected = filters.outdoorAreas?.includes(facility.id) || false;
+                return (
+                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ outdoorAreas: isSelected ? (filters.outdoorAreas || []).filter(id => id !== facility.id) : [...(filters.outdoorAreas || []), facility.id] })}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
+                    {filterCounts[`facility_${facility.id}`] !== undefined && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">({filterCounts[`facility_${facility.id}`]})</span>
+                    )}
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
+          )}
 
-            {/* 11. Activities (Group 3) */}
-            {outdoorFacilities.length > 0 ? (
-              <CollapsibleFilterSection
-                title={t('search.filtersSection.activities')}
-                itemCount={outdoorFacilities.length}
-                initialShowCount={3}
-                selectedCount={(filters.outdoorAreas || []).length}
-                onClear={() => updateFilters({ outdoorAreas: [] })}
-              >
-                {outdoorFacilities.map((facility) => {
-                  const isSelected = filters.outdoorAreas?.includes(facility.id) || false;
-                  return (
-                    <label
-                      key={facility.id}
-                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => updateFilters({
-                          outdoorAreas: isSelected
-                            ? (filters.outdoorAreas || []).filter(id => id !== facility.id)
-                            : [...(filters.outdoorAreas || []), facility.id]
-                        })}
-                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
-                      />
-                      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
-                      {filterCounts[`facility_${facility.id}`] !== undefined && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          ({filterCounts[`facility_${facility.id}`]})
-                        </span>
-                      )}
-                    </label>
-                  );
-                })}
-              </CollapsibleFilterSection>
-            ) : (
-              <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.activities')}</h4>
-                <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
-              </div>
-            )}
-
-            {/* 12. Accessibility features (Group 4) */}
-            {accessibilityFacilities.length > 0 && (
-              <CollapsibleFilterSection
-                title={t('search.filtersSection.accessibility')}
-                itemCount={accessibilityFacilities.length}
-                initialShowCount={3}
-                className="border-b-0"
-                selectedCount={(filters.accessibilityFeatures || []).length}
-                onClear={() => updateFilters({ accessibilityFeatures: [] })}
-              >
-                {accessibilityFacilities.map((facility) => {
-                  const isSelected = filters.accessibilityFeatures?.includes(facility.id) || false;
-                  return (
-                    <label
-                      key={facility.id}
-                      className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => updateFilters({
-                          accessibilityFeatures: isSelected
-                            ? (filters.accessibilityFeatures || []).filter(id => id !== facility.id)
-                            : [...(filters.accessibilityFeatures || []), facility.id]
-                        })}
-                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
-                      />
-                      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
-                      {filterCounts[`accessibility_${facility.id}`] !== undefined && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          ({filterCounts[`accessibility_${facility.id}`]})
-                        </span>
-                      )}
-                    </label>
-                  );
-                })}
-              </CollapsibleFilterSection>
-            )}
-          </>
-        )}
+          {loadingApi && (
+            <div className="text-xs text-gray-500 dark:text-gray-400 py-2">{t('search.filtersSection.loading')}</div>
+          )}
         </div>
       </>
     );
@@ -799,36 +977,7 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
-            
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 space-y-4">
-              <h3 className="font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
-              
-              {/* Same content as embedded version */}
-              <div className="space-y-4">
-                
-
-
-              </div>
-
-
-
-              <div>
-                <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-2">{t('search.amenities')}</h4>
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {apiData?.facilities.map((facility) => (
-                    <button
-                      key={facility.id}
-                      className="flex items-center justify-between w-full p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-200 dark:bg-gray-800"
-                    >
-                      <div className="flex items-center gap-2">
-                        <Star className="w-3.5 h-3.5" />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{facility.name_mn}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Mobile filter view — use desktop sidebar for full filters.</p>
           </div>
         </div>
       </div>

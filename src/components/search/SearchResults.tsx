@@ -3,12 +3,13 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { X } from 'lucide-react';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import BookingStyleHotelCard from './BookingStyleHotelCard';
 import { ApiService } from '@/services/api';
 import { SearchResponse, SearchHotelResult } from '@/types/api';
 import SearchHeader from './SearchHeader';
 import SearchResultsHeader from './SearchResultsHeader';
-import SearchFilters from './SearchFilters';
+import SearchFilters, { UB_LANDMARKS } from './SearchFilters';
 import NoResultsState from './NoResultsState';
 import PaginationControls from './PaginationControls';
 import { HotelSearchSpinner } from '@/components/ui/magic-spinner';
@@ -66,6 +67,8 @@ interface FilterState {
   discounted: boolean;
   facilities: string[];
   roomTypes: string[];
+  neighbourhood: string[];
+  landmark: string[];
 }
 
 interface SearchParams {
@@ -85,6 +88,7 @@ interface SearchParams {
 
 export default function SearchResults() {
   const searchParams = useSearchParams();
+  const { t } = useHydratedTranslation();
   const [hotels, setHotels] = useState<SearchHotelResult[]>([]);
   const [filteredHotels, setFilteredHotels] = useState<SearchHotelResult[]>([]);
   const [apiData, setApiData] = useState<CombinedApiData | null>(null);
@@ -95,10 +99,12 @@ export default function SearchResults() {
     starRating: [],
     outdoorAreas: [],
     accessibilityFeatures: [],
-    priceRange: [0, 1000000] as [number, number],
+    priceRange: [0, 99_000_000] as [number, number],
     discounted: false,
     facilities: [],
-    roomTypes: []
+    roomTypes: [],
+    neighbourhood: [],
+    landmark: [],
   });
   const [loading, setLoading] = useState(true);
   const [showMapView, setShowMapView] = useState(false);
@@ -304,7 +310,7 @@ export default function SearchResults() {
     }
 
     // Filter by price range
-    if (newFilters.priceRange[0] !== 0 || newFilters.priceRange[1] !== 1000000) {
+    if (newFilters.priceRange[0] !== 0 || newFilters.priceRange[1] !== 99_000_000) {
       filtered = filtered.filter(hotel => {
         if (!hotel.cheapest_room) return true;
         const price = getRoomPrice(hotel.cheapest_room);
@@ -368,6 +374,28 @@ export default function SearchResults() {
         .map(id => apiData?.accessibility_features?.find(f => f.id === id))
         .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
       filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
+    }
+
+    // Filter by neighbourhood (soum/district name match)
+    if (newFilters.neighbourhood && newFilters.neighbourhood.length > 0) {
+      filtered = filtered.filter(hotel => {
+        const loc = (hotel.location?.soum || hotel.location?.district || '').toLowerCase();
+        if (!loc) return false;
+        return newFilters.neighbourhood.some(n =>
+          loc.includes(n.toLowerCase()) || n.toLowerCase().includes(loc)
+        );
+      });
+    }
+
+    // Filter by landmark (district-based proximity) 
+    if (newFilters.landmark && newFilters.landmark.length > 0) {
+      filtered = filtered.filter(hotel => {
+        const dist = (hotel.location?.soum || hotel.location?.district || '').toLowerCase();
+        return newFilters.landmark.some(lmId => {
+          const lm = UB_LANDMARKS.find(l => l.id === lmId);
+          return lm?.districts.some(d => dist.includes(d.toLowerCase()));
+        });
+      });
     }
 
     // Apply name search at the end
@@ -485,7 +513,7 @@ export default function SearchResults() {
                 <HotelsMapPreview
                   hotels={filteredHotels}
                   onExpand={() => setShowMapView(true)}
-                  height={220}
+                  height={150}
                 />
               )}
               <SearchFilters
@@ -499,6 +527,7 @@ export default function SearchResults() {
                 priceBounds={[facets.priceMin, facets.priceMax]}
                 discountedCount={facets.discountedCount}
                 totalResults={hotels.length}
+                hotels={hotels}
               />
             </div>
             
@@ -541,7 +570,7 @@ export default function SearchResults() {
                 }
 
                 if (priceBounds[1] > priceBounds[0] && filters.priceRange[1] < priceBounds[1]) {
-                  chips.push({ label: `≤₮${Math.round(filters.priceRange[1] / 1000)}K`, onRemove: () => handleFilterChange({ ...filters, priceRange: [priceBounds[0], priceBounds[1]] }) });
+                  chips.push({ label: `≤₮${new Intl.NumberFormat('en-US').format(filters.priceRange[1])}`, onRemove: () => handleFilterChange({ ...filters, priceRange: [priceBounds[0], priceBounds[1]] }) });
                 }
 
                 (filters.roomFeatures || []).forEach(id => {
@@ -564,12 +593,22 @@ export default function SearchResults() {
                   if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, accessibilityFeatures: filters.accessibilityFeatures.filter(i => i !== id) }) });
                 });
 
+                (filters.neighbourhood || []).forEach(name => {
+                  chips.push({ label: name, onRemove: () => handleFilterChange({ ...filters, neighbourhood: (filters.neighbourhood || []).filter(n => n !== name) }) });
+                });
+
+                (filters.landmark || []).forEach(lmId => {
+                  const lm = UB_LANDMARKS.find(l => l.id === lmId);
+                  if (lm) chips.push({ label: lm.name_mn, onRemove: () => handleFilterChange({ ...filters, landmark: (filters.landmark || []).filter(l => l !== lmId) }) });
+                });
+
                 if (chips.length === 0) return null;
 
                 const clearAll = () => handleFilterChange({
                   propertyTypes: [], roomFeatures: [], generalServices: [], starRating: [],
                   outdoorAreas: [], accessibilityFeatures: [], discounted: false,
-                  priceRange: [0, 1000000], facilities: [], roomTypes: []
+                  priceRange: [0, 99_000_000], facilities: [], roomTypes: [],
+                  neighbourhood: [], landmark: [],
                 });
 
                 return (
@@ -587,9 +626,9 @@ export default function SearchResults() {
                     ))}
                     <button
                       onClick={clearAll}
-                      className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 underline self-center"
+                      className="text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 underline self-center"
                     >
-                      Бүгдийг арилгах
+                      {t('search.filtersSection.clearAll') || 'Clear all'}
                     </button>
                   </div>
                 );

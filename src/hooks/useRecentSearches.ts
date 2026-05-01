@@ -17,7 +17,7 @@ export interface RecentSearch {
 }
 
 const STORAGE_KEY = 'myroom_recent_searches';
-const MAX_RECENT_SEARCHES = 2;
+const MAX_RECENT_SEARCHES = 5;
 
 export function useRecentSearches() {
   const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);

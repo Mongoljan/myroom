@@ -1,5 +1,22 @@
 import type { SearchHotelResult, HotelFacility } from '@/types/api';
 
+export const STATIC_PROPERTY_TYPES = [
+  { id: 1,  name_en: 'Hotel',          name_mn: 'Зочид буудал' },
+  { id: 2,  name_en: 'Apartment Hotel', name_mn: 'Апартмент буудал' },
+  { id: 3,  name_en: 'Guesthouse',      name_mn: 'Гестхаус' },
+  { id: 4,  name_en: 'Hostel',          name_mn: 'Хостел' },
+  { id: 5,  name_en: 'Lodge',           name_mn: 'Лодж' },
+  { id: 6,  name_en: 'Villa',           name_mn: 'Тансаг зэрэглэлийн сууц' },
+  { id: 7,  name_en: 'Tourist camp',    name_mn: 'Жуулчны бааз' },
+  { id: 8,  name_en: 'Resort',          name_mn: 'Амралтын газар' },
+  { id: 9,  name_en: 'Business Hotel',  name_mn: 'Бизнес зэрэглэлийн буудал' },
+  { id: 10, name_en: 'Homestay',        name_mn: 'Гэр байр' },
+  { id: 11, name_en: 'Motel',           name_mn: 'Жижгэвтэр дэн буудал' },
+  { id: 12, name_en: 'Bed&Breakfast',   name_mn: 'Ор болон өглөө цайтай' },
+  { id: 13, name_en: 'Glamping/Tent',   name_mn: 'Майхан сууц' },
+  { id: 14, name_en: 'Capsule Hotel',   name_mn: 'Капсул зочид буудал' },
+] as const;
+
 interface PropertyType { id: number; name_en: string; name_mn: string }
 interface Facility { id: number; name_en: string; name_mn: string }
 interface Rating { id: number; rating: string }
@@ -127,18 +144,14 @@ export function deriveFacets(
     );
   };
 
+  // Canonical property-type list: prefer what the API returns, fall back to static 14
+  const canonicalPropertyTypes: PropertyType[] =
+    apiData?.property_types?.length ? apiData.property_types : [...STATIC_PROPERTY_TYPES];
+
   // Narrow combined-data — only show options that actually exist in current results
   const narrowedApiData: CombinedApiData = {
-    property_types: (apiData?.property_types || []).filter(pt => {
-      const en = pt.name_en?.toLowerCase() || '';
-      const mn = pt.name_mn?.toLowerCase() || '';
-      // If hotels don't expose property_type at all, hide the section entirely
-      if (presentPropertyTypes.size === 0) return false;
-      return Array.from(presentPropertyTypes).some(pt2 =>
-        (en && (pt2.includes(en) || en.includes(pt2))) ||
-        (mn && (pt2.includes(mn) || mn.includes(pt2)))
-      );
-    }),
+    // Always include all canonical property types; counts (computed below) gate UI visibility
+    property_types: canonicalPropertyTypes,
     facilities: (apiData?.facilities || []).filter(isFacilityPresent),
     ratings: (apiData?.ratings || []).filter(r => {
       const n = parseInt(r.rating.match(/\d+/)?.[0] || '0', 10);
@@ -155,18 +168,28 @@ export function deriveFacets(
     if (counts[`facility_${f.id}`] !== undefined) counts[`accessibility_${f.id}`] = counts[`facility_${f.id}`];
   }
 
-  // Property type counts (best-effort, name match)
-  for (const pt of narrowedApiData.property_types) {
+  // Property type counts — match by numeric ID first, then by English/Mongolian name
+  const anyTypeData = hotels.some(h => !!(h.property_type || '').trim());
+  for (const pt of canonicalPropertyTypes) {
     const en = pt.name_en?.toLowerCase() || '';
     const mn = pt.name_mn?.toLowerCase() || '';
     let c = 0;
     for (const h of hotels) {
-      const t = (h.property_type || '').toLowerCase();
-      if (!t) continue;
-      if (t.includes(en) || t.includes(mn) || en.includes(t) || mn.includes(t)) c++;
+      const raw = (h.property_type || '').trim();
+      if (!raw) continue;
+      const numericId = parseInt(raw, 10);
+      if (!isNaN(numericId) && numericId === pt.id) {
+        c++;
+      } else {
+        const t = raw.toLowerCase();
+        if (t === en || t === mn || t.includes(en) || en.includes(t) || t.includes(mn) || mn.includes(t)) c++;
+      }
     }
     if (c > 0) counts[`propertyType_${pt.id}`] = c;
   }
+
+  // Always show all 14 canonical property types; counts shown next to each where available
+  narrowedApiData.property_types = canonicalPropertyTypes;
 
   return {
     narrowedApiData,

@@ -29,17 +29,17 @@ export default function AllFacilitiesFilter({
 }: AllFacilitiesFilterProps) {
   const [showAllCategories, setShowAllCategories] = useState(false);
 
-  // Categorize facilities
-  const categories = {
-    'Popular': ['Free Wi-Fi', 'Parking', 'Restaurant', '24-hour front desk', 'Room service'],
-    'Transportation': ['Airport shuttle', 'Airport Pick-up Service', 'Car rental', 'Taxi call'],
-    'Dining': ['Restaurant', 'Bar', 'Cafe', 'Breakfast included', 'Room service'],
-    'Wellness & Recreation': ['Swimming pool', 'Fitness center', 'Spa & welness center', 'Sauna', 'Hot tub / Jacuzzi'],
-    'Business': ['Business center', 'Conference room', 'Currency exchange'],
-    'Outdoor': ['Garden', 'Terrace', 'BBQ', 'Golf course', 'Water park'],
-    'Accessibility': ['Elevator', 'Wheelchair accessible', 'Pet friendly', 'Family rooms'],
-    'Services': ['Guest Laundry', 'Luggage storage', 'Wake-up call'],
-    'Room Features': ['Air conditioning', 'Non-smoking rooms', 'Smoking area']
+  // Categorize facilities (with Mongolian labels)
+  const categories: Record<string, string[]> = {
+    'Түгээмэл': ['Free Wi-Fi', 'Parking', 'Restaurant', '24-hour front desk', 'Room service'],
+    'Тээвэр': ['Airport shuttle', 'Airport Pick-up Service', 'Car rental', 'Taxi call'],
+    'Хоол, ресторан': ['Restaurant', 'Bar', 'Cafe', 'Breakfast included', 'Room service'],
+    'Спорт & Амралт': ['Swimming pool', 'Fitness center', 'Spa & welness center', 'Sauna', 'Hot tub / Jacuzzi'],
+    'Бизнес': ['Business center', 'Conference room', 'Currency exchange'],
+    'Гадна талбай': ['Garden', 'Terrace', 'BBQ', 'Golf course', 'Water park'],
+    'Хүртээмжтэй': ['Elevator', 'Wheelchair accessible', 'Pet friendly', 'Family rooms'],
+    'Үйлчилгээ': ['Guest Laundry', 'Luggage storage', 'Wake-up call'],
+    'Өрөөний онцлог': ['Air conditioning', 'Non-smoking rooms', 'Smoking area']
   };
 
   const getFacilityIcon = (facilityNameEn: string) => {
@@ -70,14 +70,14 @@ export default function AllFacilitiesFilter({
   // Display popular categories first, then others
   const displayCategories = showAllCategories
     ? Object.entries(categories)
-    : Object.entries(categories).slice(0, 3);
+    : Object.entries(categories).slice(0, 5);
 
   return (
     <div className="space-y-3">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-        All Facilities
+        Бүх тохижилт
         <span className="ml-2 text-sm font-normal text-gray-500">
-          ({facilities.length} available)
+          ({facilities.length} боломжтой)
         </span>
       </h3>
 
@@ -94,7 +94,7 @@ export default function AllFacilitiesFilter({
             title={categoryName}
             itemCount={facilitiesInCategory.length}
             initialShowCount={5}
-            defaultExpanded={categoryName === 'Popular'}
+            defaultExpanded={categoryName === 'Түгээмэл'}
           >
             {facilitiesInCategory.map((facility) => {
               const isSelected = selectedFacilities.includes(facility.id);
@@ -136,10 +136,10 @@ export default function AllFacilitiesFilter({
           className="w-full mt-3 py-2 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium flex items-center justify-center gap-1 border-t border-gray-100 dark:border-gray-700 pt-3"
         >
           {showAllCategories ? (
-            <>Show fewer categories</>
+            <>Цөөн ангилал харах</>
           ) : (
             <>
-              Show all {Object.keys(categories).length} categories
+              Бүх {Object.keys(categories).length} ангилал харах
               <ChevronDown className="w-3 h-3" />
             </>
           )}

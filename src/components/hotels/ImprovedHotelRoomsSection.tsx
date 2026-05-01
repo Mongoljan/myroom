@@ -8,6 +8,7 @@ import { RoomPriceOptions, BookingItem } from './RoomCard';
 import TripComStyleRoomCard from './TripComStyleRoomCard';
 import BookingSummary from './BookingSummary';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import DateRangePicker from '@/components/common/DateRangePicker';
 
 interface ImprovedHotelRoomsSectionProps {
   hotelId: number;
@@ -312,49 +313,27 @@ export default function ImprovedHotelRoomsSection({
 
   return (
     <div>
-      {/* Mini Search Form - Compact style */}
+      {/* Mini Search Form - with shared DateRangePicker */}
       <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
         <div className="flex flex-col lg:flex-row lg:items-center gap-3">
-          {/* Check-in Date */}
+          {/* Date Range Picker */}
           <div className="flex-1 min-w-0">
-            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-              {t('hotelRooms.checkInDate', 'Орох огноо')}
-            </label>
-            <input
-              type="date"
-              value={selectedCheckIn}
-              onChange={(e) => handleCheckInChange(e.target.value)}
-              min={new Date().toISOString().split('T')[0]}
-              className="w-full px-2 py-1.5 text-sm border-0 focus:outline-none text-gray-900 dark:text-gray-100 dark:bg-transparent"
-            />
-          </div>
-
-          {/* Night Count Display */}
-          <div className="hidden lg:flex flex-col items-center px-2">
-            <div className="text-xs text-gray-400 dark:text-gray-500">шөнө</div>
-            <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-              {getNumberOfNights()}
-            </div>
-          </div>
-
-          {/* Check-out Date */}
-          <div className="flex-1 min-w-0">
-            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-              {t('hotelRooms.checkOutDate', 'Гарах огноо')}
-            </label>
-            <input
-              type="date"
-              value={selectedCheckOut}
-              onChange={(e) => handleCheckOutChange(e.target.value)}
-              min={selectedCheckIn}
-              className="w-full px-2 py-1.5 text-sm border-0 focus:outline-none text-gray-900 dark:text-gray-100 dark:bg-transparent"
+            <DateRangePicker
+              checkIn={selectedCheckIn}
+              checkOut={selectedCheckOut}
+              onDateChange={(ci, co) => {
+                setSelectedCheckIn(ci);
+                setSelectedCheckOut(co);
+                updateURLWithDates(ci, co);
+                setBookingItems([]);
+              }}
             />
           </div>
 
           <div className="hidden lg:block h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
 
           {/* Guests - Compact Layout */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-shrink-0">
             <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
               {t('hotelRooms.guests', 'Зочид')}
             </label>
@@ -390,11 +369,6 @@ export default function ImprovedHotelRoomsSection({
                 />
               </div>
             </div>
-          </div>
-
-          {/* Mobile Night Count */}
-          <div className="lg:hidden mt-2 pt-2 border-t border-gray-100 dark:border-gray-700 text-center">
-            <span className="text-sm text-gray-600 dark:text-gray-400">{getNumberOfNights()} шөнө</span>
           </div>
         </div>
       </div>
