@@ -1,11 +1,17 @@
 @import "tailwindcss";
 @import "../styles/design-tokens.css";
 
-/* Override text-xs from 12px → 14px so minimum readable text is 14px */
+/* Typography: wire Geist Sans/Mono (loaded in layout.tsx) into Tailwind's font scale */
 @theme {
-  --text-xs: 0.875rem;
-  --text-xs--line-height: 1.25rem;
+  --font-sans: var(--font-geist-sans, ui-sans-serif, system-ui, sans-serif);
+  --font-mono: var(--font-geist-mono, ui-monospace, monospace);
 }
+
+/* Text-size scale: use Tailwind defaults.
+   - text-xs  = 12px  → only for badges, counts, truly secondary info
+   - text-sm  = 14px  → standard body / filter items
+   - text-base = 16px → section headings, card titles
+*/
 
 /* Tailwind v4: enable class-based dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -214,6 +220,7 @@
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    font-family: var(--font-sans);
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 

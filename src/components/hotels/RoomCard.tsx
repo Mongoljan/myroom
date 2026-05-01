@@ -85,13 +85,13 @@ export default function RoomCard({
             {room.roomTypeName}
           </h3>
           {room.number_of_rooms_to_sell > 0 && room.number_of_rooms_to_sell <= 5 && (
-            <span className="text-xs font-semibold text-red-600 dark:text-red-400">
+            <span className="text-sm font-semibold text-red-600 dark:text-red-400">
               {t('roomCard.lastRooms', { count: room.number_of_rooms_to_sell, defaultValue: 'Сүүлийн {{count}} өрөө' })}
             </span>
           )}
         </div>
         {room.roomCategoryName && room.roomCategoryName !== 'Unknown' && (
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{room.roomCategoryName}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{room.roomCategoryName}</p>
         )}
       </div>
 
@@ -100,7 +100,7 @@ export default function RoomCard({
         <div className="w-full lg:w-60 flex-shrink-0 space-y-2">
           <div className="relative w-full h-36 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
             {hasDiscount && (
-              <div className="absolute top-2 right-2 z-10 bg-red-500 text-white px-2 py-0.5 rounded text-xs font-bold shadow">
+              <div className="absolute top-2 right-2 z-10 bg-red-500 text-white px-2 py-0.5 rounded text-sm font-bold shadow">
                 -{discountPercentage}%
               </div>
             )}
@@ -126,7 +126,7 @@ export default function RoomCard({
                   <div key={idx} className="relative rounded-md overflow-hidden bg-gray-100 dark:bg-gray-700">
                     <SafeImage src={img.image} alt={`${room.roomTypeName} ${idx + 2}`} fill className="object-cover" />
                     {isLast && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xs font-semibold gap-1">
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-sm font-semibold gap-1">
                         <ImageIcon className="w-3.5 h-3.5" />
                         {room.images.length}
                       </div>
@@ -229,7 +229,7 @@ export default function RoomCard({
           </ul>
 
           {room.room_Description && (
-            <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed pt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed pt-1">
               {room.room_Description}
             </p>
           )}
@@ -239,14 +239,14 @@ export default function RoomCard({
         <div className="w-full lg:w-72 flex-shrink-0 lg:border-l border-gray-100 dark:border-gray-700 lg:pl-5 flex flex-col gap-3">
           <div>
             {hasDiscount && priceOptions?.basePriceRaw && (
-              <div className="text-xs text-gray-400 line-through">₮{priceOptions.basePriceRaw.toLocaleString()}</div>
+              <div className="text-sm text-gray-400 line-through">₮{priceOptions.basePriceRaw.toLocaleString()}</div>
             )}
             {priceOptions ? (
               <div className="flex items-baseline gap-1.5">
                 <span className="text-2xl font-bold text-gray-900 dark:text-white">
                   ₮{priceOptions.basePrice.toLocaleString()}
                 </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400">/ {t('roomCard.night', 'шөнө')}</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">/ {t('roomCard.night', 'шөнө')}</span>
               </div>
             ) : (
               <div className="text-sm text-gray-500 dark:text-gray-400">{t('roomCard.priceUnavailable', 'Үнэ боломжгүй')}</div>
@@ -289,7 +289,7 @@ export default function RoomCard({
           {!showOnlyBasePrice && priceOptions && (priceOptions.halfDayPrice || priceOptions.singlePersonPrice) && (
             <div className="pt-3 border-t border-gray-100 dark:border-gray-700 space-y-2">
               {priceOptions.halfDayPrice && priceOptions.halfDayPrice > 0 && (
-                <div className="flex items-center justify-between gap-2 text-xs">
+                <div className="flex items-center justify-between gap-2 text-sm">
                   <div className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
                     <Clock className="w-3.5 h-3.5" />
                     {t('roomCard.halfDayPrice', 'Хагас өдөр')}
@@ -299,7 +299,7 @@ export default function RoomCard({
                     <select
                       value={getRoomQuantity('halfDay')}
                       onChange={(e) => onQuantityChange('halfDay', parseInt(e.target.value))}
-                      className="border border-gray-300 dark:border-gray-600 rounded px-1.5 py-0.5 text-xs bg-white dark:bg-gray-800"
+                      className="border border-gray-300 dark:border-gray-600 rounded px-1.5 py-0.5 text-sm bg-white dark:bg-gray-800"
                     >
                       {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('halfDay') + 1, 6) }, (_, i) => (
                         <option key={i} value={i}>{i}</option>
@@ -309,7 +309,7 @@ export default function RoomCard({
                 </div>
               )}
               {priceOptions.singlePersonPrice && priceOptions.singlePersonPrice > 0 && (
-                <div className="flex items-center justify-between gap-2 text-xs">
+                <div className="flex items-center justify-between gap-2 text-sm">
                   <div className="flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
                     <User className="w-3.5 h-3.5" />
                     {t('roomCard.singleGuest', '1 хүн')}
@@ -319,7 +319,7 @@ export default function RoomCard({
                     <select
                       value={getRoomQuantity('singlePerson')}
                       onChange={(e) => onQuantityChange('singlePerson', parseInt(e.target.value))}
-                      className="border border-gray-300 dark:border-gray-600 rounded px-1.5 py-0.5 text-xs bg-white dark:bg-gray-800"
+                      className="border border-gray-300 dark:border-gray-600 rounded px-1.5 py-0.5 text-sm bg-white dark:bg-gray-800"
                     >
                       {Array.from({ length: Math.min(remainingQuantity + getRoomQuantity('singlePerson') + 1, 6) }, (_, i) => (
                         <option key={i} value={i}>{i}</option>

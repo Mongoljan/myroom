@@ -180,7 +180,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                   className="object-cover"
                 />
                 {hotel.priceOptions?.hasDiscount && (
-                  <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-medium">
+                  <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-sm font-medium">
                     {t('similarHotels.discount')}
                   </div>
                 )}
@@ -191,7 +191,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                   <h3 className="font-medium text-sm line-clamp-1 group-hover:text-slate-900 dark:group-hover:text-white transition-colors text-gray-900 dark:text-white">
                     {hotel.property_name}
                   </h3>
-                  <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-xs">
+                  <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-sm">
                     <MapPin className="w-3 h-3" />
                     <span className="line-clamp-1">
                       {hotel.location?.province_city}, {hotel.location?.soum}
@@ -205,7 +205,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                       <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
                     {hotel.rating_stars?.label || t('similarHotels.noRating')}
                   </span>
                 </div>
@@ -226,7 +226,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                       `₮${hotel.cheapest_room?.price_per_night?.toLocaleString() || t('similarHotels.priceUnknown')}`
                     }
                   </span>
-                  <span className="text-xs text-gray-600 dark:text-gray-400">{t('similarHotels.from')}</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{t('similarHotels.from')}</span>
                 </div>
               </div>
             </div>

@@ -40,20 +40,20 @@ export default function BookingSummary({
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sticky top-4">
       {/* Date Range Display */}
       <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">{t('bookingExtra.stayDates')}</div>
+        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('bookingExtra.stayDates')}</div>
         <div className="flex items-center justify-between text-sm">
           <div>
             <div className="font-medium text-gray-900 dark:text-white">{new Date(checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">{t('bookingExtra.checkIn')}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">{t('bookingExtra.checkIn')}</div>
           </div>
           <div className="flex-1 border-t border-gray-300 dark:border-gray-600 mx-3 relative">
-            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 px-2 text-xs text-gray-600 dark:text-gray-400">
+            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 px-2 text-sm text-gray-600 dark:text-gray-400">
               {nights} {nights !== 1 ? t('bookingExtra.nights') : t('bookingExtra.night')}
             </div>
           </div>
           <div>
             <div className="font-medium text-gray-900 dark:text-white">{new Date(checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">{t('bookingExtra.checkOut')}</div>
+            <div className="text-sm text-gray-600 dark:text-gray-400">{t('bookingExtra.checkOut')}</div>
           </div>
         </div>
       </div>
@@ -61,7 +61,7 @@ export default function BookingSummary({
       <div className="text-center mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
         <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('bookingExtra.totalPrice')}</div>
         <div className="text-2xl font-bold text-gray-900 dark:text-white">₮{totalPriceWithNights.toLocaleString()}</div>
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           ₮{totalPrice.toLocaleString()} × {nights} {nights !== 1 ? t('bookingExtra.nights') : t('bookingExtra.night')}
         </div>
       </div>
@@ -88,10 +88,10 @@ export default function BookingSummary({
                     <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
                       {item.room.roomTypeName}
                     </h4>
-                    <div className="text-xs text-slate-900 dark:text-slate-300 mb-1">
+                    <div className="text-sm text-slate-900 dark:text-slate-300 mb-1">
                       {priceTypeLabels[item.priceType]}
                     </div>
-                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
                       ₮{item.price.toLocaleString()} × {item.quantity} = ₮{(item.price * item.quantity).toLocaleString()}
                     </div>
                   </div>
@@ -105,7 +105,7 @@ export default function BookingSummary({
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600 dark:text-gray-400">{t('bookingExtra.quantity')}:</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{t('bookingExtra.quantity')}:</span>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onQuantityChange(item.room.id, item.priceType, Math.max(1, item.quantity - 1))}

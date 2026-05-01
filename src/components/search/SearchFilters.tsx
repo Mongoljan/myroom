@@ -59,6 +59,7 @@ export default function SearchFilters({
     generalServiceFacilities,
     outdoorFacilities,
     accessibilityFacilities,
+    bedTypeFacilities,
     neighbourhoodOptions,
     landmarkCounts,
   } = useSearchFilters({ onFilterChange, apiData, externalFilters, filterCounts, priceBounds, hotels });
@@ -101,6 +102,11 @@ export default function SearchFilters({
   (filters.accessibilityFeatures || []).forEach(id => {
     const fac = apiData?.accessibility_features?.find(f => f.id === id);
     if (fac) activeFilterChips.push({ label: fac.name_mn, onRemove: () => updateFilters({ accessibilityFeatures: (filters.accessibilityFeatures || []).filter(i => i !== id) }) });
+  });
+
+  (filters.bedTypes || []).forEach(id => {
+    const bt = bedTypeFacilities.find(b => b.id === id);
+    if (bt) activeFilterChips.push({ label: bt.name, onRemove: () => updateFilters({ bedTypes: (filters.bedTypes || []).filter(i => i !== id) }) });
   });
 
   (filters.neighbourhood || []).forEach(name => {
@@ -273,9 +279,10 @@ export default function SearchFilters({
             <CollapsibleFilterSection
               title={t('search.filtersSection.generalFacilities')}
               itemCount={roomFeatureFacilities.length}
-              initialShowCount={4}
+              initialShowCount={10}
               selectedCount={(filters.roomFeatures || []).length}
               onClear={() => updateFilters({ roomFeatures: [] })}
+              usePanel
             >
               {roomFeatureFacilities.map((facility) => {
                 const isSelected = (filters.roomFeatures || []).includes(facility.id);
@@ -302,9 +309,10 @@ export default function SearchFilters({
             <CollapsibleFilterSection
               title={t('search.filtersSection.additionalFacilities')}
               itemCount={generalServiceFacilities.length}
-              initialShowCount={5}
+              initialShowCount={10}
               selectedCount={(filters.generalServices || []).length}
               onClear={() => updateFilters({ generalServices: [] })}
+              usePanel
             >
               {generalServiceFacilities.map((facility) => {
                 const isSelected = (filters.generalServices || []).includes(facility.id);
@@ -331,9 +339,10 @@ export default function SearchFilters({
             <CollapsibleFilterSection
               title={t('search.filtersSection.accessibility')}
               itemCount={accessibilityFacilities.length}
-              initialShowCount={3}
+              initialShowCount={10}
               selectedCount={(filters.accessibilityFeatures || []).length}
               onClear={() => updateFilters({ accessibilityFeatures: [] })}
+              usePanel
             >
               {accessibilityFacilities.map((facility) => {
                 const isSelected = (filters.accessibilityFeatures || []).includes(facility.id);
@@ -348,6 +357,36 @@ export default function SearchFilters({
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {filterCounts[`accessibility_${facility.id}`] !== undefined && (
                       <span className="text-xs text-gray-500 dark:text-gray-400">({filterCounts[`accessibility_${facility.id}`]})</span>
+                    )}
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
+          )}
+
+          {/* 8. Bed type */}
+          {bedTypeFacilities.length > 0 && (
+            <CollapsibleFilterSection
+              title={t('search.filtersSection.bedType') || 'Орны төрөл'}
+              itemCount={bedTypeFacilities.length}
+              initialShowCount={5}
+              selectedCount={(filters.bedTypes || []).length}
+              onClear={() => updateFilters({ bedTypes: [] })}
+              usePanel
+            >
+              {bedTypeFacilities.map((bt) => {
+                const isSelected = (filters.bedTypes || []).includes(bt.id);
+                return (
+                  <label key={bt.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ bedTypes: isSelected ? (filters.bedTypes || []).filter(id => id !== bt.id) : [...(filters.bedTypes || []), bt.id] })}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{bt.name}</span>
+                    {filterCounts[`bedType_${bt.id}`] !== undefined && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">({filterCounts[`bedType_${bt.id}`]})</span>
                     )}
                   </label>
                 );
@@ -461,9 +500,10 @@ export default function SearchFilters({
             <CollapsibleFilterSection
               title={t('search.filtersSection.activities')}
               itemCount={outdoorFacilities.length}
-              initialShowCount={3}
+              initialShowCount={10}
               selectedCount={(filters.outdoorAreas || []).length}
               onClear={() => updateFilters({ outdoorAreas: [] })}
+              usePanel
             >
               {outdoorFacilities.map((facility) => {
                 const isSelected = (filters.outdoorAreas || []).includes(facility.id);

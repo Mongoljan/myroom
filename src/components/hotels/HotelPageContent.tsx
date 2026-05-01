@@ -59,10 +59,12 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
       ? propertyDetails.activities
       : hotel.activities) ?? [];
 
+  // Prefer search-API accessibility_features (complete with names) over property-details
+  // join-table records which lack name fields.
   const accessibilityFeatures: HotelFacility[] =
-    (propertyDetails?.accessibility_feature?.length
-      ? propertyDetails.accessibility_feature
-      : hotel.accessibility_features) ?? [];
+    hotel.accessibility_features?.length
+      ? hotel.accessibility_features
+      : ((propertyDetails?.accessibility_feature ?? []) as HotelFacility[]);
 
   return (
     <div className="bg-white dark:bg-gray-900 min-h-screen">

@@ -94,9 +94,11 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
 
     // Property type filter
     if (selectedPropertyTypes.size > 0) {
-      filtered = filtered.filter(hotel =>
-        selectedPropertyTypes.has(hotel.property_type?.toLowerCase() || 'hotel')
-      );
+      filtered = filtered.filter(hotel => {
+        const pt = hotel.property_type;
+        const ptStr = typeof pt === 'object' && pt ? pt.name_en.toLowerCase() : (pt || 'hotel').toLowerCase();
+        return selectedPropertyTypes.has(ptStr);
+      });
     }
 
     setFilteredHotels(filtered);

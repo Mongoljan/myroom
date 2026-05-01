@@ -22,6 +22,7 @@ interface Facility { id: number; name_en: string; name_mn: string }
 interface Rating { id: number; rating: string }
 interface Province { id: number; name: string }
 interface AccessibilityFeature { id: number; name_en: string; name_mn: string }
+interface BedType { id: number; name: string }
 
 export interface CombinedApiData {
   property_types: PropertyType[];
@@ -31,12 +32,16 @@ export interface CombinedApiData {
   ratings: Rating[];
   province: Province[];
   accessibility_features: AccessibilityFeature[];
+  bed_types?: BedType[];
 }
+
+/** Canonical bed types from /api/all-data/ */
+export interface AllDataBedType { id: number; name: string; is_custom?: boolean }
 
 export interface DerivedFacets {
   /** Combined-data narrowed to ONLY options that appear in current results */
   narrowedApiData: CombinedApiData;
-  /** counts keyed as `facility_${id}`, `rating_${stars}`, `propertyType_${id}`, `accessibility_${id}`, `discounted` */
+  /** counts keyed as `facility_${id}`, `rating_${stars}`, `propertyType_${id}`, `accessibility_${id}`, `bedType_${id}`, `discounted` */
   filterCounts: Record<string, number>;
   /** Min/Max price across results' cheapest_room */
   priceMin: number;
@@ -69,12 +74,15 @@ const getRoomPrice = (hotel: SearchHotelResult): number => {
  */
 export function deriveFacets(
   hotels: SearchHotelResult[],
-  apiData: CombinedApiData | null
+  apiData: CombinedApiData | null,
+  allDataBedTypes?: AllDataBedType[]
 ): DerivedFacets {
   const presentFacilityIds = new Set<number>();
   const presentFacilityNames = new Set<string>(); // fallback for string-shaped facilities
   const presentRatings = new Set<number>();
-  const presentPropertyTypes = new Set<string>();
+  const presentPropertyTypeIds = new Set<number>();
+  const presentBedTypeIds = new Set<number>();
+  const bedTypeMap = new Map<number, string>(); // id → name, built from hotel results
   const counts: Record<string, number> = {};
   let priceMin = Infinity;
   let priceMax = 0;
@@ -106,9 +114,22 @@ export function deriveFacets(
       counts[k] = (counts[k] || 0) + 1;
     }
 
-    // Property type
+    // Property type — now can be an object {id, name_en, name_mn} or legacy string
     if (h.property_type) {
-      presentPropertyTypes.add(h.property_type.toLowerCase());
+      if (typeof h.property_type === 'object' && h.property_type.id) {
+        presentPropertyTypeIds.add(h.property_type.id);
+      }
+    }
+
+    // Bed types — build presentBedTypeIds; use all-data canonical names when available
+    for (const bt of h.bed_types || []) {
+      if (bt.id) {
+        presentBedTypeIds.add(bt.id);
+        // Only store the name from hotel result as fallback; canonical overwrites below
+        if (!bedTypeMap.has(bt.id)) bedTypeMap.set(bt.id, bt.name || `Bed ${bt.id}`);
+        const k = `bedType_${bt.id}`;
+        counts[k] = (counts[k] || 0) + 1;
+      }
     }
 
     // Price range
@@ -144,14 +165,23 @@ export function deriveFacets(
     );
   };
 
+  // Overwrite bed type names with canonical ones from all-data if provided
+  if (allDataBedTypes?.length) {
+    for (const bt of allDataBedTypes) {
+      if (presentBedTypeIds.has(bt.id)) {
+        bedTypeMap.set(bt.id, bt.name);
+      }
+    }
+  }
+
   // Canonical property-type list: prefer what the API returns, fall back to static 14
   const canonicalPropertyTypes: PropertyType[] =
     apiData?.property_types?.length ? apiData.property_types : [...STATIC_PROPERTY_TYPES];
 
   // Narrow combined-data — only show options that actually exist in current results
   const narrowedApiData: CombinedApiData = {
-    // Always include all canonical property types; counts (computed below) gate UI visibility
-    property_types: canonicalPropertyTypes,
+    // Only property types that have ≥1 matching hotel
+    property_types: canonicalPropertyTypes.filter(pt => presentPropertyTypeIds.has(pt.id)),
     facilities: (apiData?.facilities || []).filter(isFacilityPresent),
     ratings: (apiData?.ratings || []).filter(r => {
       const n = parseInt(r.rating.match(/\d+/)?.[0] || '0', 10);
@@ -161,6 +191,8 @@ export function deriveFacets(
     accessibility_features: (apiData?.accessibility_features || []).filter(isFacilityPresent),
     additionalFacilities: (apiData?.additionalFacilities || []).filter(isFacilityPresent),
     activities: (apiData?.activities || []).filter(isFacilityPresent),
+    // Derived directly from hotel results — independent of combined-data API
+    bed_types: Array.from(bedTypeMap.entries()).map(([id, name]) => ({ id, name })),
   };
 
   // Per-item counts for groups 2-4 (using same facility_${id} counts already collected)
@@ -168,28 +200,32 @@ export function deriveFacets(
     if (counts[`facility_${f.id}`] !== undefined) counts[`accessibility_${f.id}`] = counts[`facility_${f.id}`];
   }
 
-  // Property type counts — match by numeric ID first, then by English/Mongolian name
-  const anyTypeData = hotels.some(h => !!(h.property_type || '').trim());
-  for (const pt of canonicalPropertyTypes) {
+  // Property type counts — match by numeric ID (from object) first, then legacy string name
+  for (const pt of narrowedApiData.property_types) {
     const en = pt.name_en?.toLowerCase() || '';
     const mn = pt.name_mn?.toLowerCase() || '';
     let c = 0;
     for (const h of hotels) {
-      const raw = (h.property_type || '').trim();
+      const raw = h.property_type;
       if (!raw) continue;
-      const numericId = parseInt(raw, 10);
-      if (!isNaN(numericId) && numericId === pt.id) {
-        c++;
+      if (typeof raw === 'object') {
+        if (raw.id === pt.id) c++;
       } else {
-        const t = raw.toLowerCase();
-        if (t === en || t === mn || t.includes(en) || en.includes(t) || t.includes(mn) || mn.includes(t)) c++;
+        const s = raw.trim();
+        if (!s) continue;
+        const numericId = parseInt(s, 10);
+        if (!isNaN(numericId) && numericId === pt.id) {
+          c++;
+        } else {
+          const t = s.toLowerCase();
+          if (t === en || t === mn || t.includes(en) || en.includes(t) || t.includes(mn) || mn.includes(t)) c++;
+        }
       }
     }
     if (c > 0) counts[`propertyType_${pt.id}`] = c;
   }
 
-  // Always show all 14 canonical property types; counts shown next to each where available
-  narrowedApiData.property_types = canonicalPropertyTypes;
+  // narrowedApiData.property_types already filtered to only those with hotels above
 
   return {
     narrowedApiData,

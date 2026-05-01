@@ -54,6 +54,7 @@ interface CombinedApiData {
   ratings: Rating[];
   province: Province[];
   accessibility_features: AccessibilityFeature[];
+  bed_types?: Array<{ id: number; name: string }>;
 }
 
 interface FilterState {
@@ -69,6 +70,7 @@ interface FilterState {
   roomTypes: string[];
   neighbourhood: string[];
   landmark: string[];
+  bedTypes: number[];
 }
 
 interface SearchParams {
@@ -92,6 +94,7 @@ export default function SearchResults() {
   const [hotels, setHotels] = useState<SearchHotelResult[]>([]);
   const [filteredHotels, setFilteredHotels] = useState<SearchHotelResult[]>([]);
   const [apiData, setApiData] = useState<CombinedApiData | null>(null);
+  const [allDataBedTypes, setAllDataBedTypes] = useState<Array<{ id: number; name: string }>>([]);
   const [filters, setFilters] = useState<FilterState>({
     propertyTypes: [],
     roomFeatures: [],
@@ -105,6 +108,7 @@ export default function SearchResults() {
     roomTypes: [],
     neighbourhood: [],
     landmark: [],
+    bedTypes: [],
   });
   const [loading, setLoading] = useState(true);
   const [showMapView, setShowMapView] = useState(false);
@@ -136,11 +140,17 @@ export default function SearchResults() {
       setLoading(true);
 
       try {
-        // Load combined API data for backend functionality
+        // Load combined API data + all-data (for bed type names) in parallel
         const loadApiData = async () => {
           try {
-            const apiDataResponse = await ApiService.getCombinedData();
+            const [apiDataResponse, allDataResponse] = await Promise.all([
+              ApiService.getCombinedData(),
+              ApiService.getAllData(),
+            ]);
             setApiData(apiDataResponse);
+            if (allDataResponse?.bed_types?.length) {
+              setAllDataBedTypes(allDataResponse.bed_types);
+            }
           } catch (error) {
           }
         };
@@ -271,17 +281,22 @@ export default function SearchResults() {
     // Apply filters to hotels
     let filtered = hotels;
     
-    // Filter by property types (using property_type field)
+    // Filter by property types (using property_type field — now an object {id,name_en,name_mn})
     if (newFilters.propertyTypes && newFilters.propertyTypes.length > 0) {
-      const selectedTypes = newFilters.propertyTypes
-        .map(id => apiData?.property_types?.find(pt => pt.id === id))
-        .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
       filtered = filtered.filter(hotel => {
-        const t = (hotel.property_type || '').toLowerCase();
-        if (!t) return false;
-        return selectedTypes.some(pt => {
-          const en = (pt.name_en || '').toLowerCase();
-          const mn = (pt.name_mn || '').toLowerCase();
+        const pt = hotel.property_type;
+        if (!pt) return false;
+        if (typeof pt === 'object') {
+          return newFilters.propertyTypes.includes(pt.id);
+        }
+        // Legacy string fall-back
+        const selectedTypes = newFilters.propertyTypes
+          .map(id => apiData?.property_types?.find(p => p.id === id))
+          .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
+        const t = pt.toLowerCase();
+        return selectedTypes.some(p => {
+          const en = (p.name_en || '').toLowerCase();
+          const mn = (p.name_mn || '').toLowerCase();
           return (en && (t.includes(en) || en.includes(t))) || (mn && (t.includes(mn) || mn.includes(t)));
         });
       });
@@ -363,6 +378,13 @@ export default function SearchResults() {
         .map(id => apiData?.accessibility_features?.find(f => f.id === id))
         .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
       filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
+    }
+
+    // Filter by bed types — hotel must have at least one matching bed type
+    if (newFilters.bedTypes && newFilters.bedTypes.length > 0) {
+      filtered = filtered.filter(hotel =>
+        (hotel.bed_types || []).some(bt => newFilters.bedTypes.includes(bt.id))
+      );
     }
 
     // Filter by neighbourhood (soum/district name match)
@@ -472,7 +494,7 @@ export default function SearchResults() {
 
   // Derive available filter facets from current search results so the
   // sidebar only shows options that exist in this result set, with counts.
-  const facets = useMemo(() => deriveFacets(hotels, apiData), [hotels, apiData]);
+  const facets = useMemo(() => deriveFacets(hotels, apiData, allDataBedTypes), [hotels, apiData, allDataBedTypes]);
 
   if (loading) {
     return (
@@ -582,6 +604,11 @@ export default function SearchResults() {
                   if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, accessibilityFeatures: filters.accessibilityFeatures.filter(i => i !== id) }) });
                 });
 
+                (filters.bedTypes || []).forEach(id => {
+                  const bt = facets.narrowedApiData.bed_types?.find(b => b.id === id);
+                  if (bt) chips.push({ label: bt.name, onRemove: () => handleFilterChange({ ...filters, bedTypes: (filters.bedTypes || []).filter(i => i !== id) }) });
+                });
+
                 (filters.neighbourhood || []).forEach(name => {
                   chips.push({ label: name, onRemove: () => handleFilterChange({ ...filters, neighbourhood: (filters.neighbourhood || []).filter(n => n !== name) }) });
                 });
@@ -597,7 +624,7 @@ export default function SearchResults() {
                   propertyTypes: [], roomFeatures: [], generalServices: [], starRating: [],
                   outdoorAreas: [], accessibilityFeatures: [], discounted: false,
                   priceRange: [0, 99_000_000], facilities: [], roomTypes: [],
-                  neighbourhood: [], landmark: [],
+                  neighbourhood: [], landmark: [], bedTypes: [],
                 });
 
                 return (

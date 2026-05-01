@@ -85,7 +85,7 @@ export default function RoomDetailsModal({ open, onOpenChange, room }: RoomDetai
             <div className="min-w-0">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white truncate">{room.roomTypeName}</h2>
               {room.roomCategoryName && room.roomCategoryName !== 'Unknown' && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{room.roomCategoryName}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{room.roomCategoryName}</p>
               )}
             </div>
             <DialogClose asChild>
@@ -126,7 +126,7 @@ export default function RoomDetailsModal({ open, onOpenChange, room }: RoomDetai
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
-                      <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                      <div className="absolute bottom-2 right-2 bg-black/60 text-white text-sm px-2 py-0.5 rounded">
                         {imageIdx + 1} / {images.length}
                       </div>
                     </>
@@ -222,7 +222,7 @@ export default function RoomDetailsModal({ open, onOpenChange, room }: RoomDetai
                     <div className="flex items-center gap-2 mb-2">
                       <Icon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{title}</h4>
-                      <span className="text-xs text-gray-500">({items.length})</span>
+                      <span className="text-sm text-gray-500">({items.length})</span>
                     </div>
                     <ul className="space-y-1.5 text-[13px]">
                       {items.map((it, idx) => (

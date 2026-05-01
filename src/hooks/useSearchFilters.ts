@@ -33,6 +33,11 @@ export interface AccessibilityFeature {
   name_mn: string;
 }
 
+export interface BedType {
+  id: number;
+  name: string;
+}
+
 export interface CombinedApiData {
   property_types: PropertyType[];
   facilities: Facility[];
@@ -41,6 +46,7 @@ export interface CombinedApiData {
   ratings: Rating[];
   province: Province[];
   accessibility_features: AccessibilityFeature[];
+  bed_types?: BedType[];
 }
 
 export interface FilterState {
@@ -56,6 +62,7 @@ export interface FilterState {
   roomTypes: string[];
   neighbourhood: string[];
   landmark: string[];
+  bedTypes: number[];
 }
 
 export interface RecentFilter {
@@ -86,6 +93,7 @@ export const DEFAULT_FILTERS: FilterState = {
   roomTypes: [],
   neighbourhood: [],
   landmark: [],
+  bedTypes: [],
 };
 
 // ─── Landmarks ────────────────────────────────────────────────────────────────
@@ -207,7 +215,8 @@ export function useSearchFilters({
       filterState.facilities.length === 0 &&
       filterState.roomTypes.length === 0 &&
       (filterState.neighbourhood?.length ?? 0) === 0 &&
-      (filterState.landmark?.length ?? 0) === 0;
+      (filterState.landmark?.length ?? 0) === 0 &&
+      (filterState.bedTypes?.length ?? 0) === 0;
 
     if (isDefault) return;
 
@@ -323,6 +332,7 @@ export function useSearchFilters({
   const generalServiceFacilities = apiData?.additionalFacilities || [];
   const outdoorFacilities      = apiData?.activities             || [];
   const accessibilityFacilities = apiData?.accessibility_features || [];
+  const bedTypeFacilities      = apiData?.bed_types              || [];
 
   const neighbourhoodOptions: { name: string; count: number }[] = (() => {
     const counts = new Map<string, number>();
@@ -359,6 +369,7 @@ export function useSearchFilters({
     generalServiceFacilities,
     outdoorFacilities,
     accessibilityFacilities,
+    bedTypeFacilities,
     neighbourhoodOptions,
     landmarkCounts,
     filterCounts,

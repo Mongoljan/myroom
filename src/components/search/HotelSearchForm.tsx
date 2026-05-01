@@ -15,9 +15,10 @@ import { useRecentSearches } from '@/hooks/useRecentSearches';
 
 interface HotelSearchFormProps {
   compact?: boolean;
+  onSearchActiveChange?: (active: boolean) => void;
 }
 
-export default function HotelSearchForm({ compact = false }: HotelSearchFormProps) {
+export default function HotelSearchForm({ compact = false, onSearchActiveChange }: HotelSearchFormProps) {
   const { t } = useHydratedTranslation();
   const { recentSearches, saveSearch } = useRecentSearches();
   const urlSearchParams = useSearchParams();
@@ -263,6 +264,7 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
                         }}
                         placeholder={t('search.selectDates')}
                         minimal={true}
+                        onOpenChange={onSearchActiveChange}
                       />
                     </div>
                   </div>

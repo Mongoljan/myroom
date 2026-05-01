@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Gem, LayoutGrid, PackagePlus, Bike, HandHelping, Check } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { LayoutGrid, PackagePlus, Bike, HandHelping, Check, ChevronDown, X } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import type { CombinedData, HotelFacility } from '@/types/api';
+
+const PREVIEW_COUNT = 10;
 
 interface HotelAmenitiesProps {
   generalFacilities?: HotelFacility[];
@@ -64,6 +67,11 @@ export default function HotelAmenities({
   const { t, i18n } = useHydratedTranslation();
   const locale: 'en' | 'mn' = i18n?.language?.startsWith('en') ? 'en' : 'mn';
   const [combined, setCombined] = useState<CombinedData | null>(null);
+  const [openPanel, setOpenPanel] = useState<GroupKey | null>(null);
+  // openPanel is used as a boolean: non-null = panel open
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,21 +135,23 @@ export default function HotelAmenities({
     );
   }
 
+  const hasMore = groups.some(g => g.items.length > PREVIEW_COUNT);
+
   return (
-    <div className="bg-white dark:bg-transparent space-y-8">
+    <div className="bg-white dark:bg-transparent">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-6">
         {groups.map(({ key, title, Icon, items }) => (
           <div key={key}>
             <div className="flex items-center gap-2.5 mb-3">
               <Icon className="w-4 h-4 text-gray-700 dark:text-gray-400 shrink-0" />
-              <h4 className="text-[15px] font-semibold text-gray-900 dark:text-white">{title}</h4>
-              <span className="text-xs text-gray-500 dark:text-gray-400">({items.length})</span>
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{title}</h4>
+              <span className="text-sm text-gray-500 dark:text-gray-400">({items.length})</span>
             </div>
             <ul className="space-y-2 pl-0">
-              {items.map((item, index) => (
+              {items.slice(0, PREVIEW_COUNT).map((item, index) => (
                 <li
                   key={`${key}-${index}`}
-                  className="flex items-start gap-2 text-[14px] text-gray-700 dark:text-gray-300"
+                  className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"
                 >
                   <Check className="w-3.5 h-3.5 text-green-600 mt-0.5 shrink-0" />
                   <span className="leading-relaxed">{item.label}</span>
@@ -151,6 +161,81 @@ export default function HotelAmenities({
           </div>
         ))}
       </div>
+
+      {/* Single global "see all" button */}
+      {hasMore && (
+        <button
+          onClick={() => setOpenPanel('general')}
+          className="mt-5 flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium transition-colors"
+        >
+          Бүгдийг харах ({totalCount})
+          <ChevronDown className="w-3.5 h-3.5" />
+        </button>
+      )}
+
+      {/* Right-side panel — all groups in one scrollable drawer */}
+      {openPanel && mounted && createPortal(
+        <div className="fixed inset-0 z-200 flex justify-end">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setOpenPanel(null)}
+          />
+          <div className="relative w-[780px] max-w-[95vw] bg-white dark:bg-gray-900 h-full shadow-2xl flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Тохижилт</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{totalCount} нийт зүйл</p>
+              </div>
+              <button
+                onClick={() => setOpenPanel(null)}
+                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
+            </div>
+
+            {/* Grid layout — all groups side by side */}
+            <div className="flex-1 overflow-y-auto px-6 py-5">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {groups.map(({ key, title, Icon, items }) => (
+                  <div key={key}>
+                    <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100 dark:border-gray-800">
+                      <Icon className="w-4 h-4 text-gray-600 dark:text-gray-400 shrink-0" />
+                      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                        {title}
+                        <span className="ml-1 text-sm font-normal text-gray-400">({items.length})</span>
+                      </h4>
+                    </div>
+                    <ul className="space-y-2">
+                      {items.map((item, index) => (
+                        <li
+                          key={index}
+                          className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300"
+                        >
+                          <Check className="w-3.5 h-3.5 text-green-600 mt-0.5 shrink-0" />
+                          <span className="leading-relaxed">{item.label}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-5 py-4 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setOpenPanel(null)}
+                className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                Хаах
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

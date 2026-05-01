@@ -351,7 +351,10 @@ export interface SearchHotelResult {
   additional_facilities?: HotelFacility[];
   activities?: HotelFacility[];
   accessibility_features?: HotelFacility[];
-  property_type?: string; // Optional: property type (hotel, apartment, guesthouse)
+  /** Now returned as an object from the search API */
+  property_type?: string | { id: number; name_en: string; name_mn: string };
+  /** Bed types available in this hotel's rooms */
+  bed_types?: Array<{ id: number; name: string }>;
 }
 
 export interface SearchResponse {

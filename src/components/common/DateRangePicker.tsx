@@ -12,6 +12,7 @@ interface DateRangePickerProps {
   placeholder?: string;
   label?: string | React.ReactNode;
   minimal?: boolean; // For hero section - removes border, padding, and calendar icon
+  onOpenChange?: (open: boolean) => void;
 }
 
 interface CalendarDay {
@@ -26,7 +27,8 @@ export default function DateRangePicker({
   onDateChange, 
   placeholder = "Check in - Check out",
   label,
-  minimal = false
+  minimal = false,
+  onOpenChange,
 }: DateRangePickerProps) {
   const { t } = useHydratedTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -55,6 +57,12 @@ export default function DateRangePicker({
   };
 
   const nights = calculateNights();
+
+  // Notify parent when picker opens/closes
+  useEffect(() => {
+    onOpenChange?.(isOpen);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   // Calculate modal position when opening
   useEffect(() => {

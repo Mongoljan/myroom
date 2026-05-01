@@ -78,7 +78,7 @@ export default function RoomImageModal({
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-gray-900/95">
             <div className="text-sm font-semibold truncate text-slate-900 dark:text-white">{roomName}</div>
-            <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+            <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
               <span>{currentImageIndex + 1} / {images.length}</span>
               <DialogClose asChild>
                 <button className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors" aria-label="Close">

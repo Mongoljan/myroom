@@ -496,7 +496,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                       <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
                         ₮{priceInfo.original.toLocaleString()}
                       </span>
-                      <span className="px-1.5 py-0.5 bg-red-500 text-white text-xs font-semibold rounded">
+                      <span className="px-1.5 py-0.5 bg-red-500 text-white text-sm font-semibold rounded">
                         -{priceInfo.discount}%
                       </span>
                     </>
@@ -507,7 +507,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                   <span className="text-sm text-gray-600 dark:text-gray-400">/{t('hotelDetails.night', 'шөнө')}</span>
                 </div>
                 {hotel.cheapest_room && hotel.cheapest_room.nights > 1 && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
                     {t('hotelDetails.totalForStay', 'Нийт')} {hotel.cheapest_room.nights} {t('hotelDetails.nights', 'шөнө')}: <span className="font-semibold text-gray-700 dark:text-gray-300">₮{hotel.cheapest_room.estimated_total_for_requested_rooms.toLocaleString()}</span>
                   </span>
                 )}
@@ -634,7 +634,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             <div className="flex flex-col h-[85vh]">
               <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-gray-900/95">
                 <div className="text-sm font-semibold truncate text-slate-900 dark:text-white">{hotelName}</div>
-                <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                   <span>{currentImageIndex + 1} / {allImages.length}</span>
                   <DialogClose asChild>
                     <button className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors" aria-label="Close">
@@ -732,7 +732,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             </div>
             <div className="flex items-center gap-2">
               <div className="text-2xl font-bold text-gray-300 dark:text-gray-600">—</div>
-              <div className="text-xs text-gray-400 dark:text-gray-500">{t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}</div>
+              <div className="text-sm text-gray-400 dark:text-gray-500">{t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}</div>
             </div>
           </div>
 
@@ -747,13 +747,13 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             
             <div className="space-y-2.5">
               {getNearbyPlaces().filter(p => p.category === 'transport').slice(0, 2).map((place, i) => (
-                <div key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <div key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                   {i === 0 ? <Plane className="w-3 h-3 mt-0.5 flex-shrink-0" /> : <Train className="w-3 h-3 mt-0.5 flex-shrink-0" />}
                   <span className="leading-snug">{place.name} <span className="text-gray-400">— {place.distance}</span></span>
                 </div>
               ))}
               {getNearbyPlaces().filter(p => p.category === 'landmarks').slice(0, 1).map((place, i) => (
-                <div key={i} className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+                <div key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <Landmark className="w-3 h-3 mt-0.5 flex-shrink-0" />
                   <span className="leading-snug">{place.name} <span className="text-gray-400">— {place.distance}</span></span>
                 </div>
@@ -764,7 +764,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             {hotel.google_map && (
               <button
                 onClick={() => setShowMapModal(true)}
-                className="mt-3 text-blue-600 hover:text-blue-700 text-xs font-medium"
+                className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
               >
                 {t('hotelDetails.viewOnMap', 'Газрын зураг дээр харах')}
               </button>
@@ -775,15 +775,15 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">{t('hotelDetails.propertyHighlights', 'Буудлын онцлогууд')}</h4>
             <div className="space-y-2.5">
-              <div className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+              <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <MapPin className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
                 <span>{hotel.location.province_city || 'City'} {t('hotelDetails.center', 'төвд')}</span>
               </div>
-              <div className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+              <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Car className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
                 <span>{t('hotelDetails.airportTransfer', 'Нисэх онгоцны буудлын трансфер')}</span>
               </div>
-              <div className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
+              <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <Clock className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
                 <span>{t('hotelDetails.frontDesk24h', '24 цагийн хүлээн авалт')}</span>
               </div>
@@ -810,7 +810,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             </div>
             {/* Operation stats */}
             {basicInfo && (
-              <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-sm text-gray-500 dark:text-gray-400">
                 {basicInfo.start_date && (
                   <span>🏢 {t('hotelDetails.operatingSince', 'Үйл ажиллагаа эхэлсэн')}: {new Date(basicInfo.start_date).getFullYear()}</span>
                 )}
@@ -858,7 +858,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
               <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white">
                 {t('hotelDetails.facilityGroups.highlights', 'Онцлох нь')}
               </h3>
-              <span className="text-xs text-gray-500 dark:text-gray-400">({highlights.length})</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">({highlights.length})</span>
             </div>
             <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-2">
               {highlights.map((f, i) => (
@@ -877,7 +877,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             {t('hotelDetails.aboutProperty', 'Тухай')}
           </DialogTitle>
           {basicInfo && (
-            <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4 text-sm text-gray-500 dark:text-gray-400">
               {basicInfo.start_date && (
                 <span>🏢 {t('hotelDetails.operatingSince', 'Үйл ажиллагаа эхэлсэн')}: {new Date(basicInfo.start_date).getFullYear()}</span>
               )}

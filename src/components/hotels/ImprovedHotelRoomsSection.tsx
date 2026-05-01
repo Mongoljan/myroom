@@ -349,7 +349,7 @@ export default function ImprovedHotelRoomsSection({
           {/* Guests — +/- button counters (no lag) */}
           <div className="flex items-end gap-2 flex-shrink-0">
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.adults', 'Том')}</label>
+              <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.adults', 'Том')}</label>
               <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
                 <button type="button" onClick={() => setAdultsCount(c => Math.max(1, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
                 <span className="min-w-[2rem] text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{adultsCount}</span>
@@ -357,7 +357,7 @@ export default function ImprovedHotelRoomsSection({
               </div>
             </div>
             <div>
-              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.children', 'Хүүхэд')}</label>
+              <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.children', 'Хүүхэд')}</label>
               <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
                 <button type="button" onClick={() => setChildrenCountLocal(c => Math.max(0, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
                 <span className="min-w-[2rem] text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{childrenCountLocal}</span>

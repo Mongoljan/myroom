@@ -143,7 +143,7 @@ export default function TripComStyleRoomCard({
               )}
             </h3>
             {hasDiscount && (
-              <div className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+              <div className="bg-red-500 text-white text-sm font-bold px-1.5 py-0.5 rounded">
                 {discountPercent}% OFF
               </div>
             )}
@@ -191,7 +191,7 @@ export default function TripComStyleRoomCard({
                   
                   {/* Image count badge */}
                   {room.images.length > 1 && (
-                    <div className="absolute bottom-1 right-1 bg-black/60 text-white text-xs px-1 py-0.5 rounded flex items-center gap-0.5">
+                    <div className="absolute bottom-1 right-1 bg-black/60 text-white text-sm px-1 py-0.5 rounded flex items-center gap-0.5">
                       <span>📷</span>
                       <span>{selectedImageIndex + 1}/{room.images.length}</span>
                     </div>
@@ -199,7 +199,7 @@ export default function TripComStyleRoomCard({
 
                   {/* Click to view overlay */}
                   <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-white px-2 py-1 rounded text-xs font-medium">
+                    <div className="bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-white px-2 py-1 rounded text-sm font-medium">
                       {t('roomCard.viewFully', 'Бүтнээр харах')}
                     </div>
                   </div>
@@ -225,7 +225,7 @@ export default function TripComStyleRoomCard({
             <div className="text-sm text-gray-700 dark:text-gray-300">
               <span className="font-medium">{room.adultQty + room.childQty} {t('roomCard.guests', 'guests')}</span>
               {room.room_size && Number(room.room_size) > 0 && (
-                <span className="text-gray-500 dark:text-gray-400 text-xs ml-1">({Number(room.room_size)}m²)</span>
+                <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">({Number(room.room_size)}m²)</span>
               )}
             </div>
 
@@ -252,7 +252,7 @@ export default function TripComStyleRoomCard({
             {/* Amenities - Compact, horizontal layout */}
             <div className="flex flex-wrap gap-x-3 gap-y-1">
               {room.facilitiesDetails && room.facilitiesDetails.slice(0, 3).map((facility, idx) => (
-                <div key={idx} className="flex items-center gap-1 text-xs text-gray-700 dark:text-gray-300">
+                <div key={idx} className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
                   <CheckCircle className="w-3 h-3 text-green-600" />
                   <span>{facility.name_mn || facility.name_en}</span>
                 </div>
@@ -261,7 +261,7 @@ export default function TripComStyleRoomCard({
 
             {/* Availability Warning - Compact */}
             {remainingQuantity > 0 && remainingQuantity <= 5 && (
-              <div className="text-xs font-medium text-orange-600">
+              <div className="text-sm font-medium text-orange-600">
                 {t('roomCard.onlyRoomsLeft', { count: remainingQuantity }, `Only ${remainingQuantity} left!`)}
               </div>
             )}
@@ -276,7 +276,7 @@ export default function TripComStyleRoomCard({
                   <div className="text-sm text-gray-500 dark:text-gray-400 line-through">
                     ₮{(priceOptions.basePriceRaw || priceOptions.basePrice).toLocaleString()}
                   </div>
-                  <div className="bg-red-500 text-white text-xs font-bold px-1 py-0.5 rounded">
+                  <div className="bg-red-500 text-white text-sm font-bold px-1 py-0.5 rounded">
                     -{discountPercent}%
                   </div>
                 </div>
@@ -287,7 +287,7 @@ export default function TripComStyleRoomCard({
                 <div className="text-lg font-bold text-gray-900 dark:text-white">
                   ₮{priceOptions.basePrice.toLocaleString()}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-sm text-gray-500 dark:text-gray-400">
                   {nights > 1
                     ? `${nights} ${t('roomCard.nights', 'шөнийн нийт')}: ₮${(priceOptions.basePrice * nights).toLocaleString()} — ${t('roomCard.inclTaxes', 'татвар багтсан')}`
                     : t('roomCard.perNight', 'шөнийн үнэ')
