@@ -57,8 +57,8 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
       });
       
       setBookingResult(result);
-    } catch (error) {
-      console.error('Booking failed:', error);
+    } catch {
+      // silent fail — booking error handled by UI state
     } finally {
       setLoading(false);
     }
@@ -237,8 +237,8 @@ function HotelRoomsContent() {
         setLoading(true);
         const roomsData = await ApiService.getRoomsInHotel(hotelId);
         setRooms(roomsData);
-      } catch (error) {
-        console.error('Failed to fetch rooms:', error);
+      } catch {
+        // silent fail — empty rooms state shown to user
       } finally {
         setLoading(false);
       }

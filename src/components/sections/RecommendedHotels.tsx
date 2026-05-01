@@ -99,8 +99,7 @@ export default function RecommendedHotels() {
           ...prev,
           [activeTab]: response.count || 0
         }));
-      } catch (error) {
-        console.error('Error loading suggested hotels:', error);
+      } catch {
         setHotels([]);
       } finally {
         setIsLoading(false);

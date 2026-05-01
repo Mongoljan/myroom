@@ -65,8 +65,8 @@ function BookingContent() {
       try {
         const parsedRooms = JSON.parse(decodeURIComponent(roomsData));
         setRooms(parsedRooms);
-      } catch (error) {
-        console.error('Failed to parse rooms data:', error);
+      } catch {
+        // ignore malformed rooms data
       }
     }
   }, [roomsData]);
@@ -85,8 +85,8 @@ function BookingContent() {
 
         setHotelDetails(hotelData);
         setHotelPolicy(policyData[0] || null);
-      } catch (error) {
-        console.error('Failed to fetch hotel data:', error);
+      } catch {
+        // silent fail — UI already handles missing hotel data
       } finally {
         setLoadingHotelData(false);
       }
@@ -159,8 +159,6 @@ function BookingContent() {
       const result = await BookingService.createBooking(bookingRequest);
       setBookingResult(result);
     } catch (error) {
-      console.error('Booking failed:', error);
-      
       // Extract and format error message
       let errorMessage = t('errors.booking');
       

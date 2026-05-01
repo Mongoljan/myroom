@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { ToastProvider } from "@/components/common/ToastContainer";
@@ -6,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Header1 from "@/components/header/Header1";
 import Footer from "@/components/layout/Footer";
+import NavigationProgress from "@/components/common/NavigationProgress";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -104,6 +106,9 @@ export default function RootLayout({
           <AuthProvider>
             <ToastProvider>
               <I18nProvider>
+                <Suspense fallback={null}>
+                  <NavigationProgress />
+                </Suspense>
                 <div className="print:hidden">
                   <Header1 />
                 </div>

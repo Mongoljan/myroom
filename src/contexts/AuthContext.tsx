@@ -61,7 +61,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profile = await CustomerService.getProfile(response.token);
       setUser(profile);
     } catch (error) {
-      console.error('Login failed:', error);
       throw error;
     }
   }, []);
@@ -85,7 +84,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profile = await CustomerService.getProfile(response.token);
       setUser(profile);
     } catch (error) {
-      console.error('Registration failed:', error);
       throw error;
     }
   }, []);
@@ -95,8 +93,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (token) {
         await CustomerService.logout(token);
       }
-    } catch (error) {
-      console.error('Logout failed:', error);
+    } catch {
+      // ignore logout API errors — always clear local state
     } finally {
       CustomerService.clearToken();
       setUser(null);
@@ -109,8 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const profile = await CustomerService.getProfile(token);
         setUser(profile);
-      } catch (error) {
-        console.error('Failed to refresh profile:', error);
+      } catch {
+        // silent fail — user stays logged in with stale profile
       }
     }
   }, [token]);

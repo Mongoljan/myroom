@@ -53,8 +53,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
         const [
           combinedData = { facilities: [], additionalFacilities: [], activities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] }
         ] = await Promise.all([
-          ApiService.getCombinedData().catch(e => {
-            console.warn('Combined data failed:', e);
+          ApiService.getCombinedData().catch(() => {
             return { facilities: [], additionalFacilities: [], activities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] };
           })
         ]);
@@ -78,8 +77,8 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           soumMapTemp.set(soumItem.id, soumItem.name);
         });
         setSoumMap(soumMapTemp);
-      } catch (error) {
-        console.error('Failed to fetch hotel details:', error);
+      } catch {
+        // silent fail — hotel renders without extra detail maps
       } finally {
         setLoading(false);
       }
