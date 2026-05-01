@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Building2, Sparkles, Activity, Accessibility, Check, Star } from 'lucide-react';
+import { Gem, LayoutGrid, PackagePlus, Bike, HandHelping, Check } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import type { CombinedData, HotelFacility } from '@/types/api';
@@ -80,7 +80,7 @@ export default function HotelAmenities({
     accessibility: accessibilityFeatures ?? [],
   }), [generalFacilities, additionalFacilities, activities, accessibilityFeatures, facilities, amenities]);
 
-  const { groups, highlights } = useMemo<{ groups: Group[]; highlights: string[] }>(() => {
+  const groups = useMemo<Group[]>(() => {
     const canonicalMaps: Record<GroupKey, Map<number, ApiFacility>> = {
       general: new Map(),
       additional: new Map(),
@@ -95,32 +95,25 @@ export default function HotelAmenities({
     }
 
     const groupDefs: Group[] = [
-      { key: 'general',       title: t('hotelDetails.facilityGroups.general',       'Ерөнхий байгууламж'), Icon: Building2,    items: [] },
-      { key: 'additional',    title: t('hotelDetails.facilityGroups.additional',    'Нэмэлт байгууламж'),  Icon: Sparkles,     items: [] },
-      { key: 'activities',    title: t('hotelDetails.facilityGroups.activities',    'Үйл ажиллагаа'),      Icon: Activity,     items: [] },
-      { key: 'accessibility', title: t('hotelDetails.facilityGroups.accessibility', 'Хүртээмжтэй өрөө'),   Icon: Accessibility, items: [] },
+      { key: 'general',       title: t('hotelDetails.facilityGroups.general',       'Ерөнхий байгууламж'), Icon: LayoutGrid,   items: [] },
+      { key: 'additional',    title: t('hotelDetails.facilityGroups.additional',    'Нэмэлт байгууламж'),  Icon: PackagePlus,  items: [] },
+      { key: 'activities',    title: t('hotelDetails.facilityGroups.activities',    'Үйл ажиллагаа'),      Icon: Bike,         items: [] },
+      { key: 'accessibility', title: t('hotelDetails.facilityGroups.accessibility', 'Хүртээмжтэй өрөө'),   Icon: HandHelping,  items: [] },
     ];
-
-    const highlightItems: string[] = [];
-    const highlightSeen = new Set<string>();
 
     for (const g of groupDefs) {
       const seen = new Set<string>();
       for (const fac of sources[g.key]) {
-        const { id, label, isHighlight } = resolveItem(fac, locale, canonicalMaps[g.key]);
+        const { id, label } = resolveItem(fac, locale, canonicalMaps[g.key]);
         if (!label) continue;
         const dedupeKey = id !== null ? `id:${id}` : `nm:${label.toLowerCase()}`;
         if (seen.has(dedupeKey)) continue;
         seen.add(dedupeKey);
-        g.items.push({ label, isHighlight });
-        if (isHighlight && !highlightSeen.has(dedupeKey)) {
-          highlightSeen.add(dedupeKey);
-          highlightItems.push(label);
-        }
+        g.items.push({ label, isHighlight: false });
       }
     }
 
-    return { groups: groupDefs.filter(g => g.items.length > 0), highlights: highlightItems };
+    return groupDefs.filter(g => g.items.length > 0);
   }, [sources, combined, locale, t]);
 
   const totalCount = groups.reduce((acc, g) => acc + g.items.length, 0);
@@ -136,29 +129,6 @@ export default function HotelAmenities({
 
   return (
     <div className="bg-white dark:bg-transparent space-y-8">
-      {highlights.length > 0 && (
-        <div>
-          <div className="flex items-center gap-2.5 mb-3">
-            <Star className="w-4 h-4 text-amber-500 fill-amber-400 shrink-0" />
-            <h4 className="text-[15px] font-semibold text-gray-900 dark:text-white">
-              {t('hotelDetails.facilityGroups.highlights', 'Онцлох нь')}
-            </h4>
-            <span className="text-xs text-gray-500 dark:text-gray-400">({highlights.length})</span>
-          </div>
-          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-2 pl-0">
-            {highlights.map((item, index) => (
-              <li
-                key={`hl-${index}`}
-                className="flex items-start gap-2 text-[14px] text-gray-700 dark:text-gray-300"
-              >
-                <Check className="w-3.5 h-3.5 text-green-600 mt-0.5 shrink-0" />
-                <span className="leading-relaxed">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-6">
         {groups.map(({ key, title, Icon, items }) => (
           <div key={key}>

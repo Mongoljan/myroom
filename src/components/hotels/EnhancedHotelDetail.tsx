@@ -9,7 +9,7 @@ import {
   Palmtree, Bus, WashingMachine, Heater, Mountain,
   ArrowLeft, Bell as ConciergeBell, Zap, Hotel, DollarSign, Package,
   MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart, Layers3 as Layers, X,
-  PlayCircle
+  PlayCircle, Gem, Check
 } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
 import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
@@ -822,7 +822,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                 )}
               </div>
             )}
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4 flex-1">
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4 flex-1 text-justify">
               {additionalInfo.About}
             </p>
           </div>
@@ -841,7 +841,36 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
       </div>
       )}
 
-      {/* About Hotel Full Text Modal */}
+      {/* Highlights — shown right below About / YouTube section */}
+      {(() => {
+        const allFacilities: Array<{ name_en: string; name_mn: string; is_highlight: boolean }> = [
+          ...(propertyDetails?.general_facilities || []),
+          ...(propertyDetails?.additional_facilities || []),
+          ...(propertyDetails?.activities || []),
+          ...(propertyDetails?.accessibility_feature || []),
+        ];
+        const highlights = allFacilities.filter(f => f.is_highlight && (f.name_mn || f.name_en));
+        if (highlights.length === 0) return null;
+        return (
+          <div className="mt-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Gem className="w-4 h-4 text-amber-500 shrink-0" />
+              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white">
+                {t('hotelDetails.facilityGroups.highlights', 'Онцлох нь')}
+              </h3>
+              <span className="text-xs text-gray-500 dark:text-gray-400">({highlights.length})</span>
+            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-2">
+              {highlights.map((f, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                  <Check className="w-3.5 h-3.5 text-green-600 mt-0.5 shrink-0" />
+                  <span className="leading-relaxed">{f.name_mn || f.name_en}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })()}
       <Dialog open={showAboutModal} onOpenChange={setShowAboutModal}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogTitle className="text-lg font-semibold text-gray-900 dark:text-white mb-1">

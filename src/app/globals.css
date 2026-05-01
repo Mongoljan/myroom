@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "../styles/design-tokens.css";
 
+/* Override text-xs from 12px → 14px so minimum readable text is 14px */
+@theme {
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.25rem;
+}
+
 /* Tailwind v4: enable class-based dark mode */
 @custom-variant dark (&:where(.dark, .dark *));
 

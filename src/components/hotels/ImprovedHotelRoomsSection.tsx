@@ -39,6 +39,10 @@ export default function ImprovedHotelRoomsSection({
   const effectiveCheckIn = selectedCheckIn;
   const effectiveCheckOut = selectedCheckOut;
 
+  // Guest state — no router.push on every keystroke (fixes lag bug)
+  const [adultsCount, setAdultsCount] = useState(Math.max(1, parseInt(searchParams.get('adults') || '2', 10)));
+  const [childrenCountLocal, setChildrenCountLocal] = useState(Math.max(0, parseInt(searchParams.get('children') || '0', 10)));
+
   // State
   const [rooms, setRooms] = useState<EnrichedHotelRoom[]>([]);
   const [roomPrices, setRoomPrices] = useState<Record<string, RoomPriceOptions>>({});
@@ -74,6 +78,17 @@ export default function ImprovedHotelRoomsSection({
     setSelectedCheckOut(date);
     updateURLWithDates(selectedCheckIn, date);
     // Clear booking items when dates change
+    setBookingItems([]);
+  };
+
+  // Unified search — only pushes to URL when user explicitly clicks Search
+  const handleSearch = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('check_in', selectedCheckIn);
+    params.set('check_out', selectedCheckOut);
+    params.set('adults', adultsCount.toString());
+    params.set('children', childrenCountLocal.toString());
+    router.push(`?${params.toString()}`, { scroll: false });
     setBookingItems([]);
   };
 
@@ -331,43 +346,31 @@ export default function ImprovedHotelRoomsSection({
 
           <div className="hidden lg:block h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
 
-          {/* Guests - Compact Layout */}
-          <div className="flex-shrink-0">
-            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">
-              {t('hotelRooms.guests', 'Зочид')}
-            </label>
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-1">
-                <span className="text-gray-600 dark:text-gray-400">{t('hotelRooms.adults', 'Том')}:</span>
-                <input
-                  type="number"
-                  min="1"
-                  max="10"
-                  value={searchParams.get('adults') || 2}
-                  onChange={(e) => {
-                    const params = new URLSearchParams(searchParams.toString());
-                    params.set('adults', e.target.value);
-                    router.push(`?${params.toString()}`, { scroll: false });
-                  }}
-                  className="w-12 px-1 py-0.5 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-slate-500"
-                />
-              </div>
-              <div className="flex items-center gap-1">
-                <span className="text-gray-600 dark:text-gray-400">{t('hotelRooms.children', 'Хүүхэд')}:</span>
-                <input
-                  type="number"
-                  min="0"
-                  max="10"
-                  value={searchParams.get('children') || 0}
-                  onChange={(e) => {
-                    const params = new URLSearchParams(searchParams.toString());
-                    params.set('children', e.target.value);
-                    router.push(`?${params.toString()}`, { scroll: false });
-                  }}
-                  className="w-12 px-1 py-0.5 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-slate-500"
-                />
+          {/* Guests — +/- button counters (no lag) */}
+          <div className="flex items-end gap-2 flex-shrink-0">
+            <div>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.adults', 'Том')}</label>
+              <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
+                <button type="button" onClick={() => setAdultsCount(c => Math.max(1, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
+                <span className="min-w-[2rem] text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{adultsCount}</span>
+                <button type="button" onClick={() => setAdultsCount(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
               </div>
             </div>
+            <div>
+              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.children', 'Хүүхэд')}</label>
+              <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
+                <button type="button" onClick={() => setChildrenCountLocal(c => Math.max(0, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
+                <span className="min-w-[2rem] text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{childrenCountLocal}</span>
+                <button type="button" onClick={() => setChildrenCountLocal(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleSearch}
+              className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-gray-100 dark:text-slate-900 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap"
+            >
+              {t('search.title', 'Хайх')}
+            </button>
           </div>
         </div>
       </div>
