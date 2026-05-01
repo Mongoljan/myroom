@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import HotelPageContent from '@/components/hotels/HotelPageContent';
 import { ApiService } from '@/services/api';
-import { SearchHotelResult } from '@/types/api';
+import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, PropertyImage } from '@/types/api';
 
 // ISR-style revalidation - cache hotel data for 60 seconds
 export const revalidate = 60;
@@ -110,5 +110,46 @@ async function HotelContent({ id, searchParams }: {
     notFound();
   }
 
-  return <HotelPageContent hotel={hotel} searchParams={searchParams} />;
+  const hotelId = hotel.hotel_id;
+
+  // Fetch property details, basicInfo, and property images in parallel
+  const [propertyDetailsResult, basicInfoResult, propertyImagesResult] = await Promise.allSettled([
+    ApiService.getPropertyDetails(hotelId),
+    ApiService.getPropertyBasicInfo(hotelId),
+    ApiService.getPropertyImages(hotelId),
+  ]);
+
+  const propertyDetails: PropertyDetails | null =
+    propertyDetailsResult.status === 'fulfilled' && propertyDetailsResult.value.length > 0
+      ? propertyDetailsResult.value[0]
+      : null;
+
+  const basicInfo: PropertyBasicInfo | null =
+    basicInfoResult.status === 'fulfilled' && basicInfoResult.value.length > 0
+      ? basicInfoResult.value[0]
+      : null;
+
+  const propertyImages: PropertyImage[] =
+    propertyImagesResult.status === 'fulfilled' ? propertyImagesResult.value : [];
+
+  // Fetch additional info using the ID from property details
+  let additionalInfo: AdditionalInfo | null = null;
+  if (propertyDetails?.Additional_Information) {
+    try {
+      additionalInfo = await ApiService.getAdditionalInfo(propertyDetails.Additional_Information);
+    } catch {
+      // non-fatal – show page without about text
+    }
+  }
+
+  return (
+    <HotelPageContent
+      hotel={hotel}
+      searchParams={searchParams}
+      propertyDetails={propertyDetails}
+      basicInfo={basicInfo}
+      additionalInfo={additionalInfo}
+      propertyImages={propertyImages}
+    />
+  );
 }

@@ -16,11 +16,17 @@ import MobileMenu from "./MobileMenu";
 const Header1 = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { t } = useHydratedTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
   const profileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Prevent hydration mismatch: defer theme-dependent icon to client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -88,7 +94,10 @@ const Header1 = () => {
                 className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 border border-gray-300 dark:border-gray-600 mr-3"
                 aria-label="Toggle theme"
               >
-                {theme === 'light' ? (
+                {/* Render placeholder on server; show correct icon only after mount */}
+                {!mounted ? (
+                  <span className="w-5 h-5" />
+                ) : theme === 'light' ? (
                   <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                 ) : (
                   <Sun className="w-5 h-5 text-yellow-500" />

@@ -646,6 +646,7 @@ const resources = {
           bedType: "Bed type",
           popularPlaces: "Popular places",
           discounted: "Discounted",
+          clearAll: "Clear all",
           starsPlus: "{{rating}}+ stars"
         },
         transliterationMatches: "Including transliteration matches"
@@ -2132,6 +2133,7 @@ const resources = {
           bedType: "Орны төрөл",
           popularPlaces: "Алдартай газрууд",
           discounted: "Хямдралтай",
+          clearAll: "Бүгдийг арилгах",
           starsPlus: "{{rating}}+ од"
         },
         transliterationMatches: "Транслитерацийн тохирлыг багтаасан"
@@ -2447,7 +2449,7 @@ const resources = {
         provinceCity: "Хот/Аймаг",
         soumDistrict: "Дүүрэг/Сум",
         totalFloors: "Давхрын тоо",
-        propertyHighlights: "Онцлох шинж чанарууд",
+        propertyHighlights: "Буудлын онцлогууд",
         inCityCenter: "",
         center: "төвд",
         totalRooms: "Нийт өрөө",

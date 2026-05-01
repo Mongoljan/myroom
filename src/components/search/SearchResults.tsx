@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { X } from 'lucide-react';
 import BookingStyleHotelCard from './BookingStyleHotelCard';
 import { ApiService } from '@/services/api';
 import { SearchResponse, SearchHotelResult } from '@/types/api';
@@ -520,6 +521,80 @@ export default function SearchResults() {
                 onSearchByName={handleSearchByName}
               />
               <div className="h-2"></div>
+
+              {/* Active filter chips — shown above hotel card list */}
+              {(() => {
+                const chips: { label: string; onRemove: () => void }[] = [];
+                const priceBounds: [number, number] = [facets.priceMin, facets.priceMax];
+
+                (filters.propertyTypes || []).forEach(id => {
+                  const t = apiData?.property_types?.find(pt => pt.id === id);
+                  if (t) chips.push({ label: t.name_mn, onRemove: () => handleFilterChange({ ...filters, propertyTypes: filters.propertyTypes.filter(i => i !== id) }) });
+                });
+
+                (filters.starRating || []).forEach(stars => {
+                  chips.push({ label: `${stars} ★`, onRemove: () => handleFilterChange({ ...filters, starRating: filters.starRating.filter(s => s !== stars) }) });
+                });
+
+                if (filters.discounted) {
+                  chips.push({ label: 'Хямдралтай', onRemove: () => handleFilterChange({ ...filters, discounted: false }) });
+                }
+
+                if (priceBounds[1] > priceBounds[0] && filters.priceRange[1] < priceBounds[1]) {
+                  chips.push({ label: `≤₮${Math.round(filters.priceRange[1] / 1000)}K`, onRemove: () => handleFilterChange({ ...filters, priceRange: [priceBounds[0], priceBounds[1]] }) });
+                }
+
+                (filters.roomFeatures || []).forEach(id => {
+                  const f = apiData?.facilities?.find(fac => fac.id === id);
+                  if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, roomFeatures: filters.roomFeatures.filter(i => i !== id) }) });
+                });
+
+                (filters.generalServices || []).forEach(id => {
+                  const f = apiData?.additionalFacilities?.find(fac => fac.id === id);
+                  if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, generalServices: filters.generalServices.filter(i => i !== id) }) });
+                });
+
+                (filters.outdoorAreas || []).forEach(id => {
+                  const f = apiData?.activities?.find(fac => fac.id === id);
+                  if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, outdoorAreas: filters.outdoorAreas.filter(i => i !== id) }) });
+                });
+
+                (filters.accessibilityFeatures || []).forEach(id => {
+                  const f = apiData?.accessibility_features?.find(fac => fac.id === id);
+                  if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, accessibilityFeatures: filters.accessibilityFeatures.filter(i => i !== id) }) });
+                });
+
+                if (chips.length === 0) return null;
+
+                const clearAll = () => handleFilterChange({
+                  propertyTypes: [], roomFeatures: [], generalServices: [], starRating: [],
+                  outdoorAreas: [], accessibilityFeatures: [], discounted: false,
+                  priceRange: [0, 1000000], facilities: [], roomTypes: []
+                });
+
+                return (
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {chips.map((chip, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-xs font-medium border border-primary-200 dark:border-primary-700"
+                      >
+                        {chip.label}
+                        <button onClick={chip.onRemove} className="hover:text-red-500 transition-colors">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                    <button
+                      onClick={clearAll}
+                      className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 underline self-center"
+                    >
+                      Бүгдийг арилгах
+                    </button>
+                  </div>
+                );
+              })()
+              }
 
               {/* Results Layout */}
               {filteredHotels.length > 0 ? (

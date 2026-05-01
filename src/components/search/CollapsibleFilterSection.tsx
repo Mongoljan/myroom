@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, X } from 'lucide-react';
 
 interface CollapsibleFilterSectionProps {
   title: string;
@@ -10,6 +10,10 @@ interface CollapsibleFilterSectionProps {
   defaultExpanded?: boolean;
   initialShowCount?: number;
   className?: string;
+  /** Number of currently-selected items in this group  */
+  selectedCount?: number;
+  /** Called when the user clicks the group-level clear (×) button */
+  onClear?: () => void;
 }
 
 export default function CollapsibleFilterSection({
@@ -18,7 +22,9 @@ export default function CollapsibleFilterSection({
   itemCount,
   defaultExpanded = true,
   initialShowCount = 5,
-  className = ''
+  className = '',
+  selectedCount = 0,
+  onClear
 }: CollapsibleFilterSectionProps) {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   const [showAll, setShowAll] = useState(false);
@@ -31,24 +37,37 @@ export default function CollapsibleFilterSection({
   return (
     <div className={`space-y-2 border-b border-gray-100 dark:border-gray-700 pb-3 ${className}`}>
       {/* Section Header */}
-      <button
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full text-left hover:text-primary-600 transition-colors"
-      >
-        <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300">
-          {title}
-          {itemCount !== undefined && (
-            <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">
-              ({itemCount})
-            </span>
+      <div className="flex items-center justify-between w-full">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center gap-1 flex-1 text-left hover:text-primary-600 transition-colors min-w-0"
+        >
+          <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300 truncate">
+            {title}
+            {selectedCount > 0 && (
+              <span className="ml-1.5 text-xs font-bold text-primary-600 dark:text-primary-400">
+                ({selectedCount})
+              </span>
+            )}
+          </h4>
+          {isExpanded ? (
+            <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0 ml-1" />
+          ) : (
+            <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0 ml-1" />
           )}
-        </h4>
-        {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-        ) : (
-          <ChevronDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+        </button>
+
+        {/* Clear button — only shown when there are selected items */}
+        {selectedCount > 0 && onClear && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onClear(); }}
+            title="Арилгах"
+            className="ml-1 shrink-0 p-0.5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         )}
-      </button>
+      </div>
 
       {/* Collapsible Content */}
       {isExpanded && (

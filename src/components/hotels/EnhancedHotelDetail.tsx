@@ -8,35 +8,35 @@ import {
   Wine, Briefcase, PawPrint, Cigarette, Clock,
   Palmtree, Bus, WashingMachine, Heater, Mountain,
   ArrowLeft, Bell as ConciergeBell, Zap, Hotel, DollarSign, Package,
-  MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart, Layers3 as Layers, X
+  MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart, Layers3 as Layers, X,
+  PlayCircle
 } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
 import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
 import GoogleMapModal, { NearbyPlace } from '@/components/common/GoogleMapModal';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
-import { PropertyBasicInfo, ConfirmAddress, PropertyImage, AdditionalInfo, PropertyDetails, Facility, SearchHotelResult } from '@/types/api';
+import { ConfirmAddress, Facility, SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, PropertyImage } from '@/types/api';
 import { Train, Plane, Landmark, Utensils as RestaurantIcon, ShoppingBag, Building2 } from 'lucide-react';
 import WishlistHeart from '@/components/wishlist/WishlistHeart';
 import { useAuthenticatedUser } from '@/hooks/useCustomer';
 
 interface EnhancedHotelDetailProps {
   hotel: SearchHotelResult;
+  propertyDetails: PropertyDetails | null;
+  basicInfo: PropertyBasicInfo | null;
+  additionalInfo: AdditionalInfo | null;
+  propertyImages?: PropertyImage[];
 }
 
-export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps) {
+export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo, additionalInfo, propertyImages = [] }: EnhancedHotelDetailProps) {
   const { t } = useHydratedTranslation();
   const { isAuthenticated } = useAuthenticatedUser();
   const router = useRouter();
   // State variables for component functionality
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-  const [basicInfo, setBasicInfo] = useState<PropertyBasicInfo | null>(null);
   const [address, setAddress] = useState<ConfirmAddress | null>(null);
-  const [propertyImages, setPropertyImages] = useState<PropertyImage[]>([]);
-  const [additionalInfo, setAdditionalInfo] = useState<AdditionalInfo | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [propertyDetails, setPropertyDetails] = useState<PropertyDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [facilitiesMap, setFacilitiesMap] = useState<Map<number, Facility>>(new Map());
   const [provinceMap, setProvinceMap] = useState<Map<number, string>>(new Map());
@@ -48,8 +48,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       try {
         setLoading(true);
 
-        // Only fetch essential data that's not already in hotel object
-        // Remove redundant API calls - use existing hotel data
+        // Only fetch combinedData for facility/province maps
         const [
           combinedData = { facilities: [], additionalFacilities: [], activities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] }
         ] = await Promise.all([
@@ -58,12 +57,6 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
             return { facilities: [], additionalFacilities: [], activities: [], province: [], soum: [], property_types: [], ratings: [], accessibility_features: [], languages: [] };
           })
         ]);
-
-        // Use hotel object data instead of additional API calls
-        setBasicInfo(null); // Use hotel.property_name instead
-        setAddress(null); // Use hotel.location instead  
-        setPropertyImages([]); // Use hotel.images instead
-        setPropertyDetails(null);
 
         // Create facilities map for quick lookup
         const facMap = new Map<number, Facility>();
@@ -84,9 +77,6 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
           soumMapTemp.set(soumItem.id, soumItem.name);
         });
         setSoumMap(soumMapTemp);
-
-        // Use hotel description or set to basic info
-        setAdditionalInfo(null);
       } catch (error) {
         console.error('Failed to fetch hotel details:', error);
       } finally {
@@ -256,14 +246,52 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
     return <Building className="w-5 h-5 text-gray-600 dark:text-gray-400" />;
   };
 
-  // Use hotel object images directly - no need for additional API call
-  const allImages = [
-    { url: typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url || '', description: 'Cover' }, 
-    ...hotel.images.gallery,
-  ].filter((img, index, self) => 
-    // Remove duplicates by URL and filter out empty URLs
-    img.url && self.findIndex(i => i.url === img.url) === index
-  );
+  // Build image list: prefer dedicated property-images endpoint (is_profile first),
+  // then fall back to property_details.property_photos, then search API images.
+  const allImages = (() => {
+    const source = propertyImages?.length ? propertyImages : propertyDetails?.property_photos ?? [];
+    if (source.length) {
+      const sorted = [
+        ...source.filter(p => p.is_profile),
+        ...source.filter(p => !p.is_profile),
+      ];
+      return sorted
+        .filter(p => p.image)
+        .map(p => ({ url: p.image, description: p.description }));
+    }
+    // Fallback: search API images
+    return [
+      { url: typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url || '', description: 'Cover' },
+      ...hotel.images.gallery,
+    ].filter((img, index, self) =>
+      img.url && self.findIndex(i => i.url === img.url) === index
+    );
+  })();
+
+  // Helper: convert any YouTube URL variant to an embed URL
+  const getYouTubeEmbedUrl = (url: string): string | null => {
+    try {
+      const parsed = new URL(url);
+      // Already an embed URL
+      if (parsed.pathname.startsWith('/embed/')) {
+        return `https://www.youtube.com/embed/${parsed.pathname.split('/embed/')[1].split('?')[0]}`;
+      }
+      // Standard watch URL: ?v=ID
+      const v = parsed.searchParams.get('v');
+      if (v) return `https://www.youtube.com/embed/${v}`;
+      // youtu.be shortlink
+      if (parsed.hostname === 'youtu.be') {
+        return `https://www.youtube.com/embed${parsed.pathname}`;
+      }
+    } catch {
+      // ignore
+    }
+    return null;
+  };
+
+  const youtubeEmbedUrl = additionalInfo?.YoutubeUrl
+    ? getYouTubeEmbedUrl(additionalInfo.YoutubeUrl)
+    : null;
 
   const nextImage = () => {
     if (allImages.length > 1) {
@@ -288,7 +316,10 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
 
   // Use hotel object data directly
   const hotelName = hotel.property_name;
-  const starRating = getStarRating(hotel.rating_stars?.value || 0);
+  // Use basicInfo.star_rating (hotel category stars) if available, otherwise fall back to search API value
+  // Normalize: if value > 5 it was stored as a rating ID (offset by 2), convert to actual star count
+  const rawStarRating = basicInfo?.star_rating ?? getStarRating(hotel.rating_stars?.value || 0);
+  const starRating = rawStarRating > 5 ? rawStarRating - 2 : rawStarRating;
 
   // Generate nearby places based on location
   const getNearbyPlaces = (): NearbyPlace[] => {
@@ -498,7 +529,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
       <div className="flex gap-3">
         {/* Left: Images Section */}
         <div className="flex-1">
-          <div className="flex gap-1 h-[350px]">
+          <div className="flex gap-1 h-[420px]">
             {/* Main Large Image - Left side */}
             <div className="w-[55%] relative">
               <div className="relative bg-gray-100 dark:bg-gray-700 overflow-hidden rounded-l-xl h-full">
@@ -670,10 +701,10 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
         </Dialog>
 
         {/* Right: Info Sidebar - Separate Distinct Boxes */}
-        <div className="w-[280px] flex-shrink-0 space-y-3">
-          {/* Box 1: Star Rating — only render if API actually returns a rating */}
-          {hotel.rating_stars?.value && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+        <div className="w-[280px] flex-shrink-0 flex flex-col gap-3 h-[420px]">
+          {/* Box 1: Star Rating — only show search-API rating when no authoritative basicInfo.star_rating is available */}
+          {!basicInfo?.star_rating && hotel.rating_stars?.value && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg">
                   <span className="text-lg font-bold">
@@ -692,7 +723,7 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
           )}
 
           {/* Box 2: Surroundings */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-2">
               <MapPin className="w-4 h-4 text-blue-600" />
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -728,8 +759,8 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
           </div>
 
           {/* Box 3: Property Highlights */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.propertyHighlights', 'Property highlights')}</h4>
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.propertyHighlights', 'Буудлын онцлогууд')}</h4>
             <div className="space-y-1">
               <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                 <MapPin className="w-3 h-3 text-gray-400" />
@@ -745,19 +776,33 @@ export default function EnhancedHotelDetail({ hotel }: EnhancedHotelDetailProps)
               </div>
             </div>
           </div>
+
+          {/* Box 4: YouTube Video - fills remaining sidebar space */}
+          {youtubeEmbedUrl && (
+            <div className="bg-black rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden flex-1 min-h-0">
+              <div className="relative w-full h-full">
+                <iframe
+                  src={youtubeEmbedUrl}
+                  title={`${hotelName} video`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Description Section - Compact */}
+      {/* Description Section - only shown when About text is available */}
+      {additionalInfo?.About && (
       <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mt-3">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
-
-        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-          {t('hotelDetails.defaultDescription', { hotelName, city: hotel.location.province_city || '' })}
+        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+          {additionalInfo.About}
         </p>
-
-        {/* Additional hotel info can be added here if available in hotel object */}
       </div>
+      )}
       
       {loading && (
         <div className="flex items-center justify-center py-8">

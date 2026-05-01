@@ -426,15 +426,15 @@ function BookingContent() {
                   <div className="text-xs text-gray-700 dark:text-gray-300 space-y-2">
                     <div className="flex justify-between">
                       <span>{t('bookingExtra.beforeCancelTime', 'Цуцлах хугацааны өмнө')}:</span>
-                      <span className="font-semibold">{hotelPolicy.cancellation_fee.before_fee}%</span>
+                      <span className="font-semibold">{hotelPolicy.cancellation_fee?.single_before_time_percentage ?? '—'}%</span>
                     </div>
                     <div className="flex justify-between">
                       <span>{t('bookingExtra.afterCancelTime', 'Цуцлах хугацааны дараа')}:</span>
-                      <span className="font-semibold">{hotelPolicy.cancellation_fee.after_fee}%</span>
+                      <span className="font-semibold">{hotelPolicy.cancellation_fee?.single_after_time_percentage ?? '—'}%</span>
                     </div>
                     <div className="flex justify-between">
                       <span>{t('bookingExtra.cancelDeadline', 'Цуцлах хугацаа')}:</span>
-                      <span className="font-semibold">{hotelPolicy.cancellation_fee.cancel_time.substring(0, 5)}</span>
+                      <span className="font-semibold">{hotelPolicy.cancellation_fee?.cancel_time.substring(0, 5) ?? '—'}</span>
                     </div>
                     <p className="text-gray-600 dark:text-gray-400 mt-2 italic">
                       {t('bookingExtra.cancellationNote', 'Цуцлах болон урьдчилгаа төлбөрийн бодлого нь захиалгын төрлөөс хамаарч өөр байна.')}

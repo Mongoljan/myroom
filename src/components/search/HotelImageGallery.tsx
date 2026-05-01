@@ -15,6 +15,7 @@ interface HotelImageGalleryProps {
   hotelId?: number;
   viewMode: 'list' | 'grid';
   className?: string;
+  profileImageUrl?: string;
 }
 
 export default function HotelImageGallery({
@@ -23,6 +24,7 @@ export default function HotelImageGallery({
   hotelId,
   viewMode,
   className = "",
+  profileImageUrl,
 }: HotelImageGalleryProps) {
   const { t } = useHydratedTranslation();
   const { isAuthenticated } = useAuthenticatedUser();
@@ -45,12 +47,22 @@ export default function HotelImageGallery({
     const galleryImages = (images?.gallery || [])
       .filter(img => img && typeof img.url === 'string' && img.url.trim().length > 0);
 
+    // If we have a profile image from the property-images API, put it first
+    // and deduplicate against existing images
+    if (profileImageUrl) {
+      const profileImg = { url: profileImageUrl, description: hotelName };
+      const rest = [
+        ...(galleryImages.length > 0 ? galleryImages : (coverImage ? [coverImage] : [])),
+      ].filter(img => img.url !== profileImageUrl);
+      return [profileImg, ...rest];
+    }
+
     if (galleryImages.length > 0) {
       return galleryImages;
     }
 
     return coverImage ? [coverImage] : [];
-  }, [images, hotelName]);
+  }, [images, hotelName, profileImageUrl]);
 
   // Valid images after filtering per-image errors
   const validImages = normalizedImages.filter((_, i) => !errorSet.has(i));
@@ -151,9 +163,9 @@ export default function HotelImageGallery({
             <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/25 via-transparent to-transparent" />
           )}
 
-          {/* Counter badge */}
+          {/* Counter badge — right side to avoid clashing with discount badge on left */}
           {hasMultipleImages && (
-            <div className="absolute top-2.5 left-2.5 z-10 bg-black/60 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+            <div className="absolute top-2.5 right-2.5 z-10 bg-black/60 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
               {safeIndex + 1} / {validImages.length}
             </div>
           )}

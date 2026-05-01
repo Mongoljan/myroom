@@ -368,16 +368,99 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
   const outdoorFacilities = apiData?.activities || [];
   const accessibilityFacilities = apiData?.accessibility_features || [];
 
+  // Build active filter chips list (for both sidebar top + above hotel cards)
+  const activeFilterChips: { label: string; onRemove: () => void }[] = [];
+
+  // Property types
+  (filters.propertyTypes || []).forEach(id => {
+    const type = apiData?.property_types?.find(pt => pt.id === id);
+    if (type) {
+      activeFilterChips.push({
+        label: type.name_mn,
+        onRemove: () => updateFilters({ propertyTypes: (filters.propertyTypes || []).filter(i => i !== id) })
+      });
+    }
+  });
+
+  // Star rating
+  (filters.starRating || []).forEach(stars => {
+    activeFilterChips.push({
+      label: `${stars} ★`,
+      onRemove: () => updateFilters({ starRating: (filters.starRating || []).filter(s => s !== stars) })
+    });
+  });
+
+  // Discounted
+  if (filters.discounted) {
+    activeFilterChips.push({ label: t('search.filtersSection.discounted') || 'Хямдралтай', onRemove: () => updateFilters({ discounted: false }) });
+  }
+
+  // Price range
+  if (priceBounds && filters.priceRange[1] < priceBounds[1]) {
+    activeFilterChips.push({
+      label: `≤₮${Math.round(filters.priceRange[1] / 1000)}K`,
+      onRemove: () => updateFilters({ priceRange: [priceBounds[0], priceBounds[1]] })
+    });
+  }
+
+  // Room features (general facilities)
+  (filters.roomFeatures || []).forEach(id => {
+    const fac = apiData?.facilities?.find(f => f.id === id);
+    if (fac) activeFilterChips.push({ label: fac.name_mn, onRemove: () => updateFilters({ roomFeatures: (filters.roomFeatures || []).filter(i => i !== id) }) });
+  });
+
+  // General services (additional facilities)
+  (filters.generalServices || []).forEach(id => {
+    const fac = apiData?.additionalFacilities?.find(f => f.id === id);
+    if (fac) activeFilterChips.push({ label: fac.name_mn, onRemove: () => updateFilters({ generalServices: (filters.generalServices || []).filter(i => i !== id) }) });
+  });
+
+  // Outdoor areas (activities)
+  (filters.outdoorAreas || []).forEach(id => {
+    const fac = apiData?.activities?.find(f => f.id === id);
+    if (fac) activeFilterChips.push({ label: fac.name_mn, onRemove: () => updateFilters({ outdoorAreas: (filters.outdoorAreas || []).filter(i => i !== id) }) });
+  });
+
+  // Accessibility features
+  (filters.accessibilityFeatures || []).forEach(id => {
+    const fac = apiData?.accessibility_features?.find(f => f.id === id);
+    if (fac) activeFilterChips.push({ label: fac.name_mn, onRemove: () => updateFilters({ accessibilityFeatures: (filters.accessibilityFeatures || []).filter(i => i !== id) }) });
+  });
+
   if (embedded) {
     return (
       <>
-        {/* <FilterSummary 
-          filters={filters}
-          onRemoveFilter={handleRemoveFilter}
-          onClearAll={handleClearAllFilters}
-        /> */}
         <div className="space-y-4">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
+
+          {/* Active filter chips — top 5 shown in sidebar */}
+          {activeFilterChips.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {activeFilterChips.slice(0, 5).map((chip, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-xs font-medium border border-primary-200 dark:border-primary-700"
+                >
+                  <span className="max-w-22.5 truncate">{chip.label}</span>
+                  <button
+                    onClick={chip.onRemove}
+                    className="shrink-0 hover:text-red-500 transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+              {activeFilterChips.length > 5 && (
+                <span className="text-xs text-gray-500 dark:text-gray-400 self-center">+{activeFilterChips.length - 5}</span>
+              )}
+              <button
+                onClick={handleClearAllFilters}
+                className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 self-center ml-auto"
+              >
+                {t('search.filtersSection.clearAll') || 'Бүгдийг арилгах'}
+              </button>
+            </div>
+          )}
 
           {/* Recent Filters Section */}
           {recentFilters.length > 0 && (
@@ -453,6 +536,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 title={t('search.filtersSection.hotelType')}
                 itemCount={apiData.property_types.length}
                 initialShowCount={4}
+                selectedCount={(filters.propertyTypes || []).length}
+                onClear={() => updateFilters({ propertyTypes: [] })}
               >
                 {apiData.property_types.map((pt) => {
                   const isSelected = filters.propertyTypes?.includes(pt.id) || false;
@@ -490,6 +575,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 title={t('search.filtersSection.generalFacilities')}
                 itemCount={roomFeatureFacilities.length}
                 initialShowCount={4}
+                selectedCount={(filters.roomFeatures || []).length}
+                onClear={() => updateFilters({ roomFeatures: [] })}
               >
                 {roomFeatureFacilities.map((facility) => {
                   const isSelected = filters.roomFeatures?.includes(facility.id) || false;
@@ -531,6 +618,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 title={t('search.filtersSection.additionalFacilities')}
                 itemCount={generalServiceFacilities.length}
                 initialShowCount={5}
+                selectedCount={(filters.generalServices || []).length}
+                onClear={() => updateFilters({ generalServices: [] })}
               >
                 {generalServiceFacilities.map((facility) => {
                   const isSelected = filters.generalServices?.includes(facility.id) || false;
@@ -612,6 +701,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 title={t('search.filtersSection.activities')}
                 itemCount={outdoorFacilities.length}
                 initialShowCount={3}
+                selectedCount={(filters.outdoorAreas || []).length}
+                onClear={() => updateFilters({ outdoorAreas: [] })}
               >
                 {outdoorFacilities.map((facility) => {
                   const isSelected = filters.outdoorAreas?.includes(facility.id) || false;
@@ -654,6 +745,8 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
                 itemCount={accessibilityFacilities.length}
                 initialShowCount={3}
                 className="border-b-0"
+                selectedCount={(filters.accessibilityFeatures || []).length}
+                onClear={() => updateFilters({ accessibilityFeatures: [] })}
               >
                 {accessibilityFacilities.map((facility) => {
                   const isSelected = filters.accessibilityFeatures?.includes(facility.id) || false;

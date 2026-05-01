@@ -33,6 +33,7 @@ export interface PropertyImage {
   property: number;
   image: string;
   description: string;
+  is_profile?: boolean;
 }
 
 // Additional Info API Response
@@ -43,6 +44,15 @@ export interface AdditionalInfo {
   property: number;
 }
 
+// Facility item as returned by property-details API
+export interface PropertyFacilityItem {
+  id: number;         // join-table row id
+  facility_id: number; // the actual facility's id (1-42)
+  name_en: string;
+  name_mn: string;
+  is_highlight: boolean;
+}
+
 // Property Details API Response
 export interface PropertyDetails {
   id: number;
@@ -51,9 +61,12 @@ export interface PropertyDetails {
   propertyPolicies: number | null;
   Additional_Information: number | null;
   property_photos: PropertyImage[];
+  general_facilities: PropertyFacilityItem[];
+  additional_facilities?: PropertyFacilityItem[];
+  activities?: PropertyFacilityItem[];
+  accessibility_feature?: PropertyFacilityItem[];
   google_map: string;
   property: number;
-  general_facilities: number[];
 }
 
 export interface RoomImage {
@@ -428,17 +441,36 @@ export interface RoomFeature {
 
 // Property policies
 export interface CancellationFee {
-  id: number;
+  id?: number;
+  property?: number;
   cancel_time: string;
-  before_fee: string;
-  after_fee: string;
-  beforeManyRoom_fee: string;
-  afterManyRoom_fee: string;
-  subsequent_days_percentage: string;
-  special_condition_percentage: string;
-  created_at: string;
-  updated_at: string;
-  property: number;
+  single_before_time_percentage: string;
+  single_after_time_percentage: string;
+  multi_5days_before_percentage?: string;
+  multi_3days_before_percentage?: string;
+  multi_2days_before_percentage?: string;
+  multi_1day_before_percentage?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface ParkingPolicy {
+  id?: number;
+  outdoor_parking: 'no' | 'free' | 'paid';
+  outdoor_fee_type: 'hour' | 'day' | null;
+  outdoor_price: string | null;
+  indoor_parking: 'no' | 'free' | 'paid';
+  indoor_fee_type: 'hour' | 'day' | null;
+  indoor_price: string | null;
+}
+
+export interface ChildPolicy {
+  id?: number;
+  allow_children: boolean;
+  max_child_age: number | null;
+  child_bed_available: 'yes' | 'no' | null;
+  allow_extra_bed: boolean;
+  extra_bed_price: string | null;
 }
 
 // Breakfast policy object structure from API
@@ -453,16 +485,15 @@ export interface BreakfastPolicy {
 
 export interface PropertyPolicy {
   id: number;
-  cancellation_fee: CancellationFee;
+  property: number;
   check_in_from: string;
   check_in_until: string;
   check_out_from: string;
   check_out_until: string;
-  breakfast_policy: BreakfastPolicy | string | null; // Can be object, string, or null
-  parking_situation: string;
-  allow_children: boolean;
-  allow_pets: boolean;
-  property: number;
+  cancellation_fee: CancellationFee | null;
+  breakfast_policy: BreakfastPolicy | string | null;
+  parking_policy: ParkingPolicy | null;
+  child_policy: ChildPolicy | null;
 }
 
 // Suggested Hotels API Types

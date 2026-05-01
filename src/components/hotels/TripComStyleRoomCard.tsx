@@ -288,9 +288,9 @@ export default function TripComStyleRoomCard({
                   ₮{priceOptions.basePrice.toLocaleString()}
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {nights > 1 
-                    ? `Total price: ₮${(priceOptions.basePrice * nights).toLocaleString()} • ${nights} nights incl. taxes & fees`
-                    : '3 rooms • 6 nights incl. taxes & fees'
+                  {nights > 1
+                    ? `${nights} ${t('roomCard.nights', 'шөнийн нийт')}: ₮${(priceOptions.basePrice * nights).toLocaleString()} — ${t('roomCard.inclTaxes', 'татвар багтсан')}`
+                    : t('roomCard.perNight', 'шөнийн үнэ')
                   }
                 </div>
               </div>
