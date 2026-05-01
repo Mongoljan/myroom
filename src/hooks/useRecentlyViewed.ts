@@ -24,7 +24,6 @@ export function useRecentlyViewed() {
         setRecentlyViewed(parsed);
       }
     } catch (error) {
-      console.error('Error loading recently viewed hotels:', error);
     }
   }, []);
 
@@ -49,7 +48,6 @@ export function useRecentlyViewed() {
         return updated;
       });
     } catch (error) {
-      console.error('Error saving recently viewed hotel:', error);
     }
   }, []);
 
@@ -62,7 +60,6 @@ export function useRecentlyViewed() {
         return updated;
       });
     } catch (error) {
-      console.error('Error removing recently viewed hotel:', error);
     }
   }, []);
 

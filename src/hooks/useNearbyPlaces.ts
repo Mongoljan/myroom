@@ -69,7 +69,6 @@ export function useNearbyPlaces({
 
       // Check if Google Maps is loaded after waiting
       if (typeof google === 'undefined' || !google.maps?.places) {
-        console.warn('Google Maps Places API not loaded yet, will retry later');
         setIsLoading(false);
         return;
       }
@@ -162,7 +161,6 @@ export function useNearbyPlaces({
               });
             }
           } catch (err) {
-            console.warn(`Error fetching ${type}:`, err);
           }
         }
       }
@@ -179,7 +177,6 @@ export function useNearbyPlaces({
       setPlaces(uniquePlaces);
 
     } catch (err) {
-      console.error('Error fetching nearby places:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch nearby places');
     } finally {
       setIsLoading(false);

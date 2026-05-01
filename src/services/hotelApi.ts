@@ -65,7 +65,6 @@ export class HotelService {
 
       return data;
     } catch (error) {
-      console.error('Error fetching approved hotels:', error);
       throw error;
     }
   }
@@ -75,7 +74,6 @@ export class HotelService {
       const hotels = await this.getApprovedHotels();
       return hotels.find(hotel => hotel.pk === hotelId);
     } catch (error) {
-      console.error(`Error finding hotel with id ${hotelId}:`, error);
       return undefined;
     }
   }
@@ -93,7 +91,6 @@ export class HotelService {
 
       return hotelMap;
     } catch (error) {
-      console.error('Error fetching hotels by ids:', error);
       return new Map();
     }
   }
@@ -121,7 +118,6 @@ export class HotelService {
 
       return hotel;
     } catch (error) {
-      console.error(`Error finding hotel by name ${hotelName}:`, error);
       return undefined;
     }
   }
@@ -139,7 +135,6 @@ export class HotelService {
 
       return hotelMap;
     } catch (error) {
-      console.error('Error creating hotels map:', error);
       return new Map();
     }
   }

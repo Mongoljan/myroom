@@ -91,7 +91,6 @@ export class CustomerService {
 
       return data as T;
     } catch (error) {
-      console.error(`API request failed: ${endpoint}`, error);
       throw error;
     }
   }

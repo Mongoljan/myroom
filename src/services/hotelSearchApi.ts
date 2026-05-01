@@ -37,19 +37,12 @@ export class HotelSearchService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('[API Error Response]', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText,
-          url
-        });
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error(`[API Request Failed]`, { endpoint, url, error });
       throw error;
     }
   }
@@ -87,7 +80,6 @@ export class HotelSearchService {
     try {
       return await this.request(`/hotels/${hotelId}/`);
     } catch (error) {
-      console.error('Hotel details API failed:', error);
       throw error; // Let the calling code handle the error instead of returning fake data
     }
   }

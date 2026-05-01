@@ -173,7 +173,6 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(externalFilters));
         } catch (error) {
-          console.warn('Failed to save external filters:', error);
         }
       }
     }
@@ -220,7 +219,6 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
         setRecentFilters(parsed.slice(0, 5)); // Keep only last 5
       }
     } catch (error) {
-      console.warn('Failed to load recent filters:', error);
     }
   }, []);
 
@@ -265,7 +263,6 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
         return updated;
       });
     } catch (error) {
-      console.warn('Failed to save recent filter:', error);
     }
   }, [generateFilterLabel]);
 
@@ -277,7 +274,6 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(recentFilter.filters));
     } catch (error) {
-      console.warn('Failed to save applied recent filter:', error);
     }
   }, [onFilterChange]);
 
@@ -290,7 +286,6 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
         setRecentIndividualFilters(parsed.slice(0, 5));
       }
     } catch (error) {
-      console.warn('Failed to load individual filters:', error);
     }
   }, []);
 
@@ -304,7 +299,6 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
         return updated;
       });
     } catch (error) {
-      console.warn('Failed to save individual filter:', error);
     }
   }, []);
 
@@ -318,7 +312,6 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           onFilterChangeRef.current(parsedFilters);
         }
       } catch (error) {
-        console.warn('Failed to load saved filters:', error);
       }
     };
 
@@ -364,7 +357,6 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
           .forEach(l => { const lm = UB_LANDMARKS.find(x => x.id === l); if (lm) track(`landmark_${l}`, 'landmark', l, lm.name_mn); });
       }
     } catch (error) {
-      console.warn('Failed to save filters:', error);
     }
   }, [filters, onFilterChange, saveToRecentFilters, saveIndividualFilter, apiData]);
 
@@ -447,7 +439,6 @@ export default function SearchFilters({ isOpen, onClose, onFilterChange, embedde
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      console.warn('Failed to clear saved filters:', error);
     }
   }, [onFilterChange]);
 

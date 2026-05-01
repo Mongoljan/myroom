@@ -64,7 +64,6 @@ export class ApiService {
       
       for (const pattern of problematicPatterns) {
         if (url.includes(pattern)) {
-          console.warn(`Removing problematic image URL: ${url}`);
           return ''; // Return empty string to trigger fallback
         }
       }
@@ -137,7 +136,6 @@ export class ApiService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`API Error ${response.status}:`, errorText);
         throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
       }
 
@@ -151,7 +149,6 @@ export class ApiService {
       
       return data;
     } catch (error) {
-      console.error('API Request failed:', error);
       throw error;
     }
   }
@@ -184,7 +181,6 @@ export class ApiService {
     if (sanitized.name_id) {
       if (sanitized.name || sanitized.province_id || sanitized.soum_id || sanitized.district || sanitized.location) {
         if (process.env.NODE_ENV !== 'production') {
-          console.warn('[searchHotels] name_id present -> ignoring other location/name fields');
         }
       }
       delete sanitized.name;
@@ -195,7 +191,6 @@ export class ApiService {
     } else if (sanitized.name) {
       if (sanitized.province_id || sanitized.soum_id || sanitized.district || sanitized.location) {
         if (process.env.NODE_ENV !== 'production') {
-          console.warn('[searchHotels] name present -> ignoring province/soum/district/location');
         }
       }
       delete sanitized.province_id;
@@ -205,7 +200,6 @@ export class ApiService {
     } else if (sanitized.province_id || sanitized.soum_id || sanitized.district) {
       if (sanitized.location) {
         if (process.env.NODE_ENV !== 'production') {
-          console.warn('[searchHotels] province/soum/district present -> ignoring legacy location');
         }
         delete sanitized.location;
       }
@@ -292,7 +286,6 @@ export class ApiService {
         throw new Error(`Hotel with ID ${hotelId} not found`);
       }
     } catch (error) {
-      console.error('Failed to fetch hotel details:', error);
       // Fallback to mock data if API fails
       return this.getHotelDetailsMock(hotelId);
     }
@@ -458,7 +451,6 @@ export class ApiService {
     try {
       return this.request<PropertyPolicy[]>(`/property-policies/?property=${propertyId}`);
     } catch (error) {
-      console.error('Failed to fetch property policies:', error);
       throw error;
     }
   }
@@ -468,7 +460,6 @@ export class ApiService {
     try {
       return this.request<PropertyBasicInfo[]>(`/property-basic-info/?property=${propertyId}`);
     } catch (error) {
-      console.error('Failed to fetch property basic info:', error);
       throw error;
     }
   }
@@ -478,7 +469,6 @@ export class ApiService {
     try {
       return this.request<ConfirmAddress[]>(`/confirm-address?property=${propertyId}`);
     } catch (error) {
-      console.error('Failed to fetch confirm address:', error);
       throw error;
     }
   }
@@ -488,7 +478,6 @@ export class ApiService {
     try {
       return this.request<PropertyImage[]>(`/property-images/?property=${propertyId}`);
     } catch (error) {
-      console.error('Failed to fetch property images:', error);
       throw error;
     }
   }
@@ -498,7 +487,6 @@ export class ApiService {
     try {
       return this.request<PropertyDetails[]>(`/property-details/?property=${propertyId}`);
     } catch (error) {
-      console.error('Failed to fetch property details:', error);
       throw error;
     }
   }
@@ -508,7 +496,6 @@ export class ApiService {
     try {
       return this.request<AdditionalInfo>(`/additionalInfo/${infoId}`);
     } catch (error) {
-      console.error('Failed to fetch additional info:', error);
       throw error;
     }
   }

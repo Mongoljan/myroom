@@ -50,7 +50,6 @@ async function getHotelById(id: string): Promise<SearchHotelResult | null> {
     const hotel = await ApiService.getHotelDetails(hotelId) as SearchHotelResult;
     return hotel;
   } catch (error) {
-    console.error('Failed to fetch hotel details:', error);
     return null;
   }
 }

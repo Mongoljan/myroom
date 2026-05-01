@@ -28,7 +28,6 @@ export const isHotelInWishlist = async (hotelId: number, token?: string): Promis
     const wishlist = await getWishlist(token);
     return wishlist.some(item => item.hotel.id === hotelId);
   } catch (error) {
-    console.error('Error checking wishlist status:', error);
     return false;
   }
 };
@@ -48,7 +47,6 @@ export const getWishlist = async (token: string): Promise<WishlistItem[]> => {
     cacheExpiry = Date.now() + CACHE_DURATION;
     return wishlistCache;
   } catch (error) {
-    console.error('Error fetching wishlist:', error);
     // Return cached data if available, even if expired
     return wishlistCache || [];
   }
@@ -69,7 +67,6 @@ export const addToWishlist = async (hotelId: number, token: string): Promise<{ s
       message: response.message
     };
   } catch (error) {
-    console.error('Error adding to wishlist:', error);
     
     const errorMessage = error instanceof Error ? error.message : 'Failed to add to wishlist';
     
@@ -103,7 +100,6 @@ export const removeFromWishlist = async (hotelId: number, token: string): Promis
       message: response.message
     };
   } catch (error) {
-    console.error('Error removing from wishlist:', error);
     
     const errorMessage = error instanceof Error ? error.message : 'Failed to remove from wishlist';
     return {
@@ -138,7 +134,6 @@ export const toggleWishlist = async (hotelId: number, token: string): Promise<{
       };
     }
   } catch (error) {
-    console.error('Error toggling wishlist:', error);
     
     return {
       success: false,
@@ -156,7 +151,6 @@ export const getWishlistCount = async (token: string): Promise<number> => {
     const wishlist = await getWishlist(token);
     return wishlist.length;
   } catch (error) {
-    console.error('Error getting wishlist count:', error);
     return 0;
   }
 };
@@ -236,7 +230,6 @@ export const saveWishlistToStorage = (wishlist: WishlistItem[]): void => {
       localStorage.setItem(WISHLIST_STORAGE_KEYS.CACHE, JSON.stringify(wishlist));
       localStorage.setItem(WISHLIST_STORAGE_KEYS.CACHE_EXPIRY, Date.now().toString());
     } catch (error) {
-      console.warn('Failed to save wishlist to localStorage:', error);
     }
   }
 };
@@ -254,7 +247,6 @@ export const loadWishlistFromStorage = (): WishlistItem[] | null => {
         return JSON.parse(cached);
       }
     } catch (error) {
-      console.warn('Failed to load wishlist from localStorage:', error);
     }
   }
   return null;

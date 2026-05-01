@@ -50,7 +50,6 @@ export default function WishlistButton({ hotelId, className = '' }: WishlistButt
       });
       
     } catch (error) {
-      console.error('Error updating wishlist:', error);
     } finally {
       setIsLoading(false);
     }

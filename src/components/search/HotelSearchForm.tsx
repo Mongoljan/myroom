@@ -94,7 +94,6 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
             // For nameIdParam (property/hotel), we would need a different API
             // Leave empty for now - user can re-search
           } catch (error) {
-            console.error('Failed to load location from URL params:', error);
             setDestination('');
           }
         }
@@ -174,7 +173,6 @@ export default function HotelSearchForm({ compact = false }: HotelSearchFormProp
       const suggestions = await locationService.searchLocations(value);
       setLocationSuggestions(suggestions);
     } catch (error) {
-      console.error('Location search failed:', error);
       setLocationSuggestions([]);
     } finally {
       setIsLoadingSuggestions(false);

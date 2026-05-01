@@ -62,7 +62,6 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
         await locationService.searchLocations(query);
         // Suggestions are passed via props from parent component
       } catch (error) {
-        console.error('Location search failed:', error);
       }
     }
   };

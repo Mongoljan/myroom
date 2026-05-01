@@ -54,9 +54,7 @@ export default function ReviewsPage() {
         setReviews(revRes.reviews);
 
         // Debug: Log the actual booking data
-        console.log('[DEBUG] Raw booking data:', bookRes.bookings);
         if (bookRes.bookings.length > 0) {
-          console.log('[DEBUG] First booking full object:', JSON.stringify(bookRes.bookings[0], null, 2));
         }
 
         // Set pending bookings
@@ -81,11 +79,9 @@ export default function ReviewsPage() {
           // Also store the name map for later use
           (window as unknown as Record<string, unknown>).__hotelByNameMap = hotelByNameMap;
         } catch (hotelError) {
-          console.error('Failed to fetch hotel info (non-critical):', hotelError);
           // Continue without hotel info - we can still match by name
         }
       } catch (error) {
-        console.error('Failed to fetch reviews/bookings:', error);
       } finally {
         setIsLoading(false);
       }
@@ -103,7 +99,6 @@ export default function ReviewsPage() {
 
     // If hotel ID is missing or 0, try to find it by name
     if (!hotelId || hotelId === 0) {
-      console.log('Hotel ID missing, trying to find by name:', reviewTarget.hotel_name);
 
       // Try different matching strategies
       const hotelNameLower = reviewTarget.hotel_name?.toLowerCase() || '';
@@ -115,7 +110,6 @@ export default function ReviewsPage() {
         const hotelEntry = hotelByNameMap.get(hotelNameLower);
         if (hotelEntry) {
           hotelId = hotelEntry.pk;
-          console.log('Found hotel by exact name match:', hotelEntry);
         } else {
           // Try partial match
           const entries = Array.from(hotelByNameMap.entries());
@@ -124,7 +118,6 @@ export default function ReviewsPage() {
           );
           if (partialMatch) {
             hotelId = partialMatch[1].pk;
-            console.log('Found hotel by partial name match:', partialMatch[1]);
           }
         }
       }
@@ -138,12 +131,10 @@ export default function ReviewsPage() {
         );
         if (hotelEntry) {
           hotelId = hotelEntry.pk;
-          console.log('Found hotel from hotels map:', hotelEntry);
         }
       }
     }
 
-    console.log('Final hotel ID to submit:', hotelId, 'for booking:', reviewTarget.id);
 
     if (!hotelId || hotelId === 0) {
       setSubmitError(`Cannot find hotel "${reviewTarget.hotel_name}" in the system. Please contact support.`);
@@ -166,7 +157,6 @@ export default function ReviewsPage() {
         reviewData.comment = comment.trim();
       }
 
-      console.log('Submitting review data:', JSON.stringify(reviewData));
 
       await CustomerService.createReview(token, reviewData);
       setPendingBookings((prev) => prev.filter((b) => b.id !== reviewTarget.id));
@@ -179,9 +169,7 @@ export default function ReviewsPage() {
       setReviews(updatedReviews.reviews);
 
       // Show success for a moment
-      console.log('Review submitted successfully!');
     } catch (err: unknown) {
-      console.error('Review submission error:', err);
       const e = err as { response?: { data?: { error?: string; message?: string } }; message?: string };
       const errorMessage = e?.response?.data?.error ||
                           e?.response?.data?.message ||

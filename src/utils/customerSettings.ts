@@ -51,7 +51,6 @@ export const getCustomerSettings = async (token: string): Promise<CustomerSettin
     cacheExpiry = Date.now() + CACHE_DURATION;
     return settings;
   } catch (error) {
-    console.error('Error fetching customer settings:', error);
     
     // Return cached data if available, otherwise return defaults
     return settingsCache || getDefaultSettings();
@@ -81,7 +80,6 @@ export const updateCustomerSettings = async (
       settings: response.settings
     };
   } catch (error) {
-    console.error('Error updating customer settings:', error);
     
     const errorMessage = error instanceof Error ? error.message : 'Failed to update settings';
     return {
@@ -236,7 +234,6 @@ export const saveSettingsToStorage = (settings: CustomerSettingsResponse): void 
       localStorage.setItem(SETTINGS_STORAGE_KEYS.CACHE, JSON.stringify(settings));
       localStorage.setItem(SETTINGS_STORAGE_KEYS.CACHE_EXPIRY, Date.now().toString());
     } catch (error) {
-      console.warn('Failed to save settings to localStorage:', error);
     }
   }
 };
@@ -254,7 +251,6 @@ export const loadSettingsFromStorage = (): CustomerSettingsResponse | null => {
         return JSON.parse(cached);
       }
     } catch (error) {
-      console.warn('Failed to load settings from localStorage:', error);
     }
   }
   return null;

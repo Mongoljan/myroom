@@ -96,7 +96,6 @@ export class LocationService {
       
       return suggestions;
     } catch (error) {
-      console.error('Error fetching location suggestions:', error);
       return [];
     }
   }
@@ -255,7 +254,6 @@ export class LocationService {
         return true;
       }).slice(0, 5);
     } catch (error) {
-      console.error('Error fetching popular locations:', error);
       return [];
     }
   }
@@ -269,7 +267,6 @@ export class LocationService {
       }
       return await response.json();
     } catch (error) {
-      console.error('Error fetching all location data:', error);
       return null;
     }
   }
@@ -311,7 +308,6 @@ export class LocationService {
 
       return null;
     } catch (error) {
-      console.error('Error fetching location by ID:', error);
       return null;
     }
   }

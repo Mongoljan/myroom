@@ -76,7 +76,6 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
               similarHotels = [...similarHotels, ...transformedHotels];
             }
           } catch (error) {
-            console.error('Failed to fetch suggested hotels:', error);
           }
         }
 
@@ -120,7 +119,6 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
               }
               return hotel;
             } catch (error) {
-              console.error(`Failed to fetch prices for hotel ${hotel.hotel_id}:`, error);
               return hotel;
             }
           })
@@ -128,7 +126,6 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
 
         setHotels(hotelsWithPrices);
       } catch (error) {
-        console.error('Failed to fetch similar hotels:', error);
         setHotels([]);
       } finally {
         setLoading(false);

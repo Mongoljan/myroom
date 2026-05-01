@@ -106,7 +106,6 @@ export async function fetchNearbyPlaces(
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   
   if (!apiKey) {
-    console.warn('Google Maps API key not configured');
     return [];
   }
 
@@ -145,7 +144,6 @@ export async function fetchNearbyPlaces(
         }
       }
     } catch (error) {
-      console.error(`Error fetching ${type} places:`, error);
     }
   }
 

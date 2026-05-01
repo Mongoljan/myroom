@@ -113,7 +113,6 @@ export function useWishlist(token?: string) {
     try {
       return await isHotelInWishlist(hotelId, token);
     } catch (err) {
-      console.error('Error checking wishlist status:', err);
       return false;
     }
   }, [token]);
@@ -241,7 +240,6 @@ export function useIsInWishlist(hotelId: number, token?: string) {
       const inWishlist = await isHotelInWishlist(hotelId, token);
       setIsInWishlist(inWishlist);
     } catch (err) {
-      console.error('Error checking wishlist status:', err);
       setIsInWishlist(false);
     } finally {
       setLoading(false);
@@ -289,7 +287,6 @@ export function useAuthenticatedUser() {
       try {
         await CustomerService.logout(token);
       } catch (error) {
-        console.error('Logout error:', error);
       }
     }
     updateToken(null);

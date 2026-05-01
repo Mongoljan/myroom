@@ -37,7 +37,6 @@ export class BookingService {
 
       return data;
     } catch (error) {
-      console.error(`API request failed: ${endpoint}`, error);
       throw error;
     }
   }

@@ -69,13 +69,11 @@ export default function WishlistHeart({
         // API call failed, revert optimistic update
         setLocalIsInWishlist(!newState);
         onWishlistChange?.(!newState);
-        console.error('Failed to toggle wishlist:', result.message);
       }
     } catch (error) {
       // Revert optimistic update on error
       setLocalIsInWishlist(!localIsInWishlist);
       onWishlistChange?.(!localIsInWishlist);
-      console.error('Failed to toggle wishlist:', error);
     }
   };
 

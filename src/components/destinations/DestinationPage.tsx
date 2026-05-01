@@ -64,7 +64,6 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
           setFilteredHotels(searchResult.results);
         }
       } catch (error) {
-        console.error('Error loading hotels:', error);
         setHotels([]);
         setFilteredHotels([]);
       } finally {

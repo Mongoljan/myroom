@@ -245,22 +245,18 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                     );
                     setRoomAvailability(availabilityResponse.available_rooms);
                   } catch (availError) {
-                    console.error('Failed to check room availability:', availError);
                     setRoomAvailability(null);
                   }
                 }
               } else {
-                console.warn('No rooms data available for hotel:', hotel.hotel_id);
                 setCheapestRoom(null);
               }
             } catch (roomError) {
-              console.error('Failed to load room details:', roomError);
               setCheapestRoom(null);
             }
           }
         }
       } catch (error) {
-        console.error('Failed to load property data:', error);
       }
     };
 

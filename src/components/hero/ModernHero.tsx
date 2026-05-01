@@ -142,7 +142,6 @@ export default function ModernHero() {
         const suggestions = await locationService.searchLocations(destination);
         setLocationSuggestions(suggestions);
       } catch (error) {
-        console.error('Error searching locations:', error);
         setLocationSuggestions([]);
       } finally {
         setIsLoadingSuggestions(false);
@@ -160,7 +159,6 @@ export default function ModernHero() {
         const popular = await locationService.getPopularLocations();
         setLocationSuggestions(popular);
       } catch (error) {
-        console.error('Error loading popular locations:', error);
       }
     };
     loadPopular();

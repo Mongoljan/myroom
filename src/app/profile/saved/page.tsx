@@ -22,10 +22,8 @@ export default function SavedPage() {
     try {
       const result = await removeHotel(hotelId);
       if (!result.success) {
-        console.error('Failed to remove from wishlist:', result.message);
       }
     } catch (error) {
-      console.error('Error removing from wishlist:', error);
     } finally {
       setRemovingIds(prev => {
         const newSet = new Set(prev);

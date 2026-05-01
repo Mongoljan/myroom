@@ -205,7 +205,6 @@ export default function FaqSection() {
               
               // Debug: Check if FAQ has content
               if (!faq || !faq.q || !faq.a) {
-                console.warn(`Additional FAQ at index ${actualIndex} missing content:`, faq);
                 return null;
               }
               

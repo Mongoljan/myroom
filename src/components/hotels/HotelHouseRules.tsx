@@ -25,7 +25,6 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
         const data = await ApiService.getPropertyPolicies(hotelId);
         setPolicies(data);
       } catch (err) {
-        console.error('Failed to fetch property policies:', err);
         setError('Failed to load property policies');
       } finally {
         setLoading(false);

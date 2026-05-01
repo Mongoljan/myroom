@@ -148,12 +148,6 @@ class HotelRoomsService {
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('API Error Details:', {
-            endpoint,
-            status: response.status,
-            statusText: response.statusText,
-            errorBody: errorText
-          });
           continue; // Try next endpoint
         }
         
@@ -162,12 +156,10 @@ class HotelRoomsService {
         
         return this.allRoomDataCache!;
       } catch (error) {
-        console.error(`Error with endpoint ${endpoint}:`, error);
         continue; // Try next endpoint
       }
     }
 
-    console.error('All API endpoints failed, returning empty data structure');
     // Return empty data structure if all APIs fail
     return {
       room_facilities: [],
@@ -192,19 +184,11 @@ class HotelRoomsService {
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Hotel Rooms API Error Details:', {
-          status: response.status,
-          statusText: response.statusText,
-          url: response.url,
-          hotelId: hotelId,
-          errorBody: errorText
-        });
         throw new Error(`Failed to fetch hotel rooms: ${response.status} ${response.statusText} - ${errorText}`);
       }
       
       return await response.json();
     } catch (error) {
-      console.error('Error fetching hotel rooms:', error);
       return [];
     }
   }
@@ -218,7 +202,6 @@ class HotelRoomsService {
 
       return rooms.map(room => this.enrichRoomData(room, allData));
     } catch (error) {
-      console.error('Error fetching enriched hotel rooms:', error);
       return [];
     }
   }

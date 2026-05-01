@@ -123,7 +123,6 @@ export default function ImprovedHotelRoomsSection({
 
         setRoomPrices(pricesData);
       } catch (error) {
-        console.error('Failed to load rooms and prices:', error);
       } finally {
         setLoading(false);
       }

@@ -31,7 +31,6 @@ export function useRecentSearches() {
         setRecentSearches(parsed);
       }
     } catch (error) {
-      console.error('Error loading recent searches:', error);
     }
   }, []);
 
@@ -64,7 +63,6 @@ export function useRecentSearches() {
       setRecentSearches(updatedSearches);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSearches));
     } catch (error) {
-      console.error('Error saving recent search:', error);
     }
   };
 
