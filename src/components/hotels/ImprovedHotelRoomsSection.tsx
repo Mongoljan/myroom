@@ -297,7 +297,7 @@ export default function ImprovedHotelRoomsSection({
 
   if (availableRooms.length === 0) {
     return (
-      <div className="flex items-center justify-between min-h-[400px]">
+      <div className="flex items-center justify-between min-h-100">
         <div className="flex-1 flex flex-col items-center justify-center">
           <div className="text-center">
             <Bed className="w-16 h-16 mx-auto text-gray-400 mb-4" />
@@ -347,12 +347,12 @@ export default function ImprovedHotelRoomsSection({
           <div className="hidden lg:block h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
 
           {/* Guests — +/- button counters (no lag) */}
-          <div className="flex items-end gap-2 flex-shrink-0">
+          <div className="flex items-end gap-2 shrink-0">
             <div>
               <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.adults', 'Том')}</label>
               <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
                 <button type="button" onClick={() => setAdultsCount(c => Math.max(1, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
-                <span className="min-w-[2rem] text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{adultsCount}</span>
+                <span className="min-w-8 text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{adultsCount}</span>
                 <button type="button" onClick={() => setAdultsCount(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
               </div>
             </div>
@@ -360,7 +360,7 @@ export default function ImprovedHotelRoomsSection({
               <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.children', 'Хүүхэд')}</label>
               <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
                 <button type="button" onClick={() => setChildrenCountLocal(c => Math.max(0, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
-                <span className="min-w-[2rem] text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{childrenCountLocal}</span>
+                <span className="min-w-8 text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{childrenCountLocal}</span>
                 <button type="button" onClick={() => setChildrenCountLocal(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
               </div>
             </div>

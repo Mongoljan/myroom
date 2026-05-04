@@ -1,23 +1,44 @@
 'use client';
 
 import { useState } from 'react';
-import { BedDouble, BedSingle, User, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react';
-import { FaChild } from 'react-icons/fa';
+import {
+  BedDouble,
+  Users,
+  User,
+  Baby,
+  Maximize2,
+  ChevronLeft,
+  ChevronRight,
+  Wifi,
+  Wind,
+  Tv,
+  UtensilsCrossed,
+  Cigarette,
+  CigaretteOff,
+  Bath,
+  Scissors,
+  Fan,
+  Bug,
+  Camera,
+  Zap,
+  Shield,
+  CheckCircle,
+} from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
-import RoomImageModal from './RoomImageModal';
 import { EnrichedHotelRoom, PriceBreakdown } from '@/services/hotelRoomsApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import RoomDetailModal from './RoomDetailModal';
 
 export interface RoomPriceOptions {
-  basePrice: number; // Final customer-facing price (final_customer_price)
-  basePriceRaw?: number; // Original price before discount (base_price from API)
+  basePrice: number;
+  basePriceRaw?: number;
   halfDayPrice?: number;
   singlePersonPrice?: number;
   discount?: {
     type: 'PERCENT' | 'FIXED';
     value: number;
   };
-  priceBreakdown?: PriceBreakdown; // Full price breakdown from API
+  priceBreakdown?: PriceBreakdown;
 }
 
 export interface BookingItem {
@@ -36,293 +57,325 @@ interface TripComStyleRoomCardProps {
   nights?: number;
 }
 
+// Priority facility list shown in the LEFT column, max 4
+// Order defines priority — first 4 that the room actually has get shown
+const PRIORITY_FACILITIES: Array<{
+  facilityId?: number;
+  bathroomId?: number;
+  key: string;
+  labelMn: string;
+  labelEn: string;
+  icon: React.ReactNode;
+}> = [
+  { facilityId: 48, key: 'wifi',        labelMn: 'Үнэгүй Wi-Fi',           labelEn: 'Free Wi-Fi',       icon: <Wifi className="w-3.5 h-3.5" /> },
+  { facilityId: 1,  key: 'ac',          labelMn: 'Агааржуулагч',            labelEn: 'Air conditioning', icon: <Wind className="w-3.5 h-3.5" /> },
+  { facilityId: 4,  key: 'tv',          labelMn: 'Хавтгай дэлгэцтэй TV',   labelEn: 'Flat-screen TV',   icon: <Tv className="w-3.5 h-3.5" /> },
+  { facilityId: 49, key: 'kitchen',     labelMn: 'Гал тогооны хэсэг',       labelEn: 'Kitchen',          icon: <UtensilsCrossed className="w-3.5 h-3.5" /> },
+  { facilityId: 13, key: 'smoking',     labelMn: 'Тамхилах өрөө',           labelEn: 'Smoking room',     icon: <Cigarette className="w-3.5 h-3.5 text-orange-400" /> },
+  { facilityId: 16, key: 'non_smoking', labelMn: 'Тамхи татдаггүй өрөө',   labelEn: 'Non-smoking',      icon: <CigaretteOff className="w-3.5 h-3.5 text-green-500" /> },
+  { key: 'bathroom',                    labelMn: 'Угаалгын өрөө',           labelEn: 'Bathroom',         icon: <Bath className="w-3.5 h-3.5 text-blue-400" /> },
+  { bathroomId: 4,  key: 'hairdryer',   labelMn: 'Үсний сэнс',              labelEn: 'Hairdryer',        icon: <Scissors className="w-3.5 h-3.5" /> },
+  { facilityId: 35, key: 'fan',         labelMn: 'Сэнс',                    labelEn: 'Fan',              icon: <Fan className="w-3.5 h-3.5" /> },
+  { facilityId: 40, key: 'mosquito',    labelMn: 'Шумуулны тор',            labelEn: 'Mosquito net',     icon: <Bug className="w-3.5 h-3.5" /> },
+];
+
+function getPriorityFacilities(room: EnrichedHotelRoom, limit = 4) {
+  const facilityIds = new Set(room.facilitiesDetails?.map((f) => f.id) ?? []);
+  const bathroomIds = new Set(room.bathroomItemsDetails?.map((b) => b.id) ?? []);
+  const result: Array<{ labelMn: string; labelEn: string; icon: React.ReactNode }> = [];
+
+  for (const entry of PRIORITY_FACILITIES) {
+    if (result.length >= limit) break;
+    if (entry.facilityId !== undefined && facilityIds.has(entry.facilityId)) { result.push(entry); continue; }
+    if (entry.bathroomId !== undefined && bathroomIds.has(entry.bathroomId)) { result.push(entry); continue; }
+    if (entry.key === 'bathroom' && room.is_Bathroom) { result.push(entry); }
+  }
+  return result;
+}
+
 export default function TripComStyleRoomCard({
   room,
   priceOptions,
   bookingItems,
   onQuantityChange,
-  nights = 1
+  nights = 1,
 }: TripComStyleRoomCardProps) {
   const { t } = useHydratedTranslation();
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
-
-  const getRoomQuantity = (priceType: 'base' | 'halfDay' | 'singlePerson'): number => {
-    const item = bookingItems.find(item => item.room.id === room.id && item.priceType === priceType);
-    return item?.quantity || 0;
-  };
-
-  const remainingQuantity = room.number_of_rooms_to_sell -
-    bookingItems
-      .filter(item => item.room.id === room.id)
-      .reduce((sum, item) => sum + item.quantity, 0);
-
-  // Image navigation functions
-  const nextImage = () => {
-    if (room.images && room.images.length > 1) {
-      setSelectedImageIndex((prev) => 
-        prev === room.images.length - 1 ? 0 : prev + 1
-      );
-    }
-  };
-
-  const prevImage = () => {
-    if (room.images && room.images.length > 1) {
-      setSelectedImageIndex((prev) => 
-        prev === 0 ? room.images.length - 1 : prev - 1
-      );
-    }
-  };
-
-  // Calculate discount percentage - same logic as search page
-  const getDiscountPercent = () => {
-    if (!priceOptions) return 0;
-
-    const rawPrice = priceOptions.basePriceRaw || 0;
-    const adjustedPrice = priceOptions.basePrice;
-    let discountPercent = 0;
-
-    // Calculate discount percentage from actual price difference
-    if (rawPrice > 0 && adjustedPrice < rawPrice) {
-      const actualDiscount = rawPrice - adjustedPrice;
-      const calculatedPercent = (actualDiscount / rawPrice) * 100;
-      discountPercent = calculatedPercent > 0 ? Math.max(1, Math.round(calculatedPercent)) : 0;
-    }
-
-    // If pricesetting exists and is PERCENT type, use the API value for accuracy
-    if (priceOptions.discount?.type === 'PERCENT') {
-      discountPercent = Math.max(1, Math.round(priceOptions.discount.value));
-    }
-
-    return discountPercent;
-  };
-
-  const discountPercent = getDiscountPercent();
-  const hasDiscount = discountPercent > 0 || (priceOptions?.basePriceRaw && priceOptions?.basePriceRaw > priceOptions?.basePrice);
-
-  // Get bed icon
-  const getBedIcon = () => {
-    const bedName = room.bedTypeName?.toLowerCase() || '';
-    const isDoubleBed = bedName.includes('double') || bedName.includes('king') || bedName.includes('queen');
-
-    return isDoubleBed ? (
-      <BedDouble className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-    ) : (
-      <BedSingle className="w-3.5 h-3.5 text-gray-600 dark:text-gray-400" />
-    );
-  };
-
-  // Render person icons
-  const renderPersonIcons = () => {
-    return (
-      <div className="flex items-center gap-0.5">
-        {Array.from({ length: room.adultQty }).map((_, i) => (
-          <User key={`adult-${i}`} className="w-4 h-4 text-gray-700 dark:text-gray-300" strokeWidth={2.5} />
-        ))}
-        {room.childQty > 0 && Array.from({ length: room.childQty }).map((_, i) => (
-          <FaChild key={`child-${i}`} className="w-3 h-3 text-gray-500 dark:text-gray-400" />
-        ))}
-      </div>
-    );
-  };
+  const [imageIndex, setImageIndex] = useState(0);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   if (!priceOptions) return null;
 
+  const selectedQty =
+    bookingItems.find((i) => i.room.id === room.id && i.priceType === 'base')?.quantity ?? 0;
+
+  const maxQty = room.number_of_rooms_to_sell;
+  const isLowStock = maxQty > 0 && maxQty <= 5;
+
+  // Discount
+  const rawPrice = priceOptions.basePriceRaw ?? 0;
+  const finalPrice = priceOptions.basePrice;
+  const discountPct =
+    priceOptions.discount?.type === 'PERCENT'
+      ? Math.round(priceOptions.discount.value)
+      : rawPrice > 0 && finalPrice < rawPrice
+      ? Math.round(((rawPrice - finalPrice) / rawPrice) * 100)
+      : 0;
+  const hasDiscount = discountPct > 0;
+
+  // Images
+  const images = room.images ?? [];
+  const hasImages = images.length > 0;
+  const goNext = () => setImageIndex((p) => (p === images.length - 1 ? 0 : p + 1));
+  const goPrev = () => setImageIndex((p) => (p === 0 ? images.length - 1 : p - 1));
+
+  // Facilities for left column (max 4)
+  const shownFacilities = getPriorityFacilities(room, 4);
+  const totalFacilityCount =
+    (room.facilitiesDetails?.length ?? 0) +
+    (room.bathroomItemsDetails?.length ?? 0) +
+    (room.freeToiletriesDetails?.length ?? 0) +
+    (room.foodAndDrinkDetails?.length ?? 0) +
+    (room.outdoorAndViewDetails?.length ?? 0);
+  const hasMoreToShow = totalFacilityCount > shownFacilities.length;
+
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-      <div className="p-3">
-        {/* Room Title with Discount Badge - Compact */}
-        <div className="mb-2">
-          <div className="flex items-start justify-between mb-1">
-            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-              {room.roomTypeName}
-              {room.roomCategoryName && (
-                <span className="ml-1 text-sm font-normal text-gray-600 dark:text-gray-400">
-                  - {room.roomCategoryName}
-                </span>
-              )}
-            </h3>
-            {hasDiscount && (
-              <div className="bg-red-500 text-white text-sm font-bold px-1.5 py-0.5 rounded">
-                {discountPercent}% OFF
-              </div>
+    <>
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+
+        {/* ── Header ── */}
+        <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-gray-100 dark:border-gray-700">
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+            {room.roomTypeName}
+            {room.roomCategoryName && room.roomCategoryName !== 'Unknown' && (
+              <span className="ml-1 font-normal text-sm text-gray-500 dark:text-gray-400">
+                / {room.roomCategoryName}
+              </span>
             )}
-          </div>
+          </h3>
+          {isLowStock && (
+            <span className="text-red-500 text-sm font-semibold whitespace-nowrap ml-3">
+              *{t('roomCard.lastRooms', 'Сүүлийн')} {maxQty} {t('roomCard.rooms', 'өрөө')}
+            </span>
+          )}
         </div>
 
-        <div className="flex gap-3">
-          {/* Left: Images - Smaller */}
-          <div className="w-40 flex-shrink-0">
-            <div className="relative w-full h-24 rounded-md overflow-hidden bg-gray-100 dark:bg-gray-700 group cursor-pointer" onClick={() => setIsImageModalOpen(true)}>
-              {room.images && room.images.length > 0 ? (
+        {/* ── Body: Left | Middle | Right ── */}
+        <div className="flex">
+
+          {/* ── LEFT: image + thumbnails + bed + amenities ── */}
+          <div className="w-52 shrink-0 flex flex-col border-r border-gray-100 dark:border-gray-700">
+
+            {/* Main image */}
+            <div
+              className="relative bg-gray-100 dark:bg-gray-700 cursor-pointer group overflow-hidden"
+              style={{ height: '148px' }}
+              onClick={() => setDetailOpen(true)}
+            >
+              {hasImages ? (
                 <>
                   <SafeImage
-                    src={room.images[selectedImageIndex]?.image || room.images[0].image}
+                    src={images[imageIndex].image}
                     alt={room.roomTypeName}
                     fill
-                    className="object-cover transition-transform hover:scale-105"
+                    className="object-cover transition-transform group-hover:scale-105"
                   />
-                  
-                  {/* Navigation buttons - show only if multiple images */}
-                  {room.images.length > 1 && (
+                  {images.length > 1 && (
                     <>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          prevImage();
-                        }}
-                        className="absolute left-1 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1 shadow-lg transition-all opacity-0 group-hover:opacity-100"
-                        aria-label="Previous image"
+                        onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                        className="absolute left-1 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Өмнөх"
                       >
                         <ChevronLeft className="w-3 h-3 text-gray-700 dark:text-gray-300" />
                       </button>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          nextImage();
-                        }}
-                        className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1 shadow-lg transition-all opacity-0 group-hover:opacity-100"
-                        aria-label="Next image"
+                        onClick={(e) => { e.stopPropagation(); goNext(); }}
+                        className="absolute right-1 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label="Дараах"
                       >
                         <ChevronRight className="w-3 h-3 text-gray-700 dark:text-gray-300" />
                       </button>
+                      <div className="absolute bottom-1 right-1 flex items-center gap-0.5 bg-black/60 text-white text-xs px-1 py-0.5 rounded">
+                        <Camera className="w-2.5 h-2.5" />
+                        <span>{images.length}</span>
+                      </div>
                     </>
                   )}
-                  
-                  {/* Image count badge */}
-                  {room.images.length > 1 && (
-                    <div className="absolute bottom-1 right-1 bg-black/60 text-white text-sm px-1 py-0.5 rounded flex items-center gap-0.5">
-                      <span>📷</span>
-                      <span>{selectedImageIndex + 1}/{room.images.length}</span>
-                    </div>
-                  )}
-
-                  {/* Click to view overlay */}
-                  <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-white px-2 py-1 rounded text-sm font-medium">
-                      {t('roomCard.viewFully', 'Бүтнээр харах')}
-                    </div>
-                  </div>
                 </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <BedDouble className="w-8 h-8 text-gray-400" />
+                <div className="h-full flex flex-col items-center justify-center gap-1 text-gray-300 dark:text-gray-600">
+                  <BedDouble className="w-10 h-10" />
                 </div>
               )}
             </div>
 
-            {/* Compact occupancy icons under image */}
-            <div className="mt-1 flex items-center justify-end">
-              <div className="flex items-center gap-0.5">
-                {renderPersonIcons()}
+            {/* Thumbnail strip */}
+            {images.length > 1 && (
+              <div className="flex gap-1 px-2 py-1.5 border-b border-gray-100 dark:border-gray-700">
+                {images.slice(0, 4).map((img, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setImageIndex(i)}
+                    className={`relative w-10 h-7 rounded overflow-hidden shrink-0 border-2 transition-all ${
+                      i === imageIndex
+                        ? 'border-blue-500'
+                        : 'border-transparent hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <SafeImage src={img.image} alt="" fill className="object-cover" />
+                  </button>
+                ))}
+                {images.length > 4 && (
+                  <button
+                    onClick={() => setDetailOpen(true)}
+                    className="w-10 h-7 rounded shrink-0 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center"
+                  >
+                    +{images.length - 4}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Bed type + capacity + size */}
+            <div className="px-3 pt-2 pb-1 space-y-1">
+              {Array.isArray(room.bed_details) && room.bed_details.slice(0, 2).map((bed, idx) => (
+                <div key={idx} className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300">
+                  <BedDouble className="w-3.5 h-3.5 shrink-0 text-gray-500" />
+                  <span className="truncate font-medium">
+                    {bed.quantity > 1 ? `${bed.quantity}× ` : ''}
+                    {bed.name || t('roomCard.standardBed', 'Стандарт ор')}
+                  </span>
+                </div>
+              ))}
+              <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-0.5">
+                  <Users className="w-3 h-3" />
+                  <span>{room.adultQty + room.childQty}</span>
+                </div>
+                {room.room_size && Number(room.room_size) > 0 && (
+                  <div className="flex items-center gap-0.5">
+                    <Maximize2 className="w-3 h-3" />
+                    <span>{Number(room.room_size)}m²</span>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
 
-          {/* Middle: Room Details - Compact */}
-          <div className="flex-1 min-w-0 space-y-2">
-            {/* Guests + size */}
-            <div className="text-sm text-gray-700 dark:text-gray-300">
-              <span className="font-medium">{room.adultQty + room.childQty} {t('roomCard.guests', 'guests')}</span>
-              {room.room_size && Number(room.room_size) > 0 && (
-                <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">({Number(room.room_size)}m²)</span>
-              )}
-            </div>
-
-            {/* Bed details - one row per bed type */}
-            {Array.isArray(room.bed_details) && room.bed_details.length > 0 ? (
-              <div className="flex flex-col gap-1">
-                {room.bed_details.map((bed, idx) => (
-                  <div key={idx} className="flex items-center gap-1.5 text-sm text-gray-800 dark:text-gray-200">
-                    <BedDouble className="w-4 h-4 text-gray-500 shrink-0" />
-                    <span className="font-medium">
-                      {bed.quantity > 1 ? `${bed.quantity}× ` : ''}
-                      {bed.name || t('roomCard.standardBed', 'Стандарт ор')}
-                    </span>
+            {/* Priority amenities (max 4) */}
+            {shownFacilities.length > 0 && (
+              <div className="px-3 pb-1 space-y-1 border-t border-gray-50 dark:border-gray-700 pt-1.5">
+                {shownFacilities.map((f, i) => (
+                  <div key={i} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
+                    <span className="shrink-0 text-gray-400 dark:text-gray-500">{f.icon}</span>
+                    <span>{f.labelMn}</span>
                   </div>
                 ))}
               </div>
-            ) : room.bedTypeName && room.bedTypeName !== 'Unknown' ? (
-              <div className="flex items-center gap-1.5 text-sm text-gray-800 dark:text-gray-200">
-                <BedDouble className="w-4 h-4 text-gray-500 shrink-0" />
-                <span className="font-medium">{room.bedTypeName}</span>
-              </div>
-            ) : null}
-
-            {/* Amenities - Compact, horizontal layout */}
-            <div className="flex flex-wrap gap-x-3 gap-y-1">
-              {room.facilitiesDetails && room.facilitiesDetails.slice(0, 3).map((facility, idx) => (
-                <div key={idx} className="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
-                  <CheckCircle className="w-3 h-3 text-green-600" />
-                  <span>{facility.name_mn || facility.name_en}</span>
-                </div>
-              ))}
-            </div>
-
-            {/* Availability Warning - Compact */}
-            {remainingQuantity > 0 && remainingQuantity <= 5 && (
-              <div className="text-sm font-medium text-orange-600">
-                {t('roomCard.onlyRoomsLeft', { count: remainingQuantity }, `Only ${remainingQuantity} left!`)}
-              </div>
             )}
+
+            {/* Дэлгэрэнгүй link */}
+            <div className="px-3 pb-3">
+              <button
+                onClick={() => setDetailOpen(true)}
+                className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                {t('roomCard.moreDetails', 'Дэлгэрэнгүй')} →
+              </button>
+            </div>
           </div>
 
-          {/* Right: Pricing - More Compact */}
-          <div className="w-44 flex flex-col justify-between flex-shrink-0">
-            <div>
-              {/* Discount Badge */}
-              {hasDiscount && (
-                <div className="flex justify-end items-center gap-1 mb-1">
-                  <div className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                    ₮{(priceOptions.basePriceRaw || priceOptions.basePrice).toLocaleString()}
-                  </div>
-                  <div className="bg-red-500 text-white text-sm font-bold px-1 py-0.5 rounded">
-                    -{discountPercent}%
-                  </div>
-                </div>
-              )}
+          {/* ── MIDDLE: Your Choices ── */}
+          <div className="flex-1 min-w-0 p-4 flex flex-col gap-3 border-r border-gray-100 dark:border-gray-700">
 
-              {/* Current Price Per Night - Compact */}
-              <div className="text-right">
-                <div className="text-h3 font-bold text-gray-900 dark:text-white">
-                  ₮{priceOptions.basePrice.toLocaleString()}
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {nights > 1
-                    ? `${nights} ${t('roomCard.nights', 'шөнийн нийт')}: ₮${(priceOptions.basePrice * nights).toLocaleString()} — ${t('roomCard.inclTaxes', 'татвар багтсан')}`
-                    : t('roomCard.perNight', 'шөнийн үнэ')
-                  }
-                </div>
-              </div>
+            {/* Guest capacity icons */}
+            <div className="flex items-center gap-0.5">
+              {Array.from({ length: room.adultQty }).map((_, i) => (
+                <User key={`a${i}`} className="w-4 h-4 text-gray-600 dark:text-gray-300" strokeWidth={2} />
+              ))}
+              {room.childQty > 0 && Array.from({ length: room.childQty }).map((_, i) => (
+                <Baby key={`c${i}`} className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
+              ))}
+              <span className="ml-1 text-sm text-gray-600 dark:text-gray-400">
+                ×{room.adultQty + room.childQty}
+              </span>
             </div>
 
-            {/* Room Selector Dropdown - Compact */}
-            <div className="mt-2">
+            <div className="border-t border-gray-100 dark:border-gray-700" />
+
+            {/* Booking conditions */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium text-green-600 dark:text-green-400">
+                <Zap className="w-4 h-4 shrink-0" />
+                <span>Шууд баталгаажилт</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium text-green-600 dark:text-green-400">
+                <Shield className="w-4 h-4 shrink-0" />
+                <span>100% урьдчилгаа төлөлт</span>
+              </div>
+              {/* Cancellation — placeholder until backend delivers */}
+              <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 italic">
+                <CheckCircle className="w-4 h-4 shrink-0" />
+                <span>{t('roomCard.cancellationTBD', 'Цуцлах нөхцөл удахгүй')}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* ── RIGHT: Price + Selector ── */}
+          <div className="w-48 shrink-0 p-4 flex flex-col justify-between">
+
+            {/* Price block — at top */}
+            <div className="space-y-1">
+              {hasDiscount && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-sm text-gray-400 dark:text-gray-500 line-through">
+                    ₮{rawPrice.toLocaleString()}
+                  </span>
+                  <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                    {discountPct}% OFF
+                  </span>
+                </div>
+              )}
+              <div className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                ₮{finalPrice.toLocaleString()}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                {nights > 1
+                  ? `₮${(finalPrice * nights).toLocaleString()} · ${nights} ${t('roomCard.nights', 'шөнө')}`
+                  : t('roomCard.perNight', 'шөнийн үнэ')}
+              </div>
+              {isLowStock && (
+                <p className="text-orange-500 text-xs font-semibold">
+                  {t('roomCard.onlyLeft', 'Зөвхөн')} {maxQty} {t('roomCard.roomsLeft', 'үлдлээ!')}
+                </p>
+              )}
+            </div>
+
+            {/* Room selector — at bottom */}
+            <div className="mt-4">
               <select
-                value={getRoomQuantity('base')}
-                onChange={(e) => onQuantityChange('base', parseInt(e.target.value))}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                value={selectedQty}
+                onChange={(e) => onQuantityChange('base', Number(e.target.value))}
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
               >
-                <option value={0}>Select rooms</option>
-                {Array.from({ length: Math.min(remainingQuantity, 5) }, (_, i) => i + 1).map((num) => (
-                  <option key={num} value={num}>
-                    {num} {num === 1 ? 'room' : 'rooms'} • ₮{(priceOptions.basePrice * num).toLocaleString()}
+                <option value={0}>{t('roomCard.selectRooms', 'Өрөө сонгох')}</option>
+                {Array.from({ length: maxQty }, (_, i) => i + 1).map((n) => (
+                  <option key={n} value={n}>
+                    {n} {t('roomCard.rooms', 'өрөө')} (₮{(finalPrice * n).toLocaleString()})
                   </option>
                 ))}
               </select>
             </div>
           </div>
+
         </div>
       </div>
 
-      {/* Room Image Modal */}
-      <RoomImageModal
-        isOpen={isImageModalOpen}
-        onClose={() => setIsImageModalOpen(false)}
-        images={room.images || []}
-        initialIndex={selectedImageIndex}
-        roomName={room.roomTypeName}
+      <RoomDetailModal
+        room={room}
+        isOpen={detailOpen}
+        onClose={() => setDetailOpen(false)}
       />
-    </div>
+    </>
   );
 }
