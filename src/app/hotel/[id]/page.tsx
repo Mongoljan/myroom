@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import HotelPageContent from '@/components/hotels/HotelPageContent';
 import { ApiService } from '@/services/api';
-import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, PropertyImage } from '@/types/api';
+import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, PropertyImage, CancellationFee } from '@/types/api';
 
 // ISR-style revalidation - cache hotel data for 60 seconds
 export const revalidate = 60;
@@ -111,11 +111,12 @@ async function HotelContent({ id, searchParams }: {
 
   const hotelId = hotel.hotel_id;
 
-  // Fetch property details, basicInfo, and property images in parallel
-  const [propertyDetailsResult, basicInfoResult, propertyImagesResult] = await Promise.allSettled([
+  // Fetch property details, basicInfo, property images, and policies in parallel
+  const [propertyDetailsResult, basicInfoResult, propertyImagesResult, policiesResult] = await Promise.allSettled([
     ApiService.getPropertyDetails(hotelId),
     ApiService.getPropertyBasicInfo(hotelId),
     ApiService.getPropertyImages(hotelId),
+    ApiService.getPropertyPolicies(hotelId),
   ]);
 
   const propertyDetails: PropertyDetails | null =
@@ -130,6 +131,11 @@ async function HotelContent({ id, searchParams }: {
 
   const propertyImages: PropertyImage[] =
     propertyImagesResult.status === 'fulfilled' ? propertyImagesResult.value : [];
+
+  const cancellationFee: CancellationFee | null =
+    policiesResult.status === 'fulfilled' && policiesResult.value.length > 0
+      ? policiesResult.value[0].cancellation_fee
+      : null;
 
   // Fetch additional info using the ID from property details
   let additionalInfo: AdditionalInfo | null = null;
@@ -149,6 +155,7 @@ async function HotelContent({ id, searchParams }: {
       basicInfo={basicInfo}
       additionalInfo={additionalInfo}
       propertyImages={propertyImages}
+      cancellationFee={cancellationFee}
     />
   );
 }
