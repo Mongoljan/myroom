@@ -334,11 +334,11 @@ export default function TripComStyleRoomCard({
                       <span>{t('roomCard.cancellationPolicy', 'Цуцлалтын бодлого')}</span>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 pl-5.5">
-                      {t('roomCard.beforeCancelLabel', 'Өмнөх өдрийн {{time}} цагаас өмнө', { time })}
+                      {`${t('roomCard.beforeCancelLabelPrefix', 'Өмнөх өдрийн')} ${time} ${t('roomCard.beforeCancelLabelSuffix', 'цагаас өмнө')}`}
                       {': '}<span className={beforePct === 0 ? 'text-green-600 dark:text-green-400 font-medium' : 'text-orange-500 font-medium'}>{beforePct === 0 ? t('roomCard.freeCancelShort', 'үнэгүй') : `${beforePct}%`}</span>
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400 pl-5.5">
-                      {t('roomCard.afterCancelLabel', 'Өмнөх өдрийн {{time}} цагаас хойш', { time })}
+                      {`${t('roomCard.beforeCancelLabelPrefix', 'Өмнөх өдрийн')} ${time} ${t('roomCard.afterCancelLabelSuffix', 'цагаас хойш')}`}
                       {': '}<span className="text-orange-500 font-medium">{afterPct}%</span>
                     </p>
                   </div>
