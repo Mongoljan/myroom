@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Bed } from 'lucide-react';
 import { hotelRoomsService, EnrichedHotelRoom } from '@/services/hotelRoomsApi';
+import { ApiService } from '@/services/api';
+import { CancellationFee } from '@/types/api';
 import { RoomPriceOptions, BookingItem } from './RoomCard';
 import TripComStyleRoomCard from './TripComStyleRoomCard';
 import BookingSummary from './BookingSummary';
@@ -48,6 +50,7 @@ export default function ImprovedHotelRoomsSection({
   const [roomPrices, setRoomPrices] = useState<Record<string, RoomPriceOptions>>({});
   const [bookingItems, setBookingItems] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cancellationFee, setCancellationFee] = useState<CancellationFee | null>(null);
 
   // Update URL when dates change
   const updateURLWithDates = (newCheckIn: string, newCheckOut: string) => {
@@ -98,9 +101,15 @@ export default function ImprovedHotelRoomsSection({
       try {
         setLoading(true);
 
-        // Load enriched room data (now includes price_breakdown directly from API)
-        const roomsData = await hotelRoomsService.getEnrichedHotelRooms(hotelId);
+        // Load enriched room data and property policy in parallel
+        const [roomsData, policies] = await Promise.all([
+          hotelRoomsService.getEnrichedHotelRooms(hotelId),
+          ApiService.getPropertyPolicies(hotelId).catch(() => []),
+        ]);
         setRooms(roomsData);
+        if (policies.length > 0 && policies[0].cancellation_fee) {
+          setCancellationFee(policies[0].cancellation_fee);
+        }
 
         // Build price data from room's own price_breakdown (new API structure)
         const pricesData: Record<string, RoomPriceOptions> = {};
@@ -387,6 +396,7 @@ export default function ImprovedHotelRoomsSection({
                 bookingItems={bookingItems.filter(item => item.room.id === room.id)}
                 onQuantityChange={(priceType, quantity) => updateRoomQuantity(room, priceType, quantity)}
                 nights={getNumberOfNights()}
+                cancellationFee={cancellationFee}
               />
             ))}
           </div>

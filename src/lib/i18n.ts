@@ -916,7 +916,11 @@ const resources = {
         smokingAllowed: "Smoking allowed",
         nonSmoking: "Non-smoking",
         selectedDates: "Selected Dates",
-        more: "more"
+        more: "more",
+        cancellationPolicy: "Cancellation Policy",
+        beforeCancelLabel: "Before {{time}} the day before",
+        afterCancelLabel: "After {{time}} the day before",
+        freeCancelShort: "free"
       },
       hotelRooms: {
         availableRooms: "Available Rooms",
@@ -2396,7 +2400,11 @@ const resources = {
         smokingAllowed: "Тамхи татах боломжтой",
         nonSmoking: "Тамхи татахгүй",
         selectedDates: "Сонгосон огноо",
-        more: "бусад"
+        more: "бусад",
+        cancellationPolicy: "Цуцлалтын бодлого",
+        beforeCancelLabel: "Өмнөх өдрийн {{time}} цагаас өмнө",
+        afterCancelLabel: "Өмнөх өдрийн {{time}} цагаас хойш",
+        freeCancelShort: "үнэгүй"
       },
       hotelRooms: {
         availableRooms: "Боломжтой өрөөнүүд",

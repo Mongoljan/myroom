@@ -73,8 +73,15 @@ function SectionBlock({ title, items }: { title: string; items: string[] }) {
 }
 
 export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailModalProps) {
-  const { t } = useHydratedTranslation();
+  const { t, i18n } = useHydratedTranslation();
   const [imgIdx, setImgIdx] = useState(0);
+
+  // Language-aware category name
+  const categoryName = room
+    ? (i18n.language === 'en'
+        ? (room.roomCategoryNameEn || room.roomCategoryName)
+        : (room.roomCategoryNameMn || room.roomCategoryName))
+    : '';
 
   useEffect(() => {
     if (isOpen) setImgIdx(0);
@@ -148,9 +155,9 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white truncate">
             {room.roomTypeName}
-            {room.roomCategoryName && room.roomCategoryName !== 'Unknown' && (
+            {categoryName && categoryName !== 'Unknown' && (
               <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
-                / {room.roomCategoryName}
+                / {categoryName}
               </span>
             )}
           </h2>

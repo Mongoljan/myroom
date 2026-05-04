@@ -44,7 +44,8 @@ export interface BedType {
 
 export interface RoomCategory {
   id: number;
-  name: string;
+  name_en: string;
+  name_mn: string;
   is_custom: boolean;
 }
 
@@ -108,7 +109,9 @@ export interface AllRoomData {
 export interface EnrichedHotelRoom extends HotelRoom {
   roomTypeName: string;
   bedTypeName: string;
-  roomCategoryName: string;
+  roomCategoryName: string;    // MN (default)
+  roomCategoryNameEn: string; // EN
+  roomCategoryNameMn: string; // MN explicit
   facilitiesDetails: RoomFacility[];
   bathroomItemsDetails: BathroomItem[];
   freeToiletriesDetails: FreeToiletries[];
@@ -260,7 +263,9 @@ class HotelRoomsService {
       bed_details: normalizedBedDetails,
       roomTypeName: roomType?.name || 'Unknown',
       bedTypeName,
-      roomCategoryName: roomCategory?.name || 'Unknown',
+      roomCategoryName: roomCategory?.name_mn || 'Unknown',
+      roomCategoryNameMn: roomCategory?.name_mn || 'Unknown',
+      roomCategoryNameEn: roomCategory?.name_en || 'Unknown',
       facilitiesDetails,
       bathroomItemsDetails,
       freeToiletriesDetails,

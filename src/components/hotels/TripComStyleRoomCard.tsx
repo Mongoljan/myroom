@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
 import { EnrichedHotelRoom, PriceBreakdown } from '@/services/hotelRoomsApi';
+import { CancellationFee } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import RoomDetailModal from './RoomDetailModal';
 
@@ -55,6 +56,7 @@ interface TripComStyleRoomCardProps {
   bookingItems: BookingItem[];
   onQuantityChange: (priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => void;
   nights?: number;
+  cancellationFee?: CancellationFee | null;
 }
 
 // Priority facility list shown in the LEFT column, max 4
@@ -99,12 +101,18 @@ export default function TripComStyleRoomCard({
   bookingItems,
   onQuantityChange,
   nights = 1,
+  cancellationFee = null,
 }: TripComStyleRoomCardProps) {
-  const { t } = useHydratedTranslation();
+  const { t, i18n } = useHydratedTranslation();
   const [imageIndex, setImageIndex] = useState(0);
   const [detailOpen, setDetailOpen] = useState(false);
 
   if (!priceOptions) return null;
+
+  // Language-aware category name (falls back to MN)
+  const categoryName = i18n.language === 'en'
+    ? (room.roomCategoryNameEn || room.roomCategoryName)
+    : (room.roomCategoryNameMn || room.roomCategoryName);
 
   const selectedQty =
     bookingItems.find((i) => i.room.id === room.id && i.priceType === 'base')?.quantity ?? 0;
@@ -147,9 +155,9 @@ export default function TripComStyleRoomCard({
         <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-gray-100 dark:border-gray-700">
           <h3 className="text-base font-semibold text-gray-900 dark:text-white">
             {room.roomTypeName}
-            {room.roomCategoryName && room.roomCategoryName !== 'Unknown' && (
+            {categoryName && categoryName !== 'Unknown' && (
               <span className="ml-1 font-normal text-sm text-gray-500 dark:text-gray-400">
-                / {room.roomCategoryName}
+                / {categoryName}
               </span>
             )}
           </h3>
@@ -313,11 +321,34 @@ export default function TripComStyleRoomCard({
                 <Shield className="w-4 h-4 shrink-0" />
                 <span>100% урьдчилгаа төлөлт</span>
               </div>
-              {/* Cancellation — placeholder until backend delivers */}
-              <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 italic">
-                <CheckCircle className="w-4 h-4 shrink-0" />
-                <span>{t('roomCard.cancellationTBD', 'Цуцлах нөхцөл удахгүй')}</span>
-              </div>
+              {/* Cancellation policy — using Hotel_front naming */}
+              {cancellationFee ? (() => {
+                // Format "HH:MM:SS" → "HH:MM"
+                const time = cancellationFee.cancel_time?.slice(0, 5) ?? '';
+                const beforePct = parseFloat(cancellationFee.single_before_time_percentage ?? '0');
+                const afterPct = parseFloat(cancellationFee.single_after_time_percentage ?? '100');
+                return (
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      <CheckCircle className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t('roomCard.cancellationPolicy', 'Цуцлалтын бодлого')}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 pl-5.5">
+                      {t('roomCard.beforeCancelLabel', 'Өмнөх өдрийн {{time}} цагаас өмнө', { time })}
+                      {': '}<span className={beforePct === 0 ? 'text-green-600 dark:text-green-400 font-medium' : 'text-orange-500 font-medium'}>{beforePct === 0 ? t('roomCard.freeCancelShort', 'үнэгүй') : `${beforePct}%`}</span>
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 pl-5.5">
+                      {t('roomCard.afterCancelLabel', 'Өмнөх өдрийн {{time}} цагаас хойш', { time })}
+                      {': '}<span className="text-orange-500 font-medium">{afterPct}%</span>
+                    </p>
+                  </div>
+                );
+              })() : (
+                <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
+                  <CheckCircle className="w-4 h-4 shrink-0" />
+                  <span>{t('roomCard.cancellationPolicy', 'Цуцлалтын бодлого')}</span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -346,7 +377,7 @@ export default function TripComStyleRoomCard({
               </div>
               {isLowStock && (
                 <p className="text-orange-500 text-xs font-semibold">
-                  {t('roomCard.onlyLeft', 'Зөвхөн')} {maxQty} {t('roomCard.roomsLeft', 'үлдлээ!')}
+                  {t('roomCard.onlyLeft', { count: maxQty, defaultValue: 'Зөвхөн {{count}} үлдлээ!' })}
                 </p>
               )}
             </div>
