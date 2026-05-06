@@ -314,6 +314,7 @@ export interface CheapestRoom {
 export interface HotelImage {
   url: string;
   description: string;
+  is_profile?: boolean;
 }
 
 export interface HotelImages {
