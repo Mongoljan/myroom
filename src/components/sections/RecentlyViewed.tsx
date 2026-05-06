@@ -139,7 +139,7 @@ export default function RecentlyViewed() {
           className="mb-4"
         >
           <div>
-            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1">{t('hotel.recentlyViewed')}</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-1">{t('hotel.recentlyViewed')}</h2>
             <p className="text-caption text-gray-500 dark:text-gray-400">
               {t('hotel.recentlyViewedCount', { count: recentHotels.length })}
             </p>

@@ -28,7 +28,7 @@ export default function Partnerships() {
             transition={{ duration: 0.5 }}
             className="text-center mb-6"
           >
-            <h2 className={`${text.h2} text-gray-900 dark:text-white`}>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
               {t('partnerships.title', 'Хамтрагч байгууллагууд')}
             </h2>
           </motion.div>

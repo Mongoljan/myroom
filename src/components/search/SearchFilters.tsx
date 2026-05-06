@@ -57,6 +57,7 @@ export default function SearchFilters({
     toggleRecentFilter,
     roomFeatureFacilities,
     generalServiceFacilities,
+    roomFacilitiesData,
     outdoorFacilities,
     accessibilityFacilities,
     bedTypeFacilities,
@@ -92,6 +93,11 @@ export default function SearchFilters({
   (filters.generalServices || []).forEach(id => {
     const fac = apiData?.additionalFacilities?.find(f => f.id === id);
     if (fac) activeFilterChips.push({ label: fac.name_mn, onRemove: () => updateFilters({ generalServices: (filters.generalServices || []).filter(i => i !== id) }) });
+  });
+
+  (filters.roomFacilities || []).forEach(id => {
+    const fac = apiData?.roomFacilities?.find(f => f.id === id);
+    if (fac) activeFilterChips.push({ label: fac.name_mn, onRemove: () => updateFilters({ roomFacilities: (filters.roomFacilities || []).filter(i => i !== id) }) });
   });
 
   (filters.outdoorAreas || []).forEach(id => {
@@ -153,10 +159,10 @@ export default function SearchFilters({
             </div>
           )}
 
-          {/* Саяхны шүүлтүүр */}
+          {/* 1. Өмнөх хайлтууд */}
           {recentIndividualFilters.length > 0 && (
             <CollapsibleFilterSection
-              title={t('search.filtersSection.usedByYou') || 'Саяхны шүүлтүүр'}
+              title='Өмнөх хайлтууд'
               itemCount={recentIndividualFilters.length}
               initialShowCount={5}
               selectedCount={recentIndividualFilters.filter(item => isItemActive(item)).length}
@@ -182,10 +188,10 @@ export default function SearchFilters({
             </CollapsibleFilterSection>
           )}
 
-          {/* 1. Property type */}
+          {/* 2. Буудлын төрөл */}
           {apiData?.property_types && apiData.property_types.length > 0 && (
             <CollapsibleFilterSection
-              title={t('search.filtersSection.hotelType')}
+              title='Буудлын төрөл'
               itemCount={apiData.property_types.length}
               initialShowCount={5}
               selectedCount={(filters.propertyTypes || []).length}
@@ -221,7 +227,7 @@ export default function SearchFilters({
             if (popularFacs.length === 0) return null;
             return (
               <div className="space-y-1.5 border-b border-gray-200 dark:border-gray-600 pb-3">
-                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.popularSearches') || 'Түгээмэл шүүлтүүр'}</h4>
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Түгээмэл хайлтууд</h4>
                 {popularFacs.map((facility) => {
                   const isSelected = (filters.roomFeatures || []).includes(facility.id);
                   return (
@@ -246,7 +252,7 @@ export default function SearchFilters({
           {/* 3. Budget */}
           {priceBounds && priceBounds[1] > priceBounds[0] && totalResults >= 1 && (
             <div className="space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.budget') || 'Төсөв'}</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Үнэ</h4>
               {(() => {
                 const sliderMax = Math.min(filters.priceRange?.[1] ?? priceBounds[1], priceBounds[1]);
                 const fmt = (n: number) => '\u20ae' + new Intl.NumberFormat('en-US').format(n);
@@ -274,10 +280,10 @@ export default function SearchFilters({
             </div>
           )}
 
-          {/* 4. Room facilities (Group 1) */}
+          {/* 5. Үндсэн үйлчилгээ */}
           {roomFeatureFacilities.length > 0 && (
             <CollapsibleFilterSection
-              title={t('search.filtersSection.generalFacilities')}
+              title='Үндсэн үйлчилгээ'
               itemCount={roomFeatureFacilities.length}
               initialShowCount={10}
               selectedCount={(filters.roomFeatures || []).length}
@@ -304,10 +310,10 @@ export default function SearchFilters({
             </CollapsibleFilterSection>
           )}
 
-          {/* 5. Property facilities (Group 2) */}
+          {/* 6. Нэмэлт үйлчилгээ */}
           {generalServiceFacilities.length > 0 && (
             <CollapsibleFilterSection
-              title={t('search.filtersSection.additionalFacilities')}
+              title='Нэмэлт үйлчилгээ'
               itemCount={generalServiceFacilities.length}
               initialShowCount={10}
               selectedCount={(filters.generalServices || []).length}
@@ -334,10 +340,37 @@ export default function SearchFilters({
             </CollapsibleFilterSection>
           )}
 
-          {/* 7. Accessibility (Group 4) */}
+          {/* 7. Өрөөний тохижилт — Room facilities */}
+          {roomFacilitiesData.length > 0 && (
+            <CollapsibleFilterSection
+              title='Өрөөний тохижилт'
+              itemCount={roomFacilitiesData.length}
+              initialShowCount={10}
+              selectedCount={(filters.roomFacilities || []).length}
+              onClear={() => updateFilters({ roomFacilities: [] })}
+              usePanel
+            >
+              {roomFacilitiesData.map((facility) => {
+                const isSelected = (filters.roomFacilities || []).includes(facility.id);
+                return (
+                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ roomFacilities: isSelected ? (filters.roomFacilities || []).filter(id => id !== facility.id) : [...(filters.roomFacilities || []), facility.id] })}
+                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
+                  </label>
+                );
+              })}
+            </CollapsibleFilterSection>
+          )}
+
+          {/* 8. Буудлын хүртээмж */}
           {accessibilityFacilities.length > 0 && (
             <CollapsibleFilterSection
-              title={t('search.filtersSection.accessibility')}
+              title='Буудлын хүртээмж'
               itemCount={accessibilityFacilities.length}
               initialShowCount={10}
               selectedCount={(filters.accessibilityFeatures || []).length}
@@ -364,10 +397,10 @@ export default function SearchFilters({
             </CollapsibleFilterSection>
           )}
 
-          {/* 8. Bed type */}
+          {/* 9. Орны төрөл */}
           {bedTypeFacilities.length > 0 && (
             <CollapsibleFilterSection
-              title={t('search.filtersSection.bedType') || 'Орны төрөл'}
+              title='Орны төрөл'
               itemCount={bedTypeFacilities.length}
               initialShowCount={5}
               selectedCount={(filters.bedTypes || []).length}
@@ -394,10 +427,10 @@ export default function SearchFilters({
             </CollapsibleFilterSection>
           )}
 
-          {/* 9. Neighbourhood */}
+          {/* 10. Ойролцоох байршлууд */}
           {neighbourhoodOptions.length > 0 && (
             <CollapsibleFilterSection
-              title={t('search.filtersSection.neighbourhood') || 'Хороолол'}
+              title='Ойролцоох байршлууд'
               itemCount={neighbourhoodOptions.length}
               initialShowCount={5}
               selectedCount={(filters.neighbourhood || []).length}
@@ -421,10 +454,10 @@ export default function SearchFilters({
             </CollapsibleFilterSection>
           )}
 
-          {/* 9b. Landmarks */}
+          {/* 11. Үзвэр үзэсгэлэнт газрууд */}
           {landmarkCounts.length > 0 && (
             <CollapsibleFilterSection
-              title={t('search.filtersSection.landmarks') || 'Гол газрууд'}
+              title='Үзвэр үзэсгэлэнт газрууд'
               itemCount={landmarkCounts.length}
               initialShowCount={5}
               selectedCount={(filters.landmark || []).length}
@@ -448,7 +481,7 @@ export default function SearchFilters({
             </CollapsibleFilterSection>
           )}
 
-          {/* 10. Discount */}
+          {/* 12. Хөнгөлөлт */}
           {discountedCount > 0 && (
             <div className="space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -458,18 +491,16 @@ export default function SearchFilters({
                   onChange={(e) => updateFilters({ discounted: e.target.checked })}
                   className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                 />
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex-1">
-                  {t('search.filtersSection.discounted')}
-                </span>
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex-1">Хөнгөлөлт</span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">({discountedCount})</span>
               </label>
             </div>
           )}
 
-          {/* 11. Star rating */}
+          {/* 13. Буудлын зэрэглэл */}
           {apiData?.ratings && apiData.ratings.length > 0 && (
             <div className="space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3">
-              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('search.filtersSection.hotelStars')}</h4>
+              <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Буудлын зэрэглэл</h4>
               <div className="grid grid-cols-5 gap-1">
                 {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
                   const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
@@ -495,10 +526,13 @@ export default function SearchFilters({
             </div>
           )}
 
-          {/* 13. Activities (Group 3) */}
+          {/* 14. Зочдын үнэлгээ — placeholder */}
+          {/* TODO: implement guest rating filter when API supports it */}
+
+          {/* 15. Нэмэлт төлбөртэй үйлчилгээ */}
           {outdoorFacilities.length > 0 && (
             <CollapsibleFilterSection
-              title={t('search.filtersSection.activities')}
+              title='Нэмэлт төлбөртэй үйлчилгээ'
               itemCount={outdoorFacilities.length}
               initialShowCount={10}
               selectedCount={(filters.outdoorAreas || []).length}

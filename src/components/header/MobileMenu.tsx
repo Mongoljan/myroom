@@ -49,7 +49,7 @@ const MobileMenu = () => {
             </div>
             <Link
               href="/dashboard"
-              className="block w-full text-center bg-slate-900 text-white py-3 rounded-lg hover:bg-slate-800 transition-colors"
+              className="block w-full text-center bg-secondary text-white py-3 rounded-lg hover:bg-secondary/90 transition-colors"
             >
               {t('navigation.dashboard', 'Dashboard')}
             </Link>
@@ -70,7 +70,7 @@ const MobileMenu = () => {
           <div className="space-y-4">
             <Link
               href="/login"
-              className="block w-full text-center bg-slate-900 text-white py-3 rounded-lg hover:bg-slate-800 transition-colors"
+              className="block w-full text-center bg-secondary text-white py-3 rounded-lg hover:bg-secondary/90 transition-colors"
             >
               {t('navigation.signIn', 'Sign In')}
             </Link>

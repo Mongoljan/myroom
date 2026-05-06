@@ -120,9 +120,12 @@
   --button-primary-bg: var(--color-primary-600);
   --button-primary-hover: var(--color-primary-700);
   --button-primary-text: white;
-  --button-secondary-bg: var(--color-neutral-100);
-  --button-secondary-hover: var(--color-neutral-200);
-  --button-secondary-text: var(--color-neutral-700);
+  --button-secondary-bg: #1e293b;  /* Dark navy — used for action buttons */
+  --button-secondary-hover: #0f172a;
+  --button-secondary-text: white;
+  --button-outline-bg: transparent;
+  --button-outline-border: var(--color-primary-600);
+  --button-outline-text: var(--color-primary-600);
   --button-radius: var(--radius-lg);
   --button-shadow: var(--shadow-sm);
   --button-hover-shadow: var(--shadow-md);

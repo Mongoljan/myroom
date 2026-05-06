@@ -69,7 +69,7 @@ export default function BookingSummary({
       <button
         onClick={onBookNow}
         disabled={items.length === 0}
-        className="w-full bg-slate-900 text-white py-3 px-4 rounded-lg font-medium hover:bg-slate-800 transition-colors mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-secondary text-white py-3 px-4 rounded-lg font-medium hover:bg-secondary/90 transition-colors mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {t('hotel.bookNow')} ({totalRooms} {totalRooms !== 1 ? t('bookingExtra.rooms') : t('bookingExtra.room')})
       </button>

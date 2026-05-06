@@ -55,8 +55,8 @@ export default function SearchHeader() {
           transition-all duration-300 ease-out
         `}
       >
-        <div className={`max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 transition-all duration-300 ease-out ${isSticky ? 'py-1.5' : 'py-2'}`}>
-          <div className={`bg-white dark:bg-gray-800 border rounded-xl transition-all duration-200 ease-out ${
+        <div className={`max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 transition-all duration-300 ease-out ${isSticky ? 'py-3' : 'py-4'}`}>
+          <div className={`bg-white dark:bg-gray-800 border rounded-xl transition-all duration-200 ease-out overflow-hidden ${
             isSearchActive
               ? 'border-primary shadow-2xl ring-2 ring-primary/30'
               : 'border-primary shadow-sm'
@@ -67,7 +67,7 @@ export default function SearchHeader() {
       </div>
 
       {/* Spacer to prevent content jump when header becomes fixed */}
-      {isSticky && <div className="h-[64px]" />}
+      {isSticky && <div className="h-[80px]" />}
     </>
   );
 }

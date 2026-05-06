@@ -47,12 +47,14 @@ export interface CombinedApiData {
   province: Province[];
   accessibility_features: AccessibilityFeature[];
   bed_types?: BedType[];
+  roomFacilities?: Facility[];
 }
 
 export interface FilterState {
   propertyTypes: number[];
-  roomFeatures: number[];
-  generalServices: number[];
+  roomFeatures: number[];      // Property facilities (Үндсэн үйлчилгээ)
+  generalServices: number[];   // Additional facilities (Нэмэлт үйлчилгээ)
+  roomFacilities: number[];    // Room facilities (Өрөөний тохижилт) — from /all-data/
   outdoorAreas: number[];
   accessibilityFeatures: number[];
   starRating: number[];
@@ -85,6 +87,7 @@ export const DEFAULT_FILTERS: FilterState = {
   priceRange: [0, 99_000_000],
   roomFeatures: [],
   generalServices: [],
+  roomFacilities: [],
   discounted: false,
   starRating: [],
   outdoorAreas: [],
@@ -208,6 +211,7 @@ export function useSearchFilters({
       filterState.priceRange[1] === 99_000_000 &&
       filterState.roomFeatures.length === 0 &&
       filterState.generalServices.length === 0 &&
+      (filterState.roomFacilities?.length ?? 0) === 0 &&
       !filterState.discounted &&
       filterState.starRating.length === 0 &&
       filterState.outdoorAreas.length === 0 &&
@@ -333,6 +337,7 @@ export function useSearchFilters({
   const outdoorFacilities      = apiData?.activities             || [];
   const accessibilityFacilities = apiData?.accessibility_features || [];
   const bedTypeFacilities      = apiData?.bed_types              || [];
+  const roomFacilitiesData     = apiData?.roomFacilities         || [];
 
   const neighbourhoodOptions: { name: string; count: number }[] = (() => {
     const counts = new Map<string, number>();
@@ -367,6 +372,7 @@ export function useSearchFilters({
     toggleRecentFilter,
     roomFeatureFacilities,
     generalServiceFacilities,
+    roomFacilitiesData,
     outdoorFacilities,
     accessibilityFacilities,
     bedTypeFacilities,

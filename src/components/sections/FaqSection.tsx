@@ -78,7 +78,7 @@ export default function FaqSection() {
           transition={{ duration: 0.5, ease: "easeOut" }}
           viewport={{ once: true }}
         >
-          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-2`}>
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
             {t('faq.title', 'Frequently Asked Questions')}
           </h2>
         </motion.div>

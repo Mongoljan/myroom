@@ -227,7 +227,7 @@ export default function TripComStyleRoomCard({
                     onClick={() => setImageIndex(i)}
                     className={`relative w-10 h-7 rounded overflow-hidden shrink-0 border-2 transition-all ${
                       i === imageIndex
-                        ? 'border-blue-500'
+                        ? 'border-primary'
                         : 'border-transparent hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   >
@@ -286,7 +286,7 @@ export default function TripComStyleRoomCard({
             <div className="px-3 pb-3">
               <button
                 onClick={() => setDetailOpen(true)}
-                className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                className="text-xs text-primary hover:underline"
               >
                 {t('roomCard.moreDetails', 'Дэлгэрэнгүй')} →
               </button>

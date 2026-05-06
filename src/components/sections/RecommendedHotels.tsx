@@ -173,7 +173,7 @@ export default function RecommendedHotels() {
           transition={{ duration: 0.5 }}
           className="mb-6"
         >
-          <h2 className={`${text.h2} text-gray-900 dark:text-white mb-2`}>{t('hotel.recommended')}</h2>
+          <h2 className={`text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2`}>{t('hotel.recommended')}</h2>
           <p className={`${text.bodyMd} text-gray-500 dark:text-gray-400`}>{t('features.wideSelectionDesc')}</p>
         </motion.div>
 

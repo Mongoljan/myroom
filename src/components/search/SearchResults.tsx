@@ -55,6 +55,7 @@ interface CombinedApiData {
   province: Province[];
   accessibility_features: AccessibilityFeature[];
   bed_types?: Array<{ id: number; name: string }>;
+  roomFacilities?: Array<{ id: number; name_en: string; name_mn: string }>;
 }
 
 interface FilterState {
@@ -147,7 +148,12 @@ export default function SearchResults() {
               ApiService.getCombinedData(),
               ApiService.getAllData(),
             ]);
-            setApiData(apiDataResponse);
+            // Merge room_facilities from allData into the combined API data
+            const enrichedApiData = {
+              ...apiDataResponse,
+              roomFacilities: allDataResponse?.room_facilities || [],
+            };
+            setApiData(enrichedApiData);
             if (allDataResponse?.bed_types?.length) {
               setAllDataBedTypes(allDataResponse.bed_types);
             }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Bed } from 'lucide-react';
+import { Bed, Calendar } from 'lucide-react';
 import { hotelRoomsService, EnrichedHotelRoom } from '@/services/hotelRoomsApi';
 import { ApiService } from '@/services/api';
 import { CancellationFee } from '@/types/api';
@@ -336,50 +336,61 @@ export default function ImprovedHotelRoomsSection({
 
   return (
     <div>
-      {/* Mini Search Form - with shared DateRangePicker */}
-      <div className="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-3">
-          {/* Date Range Picker */}
-          <div className="flex-1 min-w-0">
-            <DateRangePicker
-              checkIn={selectedCheckIn}
-              checkOut={selectedCheckOut}
-              onDateChange={(ci, co) => {
-                setSelectedCheckIn(ci);
-                setSelectedCheckOut(co);
-                updateURLWithDates(ci, co);
-                setBookingItems([]);
-              }}
-            />
+      {/* Room Search Bar — matches SearchHeader style */}
+      <div className="mb-6 bg-white dark:bg-gray-800 border border-primary rounded-xl shadow-sm overflow-hidden">
+        <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
+          {/* Date Range */}
+          <div className="flex-1 p-2.5">
+            <div className="flex items-center">
+              <Calendar className="w-4.5 h-4.5 text-gray-700 dark:text-gray-300 mr-2.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">
+                  {t('search.dateLabel', 'Орох - Гарах')}
+                </div>
+                <DateRangePicker
+                  checkIn={selectedCheckIn}
+                  checkOut={selectedCheckOut}
+                  onDateChange={(ci, co) => {
+                    setSelectedCheckIn(ci);
+                    setSelectedCheckOut(co);
+                    updateURLWithDates(ci, co);
+                    setBookingItems([]);
+                  }}
+                  minimal={true}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="hidden lg:block h-6 w-px bg-gray-200 dark:bg-gray-700"></div>
-
-          {/* Guests — +/- button counters (no lag) */}
-          <div className="flex items-end gap-2 shrink-0">
-            <div>
-              <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.adults', 'Том')}</label>
-              <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
-                <button type="button" onClick={() => setAdultsCount(c => Math.max(1, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
-                <span className="min-w-8 text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{adultsCount}</span>
-                <button type="button" onClick={() => setAdultsCount(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
+          {/* Guests */}
+          <div className="p-2.5 lg:shrink-0">
+            <div className="flex items-center gap-4">
+              <div>
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.adults', 'Том хүн')}</div>
+                <div className="flex items-center border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
+                  <button type="button" onClick={() => setAdultsCount(c => Math.max(1, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
+                  <span className="min-w-8 text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{adultsCount}</span>
+                  <button type="button" onClick={() => setAdultsCount(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.children', 'Хүүхэд')}</div>
+                <div className="flex items-center border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
+                  <button type="button" onClick={() => setChildrenCountLocal(c => Math.max(0, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
+                  <span className="min-w-8 text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{childrenCountLocal}</span>
+                  <button type="button" onClick={() => setChildrenCountLocal(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
+                </div>
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  className="px-5 py-2 bg-secondary hover:bg-secondary/90 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap"
+                >
+                  {t('search.title', 'Хайх')}
+                </button>
               </div>
             </div>
-            <div>
-              <label className="block text-sm text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.children', 'Хүүхэд')}</label>
-              <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
-                <button type="button" onClick={() => setChildrenCountLocal(c => Math.max(0, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
-                <span className="min-w-8 text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{childrenCountLocal}</span>
-                <button type="button" onClick={() => setChildrenCountLocal(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleSearch}
-              className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-gray-100 dark:text-slate-900 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap"
-            >
-              {t('search.title', 'Хайх')}
-            </button>
           </div>
         </div>
       </div>

@@ -37,6 +37,10 @@
   --text-body-md: var(--ds-body);
   --text-caption: var(--ds-caption);
   --text-label:   var(--ds-label);
+
+  /* Secondary color token — dark navy for action buttons */
+  --color-secondary: #1e293b;
+  --color-secondary-hover: #0f172a;
 }
 
 /* Text-size scale: use Tailwind defaults.
