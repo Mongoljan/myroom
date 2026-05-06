@@ -632,7 +632,7 @@ export default function SearchResults() {
                   propertyTypes: [], roomFeatures: [], generalServices: [], starRating: [],
                   outdoorAreas: [], accessibilityFeatures: [], discounted: false,
                   priceRange: [0, 99_000_000], facilities: [], roomTypes: [],
-                  neighbourhood: [], landmark: [], bedTypes: [],
+                  neighbourhood: [], landmark: [], bedTypes: [], roomFacilities: [],
                 });
 
                 return (
