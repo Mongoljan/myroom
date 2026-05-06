@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
-import { text } from '@/styles/design-system';
 
 const partners = [
   { name: "Partner 1", logo: "/img/clients/1.svg" },

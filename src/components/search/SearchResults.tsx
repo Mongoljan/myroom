@@ -72,6 +72,7 @@ interface FilterState {
   neighbourhood: string[];
   landmark: string[];
   bedTypes: number[];
+  roomFacilities: number[];
 }
 
 interface SearchParams {
@@ -110,6 +111,7 @@ export default function SearchResults() {
     neighbourhood: [],
     landmark: [],
     bedTypes: [],
+    roomFacilities: [],
   });
   const [loading, setLoading] = useState(true);
   const [showMapView, setShowMapView] = useState(false);

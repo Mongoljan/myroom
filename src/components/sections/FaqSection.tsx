@@ -1,7 +1,6 @@
 "use client";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
-import { text } from '@/styles/design-system';
 import { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { Plus, Minus, ChevronDown } from 'lucide-react';
