@@ -3,19 +3,23 @@
 import React from 'react';
 import { BedDouble, BedSingle, Sofa } from 'lucide-react';
 import { FaBedPulse, FaMattressPillow } from 'react-icons/fa6';
+import { MdSingleBed, MdKingBed } from 'react-icons/md';
+import { RiHotelBedFill } from 'react-icons/ri';
+import { GiBunkBeds, GiPersonInBed } from 'react-icons/gi';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Uses real icon library icons (lucide-react + react-icons/fa6).
+// Each bed tier uses a visually distinct icon from a different library:
 //
-// Visual strategy:
-//   BedSingle  ×1 → single, semi-double*
-//   BedSingle  ×2 → twin     (2 нарийн)
-//   BedSingle  ×3 → triple   (3 нарийн)
-//   BedDouble  ×1 → queen / king / super king (1 wide bed with center divider)
-//   BedDouble  ×2 → double   (2 өргөндүү)
-//   FaMattressPillow → semi-double (unique icon, different from BedSingle)
-//   Sofa       ×1 → sofa bed
-//   FaBedPulse ×1 → extra bed
+//   MdSingleBed       → single  (simple narrow bed outline)
+//   BedSingle ×2      → twin    (2 narrow lucide beds)
+//   FaMattressPillow  → semi-double (mattress+pillow silhouette, unique shape)
+//   BedDouble         → double  (lucide wide bed with center rail)
+//   MdKingBed         → queen   (Material wider bed, distinct from BedDouble)
+//   RiHotelBedFill    → king    (Remix bold filled hotel bed)
+//   GiPersonInBed     → super king (person lying on a bed, unmistakably luxury)
+//   GiBunkBeds        → triple  (bunk bed = 3-bed feel)
+//   Sofa              → sofa bed
+//   FaBedPulse        → extra bed
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface BedTypeInfo {
@@ -31,21 +35,20 @@ interface BedEntry {
   info: BedTypeInfo;
 }
 
-// Ordered longest-key-first to avoid partial mismatches
 const BED_MAP: Array<{ keys: string[]; entry: BedEntry }> = [
   {
     keys: ['twin / double', 'twin/double'],
     entry: {
       Icon: BedDouble,
-      count: 2,
-      info: { descriptionMn: '2 өргөндүү ор', descriptionEn: 'twin or double beds' },
+      count: 1,
+      info: { descriptionMn: '2 өргөндүү ор', descriptionEn: 'twin or double bed' },
     },
   },
   {
     keys: ['triple'],
     entry: {
-      Icon: BedSingle,
-      count: 3,
+      Icon: GiBunkBeds as IconComponent,
+      count: 1,
       info: { descriptionMn: '3 нарийн ор', descriptionEn: '3 single beds' },
     },
   },
@@ -63,7 +66,7 @@ const BED_MAP: Array<{ keys: string[]; entry: BedEntry }> = [
   {
     keys: ['super king'],
     entry: {
-      Icon: BedDouble,
+      Icon: GiPersonInBed as IconComponent,
       count: 1,
       info: { descriptionMn: '1 хамгийн өргөн ор', descriptionEn: '1 super king bed' },
     },
@@ -71,7 +74,7 @@ const BED_MAP: Array<{ keys: string[]; entry: BedEntry }> = [
   {
     keys: ['king'],
     entry: {
-      Icon: BedDouble,
+      Icon: RiHotelBedFill as IconComponent,
       count: 1,
       info: { descriptionMn: '1 нилээн өргөн ор', descriptionEn: '1 king bed' },
     },
@@ -79,7 +82,7 @@ const BED_MAP: Array<{ keys: string[]; entry: BedEntry }> = [
   {
     keys: ['queen'],
     entry: {
-      Icon: BedDouble,
+      Icon: MdKingBed as IconComponent,
       count: 1,
       info: { descriptionMn: '1 өргөн ор', descriptionEn: '1 queen bed' },
     },
@@ -88,8 +91,8 @@ const BED_MAP: Array<{ keys: string[]; entry: BedEntry }> = [
     keys: ['double'],
     entry: {
       Icon: BedDouble,
-      count: 2,
-      info: { descriptionMn: '2 өргөндүү ор', descriptionEn: '2 wide beds' },
+      count: 1,
+      info: { descriptionMn: '2 өргөндүү ор', descriptionEn: 'double bed' },
     },
   },
   {
@@ -134,13 +137,6 @@ function resolveEntry(name: string): BedEntry | null {
   return null;
 }
 
-/**
- * Renders the correct bed icon(s) for a given bed type name.
- * Accepts any Tailwind className for sizing and color.
- *
- * Multi-bed types (twin, double, triple) render 2–3 icons side-by-side
- * so the count is immediately visible.
- */
 export function BedTypeIcon({
   name,
   className = 'w-5 h-5',
@@ -149,15 +145,14 @@ export function BedTypeIcon({
   className?: string;
 }) {
   const entry = resolveEntry(name);
-  const Icon = entry?.Icon ?? BedSingle;
+  const Icon = entry?.Icon ?? MdSingleBed as IconComponent;
   const count = entry?.count ?? 1;
 
   if (count === 1) {
     return <Icon className={className} />;
   }
 
-  // Multi-bed: render count icons side-by-side.
-  // Extract the h-* class so sub-icons match the intended height; make them square.
+  // Twin: render 2 BedSingle icons side-by-side
   const parts = className.split(' ');
   const hPart = parts.find((c) => /^h-[\d.]+$/.test(c)) ?? 'h-5';
   const wPart = hPart.replace('h-', 'w-');
@@ -172,7 +167,6 @@ export function BedTypeIcon({
   );
 }
 
-/** Returns the Mongolian / English description for a bed type name. */
 export function getBedTypeInfo(name: string): BedTypeInfo {
   const entry = resolveEntry(name);
   return entry?.info ?? { descriptionMn: name, descriptionEn: name };

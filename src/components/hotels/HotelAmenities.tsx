@@ -103,10 +103,10 @@ export default function HotelAmenities({
     }
 
     const groupDefs: Group[] = [
-      { key: 'general',       title: t('hotelDetails.facilityGroups.general',       'Ерөнхий байгууламж'), Icon: LayoutGrid,   items: [] },
-      { key: 'additional',    title: t('hotelDetails.facilityGroups.additional',    'Нэмэлт байгууламж'),  Icon: PackagePlus,  items: [] },
+      { key: 'general',       title: t('hotelDetails.facilityGroups.general',       'Үндсэн үйлчилгээ'),   Icon: LayoutGrid,   items: [] },
+      { key: 'additional',    title: t('hotelDetails.facilityGroups.additional',    'Нэмэлт үйлчилгээ'),   Icon: PackagePlus,  items: [] },
       { key: 'activities',    title: t('hotelDetails.facilityGroups.activities',    'Үйл ажиллагаа'),      Icon: Bike,         items: [] },
-      { key: 'accessibility', title: t('hotelDetails.facilityGroups.accessibility', 'Хүртээмжтэй өрөө'),   Icon: HandHelping,  items: [] },
+      { key: 'accessibility', title: t('hotelDetails.facilityGroups.accessibility', 'Буудлын хүртээмж'),   Icon: HandHelping,  items: [] },
     ];
 
     for (const g of groupDefs) {

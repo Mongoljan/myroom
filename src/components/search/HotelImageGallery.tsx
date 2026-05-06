@@ -58,6 +58,15 @@ export default function HotelImageGallery({
     }
 
     if (galleryImages.length > 0) {
+      // Sort so is_profile:true image comes first
+      const profileIdx = galleryImages.findIndex(img => (img as any).is_profile === true);
+      if (profileIdx > 0) {
+        return [
+          galleryImages[profileIdx],
+          ...galleryImages.slice(0, profileIdx),
+          ...galleryImages.slice(profileIdx + 1),
+        ];
+      }
       return galleryImages;
     }
 

@@ -107,6 +107,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    onSearchActiveChange?.(false);
 
     // Validate location selection - block search if no location
     if (!destination || !selectedLocationSuggestion) {
@@ -151,6 +152,8 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
     }
 
     const finalUrl = `/search?${params.toString()}`;
+    // Blur the active element so the search bar highlight is dismissed immediately
+    (document.activeElement as HTMLElement)?.blur();
     router.push(finalUrl);
   };
 
@@ -283,6 +286,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
                   onGuestChange={handleGuestChange}
                   className="relative z-[1]"
                   compact={compact}
+                  onOpenChange={onSearchActiveChange}
                 />
               </div>
 

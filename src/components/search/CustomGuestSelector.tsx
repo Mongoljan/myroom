@@ -14,6 +14,7 @@ interface CustomGuestSelectorProps {
   onGuestChange: (adults: number, children: number, rooms: number) => void;
   className?: string;
   compact?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function CustomGuestSelector({
@@ -22,7 +23,8 @@ export default function CustomGuestSelector({
   rooms,
   onGuestChange,
   className = '',
-  compact = false
+  compact = false,
+  onOpenChange,
 }: CustomGuestSelectorProps) {
   const { t } = useHydratedTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -70,9 +72,11 @@ export default function CustomGuestSelector({
         if (dropdownRef.current && !dropdownRef.current.contains(mouseEvent.target as Node) && 
             buttonRef.current && !buttonRef.current.contains(mouseEvent.target as Node)) {
           setIsOpen(false);
+          onOpenChange?.(false);
         }
       } else if (isScroll) {
         setIsOpen(false);
+        onOpenChange?.(false);
       }
     };
 
@@ -134,13 +138,16 @@ export default function CustomGuestSelector({
     <div className={`relative ${className}`}>
       {/* Trigger Button - Simplified animations for better performance */}
       <button
+        type="button"
         ref={buttonRef}
         onClick={() => {
           if (!isOpen) {
             calculatePosition();
             setIsOpen(true);
+            onOpenChange?.(true);
           } else {
             setIsOpen(false);
+            onOpenChange?.(false);
           }
         }}
         className={`w-full flex items-center justify-between ${compact ? 'p-1.5' : 'p-5'} transition-colors group hover:bg-gray-50 dark:hover:bg-gray-700`}
@@ -278,7 +285,7 @@ export default function CustomGuestSelector({
               {/* Done Button - Matching site theme */}
               <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
                 <motion.button
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => { setIsOpen(false); onOpenChange?.(false); }}
                   whileHover={{ scale: 1.01, y: -1 }}
                   whileTap={{ scale: 0.99 }}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-lg font-semibold transition-colors text-sm shadow-sm"

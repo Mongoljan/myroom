@@ -16,6 +16,7 @@ export default function SearchButton({ onClick }: SearchButtonProps) {
       <motion.button
         type="submit"
         onClick={onClick}
+        onMouseDown={(e) => e.preventDefault()}
         whileHover={{
           boxShadow: "0 4px 12px -2px rgba(59, 130, 246, 0.3)"
         }}
