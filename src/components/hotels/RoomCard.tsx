@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Bed, User, Clock, Wifi, Car, Utensils, Coffee, Cigarette, Check, Home, Image as ImageIcon } from 'lucide-react';
+import { BedTypeIcon } from '@/utils/bedTypeIcons';
 import SafeImage from '@/components/common/SafeImage';
 import { EnrichedHotelRoom, PriceBreakdown, RoomFacility } from '@/services/hotelRoomsApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -182,7 +183,7 @@ export default function RoomCard({
               <div className="flex flex-col gap-1">
                 {room.bed_details.map((bed, idx) => (
                   <div key={idx} className="flex items-center gap-2 text-sm text-gray-900 dark:text-gray-100">
-                    <Bed className="w-4 h-4 text-gray-500 shrink-0" />
+                    <BedTypeIcon name={bed.name || ''} className="w-5 h-5 text-gray-500 shrink-0" />
                     <span className="font-semibold">
                       {bed.quantity > 1 ? `${bed.quantity}× ` : ''}
                       {bed.name || t('roomCard.standardBed', 'Стандарт ор')}
@@ -197,7 +198,7 @@ export default function RoomCard({
                 {t('roomCard.bedType', 'Орны төрөл')}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-900 dark:text-gray-100">
-                <Bed className="w-4 h-4 text-gray-500 shrink-0" />
+                <BedTypeIcon name={room.bedTypeName || ''} className="w-5 h-5 text-gray-500 shrink-0" />
                 <span className="font-semibold">{room.bedTypeName}</span>
               </div>
             </div>

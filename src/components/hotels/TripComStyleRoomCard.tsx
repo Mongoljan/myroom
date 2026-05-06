@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { BedTypeIcon } from '@/utils/bedTypeIcons';
 import {
-  BedDouble,
   Users,
   User,
   Baby,
@@ -213,7 +213,10 @@ export default function TripComStyleRoomCard({
                 </>
               ) : (
                 <div className="h-full flex flex-col items-center justify-center gap-1 text-gray-300 dark:text-gray-600">
-                  <BedDouble className="w-10 h-10" />
+                  <BedTypeIcon
+                    name={room.bed_details?.[0]?.name || ''}
+                    className="w-10 h-10"
+                  />
                 </div>
               )}
             </div>
@@ -249,7 +252,7 @@ export default function TripComStyleRoomCard({
             <div className="px-3 pt-2 pb-1 space-y-1">
               {Array.isArray(room.bed_details) && room.bed_details.slice(0, 2).map((bed, idx) => (
                 <div key={idx} className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300">
-                  <BedDouble className="w-3.5 h-3.5 shrink-0 text-gray-500" />
+                  <BedTypeIcon name={bed.name || ''} className="w-5 h-5 shrink-0 text-gray-500" />
                   <span className="truncate font-medium">
                     {bed.quantity > 1 ? `${bed.quantity}× ` : ''}
                     {bed.name || t('roomCard.standardBed', 'Стандарт ор')}
