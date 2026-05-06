@@ -2139,7 +2139,7 @@ const resources = {
           generalServices: "Ерөнхий үйлчилгээ",
           generalFacilities: "Ерөнхий байгууламж",
           additionalFacilities: "Нэмэлт байгууламж",
-          activities: "Үйл ажиллагаа",
+          activities: "Нэмэлт төлбөртэй үйлчилгээ",
           accessibility: "Хүртээмжитэй өрөө",
           neighbourhood: "Хороолол",
           landmarks: "Гол газрууд",
