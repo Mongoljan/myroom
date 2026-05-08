@@ -90,7 +90,7 @@ const Header1 = () => {
                 onClick={() => {
                   toggleTheme();
                 }}
-                className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 mr-3"
+                className="flex items-center justify-center w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 mr-3"
                 aria-label="Toggle theme"
               >
                 {/* Render placeholder on server; show correct icon only after mount */}
