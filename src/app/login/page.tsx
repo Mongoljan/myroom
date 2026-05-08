@@ -58,22 +58,22 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4">
-      <div className="w-full max-w-125">
-        <div className="bg-white dark:bg-gray-800 border border-[#D9D9D9] dark:border-gray-700 rounded-3xl pt-6 pl-6 pr-6 pb-12 flex flex-col gap-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-10 px-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-8 flex flex-col gap-6">
           {/* Header */}
           <div>
-            <h1 className="text-[24px] font-normal text-gray-900 dark:text-white mb-1">Нэвтрэх</h1>
-            <p className="text-[12px] text-gray-600 dark:text-gray-400">
+            <h1 className="text-h1 font-bold text-gray-900 dark:text-white mb-1">Нэвтрэх</h1>
+            <p className="text-caption text-gray-500 dark:text-gray-400">
               Шинэ хэрэглэгч болох{' '}
-              <Link href="/signup" className="text-[#3D52D5] underline">Бүртгүүлэх</Link>
+              <Link href="/signup" className="text-[#3D52D5] hover:underline font-medium">Бүртгүүлэх</Link>
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {/* Email / Phone */}
             <div>
-              <label className="block text-[14px] text-gray-900 dark:text-gray-100 mb-1.5">
+              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">
                 И-мэйл хаяг / Утасны дугаар <span className="text-red-500">*</span>
               </label>
               <input
@@ -84,7 +84,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-[#D9D9D9] dark:border-gray-600 rounded-lg px-4 py-3 text-[16px] text-[#181D27] dark:text-gray-100 placeholder:text-[#717680] placeholder:text-[16px] outline-none focus:border-2 focus:border-[#181D27] dark:focus:border-gray-300 bg-white dark:bg-gray-700 transition"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-[#3D52D5] focus:border-transparent bg-white dark:bg-gray-700 transition"
                 placeholder="И-мэйл хаяг эсвэл гар утасны дугаар"
                 disabled={isLoading}
               />
@@ -92,7 +92,7 @@ export default function LoginPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-[14px] text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг</label>
+              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг</label>
               <div className="relative">
                 <input
                   id="password"
@@ -102,24 +102,24 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-[#D9D9D9] dark:border-gray-600 rounded-lg px-4 py-3 pr-12 text-[16px] text-[#181D27] dark:text-gray-100 placeholder:text-[#717680] outline-none focus:border-2 focus:border-[#181D27] dark:focus:border-gray-300 bg-white dark:bg-gray-700 transition"
-                  placeholder="Нууц үгээ оруулна уу."
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-[#3D52D5] focus:border-transparent bg-white dark:bg-gray-700 transition"
+                  placeholder="Нууц үгээ оруулна уу"
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#181D27] dark:text-gray-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
             {/* Forgot password */}
-            <div className="flex justify-end -mt-2">
-              <Link href="/login/forgot" className="text-[12px] text-gray-600 dark:text-gray-400 underline">
+            <div className="flex justify-end -mt-1">
+              <Link href="/login/forgot" className="text-caption text-gray-500 dark:text-gray-400 hover:text-[#3D52D5] dark:hover:text-[#6b7fde] transition-colors">
                 Нууц үг мартсан?
               </Link>
             </div>
@@ -128,19 +128,23 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#3D52D5] hover:bg-[#3347c4] text-white font-medium rounded-full py-3 text-[14px] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-10 bg-[#3D52D5] hover:bg-[#3347c4] text-white font-medium rounded-lg text-body-md transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Нэвтэрч байна...' : 'Нэвтрэх'}
             </button>
 
-            {/* Эсвэл — no lines */}
-            <div className="text-center text-[#787878] font-medium text-[12px]">Эсвэл</div>
+            {/* Эсвэл */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
+              <span className="text-caption text-gray-400 dark:text-gray-500">Эсвэл</span>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
+            </div>
 
             {/* Social */}
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                className="flex items-center justify-center gap-2 border border-[#D9D9D9] dark:border-gray-600 rounded-xl py-3 text-[12px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                className="flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg py-2.5 text-caption text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#1877F2">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
@@ -149,7 +153,7 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
-                className="flex items-center justify-center gap-2 border border-[#D9D9D9] dark:border-gray-600 rounded-xl py-3 text-[12px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                className="flex items-center justify-center gap-2 border border-gray-300 dark:border-gray-600 rounded-lg py-2.5 text-caption text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
                 <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -162,11 +166,11 @@ export default function LoginPage() {
             </div>
 
             {/* Disclaimer */}
-            <p className="text-[12px] text-gray-500 dark:text-gray-400 text-justify leading-relaxed">
+            <p className="text-caption text-gray-500 dark:text-gray-400 text-justify leading-relaxed">
               Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын{' '}
-              <Link href="/terms" className="text-[#3D52D5] underline">Үйлчилгээний нөхцөл</Link>{' '}
+              <Link href="/terms" className="text-[#3D52D5] hover:underline">Үйлчилгээний нөхцөл</Link>{' '}
               болон{' '}
-              <Link href="/privacy" className="text-[#3D52D5] underline">Нууцлалын бодлого</Link>
+              <Link href="/privacy" className="text-[#3D52D5] hover:underline">Нууцлалын бодлого</Link>
               -ыг хүлээн зөвшөөрсөнд тооцно.
             </p>
           </form>

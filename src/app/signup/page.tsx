@@ -85,16 +85,22 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4">
-      <div className="w-full max-w-125">
-        <div className="bg-white dark:bg-gray-800 border border-[#D9D9D9] dark:border-gray-700 rounded-3xl pt-6 pl-6 pr-6 pb-12 flex flex-col gap-10">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-10 px-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-8 flex flex-col gap-6">
           {/* Title */}
-          <h1 className="text-[24px] font-normal text-gray-900 dark:text-white">Бүртгүүлэх</h1>
+          <div>
+            <h1 className="text-h1 font-bold text-gray-900 dark:text-white mb-1">Бүртгүүлэх</h1>
+            <p className="text-caption text-gray-500 dark:text-gray-400">
+              Бүртгэлтэй бол{' '}
+              <Link href="/login" className="text-[#3D52D5] hover:underline font-medium">Нэвтрэх</Link>
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {/* Email / Phone */}
             <div>
-              <label className="block text-[14px] text-gray-900 dark:text-gray-100 mb-1.5">
+              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">
                 И-мэйл хаяг / Утасны дугаар <span className="text-red-500">*</span>
               </label>
               <input
@@ -102,83 +108,83 @@ export default function SignupPage() {
                 required
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                className="w-full border border-[#D9D9D9] dark:border-gray-600 rounded-lg px-4 py-3 text-[16px] text-[#181D27] dark:text-gray-100 placeholder:text-[#717680] outline-none focus:border-2 focus:border-[#181D27] dark:focus:border-gray-300 bg-white dark:bg-gray-700 transition"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-[#3D52D5] focus:border-transparent bg-white dark:bg-gray-700 transition"
                 placeholder="И-мэйл хаяг эсвэл гар утасны дугаар"
                 disabled={isLoading}
               />
-              {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
-              {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+              {errors.email && <p className="mt-1 text-caption text-red-500">{errors.email}</p>}
+              {errors.phone && <p className="mt-1 text-caption text-red-500">{errors.phone}</p>}
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-[14px] text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг</label>
+              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-[#D9D9D9] dark:border-gray-600 rounded-lg px-4 py-3 pr-12 text-[16px] text-[#181D27] dark:text-gray-100 placeholder:text-[#717680] outline-none focus:border-2 focus:border-[#181D27] dark:focus:border-gray-300 bg-white dark:bg-gray-700 transition"
-                  placeholder="Нууц үгээ оруулна уу."
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-[#3D52D5] focus:border-transparent bg-white dark:bg-gray-700 transition"
+                  placeholder="Нууц үгээ оруулна уу"
                   disabled={isLoading}
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#181D27] dark:text-gray-300" tabIndex={-1}>
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" tabIndex={-1}>
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-[14px] text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг давтах</label>
+              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг давтах</label>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full border border-[#D9D9D9] dark:border-gray-600 rounded-lg px-4 py-3 pr-12 text-[16px] text-[#181D27] dark:text-gray-100 placeholder:text-[#717680] outline-none focus:border-2 focus:border-[#181D27] dark:focus:border-gray-300 bg-white dark:bg-gray-700 transition"
-                  placeholder="Нууц үгээ оруулна уу."
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-[#3D52D5] focus:border-transparent bg-white dark:bg-gray-700 transition"
+                  placeholder="Нууц үгээ давтан оруулна уу"
                   disabled={isLoading}
                 />
-                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#181D27] dark:text-gray-300" tabIndex={-1}>
-                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" tabIndex={-1}>
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              {errors.confirm_password && <p className="mt-1 text-xs text-red-500">{errors.confirm_password}</p>}
+              {errors.confirm_password && <p className="mt-1 text-caption text-red-500">{errors.confirm_password}</p>}
             </div>
 
             {/* Password requirements */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2">
-                <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center ${hasMinLength ? 'border-[#3D52D5] bg-[#3D52D5]' : 'border-[#D5D7DA]'}`}>
+                <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasMinLength ? 'border-[#3D52D5] bg-[#3D52D5]' : 'border-gray-300 dark:border-gray-600'}`}>
                   {hasMinLength && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
                 </div>
-                <span className="text-[12px] text-gray-600 dark:text-gray-400">8 болон түүнээс дээш тэмдэгт байх</span>
+                <span className="text-caption text-gray-500 dark:text-gray-400">8 болон түүнээс дээш тэмдэгт байх</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center ${hasComplexity ? 'border-[#3D52D5] bg-[#3D52D5]' : 'border-[#D5D7DA]'}`}>
+                <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasComplexity ? 'border-[#3D52D5] bg-[#3D52D5]' : 'border-gray-300 dark:border-gray-600'}`}>
                   {hasComplexity && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
                 </div>
-                <span className="text-[12px] text-gray-600 dark:text-gray-400">Үсэг, тоо, тэмдэгт орсон байх</span>
+                <span className="text-caption text-gray-500 dark:text-gray-400">Үсэг, тоо, тэмдэгт орсон байх</span>
               </div>
             </div>
 
             {/* Terms checkbox */}
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2.5">
               <input
                 type="checkbox"
                 id="terms"
                 checked={termsAgreed}
                 onChange={(e) => setTermsAgreed(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded border-[#D5D7DA] accent-[#3D52D5]"
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-[#3D52D5]"
               />
-              <label htmlFor="terms" className="text-[12px] text-gray-500 dark:text-gray-400 leading-relaxed text-justify">
+              <label htmlFor="terms" className="text-caption text-gray-500 dark:text-gray-400 leading-relaxed text-justify">
                 Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын{' '}
-                <Link href="/terms" className="text-[#3D52D5] underline">Үйлчилгээний нөхцөл</Link>{' '}
+                <Link href="/terms" className="text-[#3D52D5] hover:underline">Үйлчилгээний нөхцөл</Link>{' '}
                 болон{' '}
-                <Link href="/privacy" className="text-[#3D52D5] underline">Нууцлалын бодлого</Link>
+                <Link href="/privacy" className="text-[#3D52D5] hover:underline">Нууцлалын бодлого</Link>
                 -ыг хүлээн зөвшөөрсөнд тооцно.
               </label>
             </div>
@@ -187,20 +193,20 @@ export default function SignupPage() {
             <div className="grid grid-cols-2 gap-3">
               <Link
                 href="/login"
-                className="flex items-center justify-center border border-[#D9D9D9] dark:border-gray-600 rounded-2xl py-3 text-[14px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                className="flex items-center justify-center h-10 border border-gray-300 dark:border-gray-600 rounded-lg text-body-md font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
                 Нэвтрэх
               </Link>
               <button
                 type="submit"
                 disabled={isLoading || !termsAgreed}
-                className="bg-[#3D52D5] hover:bg-[#3347c4] text-white rounded-2xl py-3 text-[14px] font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-10 bg-[#3D52D5] hover:bg-[#3347c4] text-white rounded-lg text-body-md font-medium transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? 'Бүртгэж байна...' : 'Бүртгүүлэх'}
               </button>
             </div>
 
-            {errors.general && <p className="text-xs text-red-500 text-center">{errors.general}</p>}
+            {errors.general && <p className="text-caption text-red-500 text-center">{errors.general}</p>}
           </form>
         </div>
       </div>

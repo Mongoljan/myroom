@@ -5,9 +5,8 @@ import I18nProvider from "@/components/providers/I18nProvider";
 import { ToastProvider } from "@/components/common/ToastContainer";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import Header1 from "@/components/header/Header1";
-import Footer from "@/components/layout/Footer";
 import NavigationProgress from "@/components/common/NavigationProgress";
+import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -106,15 +105,9 @@ export default function RootLayout({
                 <Suspense fallback={null}>
                   <NavigationProgress />
                 </Suspense>
-                <div className="print:hidden">
-                  <Header1 />
-                </div>
-                <main className="">
+                <ConditionalLayout>
                   {children}
-                </main>
-                <div className="print:hidden">
-                  <Footer />
-                </div>
+                </ConditionalLayout>
               </I18nProvider>
             </ToastProvider>
           </AuthProvider>
