@@ -59,9 +59,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4">
-      <div className="w-full max-w-105">
+      <div className="w-full max-w-[633px]">
         {/* Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-[5px] border border-[#D9D9D9] dark:border-gray-700 px-8 py-8">
+        <div className="bg-white dark:bg-gray-800 rounded-[5px] border border-[#D9D9D9] dark:border-gray-700 px-14 py-12 min-h-[701px] flex flex-col justify-center">
           {/* Title */}
           <h1 className="text-[20px] font-medium text-gray-900 dark:text-white mb-1">
             Нэвтрэх
