@@ -59,24 +59,23 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4">
-      <div className="w-full" style={{width: '633px', maxWidth: '100%'}}>
-        {/* Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-[5px] border border-[#D9D9D9] dark:border-gray-700 px-10 py-10" style={{minHeight: '701px', display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
-          {/* Title */}
-          <h1 className="text-[20px] font-medium text-gray-900 dark:text-white mb-1">
-            Нэвтрэх
-          </h1>
-          {/* Subtitle */}
-          <p className="text-[14px] text-[#787878] mb-6">
-            Шинэ хэрэглэгч болох{' '}
-            <Link href="/signup" className="text-[14px] text-blue-600 hover:text-blue-700">
-              Бүртгүүлэх
-            </Link>
-          </p>
+      <div className="w-full max-w-125">
+        <div className="bg-white dark:bg-gray-800 border border-[#D9D9D9] dark:border-gray-700 rounded-3xl pt-6 pl-6 pr-6 pb-12 flex flex-col gap-6">
+          {/* Header */}
+          <div>
+            <h1 className="text-[24px] font-normal text-gray-900 dark:text-white mb-1">Нэвтрэх</h1>
+            <p className="text-[12px] text-gray-600 dark:text-gray-400">
+              Шинэ хэрэглэгч болох{' '}
+              <Link href="/signup" className="text-[#3D52D5] underline">Бүртгүүлэх</Link>
+            </p>
+          </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Email/Phone */}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+            {/* Email / Phone */}
             <div>
+              <label className="block text-[14px] text-gray-900 dark:text-gray-100 mb-1.5">
+                И-мэйл хаяг / Утасны дугаар <span className="text-red-500">*</span>
+              </label>
               <input
                 id="email"
                 name="email"
@@ -85,7 +84,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-[#D9D9D9] dark:border-gray-600 rounded-[5px] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-[12px] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700"
+                className="w-full border border-[#D9D9D9] dark:border-gray-600 rounded-lg px-4 py-3 text-[16px] text-[#181D27] dark:text-gray-100 placeholder:text-[#717680] placeholder:text-[16px] outline-none focus:border-2 focus:border-[#181D27] dark:focus:border-gray-300 bg-white dark:bg-gray-700 transition"
                 placeholder="И-мэйл хаяг эсвэл гар утасны дугаар"
                 disabled={isLoading}
               />
@@ -93,6 +92,7 @@ export default function LoginPage() {
 
             {/* Password */}
             <div>
+              <label className="block text-[14px] text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг</label>
               <div className="relative">
                 <input
                   id="password"
@@ -102,61 +102,56 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 border border-[#D9D9D9] dark:border-gray-600 rounded-[5px] focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition text-[12px] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700"
-                  placeholder="Нууц үг"
+                  className="w-full border border-[#D9D9D9] dark:border-gray-600 rounded-lg px-4 py-3 pr-12 text-[16px] text-[#181D27] dark:text-gray-100 placeholder:text-[#717680] outline-none focus:border-2 focus:border-[#181D27] dark:focus:border-gray-300 bg-white dark:bg-gray-700 transition"
+                  placeholder="Нууц үгээ оруулна уу."
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#181D27] dark:text-gray-300"
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
             {/* Forgot password */}
-            <div className="flex justify-end">
-              <Link href="/login/forgot" className="text-[12px] text-blue-600 hover:text-blue-700">
-                Нууц үг мартсан
+            <div className="flex justify-end -mt-2">
+              <Link href="/login/forgot" className="text-[12px] text-gray-600 dark:text-gray-400 underline">
+                Нууц үг мартсан?
               </Link>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#3D52D5] hover:bg-[#3347c4] text-white text-[12px] font-bold rounded-[5px] px-6 py-3 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#3D52D5] hover:bg-[#3347c4] text-white font-medium rounded-full py-3 text-[14px] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Нэвтэрч байна...' : 'Нэвтрэх'}
             </button>
 
-            {/* Divider */}
-            <div className="relative flex items-center justify-center py-1">
-              <div className="w-full border-t border-gray-200 dark:border-gray-700 absolute"></div>
-              <span className="relative px-3 bg-white dark:bg-gray-800 text-[12px] text-[#464646]">
-                эсвэл
-              </span>
-            </div>
+            {/* Эсвэл — no lines */}
+            <div className="text-center text-[#787878] font-medium text-[12px]">Эсвэл</div>
 
-            {/* Social Buttons */}
+            {/* Social */}
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                className="flex items-center justify-center gap-2 border border-[#D9D9D9] dark:border-gray-600 rounded-[5px] px-4 py-2.5 text-[12px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center justify-center gap-2 border border-[#D9D9D9] dark:border-gray-600 rounded-xl py-3 text-[12px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="#1877F2">
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#1877F2">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
                 Facebook
               </button>
               <button
                 type="button"
-                className="flex items-center justify-center gap-2 border border-[#D9D9D9] dark:border-gray-600 rounded-[5px] px-4 py-2.5 text-[12px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="flex items-center justify-center gap-2 border border-[#D9D9D9] dark:border-gray-600 rounded-xl py-3 text-[12px] text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -165,20 +160,16 @@ export default function LoginPage() {
                 Gmail
               </button>
             </div>
-          </form>
 
-          {/* Disclaimer */}
-          <p className="text-[14px] text-gray-500 dark:text-gray-400 text-justify mt-6 leading-relaxed">
-            Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын{' '}
-            <Link href="/terms" className="text-blue-600 hover:text-blue-700 underline">
-              Үйлчилгээний нөхцөл
-            </Link>{' '}
-            болон{' '}
-            <Link href="/privacy" className="text-blue-600 hover:text-blue-700 underline">
-              Нууцлалын бодлого
-            </Link>
-            -ыг хүлээн зөвшөөрсөнд тооцно.
-          </p>
+            {/* Disclaimer */}
+            <p className="text-[12px] text-gray-500 dark:text-gray-400 text-justify leading-relaxed">
+              Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын{' '}
+              <Link href="/terms" className="text-[#3D52D5] underline">Үйлчилгээний нөхцөл</Link>{' '}
+              болон{' '}
+              <Link href="/privacy" className="text-[#3D52D5] underline">Нууцлалын бодлого</Link>
+              -ыг хүлээн зөвшөөрсөнд тооцно.
+            </p>
+          </form>
         </div>
       </div>
     </div>
