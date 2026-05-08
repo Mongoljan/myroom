@@ -1700,7 +1700,7 @@ const resources = {
         signUp: "Бүртгүүлэх",
         pages: "Хуудас",
         articles: "Нийтлэл",
-        advice: "Зөвлөгөө",
+        advice: "Тусламж",
         checkOrder: "Захиалга шалгах",
         hotelLogin: "Буудлаар нэвтрэх",
         loginRegister: "Нэвтрэх/Бүртгүүлэх",

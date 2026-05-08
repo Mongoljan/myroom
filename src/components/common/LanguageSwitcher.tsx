@@ -6,8 +6,8 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 
 const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸', color: 'from-slate-500 to-red-600' },
-  { code: 'mn', name: 'Монгол', flag: '🇲🇳', color: 'from-red-500 to-slate-600' }
+  { code: 'en', name: 'English', flagSrc: 'https://flagcdn.com/w20/us.png', color: 'from-slate-500 to-red-600' },
+  { code: 'mn', name: 'Монгол', flagSrc: 'https://flagcdn.com/w20/mn.png', color: 'from-red-500 to-slate-600' }
 ];
 
 export default function LanguageSwitcher() {
@@ -42,7 +42,7 @@ export default function LanguageSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="group relative overflow-hidden rounded-xl bg-slate-50/40 backdrop-blur-sm border border-slate-200/50 hover:border-slate-300/70 transition-all duration-300"
+        className="group relative overflow-hidden h-10 rounded-xl bg-slate-50/40 backdrop-blur-sm border border-slate-200/50 hover:border-slate-300/70 transition-all duration-300"
       >
         {/* Animated background */}
         <motion.div
@@ -71,13 +71,19 @@ export default function LanguageSwitcher() {
             animate={{ y: isOpen ? -1 : 0 }}
             transition={{ duration: 0.2 }}
           >
-            <motion.span 
-              className="text-xl filter drop-shadow-sm"
-              animate={{ scale: mounted ? 1 : 0.8 }}
-              transition={{ duration: 0.2 }}
-            >
-              {mounted ? currentLanguage.flag : '🌐'}
-            </motion.span>
+            <span className="w-5 h-4 overflow-hidden rounded-sm shrink-0">
+              {mounted ? (
+                <img
+                  src={currentLanguage.flagSrc}
+                  alt={currentLanguage.name}
+                  width={20}
+                  height={15}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="w-5 h-4 bg-gray-200 rounded-sm block" />
+              )}
+            </span>
             <span className={`${TYPOGRAPHY.nav.secondary} text-slate-900 group-hover:text-slate-800 transition-colors tracking-wide font-medium`}>
               {mounted ? currentLanguage.code.toUpperCase() : 'EN'}
             </span>
@@ -187,12 +193,18 @@ export default function LanguageSwitcher() {
                             />
                           )}
 
-                          <motion.span 
-                            className="text-2xl filter drop-shadow-sm"
+                          <motion.span
+                            className="w-7 h-5 overflow-hidden rounded shrink-0"
                             whileHover={{ scale: 1.1 }}
                             transition={{ type: "spring", damping: 15, stiffness: 300 }}
                           >
-                            {language.flag}
+                            <img
+                              src={language.flagSrc}
+                              alt={language.name}
+                              width={28}
+                              height={20}
+                              className="w-full h-full object-cover"
+                            />
                           </motion.span>
                           
                           <div className="flex-1 text-left">
