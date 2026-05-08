@@ -69,7 +69,7 @@ export default function HotelPricingSection({
       <div className="space-y-2 mb-4">
         <div className="flex items-baseline gap-2">
           <span className="text-h1 font-bold text-slate-900 dark:text-white">
-            {formatPrice(cheapestRoom.price_per_night)}
+            {formatPrice(cheapestRoom.price_per_night_final ?? cheapestRoom.price_per_night ?? 0)}
           </span>
           <span className="text-body-md text-slate-600 dark:text-slate-400">/ {t('hotel.night')}</span>
         </div>
@@ -78,7 +78,7 @@ export default function HotelPricingSection({
           <div className="text-sm text-slate-600 dark:text-slate-400">
             {t('hotel.totalEstimate')}: {cheapestRoom.nights} {t('hotel.nights')}: {' '}
             <span className="font-semibold text-slate-900 dark:text-white">
-              {formatPrice(cheapestRoom.estimated_total_for_requested_rooms)}
+              {formatPrice(cheapestRoom.estimated_total_final ?? cheapestRoom.estimated_total_for_requested_rooms ?? 0)}
             </span>
           </div>
         )}
@@ -104,7 +104,7 @@ export default function HotelPricingSection({
             relative overflow-hidden bg-gradient-to-r from-slate-600 to-slate-700
             hover:from-slate-700 hover:to-slate-800 text-white font-semibold
             rounded-lg transition-all duration-300 flex items-center justify-center gap-2
-            ${viewMode === 'list' ? 'px-6 py-3 text-sm' : 'px-4 py-2.5 text-xs'}
+            ${viewMode === 'list' ? 'px-6 py-3 text-sm' : 'px-4 py-2.5 text-sm'}
           `}
         >
           {/* Animated background on hover */}

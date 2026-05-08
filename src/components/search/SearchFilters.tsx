@@ -352,6 +352,7 @@ export default function SearchFilters({
             >
               {roomFacilitiesData.map((facility) => {
                 const isSelected = (filters.roomFacilities || []).includes(facility.id);
+                const count = filterCounts[`roomFac_${facility.id}`];
                 return (
                   <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
@@ -361,6 +362,9 @@ export default function SearchFilters({
                       className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
+                    {count !== undefined && count > 0 && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>
+                    )}
                   </label>
                 );
               })}

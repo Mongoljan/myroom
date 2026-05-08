@@ -150,7 +150,7 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
       />
 
       {/* Modal panel */}
-      <div className="relative z-10 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="relative z-10 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white truncate">
@@ -173,23 +173,35 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
         {/* Body: two columns */}
         <div className="flex flex-1 min-h-0">
           {/* ── Left: image gallery ── */}
-          <div className="w-96 shrink-0 flex flex-col border-r border-gray-200 dark:border-gray-700">
+          <div className="w-[880px] shrink-0 flex flex-col border-r border-gray-200 dark:border-gray-700">
             {/* Main image */}
-            <div className="relative flex-1 bg-gray-100 dark:bg-gray-800 min-h-0" style={{ minHeight: '220px', maxHeight: '340px' }}>
+            <div className="relative flex-1 bg-gray-900 min-h-0 overflow-hidden" style={{ minHeight: '500px' }}>
               {hasImages ? (
                 <>
+                  {/* Blurred background — fills gaps for non-standard aspect ratios */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute inset-0 z-0"
+                    style={{
+                      backgroundImage: `url(${images[imgIdx].image})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      filter: 'blur(18px) brightness(0.35)',
+                      transform: 'scale(1.12)',
+                    }}
+                  />
                   <SafeImage
                     src={images[imgIdx].image}
                     alt={`${room.roomTypeName} ${imgIdx + 1}`}
                     fill
-                    className="object-cover"
+                    className="object-contain z-10"
                   />
                   {images.length > 1 && (
                     <>
                       <button
                         onClick={() => setImgIdx((p) => Math.max(0, p - 1))}
                         disabled={imgIdx === 0}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 rounded-full p-1.5 shadow disabled:opacity-30 transition-opacity"
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 dark:bg-gray-800/80 rounded-full p-1.5 shadow disabled:opacity-30 transition-opacity"
                         aria-label="Өмнөх"
                       >
                         <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
@@ -197,12 +209,12 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
                       <button
                         onClick={() => setImgIdx((p) => Math.min(images.length - 1, p + 1))}
                         disabled={imgIdx === images.length - 1}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 rounded-full p-1.5 shadow disabled:opacity-30 transition-opacity"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/80 dark:bg-gray-800/80 rounded-full p-1.5 shadow disabled:opacity-30 transition-opacity"
                         aria-label="Дараах"
                       >
                         <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                       </button>
-                      <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded flex items-center gap-1">
+                      <div className="absolute bottom-2 right-2 z-20 bg-black/60 text-white text-xs px-2 py-0.5 rounded flex items-center gap-1">
                         <Camera className="w-3 h-3" />
                         {imgIdx + 1}/{images.length}
                       </div>
@@ -218,14 +230,14 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
 
             {/* Thumbnails */}
             {images.length > 1 && (
-              <div className="p-3 flex gap-2 overflow-x-auto border-t border-gray-100 dark:border-gray-700 shrink-0">
+              <div className="p-2.5 flex gap-2 overflow-x-auto border-t border-gray-100 dark:border-gray-700 shrink-0">
                 {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setImgIdx(i)}
-                    className={`relative w-14 h-10 rounded overflow-hidden shrink-0 border-2 transition-all ${
+                    className={`relative w-16 h-12 rounded overflow-hidden shrink-0 border-2 transition-all ${
                       i === imgIdx
-                        ? 'border-blue-500'
+                        ? 'border-primary-600'
                         : 'border-transparent hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   >

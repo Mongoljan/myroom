@@ -34,7 +34,7 @@ export default function AuthHeader() {
             {/* Hotel login link */}
             <Link
               href="/hotel/login"
-              className={`hidden sm:inline-flex items-center px-4 h-10 bg-[#3D52D5] hover:bg-[#3347c4] text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
+              className={`hidden sm:inline-flex items-center px-4 h-10 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
             >
               {t('navigation.hotelLogin', 'Буудлаар нэвтрэх')}
             </Link>

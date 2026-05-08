@@ -87,8 +87,8 @@ function HotelSidebarCard({ hotel, isSelected, onClick, searchParams }: HotelSid
     const cheapest = hotel.cheapest_room;
     if (!cheapest) return { hasDiscount: false, price: 0, originalPrice: 0, discountPercent: 0 };
     
-    const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night;
-    const adjustedPrice = cheapest.price_per_night_adjusted || cheapest.price_per_night;
+    const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night || 0;
+    const adjustedPrice = cheapest.price_per_night_final || cheapest.price_per_night || 0;
     const hasDiscount = rawPrice > adjustedPrice;
     const discountPercent = hasDiscount ? Math.round((1 - adjustedPrice / rawPrice) * 100) : 0;
     
@@ -212,8 +212,8 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
         pricing: (() => {
           const cheapest = hotel.cheapest_room;
           if (!cheapest) return { price: 0, hasDiscount: false, discountPercent: 0 };
-          const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night;
-          const adjustedPrice = cheapest.price_per_night_adjusted || cheapest.price_per_night;
+          const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night || 0;
+          const adjustedPrice = cheapest.price_per_night_final || cheapest.price_per_night || 0;
           const hasDiscount = rawPrice > adjustedPrice;
           const discountPercent = hasDiscount ? Math.round((1 - adjustedPrice / rawPrice) * 100) : 0;
           return { price: adjustedPrice, hasDiscount, discountPercent };

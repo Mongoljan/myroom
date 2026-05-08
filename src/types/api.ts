@@ -77,7 +77,9 @@ export interface RoomImage {
 
 // Price breakdown structure from the API
 export interface RoomPriceBreakdown {
-  price_after_price_setting: number;
+  base_price: number;
+  breakfast_price: number;
+  price_with_breakfast: number;
   hotel_discount_amount: number;
   platform_markup_amount: number;
   final_customer_price: number;
@@ -287,9 +289,23 @@ export interface HotelLocation {
 }
 
 export interface PriceSetting {
-  value: number;
-  value_type: 'PERCENT' | 'FIXED';
-  adjustment_type: 'ADD' | 'SUB';
+  value: number | null;
+  value_type: string | null;
+  adjustment_type: string | null;
+}
+
+export interface RoomFacilityItem {
+  id: number;
+  name_en: string;
+  name_mn: string;
+}
+
+export interface Commission {
+  is_active: boolean;
+  hotel_discount_percent: number;
+  hotel_discount_amount: number;
+  platform_markup_percent: number;
+  platform_markup_amount: number;
 }
 
 export interface CheapestRoom {
@@ -297,18 +313,29 @@ export interface CheapestRoom {
   room_category_id: number;
   room_type_label: string;
   room_category_label: string;
-  price_per_night_raw?: number; // Original price before adjustment
-  price_per_night_adjusted?: number; // Price after adjustment
-  price_per_night: number; // Keep for backwards compatibility
+  room_facilities: RoomFacilityItem[];
+  bathroom_items: RoomFacilityItem[];
+  free_toiletries: RoomFacilityItem[];
+  food_and_drink: RoomFacilityItem[];
+  outdoor_and_view: RoomFacilityItem[];
+  price_per_night_raw: number;
+  breakfast_price: number;
+  price_per_night_with_breakfast: number;
+  price_per_night_final: number;
+  /** @deprecated use price_per_night_final */
+  price_per_night?: number;
   nights: number;
-  estimated_total_raw?: number;
-  estimated_total_adjusted?: number;
+  estimated_total_raw: number;
+  estimated_total_adjusted: number;
+  estimated_total_final: number;
+  /** @deprecated use estimated_total_final */
+  estimated_total_for_requested_rooms?: number;
   available_in_this_type: number;
   capacity_per_room_adults: number;
   capacity_per_room_children: number;
   capacity_per_room_total: number;
-  estimated_total_for_requested_rooms: number;
-  pricesetting?: PriceSetting | null;
+  pricesetting: PriceSetting | null;
+  commission: Commission;
 }
 
 export interface HotelImage {
@@ -340,6 +367,7 @@ export type HotelFacility = string | FacilityObject;
 export interface SearchHotelResult {
   hotel_id: number;
   property_name: string;
+  property_name_en: string;
   location: HotelLocation;
   nights: number;
   rooms_possible: number;
@@ -356,6 +384,7 @@ export interface SearchHotelResult {
   property_type?: string | { id: number; name_en: string; name_mn: string };
   /** Bed types available in this hotel's rooms */
   bed_types?: Array<{ id: number; name: string }>;
+  has_active_commission: boolean;
 }
 
 export interface SearchResponse {

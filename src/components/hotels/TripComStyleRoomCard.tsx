@@ -172,12 +172,12 @@ export default function TripComStyleRoomCard({
         <div className="flex">
 
           {/* ── LEFT: image + thumbnails + bed + amenities ── */}
-          <div className="w-52 shrink-0 flex flex-col border-r border-gray-100 dark:border-gray-700">
+          <div className="w-80 shrink-0 flex flex-col border-r border-gray-100 dark:border-gray-700">
 
             {/* Main image */}
             <div
               className="relative bg-gray-100 dark:bg-gray-700 cursor-pointer group overflow-hidden"
-              style={{ height: '148px' }}
+              style={{ height: '240px' }}
               onClick={() => setDetailOpen(true)}
             >
               {hasImages ? (
@@ -223,26 +223,26 @@ export default function TripComStyleRoomCard({
 
             {/* Thumbnail strip */}
             {images.length > 1 && (
-              <div className="flex gap-1 px-2 py-1.5 border-b border-gray-100 dark:border-gray-700">
-                {images.slice(0, 4).map((img, i) => (
+              <div className="flex gap-1.5 px-2 py-2 border-b border-gray-100 dark:border-gray-700">
+                {images.slice(0, 5).map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setImageIndex(i)}
-                    className={`relative w-10 h-7 rounded overflow-hidden shrink-0 border-2 transition-all ${
+                    className={`relative w-11 h-8 rounded overflow-hidden shrink-0 border-2 transition-all ${
                       i === imageIndex
-                        ? 'border-primary'
+                        ? 'border-primary-600'
                         : 'border-transparent hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   >
                     <SafeImage src={img.image} alt="" fill className="object-cover" />
                   </button>
                 ))}
-                {images.length > 4 && (
+                {images.length > 5 && (
                   <button
                     onClick={() => setDetailOpen(true)}
-                    className="w-10 h-7 rounded shrink-0 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center"
+                    className="w-11 h-8 rounded shrink-0 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center"
                   >
-                    +{images.length - 4}
+                    +{images.length - 5}
                   </button>
                 )}
               </div>

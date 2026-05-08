@@ -1,24 +1,37 @@
 /**
- * MyRoom Design System - Professional Design Tokens
- * Based on modern travel platform best practices (Hotels.com, Trip.com, etc.)
- *
- * 🎨 BRAND COLOR: Teal - Modern, Fresh, Trust
- * To change the entire brand color scheme, simply update the primary color values below.
+ * MyRoom Design System — Design Tokens
+ * ╔══════════════════════════════════════════════════════════════════╗
+ * ║  BRAND COLORS — Edit ONLY this section to retheme the entire   ║
+ * ║  app. All components, buttons, and links pull from these vars. ║
+ * ╚══════════════════════════════════════════════════════════════════╝
  */
 
 :root {
-  /* Primary Brand Color - Teal (Easily adjustable) */
-  --color-primary-50: #f0fdfa;
-  --color-primary-100: #ccfbf1;
-  --color-primary-200: #99f6e4;
-  --color-primary-300: #5eead4;
-  --color-primary-400: #2dd4bf;
-  --color-primary-500: #14b8a6;  /* Main brand color */
-  --color-primary-600: #0d9488;  /* Primary buttons & CTAs */
-  --color-primary-700: #0f766e;
-  --color-primary-800: #115e59;
-  --color-primary-900: #134e4a;
-  --color-primary-950: #042f2e;
+  /* ─── PRIMARY: Blue / Indigo (#3D52D5) ─── */
+  --color-primary-50:  #eef0fb;
+  --color-primary-100: #d5d9f5;
+  --color-primary-200: #abb3eb;
+  --color-primary-300: #818de1;
+  --color-primary-400: #5767d7;
+  --color-primary-500: #3D52D5;  /* main brand hue            */
+  --color-primary-600: #3347c4;  /* CTA buttons (bg-primary)  */
+  --color-primary-700: #2a3bab;  /* hover state               */
+  --color-primary-800: #1f2d88;
+  --color-primary-900: #172066;
+  --color-primary-950: #0d1340;
+
+  /* ─── SECONDARY: Dark Navy (nav, secondary buttons, dark bg) ─── */
+  --color-secondary-50:  #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;  /* secondary buttons         */
+  --color-secondary-900: #0f172a;  /* dark nav (≈ slate-900)    */
+  --color-secondary-950: #020617;
 
   /* Neutral/Gray Scale - Professional */
   --color-neutral-50: #f9fafb;
@@ -120,8 +133,8 @@
   --button-primary-bg: var(--color-primary-600);
   --button-primary-hover: var(--color-primary-700);
   --button-primary-text: white;
-  --button-secondary-bg: #1e293b;  /* Dark navy — used for action buttons */
-  --button-secondary-hover: #0f172a;
+  --button-secondary-bg: var(--color-secondary-800);
+  --button-secondary-hover: var(--color-secondary-900);
   --button-secondary-text: white;
   --button-outline-bg: transparent;
   --button-outline-border: var(--color-primary-600);
@@ -220,10 +233,10 @@
 }
 
 /* Professional utility classes using design tokens */
-.bg-primary { background-color: var(--color-primary-600); }
+/* NOTE: bg-primary, text-primary, border-primary, bg-primary-{n}, etc.
+   are generated as Tailwind utilities via @theme in globals.css.
+   Do NOT redefine them here — edit brand values at the top of this file. */
 .bg-primary-light { background-color: var(--color-primary-100); }
-.text-primary { color: var(--color-primary-600); }
-.border-primary { border-color: var(--color-primary-600); }
 
 .bg-neutral { background-color: var(--color-neutral-100); }
 .text-neutral { color: var(--color-neutral-600); }

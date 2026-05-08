@@ -7,6 +7,7 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/components/common/ToastContainer';
+import PolicyModal from '@/components/common/PolicyModal';
 
 export default function LoginPage() {
   const { t } = useHydratedTranslation();
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [policyModal, setPolicyModal] = useState<{ open: boolean; type: 'terms' | 'privacy' }>({ open: false, type: 'terms' });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,16 +60,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-10 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-start justify-center bg-gray-50 dark:bg-gray-900 px-4 pt-16 pb-16">
+      <div className="w-full max-w-lg">
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-8 flex flex-col gap-6">
           {/* Header */}
-          <div>
-            <h1 className="text-h1 font-bold text-gray-900 dark:text-white mb-1">Нэвтрэх</h1>
-            <p className="text-caption text-gray-500 dark:text-gray-400">
-              Шинэ хэрэглэгч болох{' '}
-              <Link href="/signup" className="text-[#3D52D5] hover:underline font-medium">Бүртгүүлэх</Link>
-            </p>
+          <div className="text-center">
+            <h1 className="text-h1 font-bold text-gray-900 dark:text-white">Нэвтрэх</h1>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -84,7 +82,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-[#3D52D5] focus:border-transparent bg-white dark:bg-gray-700 transition"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
                 placeholder="И-мэйл хаяг эсвэл гар утасны дугаар"
                 disabled={isLoading}
               />
@@ -102,7 +100,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-[#3D52D5] focus:border-transparent bg-white dark:bg-gray-700 transition"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
                   placeholder="Нууц үгээ оруулна уу"
                   disabled={isLoading}
                 />
@@ -119,19 +117,27 @@ export default function LoginPage() {
 
             {/* Forgot password */}
             <div className="flex justify-end -mt-1">
-              <Link href="/login/forgot" className="text-caption text-gray-500 dark:text-gray-400 hover:text-[#3D52D5] dark:hover:text-[#6b7fde] transition-colors">
+              <Link href="/login/forgot" className="text-caption text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                 Нууц үг мартсан?
               </Link>
             </div>
 
             {/* Submit */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-10 bg-[#3D52D5] hover:bg-[#3347c4] text-white font-medium rounded-lg text-body-md transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Нэвтэрч байна...' : 'Нэвтрэх'}
-            </button>
+            <div className="flex flex-col gap-3">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-10 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg text-body-md transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Нэвтэрч байна...' : 'Нэвтрэх'}
+              </button>
+              <Link
+                href="/signup"
+                className="flex items-center justify-center w-full h-10 border border-primary-600 dark:border-primary-500 rounded-lg text-body-md font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/30 transition"
+              >
+                Бүртгүүлэх
+              </Link>
+            </div>
 
             {/* Эсвэл */}
             <div className="flex items-center gap-3">
@@ -168,11 +174,31 @@ export default function LoginPage() {
             {/* Disclaimer */}
             <p className="text-caption text-gray-500 dark:text-gray-400 text-justify leading-relaxed">
               Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын{' '}
-              <Link href="/terms" className="text-[#3D52D5] hover:underline">Үйлчилгээний нөхцөл</Link>{' '}
+              <button
+                type="button"
+                onClick={() => setPolicyModal({ open: true, type: 'terms' })}
+                className="text-primary-600 dark:text-primary-400 hover:underline"
+              >
+                Үйлчилгээний нөхцөл
+              </button>{' '}
               болон{' '}
-              <Link href="/privacy" className="text-[#3D52D5] hover:underline">Нууцлалын бодлого</Link>
+              <button
+                type="button"
+                onClick={() => setPolicyModal({ open: true, type: 'privacy' })}
+                className="text-primary-600 dark:text-primary-400 hover:underline"
+              >
+                Нууцлалын бодлого
+              </button>
               -ыг хүлээн зөвшөөрсөнд тооцно.
             </p>
+
+            {/* Policy modal — read-only for login page */}
+            <PolicyModal
+              isOpen={policyModal.open}
+              type={policyModal.type}
+              mode="read"
+              onClose={() => setPolicyModal((p) => ({ ...p, open: false }))}
+            />
           </form>
         </div>
       </div>

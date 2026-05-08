@@ -12,6 +12,7 @@ interface CustomGuestSelectorProps {
   childrenCount: number;
   rooms: number;
   onGuestChange: (adults: number, children: number, rooms: number) => void;
+  onChildrenAgesChange?: (ages: number[]) => void;
   className?: string;
   compact?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -22,6 +23,7 @@ export default function CustomGuestSelector({
   childrenCount,
   rooms,
   onGuestChange,
+  onChildrenAgesChange,
   className = '',
   compact = false,
   onOpenChange,
@@ -36,6 +38,8 @@ export default function CustomGuestSelector({
   const [localAdults, setLocalAdults] = useState(adults);
   const [localChildren, setLocalChildren] = useState(childrenCount);
   const [localRooms, setLocalRooms] = useState(rooms);
+  // Per-child ages: array length == localChildren, value -1 means not yet set
+  const [childAges, setChildAges] = useState<number[]>(() => Array(childrenCount).fill(-1));
 
   // Debounce timer ref - reduced delay for better UX
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -95,6 +99,11 @@ export default function CustomGuestSelector({
     setLocalAdults(adults);
     setLocalChildren(childrenCount);
     setLocalRooms(rooms);
+    setChildAges((prev) => {
+      if (prev.length === childrenCount) return prev;
+      if (childrenCount > prev.length) return [...prev, ...Array(childrenCount - prev.length).fill(-1)];
+      return prev.slice(0, childrenCount);
+    });
   }, [adults, childrenCount, rooms]);
 
   const updateGuests = useCallback((type: 'adults' | 'children' | 'rooms', increment: boolean) => {
@@ -108,6 +117,17 @@ export default function CustomGuestSelector({
     } else if (type === 'children') {
       newChildren = increment ? localChildren + 1 : Math.max(0, localChildren - 1);
       setLocalChildren(newChildren);
+      // Adjust child ages array
+      setChildAges((prev) => {
+        let next: number[];
+        if (newChildren > prev.length) {
+          next = [...prev, ...Array(newChildren - prev.length).fill(-1)];
+        } else {
+          next = prev.slice(0, newChildren);
+        }
+        onChildrenAgesChange?.(next);
+        return next;
+      });
     } else if (type === 'rooms') {
       newRooms = increment ? localRooms + 1 : Math.max(1, localRooms - 1);
       setLocalRooms(newRooms);
@@ -122,7 +142,7 @@ export default function CustomGuestSelector({
     debounceRef.current = setTimeout(() => {
       onGuestChange(newAdults, newChildren, newRooms);
     }, 150);
-  }, [localAdults, localChildren, localRooms, onGuestChange]);
+  }, [localAdults, localChildren, localRooms, onGuestChange, onChildrenAgesChange]);
 
   const getGuestText = () => {
     const parts = [];
@@ -221,7 +241,7 @@ export default function CustomGuestSelector({
                     {t('search.children', 'Children')}
                   </div>
                   <div className="text-xs text-gray-900 dark:text-gray-300">
-                    {t('search.childrenAgeNote', 'Age 0-12')}
+                    {t('search.childrenAgeNote', 'Age 0-17')}
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -247,6 +267,40 @@ export default function CustomGuestSelector({
                   </motion.button>
                 </div>
               </div>
+
+              {/* Per-child age inputs */}
+              {localChildren > 0 && (
+                <div className="space-y-2 pt-1">
+                  <p className="text-xs text-amber-600 dark:text-amber-400 leading-snug">
+                    Өрөөний үнийг үнэн зөв тооцоолоход шаардлагатай тул хүүхэд бүрийн насыг үнэн зөв оруулна уу.
+                  </p>
+                  {childAges.map((age, idx) => (
+                    <div key={idx} className="flex items-center justify-between gap-2">
+                      <label className="text-sm text-gray-700 dark:text-gray-300 shrink-0">
+                        {idx + 1}-р хүүхэд
+                      </label>
+                      <select
+                        value={age === -1 ? '' : age}
+                        onChange={(e) => {
+                          const val = e.target.value === '' ? -1 : parseInt(e.target.value);
+                          setChildAges((prev) => {
+                            const next = [...prev];
+                            next[idx] = val;
+                            onChildrenAgesChange?.(next);
+                            return next;
+                          });
+                        }}
+                        className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 cursor-pointer"
+                      >
+                        <option value="">Нас оруулах</option>
+                        {Array.from({ length: 18 }, (_, i) => (
+                          <option key={i} value={i}>{i} нас</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Rooms */}
               <div className="flex items-center justify-between">

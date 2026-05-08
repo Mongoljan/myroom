@@ -124,7 +124,7 @@ export default function SearchResults() {
   // Helper function to get price from cheapest_room (handles different API response formats)
   const getRoomPrice = (room: SearchHotelResult['cheapest_room']): number => {
     if (!room) return 0;
-    return room.price_per_night || room.price_per_night_adjusted || room.price_per_night_raw || 0;
+    return room.price_per_night_final || room.price_per_night || room.price_per_night_raw || 0;
   };
 
   // Track when header becomes sticky
@@ -316,7 +316,7 @@ export default function SearchResults() {
         const r = hotel.cheapest_room;
         if (!r) return false;
         const raw = r.price_per_night_raw || r.price_per_night || 0;
-        const adj = r.price_per_night_adjusted || r.price_per_night || 0;
+        const adj = r.price_per_night_final || r.price_per_night || 0;
         return raw > 0 && adj > 0 && raw > adj;
       });
     }
@@ -393,6 +393,14 @@ export default function SearchResults() {
       filtered = filtered.filter(hotel =>
         (hotel.bed_types || []).some(bt => newFilters.bedTypes.includes(bt.id))
       );
+    }
+
+    // Filter by room facilities (from cheapest_room.room_facilities)
+    if (newFilters.roomFacilities && newFilters.roomFacilities.length > 0) {
+      filtered = filtered.filter(hotel => {
+        const roomFacs = hotel.cheapest_room?.room_facilities || [];
+        return newFilters.roomFacilities.some(id => roomFacs.some(f => f.id === id));
+      });
     }
 
     // Filter by neighbourhood (soum/district name match)

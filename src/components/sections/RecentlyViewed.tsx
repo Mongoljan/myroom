@@ -18,6 +18,8 @@ interface RecentHotel {
   image: string;
   badge?: string;
   rating_label: string;
+  stars: number;
+  viewedAt: string;
 }
 
 export default function RecentlyViewed() {
@@ -81,11 +83,11 @@ export default function RecentlyViewed() {
           
           let badge: string | undefined;
           if (diffDays === 1) {
-            badge = 'TODAY';
+            badge = 'Өнөөдөр';
           } else if (diffDays <= 3) {
-            badge = 'RECENT';
+            badge = 'Саяхан';
           } else if (index === 0) {
-            badge = 'LAST VIEWED';
+            badge = 'Сүүлд үзсэн';
           }
 
           return {
@@ -98,7 +100,9 @@ export default function RecentlyViewed() {
             price: hotel.cheapest_room?.price_per_night || 0,
             image: getHotelImage(hotel),
             badge,
-            rating_label: hotel.rating_stars?.label || t('hotel.rating', 'Rating')
+            rating_label: hotel.rating_stars?.label || t('hotel.rating', 'Rating'),
+            stars: parseInt(hotel.rating_stars?.value) || 0,
+            viewedAt: item.viewedAt,
           };
         });
         setRecentHotels(hotels);
@@ -211,6 +215,8 @@ export default function RecentlyViewed() {
                 badge={hotel.badge}
                 badgeColor="blue"
                 index={index}
+                stars={hotel.stars}
+                viewedAt={hotel.viewedAt}
               />
             ))}
             </div>

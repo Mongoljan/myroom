@@ -119,21 +119,21 @@ export default function ImprovedHotelRoomsSection({
           
           // Use price_breakdown from the room API response
           if (room.price_breakdown && room.price_breakdown.final_customer_price > 0) {
-            const { price_after_price_setting, final_customer_price, hotel_discount_amount } = room.price_breakdown;
+            const { base_price, final_customer_price, hotel_discount_amount } = room.price_breakdown;
             
             // Price structure:
-            // - price_after_price_setting: Price after hotel's internal adjustments (strikethrough price)
+            // - base_price: Base room price (strikethrough price)
             // - hotel_discount_amount: The discount amount from our contract with hotel
             // - final_customer_price: What customer actually pays (main displayed price)
             
-            // Calculate discount percentage: (price_after_price_setting - final_customer_price) / price_after_price_setting * 100
-            const discountPercent = price_after_price_setting > 0 
-              ? Math.round(((price_after_price_setting - final_customer_price) / price_after_price_setting) * 100)
+            // Calculate discount percentage: (base_price - final_customer_price) / base_price * 100
+            const discountPercent = base_price > 0 
+              ? Math.round(((base_price - final_customer_price) / base_price) * 100)
               : 0;
             
             pricesData[key] = {
               basePrice: final_customer_price, // Customer-facing price (what they pay)
-              basePriceRaw: price_after_price_setting, // Original price for strikethrough display
+              basePriceRaw: base_price, // Original price for strikethrough display
               halfDayPrice: room.half_day_price && room.half_day_price > 0 ? room.half_day_price : undefined,
               singlePersonPrice: room.single_person_price && room.single_person_price > 0 ? room.single_person_price : undefined,
               discount: hotel_discount_amount > 0 ? {

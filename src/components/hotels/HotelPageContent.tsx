@@ -36,6 +36,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
   const handleSectionChange = useCallback((section: string) => {
     setActiveSection(section);
   }, []);
+  
 
   // Track this hotel as viewed when component mounts
   useEffect(() => {
@@ -90,7 +91,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
         activeSection={activeSection}
         onSectionChange={handleSectionChange}
         hotelName={hotel.property_name}
-        price={hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 0}
+        price={hotel.cheapest_room?.price_per_night_final || hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 0}
       />
 
       {/* Content Sections - More Compact */}

@@ -51,7 +51,7 @@ export default function MiniMapPreview({ hotels, onShowFullMap, className = '' }
         const coords = extractCoordinates(hotel.google_map);
         const cheapest = hotel.cheapest_room;
         const rawPrice = cheapest?.price_per_night_raw || cheapest?.price_per_night || 0;
-        const adjustedPrice = cheapest?.price_per_night_adjusted || cheapest?.price_per_night || 0;
+        const adjustedPrice = cheapest?.price_per_night_final || cheapest?.price_per_night || 0;
         const hasDiscount = rawPrice > adjustedPrice;
         
         return { hotel, coords, hasDiscount };

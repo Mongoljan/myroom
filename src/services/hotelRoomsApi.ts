@@ -57,7 +57,9 @@ export interface RoomImage {
 
 // Price breakdown structure from the API
 export interface PriceBreakdown {
-  price_after_price_setting: number;
+  base_price: number;
+  breakfast_price: number;
+  price_with_breakfast: number;
   hotel_discount_amount: number;
   platform_markup_amount: number;
   final_customer_price: number;
@@ -86,12 +88,15 @@ export interface HotelRoom {
   smoking_allowed: boolean;
   images: RoomImage[];
   total_count: number;
-  // New pricing fields from API
+  // Pricing fields from API
   base_price: number | null;
   single_person_price: number | null;
   half_day_price: number | null;
   breakfast_include_price: number | null;
   final_price: number | null;
+  rooms_possible: number;
+  breakfast_price: number;
+  price_with_breakfast: number;
   price_breakdown: PriceBreakdown;
 }
 

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { MapPin } from 'lucide-react';
+import { MapPin, Star, CheckCircle, Clock } from 'lucide-react';
 import { text } from '@/styles/design-system';
 import SafeImage from '@/components/common/SafeImage';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -20,6 +20,10 @@ interface SectionHotelCardProps {
   badgeColor?: 'orange' | 'green' | 'blue' | 'purple' | 'gray';
   index?: number;
   className?: string;
+  /** Hotel star classification (1–5). Shows ★ icons next to the name. */
+  stars?: number;
+  /** ISO date string — when the user viewed this hotel. Shows "Өнөөдөр" / "N өдрийн өмнө". */
+  viewedAt?: string;
 }
 
 export default function SectionHotelCard({
@@ -33,7 +37,9 @@ export default function SectionHotelCard({
   badge,
   badgeColor = 'gray',
   index = 0,
-  className = ""
+  className = "",
+  stars,
+  viewedAt,
 }: SectionHotelCardProps) {
   const { t } = useHydratedTranslation();
 
@@ -62,7 +68,22 @@ export default function SectionHotelCard({
     return fallbackImages[parseInt(id) % fallbackImages.length];
   };
 
-  // Use image or fallback
+  // Compute time-since text for viewedAt
+  const getViewedAtLabel = (): string | null => {
+    if (!viewedAt) return null;
+    const diff = Date.now() - new Date(viewedAt).getTime();
+    const mins = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+    if (mins < 60) return 'Сая үзсэн';
+    if (hours < 24) return `${hours} цагийн өмнө`;
+    if (days === 1) return 'Өнөөдөр үзсэн';
+    if (days === 2) return 'Өчигдөр үзсэн';
+    return `${days} өдрийн өмнө`;
+  };
+
+  const viewedLabel = getViewedAtLabel();
+  const starCount = stars ? Math.min(5, Math.max(1, Math.round(stars))) : 0;
   const imageUrl = image || getFallbackImage();
 
   return (
@@ -108,33 +129,67 @@ export default function SectionHotelCard({
         </div>
 
         {/* Hotel Info */}
-        <div className="p-4">
-          <h3 className={`${text.h4} text-gray-900 dark:text-white mb-2 line-clamp-1 group-hover:text-slate-900 dark:group-hover:text-gray-100 transition-colors`}>
-            {name}
-          </h3>
+        <div className="p-3 flex flex-col gap-1.5">
 
-          <div className="flex items-center text-gray-500 dark:text-gray-400 mb-2">
-            <MapPin className="w-4 h-4 mr-1" />
+          {/* Name + star classification */}
+          <div>
+            <h3 className={`${text.h4} text-gray-900 dark:text-white line-clamp-1 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors`}>
+              {name}
+            </h3>
+            {starCount > 0 && (
+              <div className="flex items-center gap-0.5 mt-0.5">
+                {Array.from({ length: starCount }).map((_, i) => (
+                  <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                ))}
+                {Array.from({ length: 5 - starCount }).map((_, i) => (
+                  <Star key={`e${i}`} className="w-3 h-3 text-gray-200 dark:text-gray-600 fill-gray-200 dark:fill-gray-600" />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Location */}
+          <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+            <MapPin className="w-3 h-3 shrink-0" />
             <span className={`${text.caption} line-clamp-1`}>{location || t('hotelDetails.locationUnknown', 'Location unknown')}</span>
           </div>
 
-          {/* Rating and Price */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="bg-primary text-white px-2 py-0.5 rounded text-xs font-medium mr-1">
-                {rating}
-              </div>
-              <span className={`${text.caption} text-gray-500 dark:text-gray-400`}>
-                {ratingLabel?.replace(/\d+\s*stars?/i, '').trim() || t('hotel.rating', 'rating')}
+          {/* Guest rating + starting price */}
+          <div className="flex items-end justify-between mt-0.5">
+            {/* Зочдын үнэлгээ */}
+            <div className="flex items-center gap-1">
+              <span className="bg-primary text-white text-xs font-bold px-1.5 py-0.5 rounded leading-none">
+                {rating.toFixed(1)}
+              </span>
+              <span className={`${text.caption} text-gray-500 dark:text-gray-400 leading-none`}>
+                {ratingLabel?.replace(/\d+\s*stars?/i, '').trim() || t('hotel.rating', 'Үнэлгээ')}
               </span>
             </div>
-            <div className="text-right">
-              <div className={`${text.caption} text-gray-500 dark:text-gray-400`}>{t('hotelDetails.startingPrice', 'starting price')}</div>
-              <div className={`${text.bodySm} font-bold text-gray-900 dark:text-white`}>
-                ₮{formatPrice(price)}{t('hotelDetails.priceFrom', '-from')}
+            {/* Эхлэх үнэ */}
+            {price > 0 && (
+              <div className="text-right">
+                <div className={`${text.caption} text-gray-400 dark:text-gray-500 leading-none mb-0.5`}>{t('hotelDetails.startingPrice', 'Эхлэх үнэ')}</div>
+                <div className={`${text.bodySm} font-bold text-gray-900 dark:text-white leading-none`}>
+                  ₮{formatPrice(price)}
+                </div>
               </div>
-            </div>
+            )}
           </div>
+
+          {/* Mark check + viewed-at text */}
+          <div className="flex items-center justify-between pt-1 border-t border-gray-100 dark:border-gray-700 mt-0.5">
+            <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+              <CheckCircle className="w-3.5 h-3.5 shrink-0" />
+              <span className="text-xs font-medium">Шууд баталгаажилт</span>
+            </div>
+            {viewedLabel && (
+              <div className="flex items-center gap-1 text-gray-400 dark:text-gray-500">
+                <Clock className="w-3 h-3 shrink-0" />
+                <span className="text-xs">{viewedLabel}</span>
+              </div>
+            )}
+          </div>
+
         </div>
       </Link>
     </motion.div>

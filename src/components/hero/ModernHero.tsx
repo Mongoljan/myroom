@@ -501,10 +501,10 @@ export default function ModernHero() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="fixed bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 z-40 max-h-96 overflow-y-auto w-[400px] max-w-[90vw]"
+                      className="fixed bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 z-40 max-h-[480px] overflow-y-auto w-[580px] max-w-[95vw]"
                       style={{ 
                         top: Math.max(8, locationModalPosition.top),
-                        left: Math.max(8, Math.min(locationModalPosition.left, window.innerWidth - 416)),
+                        left: Math.max(8, Math.min(locationModalPosition.left, window.innerWidth - 596)),
                         boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
                       }}
                       onClick={(e) => e.stopPropagation()}
@@ -513,51 +513,66 @@ export default function ModernHero() {
                           {/* Recent Searches Section */}
                           {destination.length < 2 && recentSearches.length > 0 && (
                             <div className="mb-4">
-                              <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400 mb-2 flex items-center`}>
-                                <Clock className="w-3 h-3 mr-1" />
+                              <div className={`${TYPOGRAPHY.body.caption} font-semibold text-gray-500 dark:text-gray-400 mb-2`}>
                                 {t('search.recentSearches')}
                               </div>
-                              <div className="space-y-1">
-                                {recentSearches.map((search) => (
+                              <div className="divide-y divide-gray-50 dark:divide-gray-700">
+                                {recentSearches.slice(0, 3).map((search) => (
                                   <button
                                     key={search.id}
                                     onClick={() => handleLocationSelect(search.location)}
-                                    className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 rounded-md transition-colors group border border-transparent hover:border-slate-200"
+                                    className="w-full grid grid-cols-[auto_1fr_auto] items-center gap-3 py-2.5 px-1 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors group"
                                   >
-                                    <div className="text-slate-900 mr-3">
-                                      <Clock className="w-4 h-4" />
-                                    </div>
-                                    <div className="flex-1">
-                                      <div className={`${TYPOGRAPHY.modal.content} text-gray-900 dark:text-white group-hover:text-slate-900`}>
-                                        {search.location.fullName}
-                                      </div>
-                                      <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400`}>
-                                        {search.checkIn} - {search.checkOut} • {search.guests.adults} {t('search.adults').toLowerCase()}, {search.guests.children} {t('search.children').toLowerCase()} • {search.guests.rooms} {t('search.rooms').toLowerCase()}
-                                      </div>
-                                    </div>
+                                    <Clock className="w-4 h-4 text-gray-400 shrink-0" />
+                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                                      {search.location.fullName}
+                                    </span>
+                                    <span className={`${TYPOGRAPHY.body.caption} text-gray-400 dark:text-gray-500 whitespace-nowrap`}>
+                                      {search.checkIn} – {search.checkOut} • {search.guests.adults} том, {search.guests.children} хүүхэд
+                                    </span>
                                   </button>
                                 ))}
                               </div>
-                              <div className="border-t border-gray-100 dark:border-gray-700 my-3"></div>
+                              <div className="border-t border-gray-100 dark:border-gray-700 mt-3 mb-3"></div>
                             </div>
                           )}
 
                           {/* Popular Locations / Search Results Section */}
-                          <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400 mb-2`}>
+                          <div className={`${TYPOGRAPHY.body.caption} font-semibold text-gray-500 dark:text-gray-400 mb-2`}>
                             {destination.length < 2 ? t('search.popularLocations') : t('search.searchResults')}
                           </div>
                           
                           {isLoadingSuggestions ? (
                             <div className="flex items-center justify-center py-4">
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-900"></div>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
+                            </div>
+                          ) : destination.length < 2 ? (
+                            /* Popular destinations — flex-wrap province pills */
+                            <div className="flex flex-wrap gap-2">
+                              {locationSuggestions.map((suggestion) => (
+                                <button
+                                  key={suggestion.id}
+                                  onClick={() => handleLocationSelect(suggestion)}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 dark:bg-gray-700/60 border border-gray-200 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-primary-50 hover:border-primary-500 hover:text-primary-700 dark:hover:border-primary-500 dark:hover:text-primary-400 transition-colors"
+                                >
+                                  <MapPin className="w-3 h-3 shrink-0" />
+                                  {suggestion.name}
+                                </button>
+                              ))}
+                              {locationSuggestions.length === 0 && (
+                                <div className="text-sm text-gray-500 dark:text-gray-400 py-2">
+                                  {t('search.noResults')}
+                                </div>
+                              )}
                             </div>
                           ) : (
+                            /* Search results — vertical list */
                             <div className="space-y-1">
                               {locationSuggestions.map((suggestion) => (
                                 <button
                                   key={suggestion.id}
                                   onClick={() => handleLocationSelect(suggestion)}
-                                  className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 rounded-md transition-colors"
+                                  className="w-full flex items-center p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
                                 >
                                   <div className="mr-3">
                                     {getLocationIcon(suggestion.type)}
@@ -572,7 +587,7 @@ export default function ModernHero() {
                                   </div>
                                 </button>
                               ))}
-                              {locationSuggestions.length === 0 && !isLoadingSuggestions && (
+                              {locationSuggestions.length === 0 && (
                                 <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-3">
                                   {t('search.noResults')}
                                 </div>
@@ -635,7 +650,7 @@ export default function ModernHero() {
                       scale: 0.98,
                       boxShadow: "0 2px 4px -1px rgba(59, 130, 246, 0.2)"
                     }}
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-sm shadow-lg shadow-blue-600/30"
+                    className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-sm shadow-lg shadow-primary-600/30"
                   >
                     <Search className="w-5 h-5" />
                     <span className="hidden text-base xl:inline tracking-wide">{t('search.searchButton', 'Хайх')}</span>

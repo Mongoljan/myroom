@@ -41,7 +41,7 @@ export default function HotelsMapPreview({ hotels, onExpand, height = 280 }: Hot
       .map(h => {
         const coords = extractCoordinates(h.google_map);
         const cheapest = h.cheapest_room;
-        const price = cheapest?.price_per_night_adjusted || cheapest?.price_per_night || 0;
+        const price = cheapest?.price_per_night_final || cheapest?.price_per_night || 0;
         return coords ? { hotel: h, coords, price } : null;
       })
       .filter(Boolean) as Array<{ hotel: SearchHotelResult; coords: { lat: number; lng: number }; price: number }>;

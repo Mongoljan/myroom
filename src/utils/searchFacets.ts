@@ -33,6 +33,8 @@ export interface CombinedApiData {
   province: Province[];
   accessibility_features: AccessibilityFeature[];
   bed_types?: BedType[];
+  /** Room-level facilities derived from cheapest_room.room_facilities in search results */
+  roomFacilities?: Facility[];
 }
 
 /** Canonical bed types from /api/all-data/ */
@@ -63,7 +65,7 @@ const facilityNameOf = (f: HotelFacility, locale: 'en' | 'mn'): string => {
 const getRoomPrice = (hotel: SearchHotelResult): number => {
   const r = hotel.cheapest_room;
   if (!r) return 0;
-  return r.price_per_night || r.price_per_night_adjusted || r.price_per_night_raw || 0;
+  return r.price_per_night_final || r.price_per_night || r.price_per_night_raw || 0;
 };
 
 /**
@@ -83,6 +85,7 @@ export function deriveFacets(
   const presentPropertyTypeIds = new Set<number>();
   const presentBedTypeIds = new Set<number>();
   const bedTypeMap = new Map<number, string>(); // id → name, built from hotel results
+  const roomFacilityMap = new Map<number, { id: number; name_en: string; name_mn: string }>(); // id → facility
   const counts: Record<string, number> = {};
   let priceMin = Infinity;
   let priceMax = 0;
@@ -132,6 +135,15 @@ export function deriveFacets(
       }
     }
 
+    // Room facilities from cheapest_room — these are objects with {id, name_en, name_mn}
+    for (const rf of h.cheapest_room?.room_facilities || []) {
+      if (rf.id) {
+        if (!roomFacilityMap.has(rf.id)) roomFacilityMap.set(rf.id, rf);
+        const k = `roomFac_${rf.id}`;
+        counts[k] = (counts[k] || 0) + 1;
+      }
+    }
+
     // Price range
     const p = getRoomPrice(h);
     if (p > 0) {
@@ -143,8 +155,8 @@ export function deriveFacets(
     const r = h.cheapest_room;
     if (r) {
       const raw = r.price_per_night_raw || r.price_per_night || 0;
-      const adj = r.price_per_night_adjusted || r.price_per_night || 0;
-      if (raw > 0 && adj > 0 && raw > adj) {
+      const final = r.price_per_night_final || r.price_per_night || 0;
+      if (raw > 0 && final > 0 && raw > final) {
         discountedCount++;
       }
     }
@@ -193,6 +205,9 @@ export function deriveFacets(
     activities: (apiData?.activities || []).filter(isFacilityPresent),
     // Derived directly from hotel results — independent of combined-data API
     bed_types: Array.from(bedTypeMap.entries()).map(([id, name]) => ({ id, name })),
+    // Room facilities derived from cheapest_room.room_facilities in search results
+    roomFacilities: Array.from(roomFacilityMap.values())
+      .sort((a, b) => (counts[`roomFac_${b.id}`] || 0) - (counts[`roomFac_${a.id}`] || 0)),
   };
 
   // Per-item counts for groups 2-4 (using same facility_${id} counts already collected)

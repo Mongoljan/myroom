@@ -128,8 +128,8 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
     const hasDiscount = pricesetting && pricesetting.adjustment_type === 'SUB';
 
     // Use the raw and adjusted prices from API if available
-    const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night;
-    const adjustedPrice = cheapest.price_per_night_adjusted || cheapest.price_per_night;
+    const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night || 0;
+    const adjustedPrice = cheapest.price_per_night_final || cheapest.price_per_night || 0;
 
     let discountPercent = 0;
 
@@ -143,7 +143,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
     }
 
     // If pricesetting exists and is PERCENT type, use the API value for accuracy
-    if (hasDiscount && pricesetting && pricesetting.value_type === 'PERCENT') {
+    if (hasDiscount && pricesetting && pricesetting.value_type === 'PERCENT' && pricesetting.value !== null) {
       discountPercent = Math.max(1, Math.round(pricesetting.value));
     }
 

@@ -387,26 +387,26 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   // Get cheapest price with discount info
   const getCheapestPrice = () => {
     // Try cheapest_room first
-    if (hotel.cheapest_room && hotel.cheapest_room.price_per_night) {
-      const { price_per_night, price_per_night_raw, pricesetting } = hotel.cheapest_room;
+    if (hotel.cheapest_room && hotel.cheapest_room.price_per_night_final) {
+      const { price_per_night_final, price_per_night_raw, pricesetting } = hotel.cheapest_room;
 
       // Check if there's a discount
-      const hasDiscount = price_per_night_raw && price_per_night_raw > price_per_night;
+      const hasDiscount = price_per_night_raw && price_per_night_raw > price_per_night_final;
 
       if (hasDiscount && pricesetting && pricesetting.adjustment_type === 'SUB') {
-        const discountPercent = pricesetting.value_type === 'PERCENT'
+        const discountPercent = pricesetting.value_type === 'PERCENT' && pricesetting.value !== null
           ? pricesetting.value
-          : ((price_per_night_raw - price_per_night) / price_per_night_raw) * 100;
+          : ((price_per_night_raw - price_per_night_final) / price_per_night_raw) * 100;
 
         return {
-          current: price_per_night,
+          current: price_per_night_final,
           original: price_per_night_raw,
           discount: Math.round(discountPercent)
         };
       }
 
       return {
-        current: price_per_night,
+        current: price_per_night_final,
         original: null,
         discount: null
       };
@@ -508,7 +508,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                 </div>
                 {hotel.cheapest_room && hotel.cheapest_room.nights > 1 && (
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {t('hotelDetails.totalForStay', 'Нийт')} {hotel.cheapest_room.nights} {t('hotelDetails.nights', 'шөнө')}: <span className="font-semibold text-gray-700 dark:text-gray-300">₮{hotel.cheapest_room.estimated_total_for_requested_rooms.toLocaleString()}</span>
+                    {t('hotelDetails.totalForStay', 'Нийт')} {hotel.cheapest_room.nights} {t('hotelDetails.nights', 'шөнө')}: <span className="font-semibold text-gray-700 dark:text-gray-300">₮{(hotel.cheapest_room.estimated_total_final ?? hotel.cheapest_room.estimated_total_for_requested_rooms ?? 0).toLocaleString()}</span>
                   </span>
                 )}
               </div>
