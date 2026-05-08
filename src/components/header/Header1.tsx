@@ -208,7 +208,7 @@ const Header1 = () => {
                 ) : (
                   <Link
                     href="/login"
-                    className={`px-4 h-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium flex items-center`}
+                    className={`px-4 h-10 bg-[#3D52D5] hover:bg-[#3347c4] text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium flex items-center`}
                   >
                     {t('navigation.loginRegister')}
                   </Link>

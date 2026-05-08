@@ -59,9 +59,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4">
-      <div className="w-full max-w-md">
+      <div className="w-full" style={{width: '633px', maxWidth: '100%'}}>
         {/* Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-[5px] border border-[#D9D9D9] dark:border-gray-700 px-10 py-10">
+        <div className="bg-white dark:bg-gray-800 rounded-[5px] border border-[#D9D9D9] dark:border-gray-700 px-10 py-10" style={{minHeight: '701px', display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
           {/* Title */}
           <h1 className="text-[20px] font-medium text-gray-900 dark:text-white mb-1">
             Нэвтрэх
@@ -168,7 +168,7 @@ export default function LoginPage() {
           </form>
 
           {/* Disclaimer */}
-          <p className="text-[11px] text-gray-500 dark:text-gray-400 text-justify mt-6 leading-relaxed">
+          <p className="text-[14px] text-gray-500 dark:text-gray-400 text-justify mt-6 leading-relaxed">
             Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын{' '}
             <Link href="/terms" className="text-blue-600 hover:text-blue-700 underline">
               Үйлчилгээний нөхцөл
