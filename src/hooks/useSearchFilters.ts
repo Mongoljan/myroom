@@ -143,6 +143,10 @@ export function useSearchFilters({
 
   const loadingApi = !apiData;
   const onFilterChangeRef = useRef(onFilterChange);
+  // Keep a ref in sync with filters so updateFilters can read the latest value
+  // without needing it as a dependency (avoids stale closures).
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
   onFilterChangeRef.current = onFilterChange;
 
   // Sync when parent clears filters externally
@@ -260,38 +264,39 @@ export function useSearchFilters({
     options: { saveRecent?: boolean } = {},
   ) => {
     const { saveRecent = true } = options;
-    setFilters(prev => {
-      const updated = { ...prev, ...newFilters };
-      onFilterChange(updated);
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-        if (saveRecent) {
-          saveToRecentFilters(updated);
-          const ts = Date.now();
-          const track = (id: string, type: string, value: string | number | boolean, label: string) =>
-            saveIndividualFilter({ id, type, value, label, timestamp: ts });
+    const updated = { ...filtersRef.current, ...newFilters };
+    filtersRef.current = updated;
+    setFilters(updated);
+    // Call outside the state updater to avoid "setState during render" warning
+    onFilterChangeRef.current(updated);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+      if (saveRecent) {
+        saveToRecentFilters(updated);
+        const prev = filtersRef.current;
+        const ts = Date.now();
+        const track = (id: string, type: string, value: string | number | boolean, label: string) =>
+          saveIndividualFilter({ id, type, value, label, timestamp: ts });
 
-          (updated.starRating || []).filter(s => !(prev.starRating || []).includes(s))
-            .forEach(s => track(`starRating_${s}`, 'starRating', s, `${s}★`));
-          (updated.propertyTypes || []).filter(id => !(prev.propertyTypes || []).includes(id))
-            .forEach(id => { const pt = apiData?.property_types.find(p => p.id === id); if (pt) track(`propertyType_${id}`, 'propertyTypes', id, pt.name_mn); });
-          if (updated.discounted && !prev.discounted)
-            track('discounted', 'discounted', true, 'Хямдралтай');
-          (updated.roomFeatures || []).filter(id => !(prev.roomFeatures || []).includes(id))
-            .forEach(id => { const f = apiData?.facilities?.find(x => x.id === id); if (f) track(`roomFeature_${id}`, 'roomFeatures', id, f.name_mn); });
-          (updated.generalServices || []).filter(id => !(prev.generalServices || []).includes(id))
-            .forEach(id => { const f = apiData?.additionalFacilities?.find(x => x.id === id); if (f) track(`genService_${id}`, 'generalServices', id, f.name_mn); });
-          (updated.outdoorAreas || []).filter(id => !(prev.outdoorAreas || []).includes(id))
-            .forEach(id => { const f = apiData?.activities?.find(x => x.id === id); if (f) track(`outdoor_${id}`, 'outdoorAreas', id, f.name_mn); });
-          (updated.neighbourhood || []).filter(n => !(prev.neighbourhood || []).includes(n))
-            .forEach(n => track(`neighbourhood_${n}`, 'neighbourhood', n, n));
-          (updated.landmark || []).filter(l => !(prev.landmark || []).includes(l))
-            .forEach(l => { const lm = UB_LANDMARKS.find(x => x.id === l); if (lm) track(`landmark_${l}`, 'landmark', l, lm.name_mn); });
-        }
-      } catch { /* ignore */ }
-      return updated;
-    });
-  }, [onFilterChange, saveToRecentFilters, saveIndividualFilter, apiData]);
+        (updated.starRating || []).filter(s => !(prev.starRating || []).includes(s))
+          .forEach(s => track(`starRating_${s}`, 'starRating', s, `${s}★`));
+        (updated.propertyTypes || []).filter(id => !(prev.propertyTypes || []).includes(id))
+          .forEach(id => { const pt = apiData?.property_types.find(p => p.id === id); if (pt) track(`propertyType_${id}`, 'propertyTypes', id, pt.name_mn); });
+        if (updated.discounted && !prev.discounted)
+          track('discounted', 'discounted', true, 'Хямдралтай');
+        (updated.roomFeatures || []).filter(id => !(prev.roomFeatures || []).includes(id))
+          .forEach(id => { const f = apiData?.facilities?.find(x => x.id === id); if (f) track(`roomFeature_${id}`, 'roomFeatures', id, f.name_mn); });
+        (updated.generalServices || []).filter(id => !(prev.generalServices || []).includes(id))
+          .forEach(id => { const f = apiData?.additionalFacilities?.find(x => x.id === id); if (f) track(`genService_${id}`, 'generalServices', id, f.name_mn); });
+        (updated.outdoorAreas || []).filter(id => !(prev.outdoorAreas || []).includes(id))
+          .forEach(id => { const f = apiData?.activities?.find(x => x.id === id); if (f) track(`outdoor_${id}`, 'outdoorAreas', id, f.name_mn); });
+        (updated.neighbourhood || []).filter(n => !(prev.neighbourhood || []).includes(n))
+          .forEach(n => track(`neighbourhood_${n}`, 'neighbourhood', n, n));
+        (updated.landmark || []).filter(l => !(prev.landmark || []).includes(l))
+          .forEach(l => { const lm = UB_LANDMARKS.find(x => x.id === l); if (lm) track(`landmark_${l}`, 'landmark', l, lm.name_mn); });
+      }
+    } catch { /* ignore */ }
+  }, [saveToRecentFilters, saveIndividualFilter, apiData]);
 
   const handleClearAllFilters = useCallback(() => {
     setFilters(DEFAULT_FILTERS);
@@ -332,12 +337,12 @@ export function useSearchFilters({
 
   // ─── Derived data ────────────────────────────────────────────────────────────
 
-  const roomFeatureFacilities  = apiData?.facilities             || [];
-  const generalServiceFacilities = apiData?.additionalFacilities || [];
-  const outdoorFacilities      = apiData?.activities             || [];
-  const accessibilityFacilities = apiData?.accessibility_features || [];
-  const bedTypeFacilities      = apiData?.bed_types              || [];
-  const roomFacilitiesData     = apiData?.roomFacilities         || [];
+  const roomFeatureFacilities  = [...(apiData?.facilities             || [])].sort((a, b) => a.name_mn.localeCompare(b.name_mn, 'mn'));
+  const generalServiceFacilities = [...(apiData?.additionalFacilities || [])].sort((a, b) => a.name_mn.localeCompare(b.name_mn, 'mn'));
+  const outdoorFacilities      = [...(apiData?.activities             || [])].sort((a, b) => a.name_mn.localeCompare(b.name_mn, 'mn'));
+  const accessibilityFacilities = [...(apiData?.accessibility_features || [])].sort((a, b) => a.name_mn.localeCompare(b.name_mn, 'mn'));
+  const bedTypeFacilities      = [...(apiData?.bed_types              || [])].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'en'));
+  const roomFacilitiesData     = [...(apiData?.roomFacilities         || [])].sort((a, b) => a.name_mn.localeCompare(b.name_mn, 'mn'));
 
   const neighbourhoodOptions: { name: string; count: number }[] = (() => {
     const counts = new Map<string, number>();
@@ -347,7 +352,7 @@ export function useSearchFilters({
     }
     return Array.from(counts.entries())
       .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count);
+      .sort((a, b) => a.name.localeCompare(b.name, 'mn'));
   })();
 
   // Landmark hotel counts
@@ -357,7 +362,7 @@ export function useSearchFilters({
       const d = (h.location?.soum || h.location?.district || '').toLowerCase();
       return lm.districts.some(ld => d.includes(ld.toLowerCase()));
     }).length,
-  }));
+  })).sort((a, b) => a.name_mn.localeCompare(b.name_mn, 'mn'));
 
   return {
     filters,

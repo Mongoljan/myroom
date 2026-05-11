@@ -24,11 +24,11 @@ export default function LocationInput({
   const { t } = useHydratedTranslation();
 
   return (
-    <div className={`flex-1 ${compact ? 'p-1.5' : 'p-2.5'} w-full relative`}>
-      <div className="flex items-center">
-        <MapPin className={`${compact ? 'w-4 h-4' : 'w-4.5 h-4.5'} text-gray-700 dark:text-gray-300 ${compact ? 'mr-2' : 'mr-2.5'} shrink-0`} />
+    <div className={`flex-1 ${compact ? 'p-1.5' : 'p-5'} w-full relative`}>
+      <div className={`flex items-center ${compact ? '' : 'gap-4'}`}>
+        <MapPin className={`${compact ? 'w-4 h-4 mr-2 text-gray-700' : 'w-6 h-6 text-slate-900'} dark:text-gray-300 shrink-0`} />
         <div className="flex-1 min-w-0">
-          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">
+          <div className={`text-xs font-medium text-gray-500 dark:text-gray-400 ${compact ? 'mb-0.5' : 'mb-1'}`}>
             {t('search.locationLabel', 'Газар')}
           </div>
           <input
@@ -38,7 +38,7 @@ export default function LocationInput({
             onChange={(e) => onLocationChange(e.target.value)}
             onFocus={onLocationFocus}
             placeholder={t('search.destinationPlaceholder', 'Хот, дүүрэг оруулна уу')}
-            className="w-full text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border-none outline-none font-medium bg-transparent"
+            className={`w-full ${compact ? 'text-sm' : 'text-base font-medium'} text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border-none outline-none bg-transparent`}
           />
         </div>
         {destination && (

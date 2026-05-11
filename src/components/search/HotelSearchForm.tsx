@@ -36,6 +36,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [showLocationError, setShowLocationError] = useState(false);
+  const [isShowingPopular, setIsShowingPopular] = useState(false);
   const hasLoadedFromUrl = useRef(false);
   
   const locationRef = useRef<HTMLDivElement>(null);
@@ -159,6 +160,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
 
   const handleLocationSearch = async (value: string) => {
     setDestination(value);
+    setIsShowingPopular(false);
 
     // Always clear selectedLocationSuggestion when user types to allow free editing
     if (selectedLocationSuggestion) {
@@ -166,7 +168,18 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
     }
 
     if (value.length < 2) {
-      setShowLocationSuggestions(false);
+      // Show popular when input is cleared
+      setShowLocationSuggestions(true);
+      setIsShowingPopular(true);
+      setIsLoadingSuggestions(true);
+      try {
+        const popular = await locationService.getPopularLocations();
+        setLocationSuggestions(popular);
+      } catch {
+        setLocationSuggestions([]);
+      } finally {
+        setIsLoadingSuggestions(false);
+      }
       return;
     }
 
@@ -204,9 +217,20 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
     setRooms(newRooms);
   };
 
-  const handleLocationFocus = () => {
+  const handleLocationFocus = async () => {
     setShowLocationSuggestions(true);
     setShowLocationError(false);
+    // Always show popular destinations when field is focused (not actively typing)
+    setIsShowingPopular(true);
+    setIsLoadingSuggestions(true);
+    try {
+      const popular = await locationService.getPopularLocations();
+      setLocationSuggestions(popular);
+    } catch {
+      setLocationSuggestions([]);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
   };
 
   // Close suggestions when clicking outside
@@ -253,11 +277,11 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
               </div>
 
               {/* Date Range Picker */}
-              <div className={`lg:flex-1 ${compact ? 'p-1.5' : 'p-2.5'} w-full`}>
-                <div className="flex items-center">
-                  <Calendar className={`${compact ? 'w-4 h-4' : 'w-4.5 h-4.5'} text-gray-700 dark:text-gray-300 ${compact ? 'mr-2' : 'mr-2.5'} shrink-0`} />
+              <div className={`lg:flex-1 ${compact ? 'p-1.5' : 'p-5'} w-full`}>
+                <div className={`flex items-center ${compact ? '' : 'gap-4'}`}>
+                  <Calendar className={`${compact ? 'w-4 h-4 mr-2 text-gray-700' : 'w-6 h-6 text-slate-900'} dark:text-gray-300 shrink-0`} />
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">
+                    <div className={`text-xs font-medium text-gray-500 dark:text-gray-400 ${compact ? 'mb-0.5' : 'mb-1'}`}>
                       {t('search.dateLabel', 'Орох - Гарах')}
                     </div>
                     <div className="relative z-[1]">
@@ -307,6 +331,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
           isLoadingSuggestions={isLoadingSuggestions}
           locationSuggestions={locationSuggestions}
           onLocationSelect={handleLocationSelect}
+          isShowingPopular={isShowingPopular}
         />
       </div>
     </div>

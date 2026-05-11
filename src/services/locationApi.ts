@@ -24,6 +24,11 @@ export interface District {
 export interface Property {
   id: number;
   name: string;
+  province_id?: number | null;
+  province_name?: string | null;
+  soum_id?: number | null;
+  soum_name?: string | null;
+  district_name?: string | null;
 }
 
 export interface LocationSuggestion {
@@ -55,6 +60,8 @@ export class LocationService {
   private static instance: LocationService;
   private cache: Map<string, LocationSuggestion[]> = new Map();
   private cacheTimeout: number = 5 * 60 * 1000; // 5 minutes
+  // Bump this version string whenever formatSuggestions logic changes to bust stale cache
+  private static readonly CACHE_VERSION = 'v3';
 
   static getInstance(): LocationService {
     if (!LocationService.instance) {
@@ -68,7 +75,7 @@ export class LocationService {
       return [];
     }
 
-    const cacheKey = query.toLowerCase();
+    const cacheKey = `${LocationService.CACHE_VERSION}:${query.toLowerCase()}`;
     const cached = this.cache.get(cacheKey);
     
     if (cached) {
@@ -76,7 +83,7 @@ export class LocationService {
     }
 
     try {
-      const response = await fetch('https://dev.kacc.mn/api/locations/suggest/', {
+      const response = await fetch(`https://dev.kacc.mn/api/locations/suggest/?q=${encodeURIComponent(query)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -121,89 +128,45 @@ export class LocationService {
       }
     });
 
-    // Add matching soums with transliteration support
-    data.soums.forEach(soum => {
-      const nameScore = getSearchScore(query, soum.name);
-      const provinceScore = getSearchScore(query, soum.province_name);
-      const fullNameScore = getSearchScore(query, `${soum.name} ${soum.province_name}`);
-      const maxScore = Math.max(nameScore, provinceScore, fullNameScore);
-      
-      if (maxScore > 0) {
-        suggestions.push({
-          id: `soum-${soum.id}`,
-          name: soum.name,
-          fullName: `${soum.name}, ${soum.province_name}`,
-          type: 'soum',
-          property_count: soum.property_count,
-          searchScore: maxScore,
-          originalData: {
-            province_id: soum.province_id,
-            soum_id: soum.id
-          }
-        });
-      }
-    });
-
-    // Add matching districts with transliteration support
-    data.districts.forEach(district => {
-      const nameScore = getSearchScore(query, district.name);
-      const soumScore = getSearchScore(query, district.soum_name);
-      const provinceScore = getSearchScore(query, district.province_name);
-      const fullNameScore = getSearchScore(query, `${district.name} ${district.soum_name} ${district.province_name}`);
-      const maxScore = Math.max(nameScore, soumScore, provinceScore, fullNameScore);
-      
-      if (maxScore > 0) {
-        suggestions.push({
-          id: `district-${district.soum_id}-${district.name}`,
-          name: district.name,
-          fullName: `${district.name}, ${district.soum_name}, ${district.province_name}`,
-          type: 'district',
-          property_count: district.property_count,
-          searchScore: maxScore,
-          originalData: {
-            province_id: district.province_id,
-            soum_id: district.soum_id,
-            district_name: district.name
-          }
-        });
-      }
-    });
-
-    // Add matching properties (hotels) with transliteration support
+    // Add properties (hotels) — API already filtered geographically, include all returned.
+    // Boost score if the hotel name itself matches the query.
     if (data.properties) {
       data.properties.forEach(property => {
-        const score = getSearchScore(query, property.name);
-        if (score > 0) {
-          suggestions.push({
-            id: `property-${property.id}`,
-            name: property.name,
-            fullName: property.name,
-            type: 'property',
-            property_count: 1,
-            searchScore: score,
-            originalData: {
-              property_id: property.id
-            }
-          });
-        }
+        const nameScore = getSearchScore(query, property.name);
+        const locationParts = [property.province_name, property.soum_name].filter(Boolean);
+        const fullName = locationParts.join(', ');
+        suggestions.push({
+          id: `property-${property.id}`,
+          name: property.name,
+          fullName,
+          type: 'property',
+          property_count: 1,
+          searchScore: nameScore > 0 ? nameScore : 0.1,
+          originalData: {
+            property_id: property.id
+          }
+        });
       });
     }
 
-    // Sort by search relevance and type priority
+    // Sort: provinces first, then properties. Within each group rank by score then property count.
     return suggestions.sort((a, b) => {
-      // First by search score (higher is better)
+      const aIsProperty = a.type === 'property';
+      const bIsProperty = b.type === 'property';
+
+      // Locations always come before hotels
+      if (aIsProperty && !bIsProperty) return 1;
+      if (!aIsProperty && bIsProperty) return -1;
+
+      // Within same group: higher score first
       const scoreDiff = (b.searchScore || 0) - (a.searchScore || 0);
       if (scoreDiff !== 0) return scoreDiff;
-      
-      // Then by type priority (properties first for name searches)
-      if (a.type === 'property' && b.type !== 'property') return -1;
-      if (b.type === 'property' && a.type !== 'property') return 1;
-      
+
       // Then by property count (descending)
       if (a.property_count !== b.property_count) {
         return b.property_count - a.property_count;
       }
-      
+
       // Finally by name
       return a.name.localeCompare(b.name);
     });

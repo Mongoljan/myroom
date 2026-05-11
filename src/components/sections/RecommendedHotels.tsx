@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
-import PointerHighlight from '@/components/aceternity/PointerHighlight';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
 import { text } from '@/styles/design-system';
 
@@ -177,26 +176,28 @@ export default function RecommendedHotels() {
           {/* <p className={`${text.bodyMd} text-gray-500 dark:text-gray-400`}>{t('features.wideSelectionDesc')}</p> */}
         </motion.div>
 
-        {/* Tab filters */}
-        <PointerHighlight className="mb-5" highlightColor="rgba(59, 130, 246, 0.08)">
-          <div className="flex flex-wrap gap-2">
-            {tabs.map((tab) => (
-              <motion.button
+        {/* Tab filters - single pill box with underline indicator */}
+        <div className="mb-5 overflow-x-auto scrollbar-hide">
+          <div className="flex border border-gray-200 dark:border-gray-700 rounded-full overflow-hidden w-full">
+            {tabs.map((tab, idx) => (
+              <button
                 key={tab.key}
                 onClick={() => handleTabChange(tab.key)}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  activeTab === tab.key
-                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-sm'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-slate-300 dark:hover:border-slate-500'
-                }`}
+                className={`relative flex-1 px-2 py-2.5 text-sm font-medium text-center whitespace-nowrap transition-colors duration-200
+                  ${idx > 0 ? 'border-l border-gray-200 dark:border-gray-700' : ''}
+                  ${activeTab === tab.key
+                    ? 'text-primary dark:text-primary bg-white dark:bg-gray-900'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-900'
+                  }`}
               >
-                {tab.label} {tabCounts[tab.key] > 0 && <span className="ml-0.5 opacity-70">({tabCounts[tab.key]})</span>}
-              </motion.button>
+                {tab.label}
+                {activeTab === tab.key && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                )}
+              </button>
             ))}
           </div>
-        </PointerHighlight>
+        </div>
 
         {/* Hotels Grid */}
         {isLoading ? (
@@ -205,13 +206,16 @@ export default function RecommendedHotels() {
               {[...Array(8)].map((_, index) => (
                 <div
                   key={`skeleton-${index}`}
-                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse w-[260px] sm:w-[280px] flex-shrink-0"
+                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse w-[280px] flex-shrink-0"
                 >
-                  <div className="h-36 bg-gray-200 dark:bg-gray-700"></div>
-                  <div className="p-3">
-                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded mb-1"></div>
-                    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-3/4"></div>
-                    <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  <div className="h-[180px] bg-gray-200 dark:bg-gray-700" />
+                  <div className="p-3 space-y-2">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                    <div className="flex justify-between items-center pt-1">
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-16" />
+                      <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+                    </div>
                   </div>
                 </div>
               ))}

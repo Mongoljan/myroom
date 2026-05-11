@@ -130,35 +130,6 @@ export default function SearchFilters({
         <div className="space-y-4">
           <h3 className="text-h3 font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
 
-          {/* Active filter chips */}
-          {activeFilterChips.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {activeFilterChips.slice(0, 5).map((chip, i) => (
-                <span
-                  key={i}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700/60 text-gray-600 dark:text-gray-300 text-xs font-medium border border-gray-200 dark:border-gray-600"
-                >
-                  <span className="max-w-22.5 truncate">{chip.label}</span>
-                  <button
-                    onClick={chip.onRemove}
-                    className="shrink-0 hover:text-red-500 transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              ))}
-              {activeFilterChips.length > 5 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400 self-center">+{activeFilterChips.length - 5}</span>
-              )}
-              <button
-                onClick={handleClearAllFilters}
-                className="text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 self-center ml-auto underline"
-              >
-                {t('search.filtersSection.clearAll') || 'Бүгдийг арилгах'}
-              </button>
-            </div>
-          )}
-
           {/* 1. Өмнөх хайлтууд */}
           {recentIndividualFilters.length > 0 && (
             <CollapsibleFilterSection
@@ -197,7 +168,7 @@ export default function SearchFilters({
               selectedCount={(filters.propertyTypes || []).length}
               onClear={() => updateFilters({ propertyTypes: [] })}
             >
-              {apiData.property_types.map((pt) => {
+              {[...apiData.property_types].sort((a, b) => a.name_mn.localeCompare(b.name_mn, 'mn')).map((pt) => {
                 const isSelected = (filters.propertyTypes || []).includes(pt.id);
                 const count = filterCounts[`propertyType_${pt.id}`];
                 return (

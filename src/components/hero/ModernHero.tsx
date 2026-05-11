@@ -566,35 +566,67 @@ export default function ModernHero() {
                               )}
                             </div>
                           ) : (
-                            /* Search results — vertical list */
-                            <div className="space-y-1">
-                              {locationSuggestions.map((suggestion) => (
-                                <button
-                                  key={suggestion.id}
-                                  onClick={() => handleLocationSelect(suggestion)}
-                                  className="w-full flex items-center p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
-                                >
-                                  <div className="mr-3">
-                                    {getLocationIcon(suggestion.type)}
+                            /* Search results — locations first, then hotels */
+                            (() => {
+                              const locResults = locationSuggestions.filter(s => s.type !== 'property');
+                              const hotelResults = locationSuggestions.filter(s => s.type === 'property');
+                              if (locationSuggestions.length === 0) {
+                                return (
+                                  <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-3">
+                                    {t('search.noResults')}
                                   </div>
-                                  <div className="flex-1">
-                                    <div className={`${TYPOGRAPHY.modal.content} text-gray-900 dark:text-white`}>
-                                      {suggestion.fullName}
-                                    </div>
-                                    <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400`}>
-                                      {suggestion.type === 'property' ? t('search.property') : t('search.hotelsCount', { count: suggestion.property_count })}
-                                    </div>
-                                  </div>
-                                </button>
-                              ))}
-                              {locationSuggestions.length === 0 && (
-                                <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-3">
-                                  {t('search.noResults')}
+                                );
+                              }
+                              return (
+                                <div className="space-y-1">
+                                  {locResults.map((suggestion) => (
+                                    <button
+                                      key={suggestion.id}
+                                      onClick={() => handleLocationSelect(suggestion)}
+                                      className="w-full flex items-center p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+                                    >
+                                      <div className="mr-3 shrink-0 w-8 h-8 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                        {getLocationIcon(suggestion.type)}
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className={`${TYPOGRAPHY.modal.content} font-medium text-gray-900 dark:text-white truncate`}>
+                                          {suggestion.name}
+                                        </div>
+                                        <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400`}>
+                                          {suggestion.type === 'soum' || suggestion.type === 'district'
+                                            ? suggestion.fullName
+                                            : t('search.hotelsCount', { count: suggestion.property_count })}
+                                        </div>
+                                      </div>
+                                    </button>
+                                  ))}
+                                  {locResults.length > 0 && hotelResults.length > 0 && (
+                                    <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
+                                  )}
+                                  {hotelResults.map((suggestion) => (
+                                    <button
+                                      key={suggestion.id}
+                                      onClick={() => handleLocationSelect(suggestion)}
+                                      className="w-full flex items-center p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+                                    >
+                                      <div className="mr-3 shrink-0 w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                                        <Hotel className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className={`${TYPOGRAPHY.modal.content} font-medium text-gray-900 dark:text-white truncate`}>
+                                          {suggestion.name}
+                                        </div>
+                                        <div className={`${TYPOGRAPHY.body.caption} text-gray-500 dark:text-gray-400 truncate`}>
+                                          {suggestion.fullName || t('search.property')}
+                                        </div>
+                                      </div>
+                                    </button>
+                                  ))}
                                 </div>
-                              )}
-                            </div>
+                              );
+                            })()
                           )}
-                        </div>
+                        </div> 
                     </motion.div>
                   </AnimatePresence>,
                   document.body

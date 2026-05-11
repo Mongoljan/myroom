@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { MapPin, Star, CheckCircle, Clock } from 'lucide-react';
+import { MapPin, Star } from 'lucide-react';
 import { text } from '@/styles/design-system';
 import SafeImage from '@/components/common/SafeImage';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -68,21 +68,6 @@ export default function SectionHotelCard({
     return fallbackImages[parseInt(id) % fallbackImages.length];
   };
 
-  // Compute time-since text for viewedAt
-  const getViewedAtLabel = (): string | null => {
-    if (!viewedAt) return null;
-    const diff = Date.now() - new Date(viewedAt).getTime();
-    const mins = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-    if (mins < 60) return 'Сая үзсэн';
-    if (hours < 24) return `${hours} цагийн өмнө`;
-    if (days === 1) return 'Өнөөдөр үзсэн';
-    if (days === 2) return 'Өчигдөр үзсэн';
-    return `${days} өдрийн өмнө`;
-  };
-
-  const viewedLabel = getViewedAtLabel();
   const starCount = stars ? Math.min(5, Math.max(1, Math.round(stars))) : 0;
   const imageUrl = image || getFallbackImage();
 
@@ -172,20 +157,6 @@ export default function SectionHotelCard({
                 <div className={`${text.bodySm} font-bold text-gray-900 dark:text-white leading-none`}>
                   ₮{formatPrice(price)}
                 </div>
-              </div>
-            )}
-          </div>
-
-          {/* Mark check + viewed-at text */}
-          <div className="flex items-center justify-between pt-1 border-t border-gray-100 dark:border-gray-700 mt-0.5">
-            <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
-              <CheckCircle className="w-3.5 h-3.5 shrink-0" />
-              <span className="text-xs font-medium">Шууд баталгаажилт</span>
-            </div>
-            {viewedLabel && (
-              <div className="flex items-center gap-1 text-gray-400 dark:text-gray-500">
-                <Clock className="w-3 h-3 shrink-0" />
-                <span className="text-xs">{viewedLabel}</span>
               </div>
             )}
           </div>

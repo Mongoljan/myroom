@@ -18,6 +18,7 @@ interface LocationSuggestionsModalProps {
   isLoadingSuggestions: boolean;
   locationSuggestions: LocationSuggestion[];
   onLocationSelect: (suggestion: LocationSuggestion) => void;
+  isShowingPopular?: boolean;
 }
 
 export default function LocationSuggestionsModal({
@@ -29,9 +30,12 @@ export default function LocationSuggestionsModal({
   recentSearches,
   isLoadingSuggestions,
   locationSuggestions,
-  onLocationSelect
+  onLocationSelect,
+  isShowingPopular = false,
 }: LocationSuggestionsModalProps) {
   const { t } = useHydratedTranslation();
+  // Show popular when: destination is short OR we're in "just focused" mode
+  const showingPopularView = isShowingPopular || destination.length < 2;
   if (!isClient || !showLocationSuggestions || typeof document === 'undefined') {
     return null;
   }
@@ -53,7 +57,7 @@ export default function LocationSuggestionsModal({
       >
         <div className="p-4">
           {/* Recent Searches Section */}
-          {destination.length < 2 && recentSearches.length > 0 && (
+          {showingPopularView && recentSearches.length > 0 && (
             <div className="mb-4">
               <div className="text-xs text-gray-500 dark:text-gray-400 mb-2 flex items-center">
                 <Clock className="w-3 h-3 mr-1" />
@@ -86,14 +90,14 @@ export default function LocationSuggestionsModal({
 
           {/* Popular Locations / Search Results Section */}
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-            {destination.length < 2 ? t('search.popularLocations') : t('search.searchResults')}
+            {showingPopularView ? t('search.popularLocations') : t('search.searchResults')}
           </div>
           
           {isLoadingSuggestions ? (
             <div className="flex items-center justify-center py-4">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-900"></div>
             </div>
-          ) : destination.length < 2 ? (
+          ) : showingPopularView ? (
             /* Popular destinations — flex-wrap pill boxes */
             <div className="flex flex-wrap gap-2">
               {locationSuggestions.map((suggestion) => (
@@ -113,37 +117,68 @@ export default function LocationSuggestionsModal({
               )}
             </div>
           ) : (
-            /* Search results — vertical list */
-            <div className="space-y-1">
-              {locationSuggestions.map((suggestion) => (
-                <button
-                  key={suggestion.id}
-                  onClick={() => onLocationSelect(suggestion)}
-                  className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
-                >
-                  <div className="mr-3">
-                    {suggestion.type === 'property' ? (
-                      <Hotel className="w-4 h-4 text-slate-900" />
-                    ) : (
-                      <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                    )}
+            /* Search results — locations first, then hotels */
+            (() => {
+              const locations = locationSuggestions.filter(s => s.type !== 'property');
+              const hotels = locationSuggestions.filter(s => s.type === 'property');
+              if (locationSuggestions.length === 0) {
+                return (
+                  <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-3">
+                    {t('search.noResults')}
                   </div>
-                  <div className="flex-1">
-                    <div className="text-sm text-gray-900 dark:text-gray-100">
-                      {suggestion.fullName}
-                    </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {suggestion.type === 'property' ? t('search.property') : t('search.hotelsCount', { count: suggestion.property_count })}
-                    </div>
-                  </div>
-                </button>
-              ))}
-              {locationSuggestions.length === 0 && (
-                <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-3">
-                  {t('search.noResults')}
+                );
+              }
+              return (
+                <div className="space-y-1">
+                  {/* Location results */}
+                  {locations.map((suggestion) => (
+                    <button
+                      key={suggestion.id}
+                      onClick={() => onLocationSelect(suggestion)}
+                      className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+                    >
+                      <div className="mr-3 shrink-0 w-8 h-8 rounded-md bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                        <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {suggestion.name}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {suggestion.type === 'soum' || suggestion.type === 'district'
+                            ? suggestion.fullName
+                            : t('search.hotelsCount', { count: suggestion.property_count })}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                  {/* Divider between locations and hotels */}
+                  {locations.length > 0 && hotels.length > 0 && (
+                    <div className="border-t border-gray-100 dark:border-gray-700 my-1" />
+                  )}
+                  {/* Hotel results */}
+                  {hotels.map((suggestion) => (
+                    <button
+                      key={suggestion.id}
+                      onClick={() => onLocationSelect(suggestion)}
+                      className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+                    >
+                      <div className="mr-3 shrink-0 w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                        <Hotel className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {suggestion.name}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {suggestion.fullName || t('search.property')}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              )}
-            </div>
+              );
+            })()
           )}
         </div>
       </motion.div>

@@ -12,7 +12,6 @@ import SearchResultsHeader from './SearchResultsHeader';
 import SearchFilters, { UB_LANDMARKS } from './SearchFilters';
 import NoResultsState from './NoResultsState';
 import PaginationControls from './PaginationControls';
-import { HotelSearchSpinner } from '@/components/ui/magic-spinner';
 import HotelsMapView from './HotelsMapView';
 import HotelsMapPreview from './HotelsMapPreview';
 import { getFacilityName } from '@/utils/facilities';
@@ -514,69 +513,159 @@ export default function SearchResults() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="h-screen flex flex-col overflow-hidden">
         <SearchHeader />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <HotelSearchSpinner />
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <div className="h-full max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-3 flex flex-col">
+            <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 overflow-hidden">
+
+              {/* Sidebar skeleton */}
+              <div className="hidden lg:flex lg:flex-col lg:w-80 shrink-0 min-h-0">
+                <div className="flex-1 min-h-0 overflow-hidden pr-1 space-y-3">
+                  {/* Map preview placeholder */}
+                  <div className="h-[150px] rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                  {/* Filter skeleton */}
+                  <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 space-y-4">
+                    <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="space-y-2">
+                        <div className="h-3 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        <div className="h-3 w-full bg-gray-100 dark:bg-gray-700/60 rounded animate-pulse" />
+                        <div className="h-3 w-5/6 bg-gray-100 dark:bg-gray-700/60 rounded animate-pulse" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Main content skeleton */}
+              <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
+                {/* Header row skeleton */}
+                <div className="shrink-0 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 pb-2 mb-2">
+                  <div className="space-y-1.5">
+                    <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    <div className="h-3.5 w-32 bg-gray-100 dark:bg-gray-700/60 rounded animate-pulse" />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="h-8 w-44 bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse" />
+                    <div className="h-8 w-52 bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse" />
+                  </div>
+                </div>
+
+                {/* Hotel card skeletons */}
+                <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col md:flex-row"
+                      style={{ opacity: 1 - i * 0.12 }}
+                    >
+                      {/* Image area */}
+                      <div className="w-full md:w-60 h-[160px] md:h-[240px] flex-shrink-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+
+                      {/* Content area */}
+                      <div className="flex-1 p-4 flex flex-col justify-between gap-3">
+                        <div className="space-y-2">
+                          {/* Name + stars */}
+                          <div className="flex items-center gap-2">
+                            <div className="h-5 w-2/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                            <div className="h-3 w-16 bg-gray-100 dark:bg-gray-700/60 rounded animate-pulse" />
+                          </div>
+                          {/* Location */}
+                          <div className="h-3.5 w-1/2 bg-gray-100 dark:bg-gray-700/60 rounded animate-pulse" />
+                        </div>
+
+                        {/* Room info row */}
+                        <div className="space-y-1.5">
+                          <div className="h-4 w-40 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                          <div className="h-3 w-56 bg-gray-100 dark:bg-gray-700/60 rounded animate-pulse" />
+                          {/* Facility tags */}
+                          <div className="flex gap-1.5 pt-0.5">
+                            {[60, 80, 72].map((w, j) => (
+                              <div key={j} className={`h-5 bg-gray-100 dark:bg-gray-700/60 rounded animate-pulse`} style={{ width: w }} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Price + button — pushed right */}
+                        <div className="flex justify-end items-end gap-4">
+                          <div className="space-y-1 text-right">
+                            <div className="h-6 w-28 bg-gray-200 dark:bg-gray-700 rounded animate-pulse ml-auto" />
+                            <div className="h-3 w-20 bg-gray-100 dark:bg-gray-700/60 rounded animate-pulse ml-auto" />
+                          </div>
+                          <div className="h-8 w-28 bg-primary/20 rounded-lg animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen ">
+    <div className="h-screen flex flex-col overflow-hidden">
       <SearchHeader />
 
-      {/* <BreadcrumbNavigation searchLocation={searchLocation} /> */}
-
-      {/* Main Results Container */}
-      <div className="">
-        <div className="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-3">
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Sidebar - Desktop only */}
-            <div className="hidden lg:block lg:w-80 shrink-0 space-y-3">
-              {/* Inline map preview above filters */}
-              {filteredHotels.length > 0 && (
-                <HotelsMapPreview
-                  hotels={filteredHotels}
-                  onExpand={() => setShowMapView(true)}
-                  height={150}
+      {/* Main Results Container — fills remaining height */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="h-full max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-3 flex flex-col">
+          <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 overflow-hidden">
+            {/* Sidebar - Desktop only, independently scrollable */}
+            <div className="hidden lg:flex lg:flex-col lg:w-80 shrink-0 min-h-0">
+              <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1">
+                {/* Inline map preview above filters */}
+                {filteredHotels.length > 0 && (
+                  <HotelsMapPreview
+                    hotels={filteredHotels}
+                    onExpand={() => setShowMapView(true)}
+                    height={150}
+                  />
+                )}
+                <SearchFilters
+                  isOpen={true}
+                  onClose={() => {}}
+                  onFilterChange={handleFilterChange}
+                  embedded={true}
+                  apiData={facets.narrowedApiData}
+                  filters={filters}
+                  filterCounts={facets.filterCounts}
+                  priceBounds={[facets.priceMin, facets.priceMax]}
+                  discountedCount={facets.discountedCount}
+                  totalResults={hotels.length}
+                  hotels={hotels}
                 />
-              )}
-              <SearchFilters
-                isOpen={true}
-                onClose={() => {}}
-                onFilterChange={handleFilterChange}
-                embedded={true}
-                apiData={facets.narrowedApiData}
-                filters={filters}
-                filterCounts={facets.filterCounts}
-                priceBounds={[facets.priceMin, facets.priceMax]}
-                discountedCount={facets.discountedCount}
-                totalResults={hotels.length}
-                hotels={hotels}
-              />
+              </div>
             </div>
-            
-            {/* Main Content */}
-            <div className="flex-1 min-w-0">
-              <SearchResultsHeader
-                searchLocation={searchLocation}
-                checkIn={checkIn}
-                checkOut={checkOut}
-                adults={searchParams.get('adults') || undefined}
-                childrenCount={searchParams.get('children') || undefined}
-                rooms={searchParams.get('rooms') || undefined}
-                filteredCount={filteredHotels.length}
-                totalCount={hotels.length}
-                sortBy={sortBy}
-                viewMode={viewMode}
-                onSort={handleSort}
-                onViewModeChange={setViewMode}
-                onShowMapView={() => setShowMapView(true)}
-                onSearchByName={handleSearchByName}
-              />
-              <div className="h-2"></div>
+            {/* Main Content — sticky header + independently scrollable cards */}
+            <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
+              {/* Pinned header row: count, map link, sort, name search */}
+              <div className="shrink-0">
+                <SearchResultsHeader
+                  searchLocation={searchLocation}
+                  checkIn={checkIn}
+                  checkOut={checkOut}
+                  adults={searchParams.get('adults') || undefined}
+                  childrenCount={searchParams.get('children') || undefined}
+                  rooms={searchParams.get('rooms') || undefined}
+                  filteredCount={filteredHotels.length}
+                  totalCount={hotels.length}
+                  sortBy={sortBy}
+                  viewMode={viewMode}
+                  onSort={handleSort}
+                  onViewModeChange={setViewMode}
+                  onShowMapView={() => setShowMapView(true)}
+                  onSearchByName={handleSearchByName}
+                />
+              </div>
+              <div className="h-2 shrink-0"></div>
+
+              {/* Scrollable hotel cards area */}
+              <div className="flex-1 min-h-0 overflow-y-auto">
 
               {/* Active filter chips — shown above hotel card list */}
               {(() => {
@@ -716,10 +805,11 @@ export default function SearchResults() {
               ) : (
                 <NoResultsState searchParams={searchParams} />
               )}
-            </div>
-          </div>
-        </div>
-      </div>
+              </div>{/* end scrollable hotel cards */}
+            </div>{/* end main content column */}
+          </div>{/* end flex row */}
+        </div>{/* end max-w container */}
+      </div>{/* end content area */}
 
       {/* Full Map View */}
       {showMapView && (

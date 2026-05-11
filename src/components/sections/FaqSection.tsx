@@ -3,7 +3,7 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 import { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { Plus, Minus, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 
 export default function FaqSection() {
   const { t, i18n } = useHydratedTranslation();
@@ -111,31 +111,13 @@ export default function FaqSection() {
                     layout
                   >
                     <motion.button
-                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-slate-500 dark:focus:ring-slate-400"
+                      className={`w-full text-left p-4 focus:outline-none ${isOpen ? 'bg-gray-50 dark:bg-gray-700/50' : ''}`}
                       onClick={() => toggleItem(idx)}
-                      whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.02)" }}
                       transition={{ duration: 0.2 }}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center flex-1 min-w-0">
-                          <motion.div 
-                            className="flex-shrink-0 w-7 h-7 bg-slate-900 text-white rounded-lg flex items-center justify-center mr-3"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            <motion.div
-                              animate={{ rotate: isOpen ? 45 : 0 }}
-                              transition={{ duration: 0.2, ease: "easeInOut" }}
-                            >
-                              {isOpen ? (
-                                <Minus className="w-3 h-3" />
-                              ) : (
-                                <Plus className="w-3 h-3" />
-                              )}
-                            </motion.div>
-                          </motion.div>
-                          
-                          <h3 className={`${TYPOGRAPHY.card.subtitle} text-gray-900 dark:text-white pr-3`}>
+                          <h3 className={`${TYPOGRAPHY.card.subtitle} font-bold text-gray-900 dark:text-white pr-3`}>
                             {faq.q}
                           </h3>
                         </div>
@@ -179,16 +161,14 @@ export default function FaqSection() {
                             exit={{ y: -10, opacity: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
                           >
-                            <div className="pl-10 border-l border-gray-200 dark:border-gray-700">
-                              <motion.p 
-                                className={`${TYPOGRAPHY.body.standard} text-gray-600 dark:text-gray-400`}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.3, delay: 0.2 }}
-                              >
-                                {faq.a || 'Энэ асуултын хариу одоогоор бэлэн байхгүй байна.'}
-                              </motion.p>
-                            </div>
+                            <motion.p 
+                              className={`${TYPOGRAPHY.body.standard} font-normal text-gray-600 dark:text-gray-400`}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.3, delay: 0.2 }}
+                            >
+                              {faq.a || 'Энэ асуултын хариу одоогоор бэлэн байхгүй байна.'}
+                            </motion.p>
                           </motion.div>
                         </motion.div>
                       )}
@@ -226,31 +206,13 @@ export default function FaqSection() {
                     layout
                   >
                     <motion.button
-                      className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-slate-500 dark:focus:ring-slate-400"
+                      className={`w-full text-left p-4 focus:outline-none ${isOpen ? 'bg-gray-50 dark:bg-gray-700/50' : ''}`}
                       onClick={() => toggleItem(actualIndex)}
-                      whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.02)" }}
                       transition={{ duration: 0.2 }}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center flex-1 min-w-0">
-                          <motion.div 
-                            className="flex-shrink-0 w-7 h-7 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-lg flex items-center justify-center mr-3"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                          >
-                            <motion.div
-                              animate={{ rotate: isOpen ? 45 : 0 }}
-                              transition={{ duration: 0.2, ease: "easeInOut" }}
-                            >
-                              {isOpen ? (
-                                <Minus className="w-3 h-3" />
-                              ) : (
-                                <Plus className="w-3 h-3" />
-                              )}
-                            </motion.div>
-                          </motion.div>
-                          
-                          <h3 className={`${TYPOGRAPHY.card.subtitle} text-gray-900 dark:text-white pr-3`}>
+                          <h3 className={`${TYPOGRAPHY.card.subtitle} font-bold text-gray-900 dark:text-white pr-3`}>
                             {faq.q}
                           </h3>
                         </div>
@@ -294,16 +256,14 @@ export default function FaqSection() {
                             exit={{ y: -10, opacity: 0 }}
                             transition={{ duration: 0.2, delay: 0.1 }}
                           >
-                            <div className="pl-10 border-l border-gray-200 dark:border-gray-700">
-                              <motion.p 
-                                className={`${TYPOGRAPHY.body.standard} text-gray-600 dark:text-gray-400`}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.3, delay: 0.2 }}
-                              >
-                                {faq.a || 'Энэ асуултын хариу одоогоор бэлэн байхгүй байна.'}
-                              </motion.p>
-                            </div>
+                            <motion.p 
+                              className={`${TYPOGRAPHY.body.standard} font-normal text-gray-600 dark:text-gray-400`}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.3, delay: 0.2 }}
+                            >
+                              {faq.a || 'Энэ асуултын хариу одоогоор бэлэн байхгүй байна.'}
+                            </motion.p>
                           </motion.div>
                         </motion.div>
                       )}
@@ -330,15 +290,9 @@ export default function FaqSection() {
                 whileTap={{ scale: 0.98 }}
               >
                 {showAll ? (
-                  <>
-                    <Minus className="w-4 h-4 mr-2" />
-                    {t('faq.showLess', 'Хураангуйлах')}
-                  </>
+                  t('faq.showLess', 'Хураангуйлах')
                 ) : (
-                  <>
-                    <Plus className="w-4 h-4 mr-2" />
-                    {t('faq.showMore', `Дэлгэрэнгүй харах (+${remainingFaqs.length})`)}
-                  </>
+                  t('faq.showMore', 'Дэлгэрэнгүй харах')
                 )}
               </motion.button>
             </motion.div>
