@@ -81,8 +81,9 @@ export default function SearchFilters({
     activeFilterChips.push({ label: t('search.filtersSection.discounted') || '\u0425\u044f\u043c\u0434\u0440\u0430\u043b\u0442\u0430\u0439', onRemove: () => updateFilters({ discounted: false }) });
   }
 
-  if (priceBounds && filters.priceRange[1] < priceBounds[1]) {
-    activeFilterChips.push({ label: `\u2264\u20ae${new Intl.NumberFormat('en-US').format(filters.priceRange[1])}`, onRemove: () => updateFilters({ priceRange: [priceBounds[0], priceBounds[1]] }) });
+  if (priceBounds && (filters.priceRange[0] > priceBounds[0] || filters.priceRange[1] < priceBounds[1])) {
+    const fmt = (n: number) => new Intl.NumberFormat('en-US').format(n);
+    activeFilterChips.push({ label: `₮${fmt(filters.priceRange[0])}-₮${fmt(filters.priceRange[1])}`, onRemove: () => updateFilters({ priceRange: [priceBounds[0], priceBounds[1]] }) });
   }
 
   (filters.roomFeatures || []).forEach(id => {
@@ -225,26 +226,85 @@ export default function SearchFilters({
             <div className="space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3">
               <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Үнэ</h4>
               {(() => {
-                const sliderMax = Math.min(filters.priceRange?.[1] ?? priceBounds[1], priceBounds[1]);
-                const fmt = (n: number) => '\u20ae' + new Intl.NumberFormat('en-US').format(n);
+                const minVal = Math.max(priceBounds[0], filters.priceRange?.[0] ?? priceBounds[0]);
+                const maxVal = Math.min(priceBounds[1], filters.priceRange?.[1] ?? priceBounds[1]);
+                const step = Math.max(1000, Math.round((priceBounds[1] - priceBounds[0]) / 100));
+                const fmt = (n: number) => '₮' + new Intl.NumberFormat('en-US').format(n);
+                const range = priceBounds[1] - priceBounds[0];
+                const leftPct = range > 0 ? ((minVal - priceBounds[0]) / range) * 100 : 0;
+                const rightPct = range > 0 ? ((priceBounds[1] - maxVal) / range) * 100 : 0;
+                // When min thumb is pushed far right, bring it to top so user can drag it back left
+                const minZIndex = leftPct >= 90 ? 4 : 2;
+                const maxZIndex = leftPct >= 90 ? 2 : 4;
                 return (
                   <>
                     <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-                      <span>{fmt(priceBounds[0])}</span>
-                      <span>{fmt(sliderMax)}</span>
+                      <span>{fmt(minVal)}</span>
+                      <span>{fmt(maxVal)}</span>
                     </div>
-                    <input
-                      type="range"
-                      min={priceBounds[0]}
-                      max={priceBounds[1]}
-                      step={Math.max(1000, Math.round((priceBounds[1] - priceBounds[0]) / 100))}
-                      value={sliderMax}
-                      onChange={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt(e.target.value, 10)] }, { saveRecent: false })}
-                      onMouseUp={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
-                      onTouchEnd={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
-                      onKeyUp={(e) => updateFilters({ priceRange: [priceBounds[0], parseInt((e.target as HTMLInputElement).value, 10)] })}
-                      className="w-full accent-primary-600"
-                    />
+                    <div className="relative h-5 flex items-center">
+                      {/* Track background */}
+                      <div className="absolute inset-x-0 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full" />
+                      {/* Active fill between thumbs */}
+                      <div
+                        className="absolute h-1.5 bg-primary rounded-full"
+                        style={{ left: `${leftPct}%`, right: `${rightPct}%` }}
+                      />
+                      {/* Visual min thumb */}
+                      <div
+                        className="absolute w-4 h-4 bg-white border-2 border-primary rounded-full shadow pointer-events-none -translate-x-1/2"
+                        style={{ left: `${leftPct}%`, zIndex: 1 }}
+                      />
+                      {/* Visual max thumb */}
+                      <div
+                        className="absolute w-4 h-4 bg-white border-2 border-primary rounded-full shadow pointer-events-none -translate-x-1/2"
+                        style={{ left: `${100 - rightPct}%`, zIndex: 1 }}
+                      />
+                      {/* Min handle input */}
+                      <input
+                        type="range"
+                        min={priceBounds[0]}
+                        max={priceBounds[1]}
+                        step={step}
+                        value={minVal}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          if (val < maxVal) updateFilters({ priceRange: [val, maxVal] }, { saveRecent: false });
+                        }}
+                        onMouseUp={(e) => {
+                          const val = Math.min(parseInt((e.target as HTMLInputElement).value, 10), maxVal - step);
+                          updateFilters({ priceRange: [val, maxVal] });
+                        }}
+                        onTouchEnd={(e) => {
+                          const val = Math.min(parseInt((e.target as HTMLInputElement).value, 10), maxVal - step);
+                          updateFilters({ priceRange: [val, maxVal] });
+                        }}
+                        className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                        style={{ zIndex: minZIndex }}
+                      />
+                      {/* Max handle input */}
+                      <input
+                        type="range"
+                        min={priceBounds[0]}
+                        max={priceBounds[1]}
+                        step={step}
+                        value={maxVal}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value, 10);
+                          if (val > minVal) updateFilters({ priceRange: [minVal, val] }, { saveRecent: false });
+                        }}
+                        onMouseUp={(e) => {
+                          const val = Math.max(parseInt((e.target as HTMLInputElement).value, 10), minVal + step);
+                          updateFilters({ priceRange: [minVal, val] });
+                        }}
+                        onTouchEnd={(e) => {
+                          const val = Math.max(parseInt((e.target as HTMLInputElement).value, 10), minVal + step);
+                          updateFilters({ priceRange: [minVal, val] });
+                        }}
+                        className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                        style={{ zIndex: maxZIndex }}
+                      />
+                    </div>
                   </>
                 );
               })()}

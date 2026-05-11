@@ -63,6 +63,9 @@ export class LocationService {
   // Bump this version string whenever formatSuggestions logic changes to bust stale cache
   private static readonly CACHE_VERSION = 'v3';
 
+  // Raw API response cache — keyed by the query that fetched it
+  private lastRawData: { query: string; data: LocationResponse } | null = null;
+
   static getInstance(): LocationService {
     if (!LocationService.instance) {
       LocationService.instance = new LocationService();
@@ -75,11 +78,25 @@ export class LocationService {
       return [];
     }
 
-    const cacheKey = `${LocationService.CACHE_VERSION}:${query.toLowerCase()}`;
+    const queryLower = query.toLowerCase();
+    const cacheKey = `${LocationService.CACHE_VERSION}:${queryLower}`;
     const cached = this.cache.get(cacheKey);
-    
+
     if (cached) {
       return cached;
+    }
+
+    // If the new query is an extension of the last fetched query (user kept typing),
+    // filter locally from the cached raw data instead of hitting the API again.
+    if (
+      this.lastRawData &&
+      queryLower.startsWith(this.lastRawData.query.toLowerCase()) &&
+      this.lastRawData.query.length >= 2
+    ) {
+      const suggestions = this.formatSuggestions(this.lastRawData.data, query);
+      this.cache.set(cacheKey, suggestions);
+      setTimeout(() => this.cache.delete(cacheKey), this.cacheTimeout);
+      return suggestions;
     }
 
     try {
@@ -95,12 +112,16 @@ export class LocationService {
       }
 
       const data: LocationResponse = await response.json();
+
+      // Store raw data so subsequent refined queries can filter locally
+      this.lastRawData = { query, data };
+
       const suggestions = this.formatSuggestions(data, query);
-      
+
       // Cache results
       this.cache.set(cacheKey, suggestions);
       setTimeout(() => this.cache.delete(cacheKey), this.cacheTimeout);
-      
+
       return suggestions;
     } catch (error) {
       return [];
