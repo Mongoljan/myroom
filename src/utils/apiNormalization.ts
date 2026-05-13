@@ -44,6 +44,7 @@ export interface NormalizedHotel {
 // Define types for room data
 export interface RoomData {
   final_price?: number;
+  final_price_after_commission?: number;
   base_price?: number;
   price_per_night_final?: number;
   images?: Array<{ url: string; description?: string }>;
@@ -162,7 +163,7 @@ export function normalizeSuggestedHotel(suggestedResult: SuggestedApiInput): Nor
     star_rating: null, // Not provided in suggested API
     avg_rating: null,
     review_count: 0,
-    min_price: suggestedResult.cheapest_room?.final_price_after_commission ?? suggestedResult.cheapest_room?.final_price || null,
+    min_price: (suggestedResult.cheapest_room?.final_price_after_commission ?? suggestedResult.cheapest_room?.final_price) ?? null,
     // Prefer is_profile gallery image, then cover
     profile_image: (suggestedResult as Record<string, unknown> & { images?: { gallery?: Array<{ url: string; is_profile: boolean }>; cover?: string } }).images?.gallery?.find(g => g.is_profile)?.url
       || (suggestedResult as Record<string, unknown> & { images?: { cover?: string } }).images?.cover
