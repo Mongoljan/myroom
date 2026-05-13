@@ -46,7 +46,7 @@ export default function CollapsibleFilterSection({
           onClick={() => setIsExpanded(!isExpanded)}
           className="flex items-center gap-1 flex-1 text-left hover:text-primary-600 transition-colors min-w-0"
         >
-          <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300 truncate">
+          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 truncate">
             {title}
             {selectedCount > 0 && (
               <span className="ml-1.5 text-xs font-bold text-primary-600 dark:text-primary-400">
