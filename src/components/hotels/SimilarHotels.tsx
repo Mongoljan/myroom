@@ -6,7 +6,7 @@ import { Star, MapPin } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import SafeImage from '@/components/common/SafeImage';
 import { ApiService } from '@/services/api';
-import { SearchHotelResult } from '@/types/api';
+import { SearchHotelResult, SuggestedHotel } from '@/types/api';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 
 interface HotelWithPrices extends SearchHotelResult {
@@ -50,7 +50,7 @@ export default function SimilarHotels({ currentHotelId, checkIn, checkOut }: Sim
             const results = suggestedData?.results || [];
             if (Array.isArray(results)) {
               // Transform suggested hotels to match SearchHotelResult structure
-              const transformedHotels = results
+              const transformedHotels = (results as SuggestedHotel[])
                 .filter(item => item?.hotel?.pk && item.hotel.pk !== currentId)
                 .slice(0, 4 - similarHotels.length)
                 .map(item => ({
