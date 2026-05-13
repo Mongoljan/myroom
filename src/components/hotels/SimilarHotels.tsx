@@ -21,9 +21,11 @@ interface HotelWithPrices extends SearchHotelResult {
 interface SimilarHotelsProps {
   currentHotelId: string | number;
   currentLocation?: string;
+  checkIn?: string;
+  checkOut?: string;
 }
 
-export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
+export default function SimilarHotels({ currentHotelId, checkIn, checkOut }: SimilarHotelsProps) {
   const { t } = useHydratedTranslation();
   const [hotels, setHotels] = useState<HotelWithPrices[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,23 +56,36 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                 .map(item => ({
                   hotel_id: item.hotel.pk,
                   property_name: item.hotel.PropertyName,
+                  property_name_en: item.hotel.PropertyName,
                   location: {
-                    province_city: item.hotel.location || '',
-                    soum: ''
+                    province_city: item.hotel.location || null,
+                    soum: null,
+                    district: null,
                   },
+                  // Use profile gallery image > cover > first gallery image
                   images: {
-                    cover: item.cheapest_room?.images?.[0]?.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format',
-                    gallery: item.cheapest_room?.images?.map(img => ({ url: img.image, description: img.description })) || []
+                    cover: item.images?.gallery?.find((g: { is_profile: boolean }) => g.is_profile)?.url
+                      || item.images?.cover
+                      || item.images?.gallery?.[0]?.url
+                      || '',
+                    gallery: item.images?.gallery || []
                   },
-                  rating_stars: { value: '0', label: '' },
+                  // Use rating_stars directly from suggestHotels response
+                  rating_stars: item.rating_stars || { id: 0, value: '', label: '' },
                   cheapest_room: item.cheapest_room ? {
-                    price_per_night: item.cheapest_room.final_price || item.cheapest_room.base_price,
+                    // Use final_price_after_commission — the actual customer-facing price
+                    price_per_night_final: item.cheapest_room.final_price_after_commission ?? item.cheapest_room.final_price ?? item.cheapest_room.base_price,
                     price_per_night_raw: item.cheapest_room.base_price,
-                    pricesetting: null
+                    estimated_total_final: item.cheapest_room.final_price_after_commission ?? item.cheapest_room.final_price ?? item.cheapest_room.base_price,
+                    pricesetting: null,
+                    commission: item.cheapest_room.commission ?? null,
                   } : null,
-                  general_facilities: [],
-                  min_estimated_total: item.cheapest_room?.final_price || 0,
-                  google_map: ''
+                  general_facilities: item.general_facilities || [],
+                  additional_facilities: item.additional_facilities || [],
+                  activities: item.activities || [],
+                  has_active_commission: item.has_active_commission ?? false,
+                  min_estimated_total: item.cheapest_room?.final_price_after_commission ?? item.cheapest_room?.final_price ?? 0,
+                  google_map: item.google_map || '',
                 } as unknown as SearchHotelResult));
 
               similarHotels = [...similarHotels, ...transformedHotels];
@@ -85,12 +100,18 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
           return;
         }
 
-        // Fetch price options for each hotel
+        // Fetch price options for each hotel that don't already have a final price
         const hotelsWithPrices = await Promise.all(
           similarHotels.map(async (hotel) => {
             try {
               // Skip if hotel_id is invalid
               if (!hotel?.hotel_id) {
+                return hotel;
+              }
+
+              // If we already have price_per_night_final from suggestHotels, don't overwrite with getRoomPrices
+              // (getRoomPrices only gives base_price before commission, causing a mismatch)
+              if (hotel.cheapest_room?.price_per_night_final) {
                 return hotel;
               }
               
@@ -167,7 +188,7 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
       <h2 className="text-h2 font-semibold text-gray-900 dark:text-white">{t('similarHotels.title')}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {uniqueHotels.map((hotel, index) => (
-          <Link key={`${hotel.hotel_id}-${index}`} href={`/hotel/${hotel.hotel_id}`}>
+          <Link key={`${hotel.hotel_id}-${index}`} href={checkIn && checkOut ? `/hotel/${hotel.hotel_id}?check_in=${checkIn}&check_out=${checkOut}` : `/hotel/${hotel.hotel_id}`}>
             <div className="group cursor-pointer bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200">
               <div className="relative h-32 overflow-hidden">
                 <SafeImage
@@ -213,18 +234,24 @@ export default function SimilarHotels({ currentHotelId }: SimilarHotelsProps) {
                 {/* Simple pricing display */}
                 <div className="flex items-baseline gap-1">
                   <span className="text-sm font-semibold">
-                    {hotel.priceOptions ? (() => {
-                      const validPrices = [
-                        hotel.priceOptions.basePrice,
-                        hotel.priceOptions.halfDayPrice,
-                        hotel.priceOptions.singlePersonPrice
-                      ].filter(price => price !== null && price !== undefined && price > 0) as number[];
-
-                      const lowestPrice = validPrices.length > 0 ? Math.min(...validPrices) : hotel.priceOptions.basePrice;
-                      return `₮${lowestPrice.toLocaleString()}`;
-                    })() :
-                      `₮${hotel.cheapest_room?.price_per_night?.toLocaleString() || t('similarHotels.priceUnknown')}`
-                    }
+                    {(() => {
+                      // Prefer price_per_night_final (post-commission) from search/suggest APIs
+                      const finalPrice = hotel.cheapest_room?.price_per_night_final;
+                      if (finalPrice && finalPrice > 0) {
+                        return `₮${finalPrice.toLocaleString()}`;
+                      }
+                      // Fallback to priceOptions (from getRoomPrices) for recently-viewed hotels
+                      if (hotel.priceOptions) {
+                        const validPrices = [
+                          hotel.priceOptions.basePrice,
+                          hotel.priceOptions.halfDayPrice,
+                          hotel.priceOptions.singlePersonPrice
+                        ].filter(price => price !== null && price !== undefined && price > 0) as number[];
+                        const lowestPrice = validPrices.length > 0 ? Math.min(...validPrices) : hotel.priceOptions.basePrice;
+                        return `₮${lowestPrice.toLocaleString()}`;
+                      }
+                      return t('similarHotels.priceUnknown');
+                    })()}
                   </span>
                   <span className="text-sm text-gray-600 dark:text-gray-400">{t('similarHotels.from')}</span>
                 </div>

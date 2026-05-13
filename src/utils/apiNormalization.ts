@@ -162,8 +162,11 @@ export function normalizeSuggestedHotel(suggestedResult: SuggestedApiInput): Nor
     star_rating: null, // Not provided in suggested API
     avg_rating: null,
     review_count: 0,
-    min_price: suggestedResult.cheapest_room?.final_price || null,
-    profile_image: null,
+    min_price: suggestedResult.cheapest_room?.final_price_after_commission ?? suggestedResult.cheapest_room?.final_price || null,
+    // Prefer is_profile gallery image, then cover
+    profile_image: (suggestedResult as Record<string, unknown> & { images?: { gallery?: Array<{ url: string; is_profile: boolean }>; cover?: string } }).images?.gallery?.find(g => g.is_profile)?.url
+      || (suggestedResult as Record<string, unknown> & { images?: { cover?: string } }).images?.cover
+      || null,
     property_type: hotelData.property_type?.toString() || null,
     rating_stars: {
       id: 0,

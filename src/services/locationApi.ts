@@ -54,7 +54,7 @@ export interface LocationResponse {
   properties: Property[];
 }
 
-import { getSearchScore } from '@/utils/transliteration';
+import { getSearchScore, hasCyrillic, hasLatin, latinToCyrillicTransliteration } from '@/utils/transliteration';
 
 export class LocationService {
   private static instance: LocationService;
@@ -100,7 +100,13 @@ export class LocationService {
     }
 
     try {
-      const response = await fetch(`https://dev.kacc.mn/api/locations/suggest/?q=${encodeURIComponent(query)}`, {
+      // When user types in Latin script, transliterate to Cyrillic for the backend
+      // (the API only matches Mongolian Cyrillic names)
+      const apiQuery = (hasLatin(query) && !hasCyrillic(query))
+        ? latinToCyrillicTransliteration(query)
+        : query;
+
+      const response = await fetch(`https://dev.kacc.mn/api/locations/suggest/?q=${encodeURIComponent(apiQuery)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

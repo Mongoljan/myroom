@@ -5,26 +5,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
-import { text } from '@/styles/design-system';
 
-// Type for API response
-interface SuggestedHotel {
-  hotel: {
-    pk: number;
-    PropertyName: string;
-    location: string;
-    property_type: number;
-    created_at: string;
-  };
-  cheapest_room: {
-    id: number;
-    base_price: number;
-    final_price: number;
-    images: Array<{ id: number; image: string; description: string }>;
-    adultQty: number;
-    childQty: number;
-  } | null;
-}
+import { SuggestedHotel } from '@/types/api';
 
 type TabKey = 'popular' | 'discount' | 'top_rated' | 'cheapest' | 'new';
 
@@ -44,12 +26,16 @@ export default function RecommendedHotels() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Get hotel image with fallback - optimized for card display
+  // Get hotel image with fallback - prefer is_profile gallery image, then cover, then room image
   const getHotelImage = (hotel: SuggestedHotel): string => {
+    // 1. Use the gallery image marked as profile
+    const profileImg = hotel.images?.gallery?.find(g => g.is_profile);
+    if (profileImg?.url) return profileImg.url;
+    // 2. Use the cover image
+    if (hotel.images?.cover) return hotel.images.cover;
+    // 3. Fall back to room image
     if (hotel.cheapest_room?.images && hotel.cheapest_room.images.length > 0) {
-      const imageUrl = hotel.cheapest_room.images[0].image;
-      // Return the image URL as-is - Next.js Image component will handle sizing
-      return imageUrl;
+      return hotel.cheapest_room.images[0].image;
     }
     // Smart fallback based on hotel ID for variety
     const fallbacks = [
@@ -91,7 +77,7 @@ export default function RecommendedHotels() {
       setIsLoading(true);
       try {
         const response = await ApiService.getSuggestedHotels(activeTab);
-        setHotels(response.results || []);
+        setHotels((response.results || []) as SuggestedHotel[]);
         
         // Update count for current tab
         setTabCounts(prev => ({
@@ -172,14 +158,13 @@ export default function RecommendedHotels() {
           transition={{ duration: 0.5 }}
           className="mb-6"
         >
-          <h2 className={`text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2`}>{t('hotel.recommended')}</h2>
-          {/* <p className={`${text.bodyMd} text-gray-500 dark:text-gray-400`}>{t('features.wideSelectionDesc')}</p> */}
+          <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('hotel.recommended')}</h2>
         </motion.div>
 
-        {/* Tab filters - single pill box with underline indicator */}
+        {/* Tab filters */}
         <div className="mb-5 overflow-x-auto scrollbar-hide">
           <div className="flex border border-gray-200 dark:border-gray-700 rounded-full overflow-hidden w-full">
-            {tabs.map((tab, idx) => (
+            {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => handleTabChange(tab.key)}
@@ -198,54 +183,49 @@ export default function RecommendedHotels() {
           </div>
         </div>
 
-        {/* Hotels Grid */}
+        {/* Carousel */}
         {isLoading ? (
-          <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
-            <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 px-4 sm:px-6 lg:px-8">
-              {[...Array(8)].map((_, index) => (
-                <div
-                  key={`skeleton-${index}`}
-                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse w-[280px] flex-shrink-0"
-                >
-                  <div className="h-[180px] bg-gray-200 dark:bg-gray-700" />
-                  <div className="p-3 space-y-2">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5" />
-                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                    <div className="flex justify-between items-center pt-1">
-                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-16" />
-                      <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24" />
-                    </div>
+          <div className="flex items-start gap-4 overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {[...Array(8)].map((_, index) => (
+              <div
+                key={`skeleton-${index}`}
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse w-70 shrink-0"
+              >
+                <div className="h-45 bg-gray-200 dark:bg-gray-700" />
+                <div className="p-3 space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5" />
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                  <div className="flex justify-between items-center pt-1">
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-16" />
+                    <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24" />
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
         ) : hotels.length > 0 ? (
-          <div className="relative -mx-4 sm:-mx-6 lg:-mx-8">
-            {/* Left scroll button */}
+          <div className="relative">
             {canScrollLeft && (
               <button
                 onClick={() => scrollRef.current?.scrollBy({ left: -300, behavior: 'smooth' })}
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               </button>
             )}
-            
-            {/* Right scroll button */}
             {canScrollRight && (
               <button
                 onClick={() => scrollRef.current?.scrollBy({ left: 300, behavior: 'smooth' })}
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               </button>
             )}
-
-            <div 
-              ref={scrollRef} 
-              className="flex gap-4 overflow-x-auto overflow-y-hidden pb-2 px-4 sm:px-6 lg:px-8 scrollbar-hide scroll-smooth"
-              style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}
+            <div
+              ref={scrollRef}
+              className="flex items-start gap-4 overflow-x-auto overflow-y-hidden pb-2 scrollbar-hide scroll-smooth"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               onScroll={() => {
                 const element = scrollRef.current;
                 if (element) {
@@ -254,27 +234,21 @@ export default function RecommendedHotels() {
                 }
               }}
             >
-              <style jsx>{`
-                div::-webkit-scrollbar {
-                  display: none;
-                }
-              `}</style>
-            
-            {hotels.slice(0, 8).map((hotel, index) => (
-              <SectionHotelCard
-                key={hotel.hotel.pk}
-                id={hotel.hotel.pk.toString()}
-                name={hotel.hotel.PropertyName}
-                location={hotel.hotel.location || t('common.locationUnknown', 'Location unknown')}
-                rating={0}
-                ratingLabel={null}
-                price={hotel.cheapest_room?.final_price || hotel.cheapest_room?.base_price || 0}
-                image={getHotelImage(hotel)}
-                badge={getTabBadgeLabel(activeTab)}
-                badgeColor={getTabBadgeColor(activeTab)}
-                index={index}
-              />
-            ))}
+              {hotels.slice(0, 8).map((hotel, index) => (
+                <SectionHotelCard
+                  key={hotel.hotel.pk}
+                  id={hotel.hotel.pk.toString()}
+                  name={hotel.hotel.PropertyName}
+                  location={hotel.hotel.location || t('common.locationUnknown', 'Location unknown')}
+                  rating={0}
+                  ratingLabel={null}
+                  price={hotel.cheapest_room?.final_price || hotel.cheapest_room?.base_price || 0}
+                  image={getHotelImage(hotel)}
+                  badge={getTabBadgeLabel(activeTab)}
+                  badgeColor={getTabBadgeColor(activeTab)}
+                  index={index}
+                />
+              ))}
             </div>
           </div>
         ) : (

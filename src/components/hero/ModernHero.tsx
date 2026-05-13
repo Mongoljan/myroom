@@ -258,7 +258,7 @@ export default function ModernHero() {
   };
 
   return (
-    <section className="relative pt-6 lg:min-h-[35vh] bg-slate-50/30">
+    <section className="relative pt-6  bg-slate-50/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl overflow-hidden shadow-2xl shadow-blue-900/20">
       {/* Animated Gradient Background */}

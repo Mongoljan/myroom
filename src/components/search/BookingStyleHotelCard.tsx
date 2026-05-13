@@ -1,6 +1,7 @@
 'use client';
 
-import { Star, MapPin, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed, BedDouble, BedSingle, X } from 'lucide-react';
+import { Star, MapPin, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed, BedDouble, BedSingle, X, CalendarX } from 'lucide-react';
+import { BedTypeIcon } from '@/utils/bedTypeIcons';
 import { FaChild } from 'react-icons/fa';
 import { SearchHotelResult, AdditionalInfo, PropertyDetails, RoomPrice, Room } from '@/types/api';
 import { SEARCH_DESIGN_SYSTEM } from '@/styles/search-design-system';
@@ -49,7 +50,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
   
   const formatPrice = (price: number) => new Intl.NumberFormat('mn-MN').format(price);
   const getStarRating = (rating: string) => {
-    const match = rating.match(/(\d+)/);
+    const match = rating?.match(/(\d+)/);
     return match ? parseInt(match[1]) : 0;
   };
 
@@ -168,6 +169,13 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
     return url;
   };
 
+  const buildNextAvailableUrl = (nextDate: { check_in: string; check_out: string }) => {
+    const params = new URLSearchParams(searchParams?.toString() || '');
+    params.set('check_in', nextDate.check_in);
+    params.set('check_out', nextDate.check_out);
+    return `/search?${params.toString()}`;
+  };
+
   // Load property details, additional info, and room prices
   useEffect(() => {
     if (!hotel.hotel_id) return; // Guard against falsy hotel_id
@@ -277,7 +285,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
         >
           <div className="flex flex-col md:flex-row">
             {/* Hotel Image with gallery modal */}
-            <div className="relative w-60 h-[240px] flex-shrink-0 overflow-hidden">
+            <div className="relative w-64 self-stretch flex-shrink-0 overflow-hidden min-h-[220px]">
               <HotelImageGallery
                 images={hotel.images}
                 hotelName={hotel.property_name}
@@ -296,7 +304,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
             </div>
 
             {/* Hotel Details - Compact */}
-            <div className="flex-1 pt-2 px-2 pb-12 min-w-0">
+            <div className="flex-1 pt-3 px-4 pb-4 min-w-0 flex flex-col">
               <div className="flex justify-between items-start mb-1">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
@@ -312,8 +320,8 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                     )}
                   </div>
                   
-                  <div className={`flex items-center gap-1 ${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.DESCRIPTION_SMALL} mb-1`}>
-                    <MapPin className="w-3 h-3 flex-shrink-0" />
+                  <div className="flex items-center gap-1 text-[14px] text-gray-600 dark:text-gray-400 mb-1">
+                    <MapPin className="w-3 h-3 shrink-0" />
                     <span className="truncate">
                       {[hotel.location.province_city, hotel.location.soum, hotel.location.district]
                         .filter(Boolean)
@@ -325,7 +333,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         e.stopPropagation();
                         setShowMapModal(true);
                       }}
-                      className={`${SEARCH_DESIGN_SYSTEM.TYPOGRAPHY.LINK} whitespace-nowrap`}
+                      className="text-[14px] text-primary hover:underline whitespace-nowrap"
                     >
                       {t('hotel.viewOnMap', 'Газрын зураг дээр харах')}
                     </button>
@@ -336,29 +344,36 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
 
               {/* Room Info Section - Figma Design Style */}
               {cheapestPrice && cheapestRoom && (
-                <div className="mt-2 flex gap-2">
+                <div className="mt-auto pt-2 flex gap-2">
                   {/* Bordered frame matching Figma */}
-                  <div className="flex-1 min-w-0 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
+                  <div className="flex-1 min-w-0 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
                   {/* Room Type Header with Icons */}
                   <div className="flex items-start justify-between mb-1">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
+                        <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white">
                           {getRoomTypeName(cheapestRoom.room_type)}
                         </h4>
                         {/* Capacity Icons */}
                         <div className="flex items-center gap-1 shrink-0">
                           {renderPersonIcons(cheapestRoom.adultQty || 2, cheapestRoom.childQty || 0)}
-                          {cheapestRoom.bed_type && (
+                          {hotel.bed_types && hotel.bed_types.length > 0 ? (
+                            <>
+                              <span className="text-gray-300 mx-1">|</span>
+                              {hotel.bed_types.map(bt => (
+                                <BedTypeIcon key={bt.id} name={bt.name} className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                              ))}
+                            </>
+                          ) : cheapestRoom.bed_type ? (
                             <>
                               <span className="text-gray-300 mx-1">|</span>
                               {renderBedIcons(cheapestRoom.bed_type, 1)}
                             </>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                       {/* Room Category + size */}
-                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                      <p className="text-[14px] text-gray-600 dark:text-gray-400">
                         {getRoomCategoryName(cheapestRoom.room_category)}
                         {cheapestRoom.room_size && (
                           <> • {cheapestRoom.room_size}м²</>
@@ -371,13 +386,13 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                   <div className="space-y-0.5 mb-1.5">
 
                     {/* Cancellation / Breakfast Policy — green */}
-                    <p className="text-xs text-green-600 dark:text-green-500">
+                    <p className="text-[14px] text-green-600 dark:text-green-500">
                       {t('hotel.freeCancellationUntil', { date: '10/31' }, '10/31-нээс өмнө цуцлах боломжтой. (Цуцлалтын хураамжгүй)')}
                     </p>
 
                     {/* Availability Warning */}
                     {((roomAvailability !== null ? roomAvailability : availableRoomsWithPrice) > 0) && (
-                      <p className="text-xs font-medium text-red-500 dark:text-red-400">
+                      <p className="text-[14px] font-medium text-red-500 dark:text-red-400">
                         {t('hotel.onlyRoomsLeft', { count: roomAvailability !== null ? roomAvailability : availableRoomsWithPrice }, `Сүүлийн ${roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} өрөө үлдлээ.`)}
                       </p>
                     )}
@@ -388,7 +403,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                     <div className="flex flex-wrap gap-1">
                       {/* Room size pill */}
                       {cheapestRoom.room_size && (
-                        <span className="inline-flex items-center text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600">
+                        <span className="inline-flex items-center text-[14px] text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600">
                           {cheapestRoom.room_size}м²
                         </span>
                       )}
@@ -398,7 +413,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         return (
                           <span
                             key={getFacilityKey(facility, index)}
-                            className={`inline-flex items-center text-xs rounded px-2 py-0.5 border ${
+                            className={`inline-flex items-center text-[14px] rounded px-2 py-0.5 border ${
                               isBreakfast
                                 ? 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
                                 : 'text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
@@ -468,7 +483,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                   </div>{/* end bordered frame */}
 
                   {/* Pricing Section - Figma Style */}
-                  <div className="pt-1.5 pl-2.5 flex flex-col justify-between">
+                  <div className="pt-1.5 pl-2.5 flex flex-col justify-end">
                     {/* Price Info - Top Section */}
                     <div>
                       {pricingInfo.hasDiscount ? (
@@ -493,11 +508,6 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         </div>
                       )}
 
-                      {/* Price per night label */}
-                      <div className="text-xs text-gray-500 dark:text-gray-400 text-end mt-0.5">
-                        {t('hotel.pricePerNightShort', '1 шөнийн үнэ')}
-                      </div>
-
                       {/* Rooms x Nights — same font as room text (xs) */}
                       <div className="text-xs text-gray-500 dark:text-gray-400 text-end mt-2">
                         {rooms} {t('hotel.rooms', 'өрөө')} x {nights} {t('navigation.night', 'шөнө')}
@@ -512,6 +522,48 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                     <button className="bg-primary hover:bg-primary/90 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200 mt-2 w-full">
                       {t('hotel.selectRoom', 'Өрөө сонгох')}
                     </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Not available banner */}
+              {hotel.is_available === false && !cheapestPrice && (
+                <div className="mt-auto pt-2">
+                  <div className="rounded-lg border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/30 p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CalendarX className="w-4 h-4 text-orange-500 shrink-0" />
+                      <span className="text-[14px] font-medium text-orange-700 dark:text-orange-400">
+                        {t('hotel.notAvailableForDates', 'Сонгосон огноонд боломжгүй байна')}
+                      </span>
+                    </div>
+                    {hotel.next_available_date && (
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="text-[14px] text-gray-600 dark:text-gray-400">
+                          {t('hotel.nextAvailable', 'Дараагийн боломжит огноо')}:{' '}
+                          <span className="font-medium text-gray-800 dark:text-gray-200">
+                            {hotel.next_available_date.check_in} → {hotel.next_available_date.check_out}
+                          </span>
+                          {hotel.next_available_date.days_away === 1 ? (
+                            <span className="ml-1 text-[13px] text-gray-500 dark:text-gray-400">
+                              ({t('hotel.tomorrow', 'маргааш')})
+                            </span>
+                          ) : hotel.next_available_date.days_away > 1 ? (
+                            <span className="ml-1 text-[13px] text-gray-500 dark:text-gray-400">
+                              ({hotel.next_available_date.days_away} {t('hotel.daysLater', 'өдрийн дараа')})
+                            </span>
+                          ) : null}
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = buildNextAvailableUrl(hotel.next_available_date!);
+                          }}
+                          className="text-[14px] font-medium text-primary hover:underline whitespace-nowrap shrink-0"
+                        >
+                          {t('hotel.searchThisDate', 'Энэ огноонд хайх')}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -578,9 +630,9 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
             )}
           </div>
           
-          <div className={`flex items-center ${SEARCH_DESIGN_SYSTEM.COLORS.TEXT_SECONDARY} mb-1.5`}>
+          <div className="flex items-center text-[14px] text-gray-600 dark:text-gray-400 mb-1.5">
             <MapPin className="w-3 h-3 mr-1" />
-            <span className="text-xs line-clamp-1">
+            <span className="text-[14px] line-clamp-1">
               {[hotel.location.province_city, hotel.location.soum, hotel.location.district]
                 .filter(Boolean)
                 .join(', ')}
@@ -600,7 +652,32 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
 
           {/* Price - always at bottom with discount support */}
           <div className="mt-auto">
-            {hotel.cheapest_room && (
+            {hotel.is_available === false && !hotel.cheapest_room ? (
+              <div className="border-t border-orange-100 dark:border-orange-900 pt-1.5">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <CalendarX className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                  <span className="text-[13px] font-medium text-orange-700 dark:text-orange-400 line-clamp-1">
+                    {t('hotel.notAvailableForDates', 'Сонгосон огноонд боломжгүй')}
+                  </span>
+                </div>
+                {hotel.next_available_date && (
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-[12px] text-gray-500 dark:text-gray-400">
+                      {hotel.next_available_date.check_in}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = buildNextAvailableUrl(hotel.next_available_date!);
+                      }}
+                      className="text-[12px] font-medium text-primary hover:underline shrink-0"
+                    >
+                      {t('hotel.searchThisDate', 'Энэ огноонд хайх')}
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : hotel.cheapest_room ? (
                 <div className="border-t border-gray-100 dark:border-gray-700 pt-1.5">
                 <div className="flex items-end justify-between">
                   <div>
@@ -631,7 +708,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                   </button>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

@@ -44,10 +44,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 }
 
 // Hotel fetching function
-async function getHotelById(id: string): Promise<SearchHotelResult | null> {
+async function getHotelById(id: string, checkIn?: string, checkOut?: string): Promise<SearchHotelResult | null> {
   try {
     const hotelId = parseInt(id);
-    const hotel = await ApiService.getHotelDetails(hotelId) as SearchHotelResult;
+    const hotel = await ApiService.getHotelDetails(hotelId, checkIn, checkOut) as SearchHotelResult;
     return hotel;
   } catch (error) {
     return null;
@@ -103,7 +103,7 @@ async function HotelContent({ id, searchParams }: {
   id: string;
   searchParams?: { check_in?: string; check_out?: string; guests?: string };
 }) {
-  const hotel = await getHotelById(id);
+  const hotel = await getHotelById(id, searchParams?.check_in, searchParams?.check_out);
   
   if (!hotel) {
     notFound();

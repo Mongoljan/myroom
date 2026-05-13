@@ -129,7 +129,7 @@ export default function SearchFilters({
     return (
       <>
         <div className="space-y-4">
-          <h3 className="text-h3 font-semibold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('search.filtersSection.title')}</h3>
 
           {/* 1. Өмнөх хайлтууд */}
           {recentIndividualFilters.length > 0 && (
@@ -231,36 +231,41 @@ export default function SearchFilters({
                 const step = Math.max(1000, Math.round((priceBounds[1] - priceBounds[0]) / 100));
                 const fmt = (n: number) => '₮' + new Intl.NumberFormat('en-US').format(n);
                 const range = priceBounds[1] - priceBounds[0];
-                const leftPct = range > 0 ? ((minVal - priceBounds[0]) / range) * 100 : 0;
+                const leftPct  = range > 0 ? ((minVal - priceBounds[0]) / range) * 100 : 0;
                 const rightPct = range > 0 ? ((priceBounds[1] - maxVal) / range) * 100 : 0;
-                // When min thumb is pushed far right, bring it to top so user can drag it back left
-                const minZIndex = leftPct >= 90 ? 4 : 2;
-                const maxZIndex = leftPct >= 90 ? 2 : 4;
                 return (
                   <>
                     <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
                       <span>{fmt(minVal)}</span>
                       <span>{fmt(maxVal)}</span>
                     </div>
-                    <div className="relative h-5 flex items-center">
+                    {/*
+                      Dual-thumb range slider.
+                      The trick: each <input> covers only the HALF of the track it
+                      controls, so they never overlap and steal each other's clicks.
+                      Min input spans left-half, max input spans right-half.
+                      When they're close together we let both cover the full track
+                      but use z-index to prioritise the correct one.
+                    */}
+                    <div className="relative h-6 flex items-center select-none overflow-visible mx-2">
                       {/* Track background */}
                       <div className="absolute inset-x-0 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full" />
                       {/* Active fill between thumbs */}
                       <div
-                        className="absolute h-1.5 bg-primary rounded-full"
+                        className="absolute h-1.5 bg-primary rounded-full pointer-events-none"
                         style={{ left: `${leftPct}%`, right: `${rightPct}%` }}
                       />
                       {/* Visual min thumb */}
                       <div
                         className="absolute w-4 h-4 bg-white border-2 border-primary rounded-full shadow pointer-events-none -translate-x-1/2"
-                        style={{ left: `${leftPct}%`, zIndex: 1 }}
+                        style={{ left: `${leftPct}%`, zIndex: 3 }}
                       />
                       {/* Visual max thumb */}
                       <div
                         className="absolute w-4 h-4 bg-white border-2 border-primary rounded-full shadow pointer-events-none -translate-x-1/2"
-                        style={{ left: `${100 - rightPct}%`, zIndex: 1 }}
+                        style={{ left: `${100 - rightPct}%`, zIndex: 3 }}
                       />
-                      {/* Min handle input */}
+                      {/* Min handle — covers left portion up to midpoint between thumbs */}
                       <input
                         type="range"
                         min={priceBounds[0]}
@@ -279,10 +284,10 @@ export default function SearchFilters({
                           const val = Math.min(parseInt((e.target as HTMLInputElement).value, 10), maxVal - step);
                           updateFilters({ priceRange: [val, maxVal] });
                         }}
-                        className="absolute inset-0 w-full opacity-0 cursor-pointer"
-                        style={{ zIndex: minZIndex }}
+                        className="absolute inset-y-0 opacity-0 cursor-pointer appearance-none"
+                        style={{ left: 0, width: `${Math.max(leftPct + 4, 50)}%`, zIndex: 4 }}
                       />
-                      {/* Max handle input */}
+                      {/* Max handle — covers right portion from midpoint to end */}
                       <input
                         type="range"
                         min={priceBounds[0]}
@@ -301,8 +306,8 @@ export default function SearchFilters({
                           const val = Math.max(parseInt((e.target as HTMLInputElement).value, 10), minVal + step);
                           updateFilters({ priceRange: [minVal, val] });
                         }}
-                        className="absolute inset-0 w-full opacity-0 cursor-pointer"
-                        style={{ zIndex: maxZIndex }}
+                        className="absolute inset-y-0 opacity-0 cursor-pointer appearance-none"
+                        style={{ right: 0, width: `${Math.max(rightPct + 4, 50)}%`, zIndex: 4 }}
                       />
                     </div>
                   </>

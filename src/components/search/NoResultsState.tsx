@@ -37,14 +37,14 @@ export default function NoResultsState({ searchParams, onClearFilters }: NoResul
             >
               {t('filters.clearFilters')}
             </button>
-            <button
+            {/* <button
               onClick={() => {
                 window.location.href = '/';
               }}
               className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 transition-all duration-200"
             >
               {t('common.search')}
-            </button>
+            </button> */}
           </div>
 
           {/* Popular destinations suggestion */}

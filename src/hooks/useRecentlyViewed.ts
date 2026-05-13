@@ -10,6 +10,10 @@ export interface RecentlyViewedHotel {
 }
 
 const STORAGE_KEY = 'myroom_recently_viewed_hotels';
+// Bump this version whenever stored hotel shape changes (e.g. after removing mock data).
+// Stale data under an old version is discarded automatically.
+const STORAGE_VERSION = 2;
+const VERSION_KEY = 'myroom_recently_viewed_version';
 const MAX_RECENTLY_VIEWED = 8;
 
 export function useRecentlyViewed() {
@@ -18,6 +22,13 @@ export function useRecentlyViewed() {
   // Load from localStorage on mount
   useEffect(() => {
     try {
+      // Clear stale data from old versions (e.g. mock hotel data)
+      const storedVersion = parseInt(localStorage.getItem(VERSION_KEY) || '0');
+      if (storedVersion < STORAGE_VERSION) {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.setItem(VERSION_KEY, STORAGE_VERSION.toString());
+        return;
+      }
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
@@ -45,6 +56,7 @@ export function useRecentlyViewed() {
           .slice(0, MAX_RECENTLY_VIEWED);
 
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+        localStorage.setItem(VERSION_KEY, STORAGE_VERSION.toString());
         return updated;
       });
     } catch (error) {

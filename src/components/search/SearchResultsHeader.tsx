@@ -115,7 +115,7 @@ export default function SearchResultsHeader({
 
 </div>
           {/* Controls Row - Trip.com style */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 items-end">
             {/* Sort Dropdown - Top Row */}
             <div className="flex items-center">
               <div className="relative">

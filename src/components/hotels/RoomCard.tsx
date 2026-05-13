@@ -279,9 +279,9 @@ export default function RoomCard({
               ))}
             </select>
 
-            {remainingQuantity > 0 && remainingQuantity <= 3 && (
-              <p className="text-[11px] text-orange-600 mt-1.5 font-medium">
-                {t('roomCard.onlyLeft', { count: remainingQuantity, defaultValue: 'Зөвхөн {{count}} өрөө үлдсэн' })}
+            {room.rooms_possible > 0 && (
+              <p className={`text-[11px] mt-1.5 font-medium ${room.rooms_possible <= 3 ? 'text-orange-600' : 'text-gray-500 dark:text-gray-400'}`}>
+                {t('roomCard.roomsAvailable', { count: room.rooms_possible, defaultValue: '{{count}} өрөө боломжтой' })}
               </p>
             )}
           </div>

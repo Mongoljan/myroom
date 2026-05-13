@@ -81,7 +81,7 @@ export default function SectionHotelCard({
     >
       <Link
         href={`/hotel/${id}`}
-        className="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:shadow-lg block h-full"
+        className="group bg-white dark:bg-gray-800 rounded-lg overflow-hidden transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:shadow-lg block"
       >
         {/* Hotel Image - Fixed dimensions for consistent sizing */}
           <div className="relative w-full h-[180px] overflow-hidden bg-gray-100 dark:bg-gray-700">

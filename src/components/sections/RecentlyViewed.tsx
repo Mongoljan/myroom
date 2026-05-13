@@ -52,17 +52,21 @@ export default function RecentlyViewed() {
     } else {
       setRecentHotels(recentlyViewed.map((item) => {
         const hotel = item.hotel;
+        // Extract numeric star count robustly: "2 stars" → 2
+        const starMatch = hotel.rating_stars?.value?.match(/(\d+)/);
+        const starCount = starMatch ? parseInt(starMatch[1]) : 0;
         return {
           id: item.id,
           name: hotel.property_name,
           location: hotel.location?.province_city && hotel.location?.soum
             ? `${hotel.location.province_city}, ${hotel.location.soum}`
             : hotel.location?.province_city || t('common.locationUnknown', 'Location unknown'),
-          rating: parseFloat(hotel.rating_stars?.value) || 0,
-          price: hotel.cheapest_room?.price_per_night || 0,
+          // No guest review score in search API — star classification only
+          rating: 0,
+          price: hotel.cheapest_room?.price_per_night_final ?? hotel.cheapest_room?.price_per_night_raw ?? 0,
           image: getHotelImage(hotel),
-          rating_label: hotel.rating_stars?.label || t('hotel.rating', 'Rating'),
-          stars: parseInt(hotel.rating_stars?.value) || 0,
+          rating_label: hotel.rating_stars?.label || '',
+          stars: starCount,
           viewedAt: item.viewedAt,
         };
       }));

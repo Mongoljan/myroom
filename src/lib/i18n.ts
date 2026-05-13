@@ -1992,7 +1992,7 @@ const resources = {
         good: "Дунд зэрэг",
         fair: "Хангалттай",
         poor: "Муу",
-        recentlyViewed: "Саяхан үзсэн зочид буудлууд",
+        recentlyViewed: "Сүүлд үзсэн",
         recentlyViewedDesc: "Таны саяхан үзсэн зочид буудлууд",
         viewAllRecent: "Бүх саяхны үзсэн зочид буудлыг үзэх",
         recommended: "Санал болгох",

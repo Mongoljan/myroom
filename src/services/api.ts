@@ -266,72 +266,88 @@ export class ApiService {
 
   // Removed hardcoded mock hotel data - using real API only
 
-  // Get hotel details - using search API with specific hotel ID
-  static async getHotelDetails(hotelId: number) {
-    try {
-      // Use search API with name_id to get specific hotel details
-      const searchResult = await this.searchHotels({
-        name_id: hotelId,
-        check_in: new Date().toISOString().split('T')[0], // Today
-        check_out: new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0], // Tomorrow
-        adults: 2,
-        children: 0,
-        rooms: 1,
-        acc_type: 'hotel'
-      });
-      
-      if (searchResult.results && searchResult.results.length > 0) {
-        return searchResult.results[0]; // Return the first (and likely only) result
-      } else {
-        throw new Error(`Hotel with ID ${hotelId} not found`);
-      }
-    } catch (error) {
-      // Fallback to mock data if API fails
-      return this.getHotelDetailsMock(hotelId);
+  // Get hotel details - using search API with specific hotel ID.
+  // Tries the given dates first, then falls back to future windows.
+  // If the search API never returns the hotel (e.g. no availability configured),
+  // falls back to building a minimal SearchHotelResult from property endpoints
+  // so the hotel page can still render.
+  static async getHotelDetails(hotelId: number, checkIn?: string, checkOut?: string) {
+    const today = new Date();
+    const fmt = (d: Date) => d.toISOString().split('T')[0];
+
+    // Build a list of date windows to try: requested dates first, then fallbacks
+    const windows: Array<[string, string]> = [];
+    if (checkIn && checkOut) windows.push([checkIn, checkOut]);
+    for (const offset of [0, 29, 59, 89]) {
+      const start = new Date(today);
+      start.setDate(start.getDate() + offset);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 1);
+      windows.push([fmt(start), fmt(end)]);
     }
-  }
-  
-  // Fallback mock data method
-  private static getHotelDetailsMock(hotelId: number) {
-    return {
-      hotel_id: hotelId,
-      property_name: hotelId === 1 ? 'Grand Hotel Ulaanbaatar' : 'Blue Sky Hotel',
-      location: {
-        province_city: 'Ulaanbaatar',
-        soum: hotelId === 1 ? 'Chingeltei' : 'Sukhbaatar',
-        district: `District ${hotelId}`
-      },
-      images: {
-        cover: {
-          url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-          description: 'Hotel exterior'
+
+    for (const [ci, co] of windows) {
+      try {
+        const result = await this.searchHotels({
+          name_id: hotelId,
+          check_in: ci,
+          check_out: co,
+          adults: 2,
+          children: 0,
+          rooms: 1,
+          acc_type: 'hotel'
+        });
+        if (result.results && result.results.length > 0) {
+          return result.results[0];
+        }
+      } catch {
+        // try next window
+      }
+    }
+
+    // Search API has no availability for this hotel across all windows.
+    // Build a SearchHotelResult from the property-level endpoints instead.
+    try {
+      const [basicInfoArr, detailsArr, imagesArr] = await Promise.all([
+        this.getPropertyBasicInfo(hotelId).catch(() => [] as PropertyBasicInfo[]),
+        this.getPropertyDetails(hotelId).catch(() => [] as PropertyDetails[]),
+        this.getPropertyImages(hotelId).catch(() => [] as PropertyImage[]),
+      ]);
+
+      const basicInfo = basicInfoArr[0];
+      const details = detailsArr[0];
+      if (!basicInfo) return null; // Hotel truly doesn't exist
+
+      const coverImage = imagesArr.find(img => img.is_profile) ?? imagesArr[0];
+      const gallery = imagesArr
+        .filter(img => img !== coverImage)
+        .map(img => ({ url: img.image, description: img.description }));
+
+      const starValue = basicInfo.star_rating;
+      const starLabel = `${starValue} star${starValue !== 1 ? 's' : ''}`;
+
+      return {
+        hotel_id: hotelId,
+        property_name: basicInfo.property_name_mn || basicInfo.property_name_en,
+        property_name_en: basicInfo.property_name_en,
+        location: { province_city: null, soum: null, district: null },
+        nights: 1,
+        rooms_possible: basicInfo.available_rooms,
+        cheapest_room: null,
+        min_estimated_total: 0,
+        images: {
+          cover: coverImage ? coverImage.image : '',
+          gallery,
         },
-        gallery: [
-          {
-            url: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800',
-            description: 'Hotel exterior'
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800',
-            description: 'Hotel room'
-          },
-          {
-            url: 'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800',
-            description: 'Hotel lobby'
-          }
-        ]
-      },
-      rating_stars: {
-        id: hotelId,
-        label: hotelId === 1 ? '4 Star Hotel' : '5 Star Hotel',
-        value: hotelId === 1 ? '4' : '5'
-      },
-      google_map: '',
-      general_facilities: hotelId === 1 
-        ? ['Free WiFi', 'Restaurant', 'Room Service', 'Parking', 'Fitness Center']
-        : ['Free WiFi', 'Restaurant', 'Spa', 'Pool', 'Concierge'],
-      description: `Experience luxury and comfort at ${hotelId === 1 ? 'Grand Hotel Ulaanbaatar' : 'Blue Sky Hotel'}. Located in the heart of Ulaanbaatar, we offer world-class amenities and exceptional service.`
-    };
+        rating_stars: { id: starValue, value: `${starValue} star`, label: starLabel },
+        google_map: details?.google_map ?? '',
+        general_facilities: details?.general_facilities ?? [],
+        additional_facilities: details?.additional_facilities ?? [],
+        has_active_commission: false,
+      };
+    } catch {
+      return null;
+    }
   }
 
   // Get rooms for a specific hotel

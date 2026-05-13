@@ -178,7 +178,7 @@ export default function HotelImageGallery({
         >
           {hasImages ? (
             <button
-              className="relative w-full h-full block"
+              className="absolute inset-0 w-full h-full block"
               onClick={handleImageClick}
             >
               <Image
@@ -186,7 +186,7 @@ export default function HotelImageGallery({
                 alt={displayImages[displaySafeIndex]?.description || hotelName}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
-                sizes="240px"
+                sizes="260px"
                 unoptimized
                 onError={() => markError(displaySafeIndex)}
               />

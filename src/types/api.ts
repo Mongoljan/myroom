@@ -364,13 +364,22 @@ export interface FacilityObject {
 
 export type HotelFacility = string | FacilityObject;
 
+export interface NextAvailableDate {
+  check_in: string;
+  check_out: string;
+  days_away: number;
+}
+
 export interface SearchHotelResult {
   hotel_id: number;
   property_name: string;
   property_name_en: string;
+  property_type?: string | { id: number; name_en: string; name_mn: string };
   location: HotelLocation;
   nights: number;
   rooms_possible: number;
+  is_available: boolean;
+  next_available_date?: NextAvailableDate | null;
   cheapest_room: CheapestRoom | null;
   min_estimated_total: number;
   images: HotelImages;
@@ -380,8 +389,6 @@ export interface SearchHotelResult {
   additional_facilities?: HotelFacility[];
   activities?: HotelFacility[];
   accessibility_features?: HotelFacility[];
-  /** Now returned as an object from the search API */
-  property_type?: string | { id: number; name_en: string; name_mn: string };
   /** Bed types available in this hotel's rooms */
   bed_types?: Array<{ id: number; name: string }>;
   has_active_commission: boolean;
@@ -549,6 +556,18 @@ export interface SuggestedRoomImage {
   description: string;
 }
 
+export interface SuggestedBedDetail {
+  id: number;
+  name: string;
+  quantity: number;
+}
+
+export interface SuggestedGalleryImage {
+  url: string;
+  description: string;
+  is_profile: boolean;
+}
+
 export interface SuggestedCheapestRoom {
   id: number;
   hotel: number;
@@ -556,15 +575,16 @@ export interface SuggestedCheapestRoom {
   room_type: number;
   room_category: number;
   room_size: string;
-  bed_type: number;
+  bed_type?: number;
+  bed_details?: SuggestedBedDetail[];
   is_Bathroom: boolean;
-  room_Facilities: number[];
-  bathroom_Items: number[];
-  free_Toiletries: number[];
-  food_And_Drink: number[];
+  room_Facilities: Array<{ id: number; name_en: string; name_mn: string } | number>;
+  bathroom_Items: Array<{ id: number; name_en: string; name_mn: string } | number>;
+  free_Toiletries: Array<{ id: number; name_en: string; name_mn: string } | number>;
+  food_And_Drink: Array<{ id: number; name_en: string; name_mn: string } | number>;
+  outdoor_And_View: Array<{ id: number; name_en: string; name_mn: string } | number>;
   adultQty: number;
   childQty: number;
-  outdoor_And_View: number[];
   number_of_rooms: number;
   number_of_rooms_to_sell: number;
   room_Description: string;
@@ -576,11 +596,31 @@ export interface SuggestedCheapestRoom {
   half_day_price: number | null;
   breakfast_include_price: number | null;
   final_price: number;
+  breakfast_price?: number;
+  price_with_breakfast?: number;
+  final_price_after_commission?: number;
+  commission?: {
+    hotel_discount_percent: number;
+    hotel_discount_amount: number;
+    platform_markup_percent: number;
+    platform_markup_amount: number;
+  };
 }
 
 export interface SuggestedHotel {
   hotel: SuggestedHotelInfo;
   cheapest_room: SuggestedCheapestRoom;
+  images?: {
+    cover: string;
+    gallery: SuggestedGalleryImage[];
+  };
+  rating_stars?: { id: number; label: string; value: string };
+  google_map?: string;
+  general_facilities?: HotelFacility[];
+  additional_facilities?: HotelFacility[];
+  activities?: HotelFacility[];
+  accessibility_features?: HotelFacility[];
+  has_active_commission?: boolean;
 }
 
 export interface SuggestedHotelsResponse {

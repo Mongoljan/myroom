@@ -523,7 +523,7 @@ export default function SearchResults() {
       <div className="h-screen flex flex-col overflow-hidden">
         <SearchHeader />
         <div className="flex-1 min-h-0 overflow-hidden">
-          <div className="h-full max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-3 flex flex-col">
+          <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col">
             <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 overflow-hidden">
 
               {/* Sidebar skeleton */}
@@ -620,7 +620,7 @@ export default function SearchResults() {
 
       {/* Main Results Container — fills remaining height */}
       <div className="flex-1 min-h-0 overflow-hidden">
-        <div className="h-full max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-3 flex flex-col">
+        <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col">
           <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 overflow-hidden">
             {/* Sidebar - Desktop only, independently scrollable */}
             <div className="hidden lg:flex lg:flex-col lg:w-80 shrink-0 min-h-0">
