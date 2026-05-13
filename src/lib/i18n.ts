@@ -2023,8 +2023,8 @@ const resources = {
         night: "шөнө",
         nights: "шөнө",
         viewDeal: "Өртөг харах",
-        noResults: "Зочид буудал олдсонгүй",
-        noResultsMessage: "Таны хайлтын шалгуурт тохирох зочид буудал олдсонгүй. Хайлтын нөхцөлөө өөрчилж үзээрэй.",
+        noResults: "Шүүлтүүрт тохирох хайлт олдсонгүй",
+        noResultsMessage: "Шүүлтүүрийг цэвэрлээд, өөрөөр хайгаад үзэх үү?",
         hotelFound: "зочид буудал олдлоо",
         hotelsFound: "зочид буудал олдлоо",
         forYourSearch: "таны хайлтаар",
@@ -2108,7 +2108,7 @@ const resources = {
           ratingHighToLow: "Үнэлгээ: өндөрөөс нам"
         },
         searchByName: "Нэрээр хайх",
-        searchByNamePlaceholder: "Зочид буудлын нэр оруулах...",
+        searchByNamePlaceholder: "Зочид буудлын нэр оруулах",
         pagination: {
           resultsText: "{{start}}-{{end}} нийт {{total}} буудлын үр дүн",
           previous: "Өмнөх",
@@ -2232,7 +2232,7 @@ const resources = {
         location: "Байршил",
         deals: "Тусгай санал",
         applyFilters: "Шүүлтүүр хэрэглэх",
-        clearFilters: "Бүх шүүлтүүрийг арилгах",
+        clearFilters: "Тэгье, цэвэрлэе",
         categories: {
           budget: "Хямд",
           midRange: "Дунд зэрэглэл",

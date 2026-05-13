@@ -42,6 +42,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
   const locationRef = useRef<HTMLDivElement>(null);
   const locationInputRef = useRef<HTMLInputElement>(null);
   const locationDropdownRef = useRef<HTMLDivElement>(null);
+  const dateContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -277,7 +278,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
               </div>
 
               {/* Date Range Picker */}
-              <div className={`lg:flex-1 ${compact ? 'p-1.5' : 'p-5'} w-full`}>
+              <div ref={dateContainerRef} className={`lg:flex-1 ${compact ? 'p-1.5' : 'p-5'} w-full`}>
                 <div className={`flex items-center ${compact ? '' : 'gap-4'}`}>
                   <Calendar className={`${compact ? 'w-4 h-4 mr-2 text-gray-700' : 'w-6 h-6 text-slate-900'} dark:text-gray-300 shrink-0`} />
                   <div className="flex-1 min-w-0">
@@ -295,6 +296,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
                         placeholder={t('search.selectDates')}
                         minimal={true}
                         onOpenChange={onSearchActiveChange}
+                        anchorRef={dateContainerRef}
                       />
                     </div>
                   </div>

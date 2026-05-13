@@ -282,20 +282,21 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                 images={hotel.images}
                 hotelName={hotel.property_name}
                 hotelId={hotel.hotel_id}
+                hotelUrl={buildHotelUrl()}
                 viewMode="list"
                 className="w-full h-full"
               />
 
               {/* Discount Badge - Top Left (Trip.com Style) */}
               {pricingInfo.hasDiscount && (
-                <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                <div className="absolute top-2.5 left-2.5 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                   {Math.round(pricingInfo.discountPercent)}% off
                 </div>
               )}
             </div>
 
             {/* Hotel Details - Compact */}
-            <div className="flex-1 p-2 min-w-0">
+            <div className="flex-1 pt-2 px-2 pb-12 min-w-0">
               <div className="flex justify-between items-start mb-1">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
@@ -335,17 +336,18 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
 
               {/* Room Info Section - Figma Design Style */}
               {cheapestPrice && cheapestRoom && (
-                <div className="mt-3 flex ">
-                  <div className="flex-2  rounded-md ">
+                <div className="mt-2 flex gap-2">
+                  {/* Bordered frame matching Figma */}
+                  <div className="flex-1 min-w-0 rounded-lg border border-gray-200 dark:border-gray-700 p-2">
                   {/* Room Type Header with Icons */}
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-start justify-between mb-1">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
                           {getRoomTypeName(cheapestRoom.room_type)}
                         </h4>
                         {/* Capacity Icons */}
-                        <div className="flex items-center gap-1 flex-shrink-0">
+                        <div className="flex items-center gap-1 shrink-0">
                           {renderPersonIcons(cheapestRoom.adultQty || 2, cheapestRoom.childQty || 0)}
                           {cheapestRoom.bed_type && (
                             <>
@@ -355,8 +357,8 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                           )}
                         </div>
                       </div>
-                      {/* Room Category */}
-                      <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                      {/* Room Category + size */}
+                      <p className="text-xs text-gray-600 dark:text-gray-400">
                         {getRoomCategoryName(cheapestRoom.room_category)}
                         {cheapestRoom.room_size && (
                           <> • {cheapestRoom.room_size}м²</>
@@ -368,36 +370,53 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                   {/* Room Details */}
                   <div className="space-y-0.5 mb-1.5">
 
-                    {/* Cancellation Policy */}
-                    <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                    {/* Cancellation / Breakfast Policy — green */}
+                    <p className="text-xs text-green-600 dark:text-green-500">
                       {t('hotel.freeCancellationUntil', { date: '10/31' }, '10/31-нээс өмнө цуцлах боломжтой. (Цуцлалтын хураамжгүй)')}
                     </p>
 
                     {/* Availability Warning */}
                     {((roomAvailability !== null ? roomAvailability : availableRoomsWithPrice) > 0) && (
-                      <p className="text-xs font-medium truncate">
+                      <p className="text-xs font-medium text-red-500 dark:text-red-400">
                         {t('hotel.onlyRoomsLeft', { count: roomAvailability !== null ? roomAvailability : availableRoomsWithPrice }, `Сүүлийн ${roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} өрөө үлдлээ.`)}
                       </p>
                     )}
                   </div>
 
-                  {/* Facility Tags */}
+                  {/* Facility Tags — room size first, then up to 4 highlights; breakfast = green */}
                   <div className="mb-1.5">
-                    <div className="flex flex-wrap gap-1 max-h-[28px] overflow-hidden">
-                      {hotel.general_facilities.slice(0, 3).map((facility, index) => (
-                        <span key={getFacilityKey(facility, index)} className="inline-flex items-center text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 truncate max-w-[120px]">
-                          {getFacilityName(facility)}
+                    <div className="flex flex-wrap gap-1">
+                      {/* Room size pill */}
+                      {cheapestRoom.room_size && (
+                        <span className="inline-flex items-center text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600">
+                          {cheapestRoom.room_size}м²
                         </span>
-                      ))}
-                      {hotel.general_facilities.length > 3 && (
+                      )}
+                      {hotel.general_facilities.slice(0, 4).map((facility, index) => {
+                        const name = getFacilityName(facility);
+                        const isBreakfast = /цай|breakfast/i.test(name);
+                        return (
+                          <span
+                            key={getFacilityKey(facility, index)}
+                            className={`inline-flex items-center text-xs rounded px-2 py-0.5 border ${
+                              isBreakfast
+                                ? 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
+                                : 'text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                            }`}
+                          >
+                            {name}
+                          </span>
+                        );
+                      })}
+                      {hotel.general_facilities.length > 4 && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setShowAllFacilities(true);
                           }}
-                          className="inline-flex items-center text-xs text-primary bg-slate-50 dark:bg-gray-700 hover:bg-slate-100 dark:hover:bg-gray-600 hover:underline rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 transition-all flex-shrink-0"
+                          className="inline-flex items-center text-xs text-primary bg-slate-50 dark:bg-gray-700 hover:bg-slate-100 dark:hover:bg-gray-600 hover:underline rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 transition-all shrink-0"
                         >
-                          +{hotel.general_facilities.length - 3}
+                          +{hotel.general_facilities.length - 4}
                         </button>
                       )}
                     </div>
@@ -446,7 +465,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                       document.body
                     )}
                   </div>
-                  </div>
+                  </div>{/* end bordered frame */}
 
                   {/* Pricing Section - Figma Style */}
                   <div className="pt-1.5 pl-2.5 flex flex-col justify-between">
@@ -455,21 +474,21 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                       {pricingInfo.hasDiscount ? (
                         <div>
                           <div className="flex justify-end gap-1.5">
-                            {/* Original Price Per Night - Strikethrough */}
-                            <div className="text-lg text-gray-500 dark:text-gray-400 line-through my-auto">
+                            {/* Original Price — same font size as room text, strikethrough */}
+                            <div className="text-sm text-gray-500 dark:text-gray-400 line-through my-auto">
                               {formatPrice(pricingInfo.originalPricePerNight)} ₮
                             </div>
                             <div className="bg-red-500 w-auto text-xs text-white text-center content-center font-bold px-1 py-[1px] rounded">
                               -{Math.round(pricingInfo.discountPercent)}%
                             </div>
                           </div>
-                          {/* Discounted Price Per Night - Bold */}
-                          <div className="text-h2 font-bold text-gray-900 dark:text-white text-end">
+                          {/* Discounted Price Per Night — 2 sizes larger than hotel name (h3=17px → 24px) */}
+                          <div className="text-2xl font-bold text-gray-900 dark:text-white text-end">
                             {formatPrice(pricingInfo.pricePerNight)} ₮
                           </div>
                         </div>
                       ) : (
-                        <div className="text-h2 font-bold text-gray-900 dark:text-white text-end">
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white text-end">
                           {formatPrice(pricingInfo.pricePerNight)} ₮
                         </div>
                       )}
@@ -479,12 +498,12 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         {t('hotel.pricePerNightShort', '1 шөнийн үнэ')}
                       </div>
 
-                      {/* Rooms x Nights */}
-                      <div className="text-sm text-gray-500 dark:text-gray-400 text-end mt-2">
+                      {/* Rooms x Nights — same font as room text (xs) */}
+                      <div className="text-xs text-gray-500 dark:text-gray-400 text-end mt-2">
                         {rooms} {t('hotel.rooms', 'өрөө')} x {nights} {t('navigation.night', 'шөнө')}
                       </div>
-                      {/* Total Price */}
-                      <div className="text-sm text-gray-500 dark:text-gray-400 text-end">
+                      {/* Total Price — same font as room text (xs) */}
+                      <div className="text-xs text-gray-500 dark:text-gray-400 text-end">
                         {t('hotel.totalPrice', 'Нийт үнэ')}: {formatPrice(pricingInfo.discountedPrice)} ₮
                       </div>
                     </div>

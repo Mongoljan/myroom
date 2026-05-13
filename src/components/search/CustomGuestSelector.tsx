@@ -277,7 +277,7 @@ export default function CustomGuestSelector({
                   {childAges.map((age, idx) => (
                     <div key={idx} className="flex items-center justify-between gap-2">
                       <label className="text-sm text-gray-700 dark:text-gray-300 shrink-0">
-                        {idx + 1}-р хүүхэд
+                        Хүүхэд {idx + 1}
                       </label>
                       <select
                         value={age === -1 ? '' : age}

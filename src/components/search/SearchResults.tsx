@@ -429,6 +429,13 @@ export default function SearchResults() {
     setFilteredHotels(filtered);
   };
 
+  const clearAllFilters = () => handleFilterChange({
+    propertyTypes: [], roomFeatures: [], generalServices: [], starRating: [],
+    outdoorAreas: [], accessibilityFeatures: [], discounted: false,
+    priceRange: [0, 99_000_000], facilities: [], roomTypes: [],
+    neighbourhood: [], landmark: [], bedTypes: [], roomFacilities: [],
+  });
+
   // Handle name search
   const handleSearchByName = useCallback((query: string) => {
     setNameSearchQuery(query);
@@ -725,13 +732,6 @@ export default function SearchResults() {
 
                 if (chips.length === 0) return null;
 
-                const clearAll = () => handleFilterChange({
-                  propertyTypes: [], roomFeatures: [], generalServices: [], starRating: [],
-                  outdoorAreas: [], accessibilityFeatures: [], discounted: false,
-                  priceRange: [0, 99_000_000], facilities: [], roomTypes: [],
-                  neighbourhood: [], landmark: [], bedTypes: [], roomFacilities: [],
-                });
-
                 return (
                   <div className="flex flex-wrap gap-1.5 mb-3">
                     {chips.map((chip, i) => (
@@ -746,7 +746,7 @@ export default function SearchResults() {
                       </span>
                     ))}
                     <button
-                      onClick={clearAll}
+                      onClick={clearAllFilters}
                       className="text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 underline self-center"
                     >
                       {t('search.filtersSection.clearAll') || 'Clear all'}
@@ -803,7 +803,7 @@ export default function SearchResults() {
                   <PaginationControls totalResults={filteredHotels.length} />
                 </>
               ) : (
-                <NoResultsState searchParams={searchParams} />
+                <NoResultsState searchParams={searchParams} onClearFilters={clearAllFilters} />
               )}
               </div>{/* end scrollable hotel cards */}
             </div>{/* end main content column */}

@@ -13,6 +13,7 @@ interface HotelImageGalleryProps {
   images: HotelImages;
   hotelName: string;
   hotelId?: number;
+  hotelUrl?: string;
   viewMode: 'list' | 'grid';
   className?: string;
   profileImageUrl?: string;
@@ -22,6 +23,7 @@ export default function HotelImageGallery({
   images,
   hotelName,
   hotelId,
+  hotelUrl,
   viewMode,
   className = "",
   profileImageUrl,
@@ -140,11 +142,34 @@ export default function HotelImageGallery({
   );
 
   // ════════════════════════════════════════════════════════════════════════
-  // LIST VIEW — single image + carousel arrows
+  // LIST VIEW — carousel with max 5 images, dot indicators, hotel-page nav
   // The parent (BookingStyleHotelCard) constrains the box size (w-60 h-[240px]),
   // so we must NOT add our own height or aspectRatio here.
   // ════════════════════════════════════════════════════════════════════════
   if (viewMode === 'list') {
+    const displayImages = validImages.slice(0, 5);
+    const totalCount = normalizedImages.length;
+    const displaySafeIndex = Math.min(currentImageIndex, Math.max(0, displayImages.length - 1));
+    const hasMultipleDisplay = displayImages.length > 1;
+
+    const nextDisplay = (e?: React.MouseEvent) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      setCurrentImageIndex((prev) => (prev + 1) % displayImages.length);
+    };
+    const prevDisplay = (e?: React.MouseEvent) => {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      setCurrentImageIndex((prev) => prev === 0 ? displayImages.length - 1 : prev - 1);
+    };
+    const handleImageClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (hotelUrl) {
+        window.open(hotelUrl, '_blank');
+      } else {
+        openModalAt(displaySafeIndex);
+      }
+    };
+
     return (
       <>
         <div
@@ -154,45 +179,62 @@ export default function HotelImageGallery({
           {hasImages ? (
             <button
               className="relative w-full h-full block"
-              onClick={(e) => openModalAt(safeIndex, e)}
+              onClick={handleImageClick}
             >
               <Image
-                src={validImages[safeIndex].url}
-                alt={validImages[safeIndex].description || hotelName}
+                src={displayImages[displaySafeIndex]?.url ?? ''}
+                alt={displayImages[displaySafeIndex]?.description || hotelName}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="240px"
                 unoptimized
-                onError={() => markError(safeIndex)}
+                onError={() => markError(displaySafeIndex)}
               />
             </button>
           ) : Placeholder}
 
           {hasImages && (
-            <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/25 via-transparent to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent" />
           )}
 
-          {/* Counter badge — right side to avoid clashing with discount badge on left */}
-          {hasMultipleImages && (
+          {/* Total count badge — top right, only if more than 5 images */}
+          {totalCount > 5 && (
             <div className="absolute top-2.5 right-2.5 z-10 bg-black/60 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-              {safeIndex + 1} / {validImages.length}
+              +{totalCount - 5}
             </div>
           )}
 
           {WishlistBtn}
-          {hasImages && ViewPhotosBtn}
+
+          {/* Dot indicators — replace "view photos" button */}
+          {hasMultipleDisplay && (
+            <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 pointer-events-auto">
+              {displayImages.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentImageIndex(i); }}
+                  className={`rounded-full transition-all duration-200 ${
+                    i === displaySafeIndex
+                      ? 'w-3.5 h-1.5 bg-white shadow-sm'
+                      : 'w-1.5 h-1.5 bg-white/60 hover:bg-white/85'
+                  }`}
+                  aria-label={`Зураг ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Prev / Next — reveal on hover */}
-          {hasMultipleImages && (
+          {hasMultipleDisplay && (
             <div className="absolute inset-0 flex items-center justify-between px-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
               <button
-                onClick={prevImage}
+                onClick={prevDisplay}
                 className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-md transition-colors pointer-events-auto"
               >
                 <ChevronLeft className="w-4 h-4 text-slate-700 dark:text-slate-300" />
               </button>
               <button
-                onClick={nextImage}
+                onClick={nextDisplay}
                 className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-md transition-colors pointer-events-auto"
               >
                 <ChevronRight className="w-4 h-4 text-slate-700 dark:text-slate-300" />

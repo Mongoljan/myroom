@@ -183,8 +183,7 @@ export default function RecommendedHotels() {
               <button
                 key={tab.key}
                 onClick={() => handleTabChange(tab.key)}
-                className={`relative flex-1 px-2 py-2.5 text-sm font-medium text-center whitespace-nowrap transition-colors duration-200
-                  ${idx > 0 ? 'border-l border-gray-200 dark:border-gray-700' : ''}
+                className={`relative flex-1 px-2 py-4 text-sm font-medium text-center whitespace-nowrap transition-colors duration-200
                   ${activeTab === tab.key
                     ? 'text-primary dark:text-primary bg-white dark:bg-gray-900'
                     : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-900'

@@ -150,7 +150,7 @@ export default function HelpPageContent() {
             transition={{ duration: 0.5 }}
             className="text-center mb-6"
           >
-            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1">
+            <h2 className="text-h2  flex justify-start font-semibold text-gray-900 dark:text-white mb-1">
               Түгээмэл асуултууд
             </h2>
             <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>

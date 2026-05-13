@@ -1,42 +1,38 @@
 'use client';
 
-import { MapPin } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface NoResultsStateProps {
   searchParams: URLSearchParams;
+  onClearFilters?: () => void;
 }
 
-export default function NoResultsState({ searchParams }: NoResultsStateProps) {
+export default function NoResultsState({ searchParams, onClearFilters }: NoResultsStateProps) {
   const { t } = useHydratedTranslation();
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-16 text-center">
       <div className="max-w-lg mx-auto">
         <div className="relative mb-8">
           <div className="w-24 h-24 bg-gradient-to-br from-slate-100 dark:from-slate-700 to-slate-200 dark:to-slate-600 rounded-full flex items-center justify-center mx-auto mb-4">
-            <MapPin className="w-12 h-12 text-primary" />
+            <Search className="w-12 h-12 text-primary" />
           </div>
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-slate-50 dark:bg-slate-800 rounded-full -z-10 animate-pulse"></div>
         </div>
 
-        <h3 className="text-h1 font-bold text-gray-900 dark:text-white mb-4">
+        <h3 className="text-h1 font-bold text-gray-900 dark:text-white ">
           {t('hotel.noResults')}
         </h3>
 
-        <p className="text-gray-800 dark:text-gray-300 mb-2 text-lg leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-300 mb-8  leading-relaxed">
           {t('hotel.noResultsMessage')}
         </p>
 
-        <p className="text-gray-900 dark:text-gray-200 mb-8">
-          {t('search.tryAnotherKeyword')}
-        </p>
 
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
-              onClick={() => {
-                // Clear filters functionality
-              }}
+              onClick={onClearFilters}
               className="px-6 py-3 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition-all duration-200"
             >
               {t('filters.clearFilters')}

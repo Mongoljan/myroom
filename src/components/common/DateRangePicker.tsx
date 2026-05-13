@@ -13,6 +13,8 @@ interface DateRangePickerProps {
   label?: string | React.ReactNode;
   minimal?: boolean; // For hero section - removes border, padding, and calendar icon
   onOpenChange?: (open: boolean) => void;
+  /** Optional container ref to anchor modal position to instead of the internal button */
+  anchorRef?: React.RefObject<HTMLElement | null>;
 }
 
 interface CalendarDay {
@@ -29,12 +31,13 @@ export default function DateRangePicker({
   label,
   minimal = false,
   onOpenChange,
+  anchorRef,
 }: DateRangePickerProps) {
   const { t } = useHydratedTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [hoverDate, setHoverDate] = useState<Date | null>(null);
-  const [modalPosition, setModalPosition] = useState({ top: 0, right: 0 });
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const pickerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -66,13 +69,23 @@ export default function DateRangePicker({
 
   // Calculate modal position when opening
   useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const buttonRect = buttonRef.current.getBoundingClientRect();
+    // Use anchorRef (section container) when provided, fall back to buttonRef
+    const el = anchorRef?.current ?? buttonRef.current;
+    if (isOpen && el) {
+      const rect = el.getBoundingClientRect();
+      const modalWidth = 560;
+      const padding = 8;
+      let left = rect.left;
+      if (left + modalWidth > window.innerWidth - padding) {
+        left = window.innerWidth - modalWidth - padding;
+      }
+      if (left < padding) left = padding;
       setModalPosition({
-        top: buttonRect.bottom + 8, // 8px margin
-        right: window.innerWidth - buttonRect.right
+        top: rect.bottom + 8,
+        left,
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   // Close picker when clicking outside
@@ -412,7 +425,7 @@ export default function DateRangePicker({
           className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl z-[100000] p-4 w-[560px] max-w-[95vw]" 
           style={{ 
             top: Math.max(8, modalPosition.top), 
-            right: Math.max(8, modalPosition.right),
+            left: Math.max(8, modalPosition.left),
             boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)"
           }}
           onClick={(e) => e.stopPropagation()}

@@ -94,15 +94,15 @@ export default function SearchResultsHeader({
               </h1>
 
               {/* Show on Map Button */}
-              {onShowMapView && (
+              {/* {onShowMapView && (
                 <button
                   onClick={onShowMapView}
                   className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                 >
                   <MapPin className="w-4 h-4" />
-                  {t('search.showOnMap', 'Газрын зураг дээр харах')}
+                  {t('search.showOnMap', 'Газрын зураг дээр харах')}асдфд
                 </button>
-              )}
+              )} */}
 
             </div>
           
@@ -149,7 +149,7 @@ export default function SearchResultsHeader({
                     onSearchByName(e.target.value);
                   }}
                   placeholder={t('search.searchByNamePlaceholder')}
-                  className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md pl-9 pr-3 py-1 text-sm text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 dark:hover:border-gray-600 transition-colors min-w-[220px]"
+                  className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md pl-9 pr-3 py-1 text-sm text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 dark:hover:border-gray-600 transition-colors min-w-[240px]"
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <Search className="w-4 h-4 text-gray-400" />

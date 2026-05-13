@@ -151,7 +151,7 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isActive}
                       onChange={() => toggleRecentFilter(item)}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.label}</span>
                   </label>
@@ -178,7 +178,7 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ propertyTypes: isSelected ? (filters.propertyTypes || []).filter(id => id !== pt.id) : [...(filters.propertyTypes || []), pt.id] })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{pt.name_mn}</span>
                     {count !== undefined && count > 0 && (
@@ -208,7 +208,7 @@ export default function SearchFilters({
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => updateFilters({ roomFeatures: isSelected ? (filters.roomFeatures || []).filter(id => id !== facility.id) : [...(filters.roomFeatures || []), facility.id] })}
-                        className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                        className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                       />
                       <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                       {filterCounts[`facility_${facility.id}`] !== undefined && (
@@ -329,7 +329,7 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ roomFeatures: isSelected ? (filters.roomFeatures || []).filter(id => id !== facility.id) : [...(filters.roomFeatures || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {filterCounts[`facility_${facility.id}`] !== undefined && (
@@ -359,7 +359,7 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ generalServices: isSelected ? (filters.generalServices || []).filter(id => id !== facility.id) : [...(filters.generalServices || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {filterCounts[`facility_${facility.id}`] !== undefined && (
@@ -390,7 +390,7 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ roomFacilities: isSelected ? (filters.roomFacilities || []).filter(id => id !== facility.id) : [...(filters.roomFacilities || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {count !== undefined && count > 0 && (
@@ -420,7 +420,7 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ accessibilityFeatures: isSelected ? (filters.accessibilityFeatures || []).filter(id => id !== facility.id) : [...(filters.accessibilityFeatures || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {filterCounts[`accessibility_${facility.id}`] !== undefined && (
@@ -450,7 +450,7 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ bedTypes: isSelected ? (filters.bedTypes || []).filter(id => id !== bt.id) : [...(filters.bedTypes || []), bt.id] })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{bt.name}</span>
                     {filterCounts[`bedType_${bt.id}`] !== undefined && (
@@ -479,10 +479,10 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ neighbourhood: isSelected ? (filters.neighbourhood || []).filter(n => n !== name) : [...(filters.neighbourhood || []), name] })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{name}</span>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">{count}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>
                   </label>
                 );
               })}
@@ -506,10 +506,10 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ landmark: isSelected ? (filters.landmark || []).filter(l => l !== id) : [...(filters.landmark || []), id] })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{name_mn}</span>
-                    {count > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">{count}</span>}
+                    {count > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>}
                   </label>
                 );
               })}
@@ -524,7 +524,7 @@ export default function SearchFilters({
                   type="checkbox"
                   checked={filters.discounted}
                   onChange={(e) => updateFilters({ discounted: e.target.checked })}
-                  className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                  className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                 />
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex-1">Хөнгөлөлт</span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">({discountedCount})</span>
@@ -534,30 +534,31 @@ export default function SearchFilters({
 
           {/* 13. Буудлын зэрэглэл */}
           {apiData?.ratings && apiData.ratings.length > 0 && (
-            <div className="space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3">
+            <div className="space-y-1.5 border-b border-gray-200 dark:border-gray-600 pb-3">
               <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Буудлын зэрэглэл</h4>
-              <div className="grid grid-cols-5 gap-1">
-                {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
-                  const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
-                  if (stars === 0) return null;
-                  const isSelected = (filters.starRating || []).includes(stars);
-                  return (
-                    <button
-                      key={rating.id}
-                      onClick={() => updateFilters({ starRating: isSelected ? (filters.starRating || []).filter(s => s !== stars) : [...(filters.starRating || []), stars] })}
-                      className={`p-1.5 rounded-md border text-xs transition-all flex flex-col items-center justify-center ${
-                        isSelected ? 'border-primary-500 bg-primary-50 text-primary-700' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300'
-                      }`}
-                    >
-                      <Star className={`w-3 h-3 mb-0.5 ${isSelected ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
-                      <span className="font-medium text-[10px]">{stars}+</span>
-                      {filterCounts[`rating_${stars}`] !== undefined && (
-                        <span className="text-[9px] text-gray-500 dark:text-gray-400">({filterCounts[`rating_${stars}`]})</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+              {apiData.ratings.filter(r => r.rating !== 'N/A').map((rating) => {
+                const stars = parseInt(rating.rating.match(/\d+/)?.[0] || '0');
+                if (stars === 0) return null;
+                const isSelected = (filters.starRating || []).includes(stars);
+                const count = filterCounts[`rating_${stars}`];
+                return (
+                  <label key={rating.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => updateFilters({ starRating: isSelected ? (filters.starRating || []).filter(s => s !== stars) : [...(filters.starRating || []), stars] })}
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 flex items-center gap-1">
+                      {stars}
+                      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                    </span>
+                    {count !== undefined && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>
+                    )}
+                  </label>
+                );
+              })}
             </div>
           )}
 
@@ -582,7 +583,7 @@ export default function SearchFilters({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ outdoorAreas: isSelected ? (filters.outdoorAreas || []).filter(id => id !== facility.id) : [...(filters.outdoorAreas || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {filterCounts[`facility_${facility.id}`] !== undefined && (

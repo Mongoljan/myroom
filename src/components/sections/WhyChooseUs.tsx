@@ -87,12 +87,12 @@ export default function WhyChooseUs() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-6"
+          className="mb-6"
         >
           <h2 className={`text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2`}>
-            {t('features.title', 'Таны аялалыг тав тухтай болгох')}
+            {t('features.title', 'Яагаад бид гэж?')}
           </h2>
-          <p className={`${text.caption} text-gray-600 dark:text-gray-400`}>{t('features.whyChooseUs', 'Яагаад бид вэ?')}</p>
+      
         </motion.div>
 
         {/* Features Grid */}

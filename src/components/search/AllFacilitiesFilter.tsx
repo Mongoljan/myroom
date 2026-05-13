@@ -109,7 +109,7 @@ export default function AllFacilitiesFilter({
                     type="checkbox"
                     checked={isSelected}
                     onChange={() => onFacilityToggle(facility.id)}
-                    className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                    className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                   />
                   <div className="flex items-center gap-2 flex-1">
                     {getFacilityIcon(facility.name_en)}

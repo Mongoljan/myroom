@@ -44,6 +44,7 @@ export default function ModernHero() {
   const locationRef = useRef<HTMLDivElement>(null);
   const locationInputRef = useRef<HTMLInputElement>(null);
   const locationDropdownRef = useRef<HTMLDivElement>(null);
+  const dateContainerRef = useRef<HTMLDivElement>(null);
 
   // Only render particles on client to avoid hydration mismatch
   useEffect(() => {
@@ -166,15 +167,19 @@ export default function ModernHero() {
 
   // Calculate location modal position
   const calculateLocationPosition = () => {
-    if (!locationInputRef.current) return;
+    // Use the section container ref so modal aligns with the section left edge
+    const container = locationRef.current;
+    const input = locationInputRef.current;
+    if (!container || !input) return;
     
-    const rect = locationInputRef.current.getBoundingClientRect();
-    const modalWidth = 400;
-    const modalHeight = 400;
-    const padding = 16;
+    const containerRect = container.getBoundingClientRect();
+    const inputRect = input.getBoundingClientRect();
+    const modalWidth = 580;
+    const modalHeight = 480;
+    const padding = 8;
     
-    let top = rect.bottom + 8;
-    let left = rect.left;
+    let top = containerRect.bottom + 8;
+    let left = containerRect.left;
     
     // Adjust if modal would go off screen right
     if (left + modalWidth > window.innerWidth - padding) {
@@ -188,7 +193,7 @@ export default function ModernHero() {
     
     // Adjust if modal would go off screen bottom
     if (top + modalHeight > window.innerHeight - padding) {
-      top = rect.top - modalHeight - 8;
+      top = inputRect.top - modalHeight - 8;
     }
     
     setLocationModalPosition({ top, left });
@@ -633,7 +638,7 @@ export default function ModernHero() {
                 )}
 
                 {/* Check-in Check-out */}
-                <div className="lg:flex-1 p-5 w-full hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors duration-200">
+                <div ref={dateContainerRef} className="lg:flex-1 p-5 w-full hover:bg-gray-50/80 dark:hover:bg-gray-700/40 transition-colors duration-200">
                   <div className="flex items-center gap-4">
                     <motion.div
                       whileHover={{ scale: 1.1, rotate: -5 }}
@@ -653,6 +658,7 @@ export default function ModernHero() {
                           }}
                           placeholder={t('search.selectDates', 'Check in - Check out')}
                           minimal={true}
+                          anchorRef={dateContainerRef}
                         />
                       </div>
                     </div>
