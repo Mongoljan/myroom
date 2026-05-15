@@ -5,27 +5,51 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
-import { SuggestedHotel } from '@/types/api';
+import { SearchHotelResult } from '@/types/api';
 
 type TabKey = 'popular' | 'discount' | 'top_rated' | 'cheapest' | 'new';
 
 interface Props {
-  /** Pre-fetched hotels for the 'popular' tab from the server. Avoids a client fetch on initial load. */
-  initialHotels: SuggestedHotel[];
+  /** Pre-fetched hotels for the 'popular' tab from the server. */
+  initialHotels: SearchHotelResult[];
+}
+
+const FALLBACKS = [
+  'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format',
+  'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&auto=format',
+  'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop&auto=format',
+  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop&auto=format',
+];
+
+function getHotelImage(hotel: SearchHotelResult): string {
+  // Gallery profile image
+  const profileImg = hotel.images?.gallery?.find(g => g.is_profile);
+  if (profileImg?.url) return profileImg.url;
+  // Cover (can be string or object)
+  const cover = hotel.images?.cover;
+  if (cover) return typeof cover === 'string' ? cover : cover.url;
+  // Fallback by id
+  return FALLBACKS[hotel.hotel_id % FALLBACKS.length];
+}
+
+function getLocation(hotel: SearchHotelResult): string {
+  const loc = hotel.location;
+  return loc?.province_city || loc?.soum || loc?.district || '';
+}
+
+function getPrice(hotel: SearchHotelResult): number {
+  const r = hotel.cheapest_room;
+  if (!r) return 0;
+  return r.price_per_night_final ?? r.estimated_total_final ?? 0;
 }
 
 export default function RecommendedHotelsClient({ initialHotels }: Props) {
   const { t } = useHydratedTranslation();
   const [activeTab, setActiveTab] = useState<TabKey>('popular');
-  // If server returned hotels, start ready. If empty (server fetch failed), show
-  // skeleton immediately and let the client-side fetch below pick it up.
   const [isLoading, setIsLoading] = useState(initialHotels.length === 0);
-  // undefined  = not fetched yet  →  triggers client fetch
-  // []         = fetched, genuinely empty  →  shows empty state
-  // SuggestedHotel[]  = has data
-  const [tabCache, setTabCache] = useState<Partial<Record<TabKey, SuggestedHotel[]>>>({
-    // Only pre-populate if server actually gave us data; otherwise leave undefined
-    // so the useEffect below fires a client-side fetch as a fallback.
+  // undefined = not yet fetched → triggers fetch
+  // []        = fetched but empty → shows empty state
+  const [tabCache, setTabCache] = useState<Partial<Record<TabKey, SearchHotelResult[]>>>({
     popular: initialHotels.length > 0 ? initialHotels : undefined,
   });
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -33,22 +57,6 @@ export default function RecommendedHotelsClient({ initialHotels }: Props) {
   const [canScrollRight, setCanScrollRight] = useState(false);
 
   const hotels = tabCache[activeTab] ?? [];
-
-  const getHotelImage = (hotel: SuggestedHotel): string => {
-    const profileImg = hotel.images?.gallery?.find(g => g.is_profile);
-    if (profileImg?.url) return profileImg.url;
-    if (hotel.images?.cover) return hotel.images.cover;
-    if (hotel.cheapest_room?.images && hotel.cheapest_room.images.length > 0) {
-      return hotel.cheapest_room.images[0].image;
-    }
-    const fallbacks = [
-      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format',
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&auto=format',
-      'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop&auto=format',
-      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop&auto=format',
-    ];
-    return fallbacks[(hotel.hotel?.pk ?? 0) % fallbacks.length];
-  };
 
   const getTabBadgeColor = (tab: TabKey): 'orange' | 'green' | 'blue' | 'purple' | 'gray' => {
     switch (tab) {
@@ -72,8 +80,8 @@ export default function RecommendedHotelsClient({ initialHotels }: Props) {
     }
   };
 
-  // Only fetch when the user switches to a tab we haven't loaded yet.
-  // The popular tab is pre-loaded from the server — no client fetch needed.
+  // Fetch only when switching to a tab not yet in cache.
+  // popular is pre-loaded from the server (or falls back to this on failure).
   useEffect(() => {
     if (tabCache[activeTab] !== undefined) return;
 
@@ -81,10 +89,7 @@ export default function RecommendedHotelsClient({ initialHotels }: Props) {
       setIsLoading(true);
       try {
         const response = await ApiService.getSuggestedHotels(activeTab);
-        const results = (response.results || []).filter(
-          (h): h is SuggestedHotel => h.hotel?.pk != null
-        );
-        setTabCache(prev => ({ ...prev, [activeTab]: results }));
+        setTabCache(prev => ({ ...prev, [activeTab]: response.results || [] }));
       } catch {
         setTabCache(prev => ({ ...prev, [activeTab]: [] }));
       } finally {
@@ -93,7 +98,7 @@ export default function RecommendedHotelsClient({ initialHotels }: Props) {
     };
 
     load();
-  }, [activeTab]); // tabCache intentionally excluded — we only want to fire on tab change
+  }, [activeTab]); // tabCache excluded intentionally
 
   useEffect(() => {
     const element = scrollRef.current;
@@ -206,13 +211,13 @@ export default function RecommendedHotelsClient({ initialHotels }: Props) {
             >
               {hotels.slice(0, 8).map((hotel, index) => (
                 <SectionHotelCard
-                  key={hotel.hotel.pk}
-                  id={hotel.hotel.pk.toString()}
-                  name={hotel.hotel.PropertyName}
-                  location={hotel.hotel.location || t('common.locationUnknown', 'Location unknown')}
+                  key={hotel.hotel_id}
+                  id={hotel.hotel_id.toString()}
+                  name={hotel.property_name}
+                  location={getLocation(hotel) || t('common.locationUnknown', 'Location unknown')}
                   rating={0}
                   ratingLabel={null}
-                  price={hotel.cheapest_room?.final_price || hotel.cheapest_room?.base_price || 0}
+                  price={getPrice(hotel)}
                   image={getHotelImage(hotel)}
                   badge={getTabBadgeLabel(activeTab)}
                   badgeColor={getTabBadgeColor(activeTab)}

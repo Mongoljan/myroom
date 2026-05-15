@@ -6,7 +6,7 @@ import { Star, MapPin } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import SafeImage from '@/components/common/SafeImage';
 import { ApiService } from '@/services/api';
-import { SearchHotelResult, SuggestedHotel } from '@/types/api';
+import { SearchHotelResult } from '@/types/api';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 
 interface HotelWithPrices extends SearchHotelResult {
@@ -49,44 +49,10 @@ export default function SimilarHotels({ currentHotelId, checkIn, checkOut }: Sim
             const suggestedData = await ApiService.getSuggestedHotels('popular');
             const results = suggestedData?.results || [];
             if (Array.isArray(results)) {
-              // Transform suggested hotels to match SearchHotelResult structure
-              const transformedHotels = (results as SuggestedHotel[])
-                .filter(item => item?.hotel?.pk && item.hotel.pk !== currentId)
-                .slice(0, 4 - similarHotels.length)
-                .map(item => ({
-                  hotel_id: item.hotel.pk,
-                  property_name: item.hotel.PropertyName,
-                  property_name_en: item.hotel.PropertyName,
-                  location: {
-                    province_city: item.hotel.location || null,
-                    soum: null,
-                    district: null,
-                  },
-                  // Use profile gallery image > cover > first gallery image
-                  images: {
-                    cover: item.images?.gallery?.find((g: { is_profile: boolean }) => g.is_profile)?.url
-                      || item.images?.cover
-                      || item.images?.gallery?.[0]?.url
-                      || '',
-                    gallery: item.images?.gallery || []
-                  },
-                  // Use rating_stars directly from suggestHotels response
-                  rating_stars: item.rating_stars || { id: 0, value: '', label: '' },
-                  cheapest_room: item.cheapest_room ? {
-                    // Use final_price_after_commission — the actual customer-facing price
-                    price_per_night_final: item.cheapest_room.final_price_after_commission ?? item.cheapest_room.final_price ?? item.cheapest_room.base_price,
-                    price_per_night_raw: item.cheapest_room.base_price,
-                    estimated_total_final: item.cheapest_room.final_price_after_commission ?? item.cheapest_room.final_price ?? item.cheapest_room.base_price,
-                    pricesetting: null,
-                    commission: item.cheapest_room.commission ?? null,
-                  } : null,
-                  general_facilities: item.general_facilities || [],
-                  additional_facilities: item.additional_facilities || [],
-                  activities: item.activities || [],
-                  has_active_commission: item.has_active_commission ?? false,
-                  min_estimated_total: item.cheapest_room?.final_price_after_commission ?? item.cheapest_room?.final_price ?? 0,
-                  google_map: item.google_map || '',
-                } as unknown as SearchHotelResult));
+              // API now returns SearchHotelResult directly — no transformation needed
+              const transformedHotels = results
+                .filter(item => item?.hotel_id && item.hotel_id !== currentId)
+                .slice(0, 4 - similarHotels.length);
 
               similarHotels = [...similarHotels, ...transformedHotels];
             }
