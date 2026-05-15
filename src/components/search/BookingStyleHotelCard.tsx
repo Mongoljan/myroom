@@ -144,7 +144,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
               <div className="flex justify-between items-start mb-1">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <h3 className="text-h3 font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
+                    <h3 className="text-[20px] font-bold text-gray-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors">
                       {hotel.property_name}
                     </h3>
                     {stars > 0 && (
@@ -186,42 +186,50 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                     {/* Left: Room info — data sourced from search API, no extra fetch needed */}
                     <div className="flex-1 min-w-0 p-3">
 
-                      {/* Room type · Room category */}
-                      <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                        <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white">
-                          {hotel.cheapest_room.room_type_label}
-                        </h4>
+                      {/* Row 1: category · type · өрөө · guest icons · bed icons */}
+                      <div className="flex items-center flex-wrap gap-1.5 font-bold">
                         {hotel.cheapest_room.room_category_label && hotel.cheapest_room.room_category_label !== 'Room' && (
-                          <span className="text-[14px] text-gray-600 dark:text-gray-400">{hotel.cheapest_room.room_category_label}</span>
+                          <span className="text-[14px]  text-gray-700 dark:text-gray-300">
+                            {hotel.cheapest_room.room_category_label}
+                          </span>
                         )}
-                      </div>
-
-                      {/* Capacity counts + bed icons */}
-                      <div className="flex items-center gap-2 mb-1.5">
-                        {/* Adult count */}
+                        <span className="text-[14px]  text-gray-700 dark:text-gray-300">
+                          {hotel.cheapest_room.room_type_label}
+                        </span>
+                        <span className="text-[14px]  text-gray-700 dark:text-gray-300">өрөө</span>
                         {(hotel.cheapest_room.capacity_per_room_adults || 2) > 0 && (
-                          <span className="flex items-center gap-0.5 text-[13px] text-gray-600 dark:text-gray-400">
+                          <span className="flex items-center gap-0.5 text-[14px] text-gray-700 dark:text-gray-300">
                             <User className="w-3.5 h-3.5" strokeWidth={2} />
                             <span>×{hotel.cheapest_room.capacity_per_room_adults || 2}</span>
                           </span>
                         )}
-                        {/* Child count */}
                         {(hotel.cheapest_room.capacity_per_room_children || 0) > 0 && (
-                          <span className="flex items-center gap-0.5 text-[13px] text-gray-500 dark:text-gray-400">
-                            <FaChild className="w-3 h-3" />
+                          <span className="flex items-center gap-0.5 text-[14px] font-medium text-gray-700 dark:text-gray-300">
+                            <FaChild className="w-3.5 h-3.5" />
                             <span>×{hotel.cheapest_room.capacity_per_room_children}</span>
                           </span>
                         )}
-                        {/* Bed icons from search API */}
                         {hotel.bed_types && hotel.bed_types.length > 0 && (
                           <>
-                            <span className="text-gray-300 dark:text-gray-600">|</span>
+                            <span className="text-gray-300 dark:text-gray-600">·</span>
                             {hotel.bed_types.map(bt => (
-                              <BedTypeIcon key={bt.id} name={bt.name} className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                              <BedTypeIcon key={bt.id} name={bt.name} className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                             ))}
                           </>
                         )}
                       </div>
+
+                      {/* Row 2: Bed type names */}
+                      {hotel.bed_types && hotel.bed_types.length > 0 && (
+                        <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
+                          {hotel.bed_types.map((bt, i) => (
+                            <span key={bt.id} className="flex items-center gap-1.5 text-[13px] text-gray-500 dark:text-gray-400">
+                              {bt.name}
+                              {i < hotel.bed_types!.length - 1 && <span className="text-gray-300 dark:text-gray-600">·</span>}
+                            </span>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Cancellation Policy */}
                       <p className="text-[13px] text-green-600 dark:text-green-500 mb-1">

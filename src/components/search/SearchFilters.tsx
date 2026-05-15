@@ -554,9 +554,10 @@ export default function SearchFilters({
                       onChange={() => updateFilters({ starRating: isSelected ? (filters.starRating || []).filter(s => s !== stars) : [...(filters.starRating || []), stars] })}
                       className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 flex items-center gap-1">
-                      {stars}
-                      <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                    <span className="flex-1 flex items-center gap-0.5">
+                      {[...Array(stars)].map((_, i) => (
+                        <Star key={i} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                      ))}
                     </span>
                     {count !== undefined && (
                       <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>

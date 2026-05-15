@@ -562,7 +562,7 @@ export default function SearchResults() {
                 </div>
 
                 {/* Hotel card skeletons */}
-                <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pb-4">
+                <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar space-y-3 pb-4">
                   {[...Array(5)].map((_, i) => (
                     <div
                       key={i}
@@ -625,8 +625,8 @@ export default function SearchResults() {
         <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col">
           <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 overflow-hidden">
             {/* Sidebar - Desktop only, independently scrollable */}
-            <div className="hidden lg:flex lg:flex-col lg:w-80 shrink-0 min-h-0">
-              <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin space-y-3 pr-1">
+            <div className="hidden lg:flex lg:flex-col lg:w-80 shrink-0 min-h-0 overflow-hidden">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar space-y-3 pr-1">
                 {/* Inline map preview above filters */}
                 {filteredHotels.length > 0 && (
                   <HotelsMapPreview
@@ -674,7 +674,7 @@ export default function SearchResults() {
               <div className="h-2 shrink-0"></div>
 
               {/* Scrollable hotel cards area */}
-              <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
 
               {/* Active filter chips — shown above hotel card list */}
               {(() => {
@@ -735,11 +735,14 @@ export default function SearchResults() {
                 if (chips.length === 0) return null;
 
                 return (
-                  <div className="flex flex-wrap gap-1.5 mb-3">
+                  <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 shrink-0">
+                      {t('search.selectedFilters', 'Сонгосон шүүлтүүр')}:
+                    </span>
                     {chips.map((chip, i) => (
                       <span
                         key={i}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-xs font-medium border border-primary-200 dark:border-primary-700"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-medium border border-primary-200 dark:border-primary-700"
                       >
                         {chip.label}
                         <button onClick={chip.onRemove} className="hover:text-red-500 transition-colors">
@@ -749,9 +752,9 @@ export default function SearchResults() {
                     ))}
                     <button
                       onClick={clearAllFilters}
-                      className="text-xs text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 underline self-center"
+                      className="text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 underline shrink-0"
                     >
-                      {t('search.filtersSection.clearAll') || 'Clear all'}
+                      {t('search.filtersSection.clearAll') || 'Бүгдийг арилгах'}
                     </button>
                   </div>
                 );

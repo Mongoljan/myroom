@@ -9,7 +9,7 @@ import {
   Palmtree, Bus, WashingMachine, Heater, Mountain,
   ArrowLeft, Bell as ConciergeBell, Zap, Hotel, DollarSign, Package,
   MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart, Layers3 as Layers, X,
-  PlayCircle, Gem, Check
+  PlayCircle, Gem, Check, Camera
 } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
 import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
@@ -433,8 +433,8 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
         onClick={handleBack}
         className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
       >
-        <ArrowLeft className="w-5 h-5" />
-        <span>{t('common.back', 'Буцах')}</span>
+        <ArrowLeft className="w-4 h-4 text-primary" />
+        <span className="font-bold text-primary">{t('common.back', 'Буцах')}</span>
       </button>
 
       {/* Hotel Header Section */}
@@ -465,7 +465,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                   <span className="text-gray-300 dark:text-gray-600">•</span>
                   <button
                     onClick={() => setShowMapModal(true)}
-                    className="flex items-center gap-1 text-slate-900 hover:text-slate-800 text-sm font-medium"
+                    className="flex items-center gap-1  hover:text-slate-800 text-sm font-medium underline text-primary"
                   >
                     <MapPin className="w-4 h-4" />
                     {t('hotelDetails.viewOnMap', 'Газрын зураг дээр харах')}
@@ -529,7 +529,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
       <div className="flex gap-3">
         {/* Left: Images Section */}
         <div className="flex-1">
-          <div className="flex gap-1 h-[420px]">
+          <div className="flex gap-1 h-[520px]">
             {/* Main Large Image - Left side */}
             <div className="w-[55%] relative">
               <div className="relative bg-gray-100 dark:bg-gray-700 overflow-hidden rounded-l-xl h-full">
@@ -548,7 +548,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
 
                 {allImages.length > 1 && (
                   <>
-                    <button
+                    {/* <button
                       onClick={prevImage}
                       className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-lg transition-all"
                       aria-label="Previous image"
@@ -561,7 +561,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                       aria-label="Next image"
                     >
                       <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-                    </button>
+                    </button> */}
                   </>
                 )}
               </div>
@@ -586,8 +586,14 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                   />
                   {/* Show +X photos overlay on last image if more images available */}
                   {index === 3 && allImages.filter(img => img.url).length > 5 && (
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                      <span className="text-white font-semibold text-lg">+{allImages.filter(img => img.url).length - 5} {t('hotelDetails.photos', 'зураг')}</span>
+                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:bg-black/70 transition-colors">
+                      <Camera className="w-6 h-6 text-white/90" />
+                      <span className="text-white font-semibold text-base leading-tight">
+                        {t('hotelDetails.seeAllPhotos', 'Бүх зураг харах')}
+                      </span>
+                      <span className="text-white/80 text-sm">
+                        {allImages.filter(img => img.url).length} {t('hotelDetails.photos', 'зураг')}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -701,7 +707,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
         </Dialog>
 
         {/* Right: Info Sidebar - Separate Distinct Boxes */}
-        <div className="w-70 shrink-0 flex flex-col gap-3 h-105">
+        <div className="w-70 shrink-0 flex flex-col gap-3 h-[520px]">
           {/* Box 1: Star Rating — only show search-API rating when no authoritative basicInfo.star_rating is available */}
           {!basicInfo?.star_rating && hotel.rating_stars?.value && (
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 shrink-0">
@@ -726,13 +732,13 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 shrink-0">
             <div className="flex items-center gap-2 mb-1">
               <Star className="w-4 h-4 text-yellow-400" />
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-[18px] font-semibold text-gray-900 dark:text-white">
                 {t('hotelDetails.guestRating', 'Зочдын үнэлгээ')}
               </h3>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="text-h1 font-bold text-gray-300 dark:text-gray-600">—</div>
-              <div className="text-sm text-gray-400 dark:text-gray-500">{t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}</div>
+            <div className="flex items-center gap-2 text-sm">
+              <div className=" font-bold text-gray-300 dark:text-gray-600">—</div>
+              <div className=" text-gray-400 dark:text-gray-500">{t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}</div>
             </div>
           </div>
 
@@ -740,7 +746,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
             <div className="flex items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-blue-600" />
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-[18px] font-semibold text-gray-900 dark:text-white">
                 {t('hotelDetails.surroundings', 'Орчин тойрон')}
               </h3>
             </div>
@@ -772,8 +778,8 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           </div>
 
           {/* Box 3: Property Highlights */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">{t('hotelDetails.propertyHighlights', 'Буудлын онцлогууд')}</h4>
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 shrink-0">
+            <h4 className="text-[18px] font-semibold text-gray-900 dark:text-white mb-3">{t('hotelDetails.propertyHighlights', 'Буудлын онцлогууд')}</h4>
             <div className="space-y-2.5">
               <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <MapPin className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
