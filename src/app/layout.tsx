@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import NavigationProgress from "@/components/common/NavigationProgress";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
+import ScrollToTop from "@/components/common/ScrollToTop";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -108,6 +109,7 @@ export default function RootLayout({
                 <ConditionalLayout>
                   {children}
                 </ConditionalLayout>
+                <ScrollToTop />
               </I18nProvider>
             </ToastProvider>
           </AuthProvider>

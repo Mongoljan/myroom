@@ -126,8 +126,8 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
           </div>   
            <div className="flex items-center">
               <div className="flex mr-3">
-                <div className=" text-gray-800 dark:text-gray-300">{t('hotel.priceFrom', 'Эхлэх үнэ')}</div> :
-                <div className="font-bold text-slate-900 dark:text-white ">{price.toLocaleString()}₮</div>
+                <div className=" text-gray-800 dark:text-gray-300">{t('hotel.priceFrom', 'Эхлэх үнэ ')}</div> :
+                <div className="font-bold text-slate-900 dark:text-white "> {price.toLocaleString()}₮</div>
               </div>
               <button
                 onClick={() => scrollToSection('rooms')}
