@@ -100,7 +100,7 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
 
   return (
     <nav className={`
-      ${isSticky ? 'fixed top-0 left-0 h-20 right-0 z-40 shadow-md bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm' : 'relative bg-white dark:bg-gray-800'} 
+      ${isSticky ? 'fixed top-0 left-0 h-16 right-0 z-40 shadow-md bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-700' : 'relative bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700'} 
       transition-all duration-300
     `}>
       <div className="max-w-7xl text-[16px] mx-auto px-4 sm:px-6 lg:px-8 h-full">
