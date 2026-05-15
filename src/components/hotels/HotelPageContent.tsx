@@ -12,7 +12,7 @@ import HotelCancellationPolicy from '@/components/hotels/HotelCancellationPolicy
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
-import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, HotelFacility, PropertyImage, CancellationFee } from '@/types/api';
+import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, HotelFacility, PropertyImage, CancellationFee, PropertyPolicy } from '@/types/api';
 
 interface HotelPageContentProps {
   hotel: SearchHotelResult;
@@ -26,9 +26,10 @@ interface HotelPageContentProps {
   additionalInfo?: AdditionalInfo | null;
   propertyImages?: PropertyImage[];
   cancellationFee?: CancellationFee | null;
+  policies?: PropertyPolicy[];
 }
 
-export default function HotelPageContent({ hotel, searchParams, propertyDetails, basicInfo, additionalInfo, propertyImages, cancellationFee }: HotelPageContentProps) {
+export default function HotelPageContent({ hotel, searchParams, propertyDetails, basicInfo, additionalInfo, propertyImages, cancellationFee, policies }: HotelPageContentProps) {
   const [activeSection, setActiveSection] = useState('overview');
   const { addRecentlyViewed } = useRecentlyViewed();
   const { t } = useHydratedTranslation();
@@ -105,12 +106,13 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
               hotelName={hotel.property_name}
               checkIn={searchParams?.check_in}
               checkOut={searchParams?.check_out}
+              initialPolicies={policies}
             />
           </div>
 
           {/* House Rules Section */}
           <div id="house-rules">
-            <HotelHouseRules hotelId={hotel.hotel_id} hotelName={hotel.property_name} />
+            <HotelHouseRules hotelId={hotel.hotel_id} hotelName={hotel.property_name} initialPolicies={policies} />
           </div>
 
           {/* Cancellation Policy Section */}

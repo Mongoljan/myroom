@@ -181,7 +181,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
               {/* Room Info + Pricing — single bordered box with vertical divider */}
               {hotel.cheapest_room && (
                 <div className="mt-auto pt-2">
-                  <div className="rounded-lg border border-gray-200 dark:border-gray-700 flex overflow-hidden">
+                  <div className="rounded-lg bg-gray-100 dark:border-gray-700 flex overflow-hidden">
 
                     {/* Left: Room info — data sourced from search API, no extra fetch needed */}
                     <div className="flex-1 min-w-0 p-3">
@@ -246,7 +246,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                               className={`inline-flex items-center text-[13px] rounded px-2 py-0.5 border ${
                                 isBreakfast
                                   ? 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
-                                  : 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                                  : 'text-gray-600 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
                               }`}
                             >
                               {name}

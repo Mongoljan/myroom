@@ -136,34 +136,36 @@ export default function SearchResults() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Load global reference data once on mount — independent of searchParams changes
+  useEffect(() => {
+    const loadReferenceData = async () => {
+      try {
+        const [apiDataResponse, allDataResponse] = await Promise.all([
+          ApiService.getCombinedData(),
+          ApiService.getAllData(),
+        ]);
+        const enrichedApiData = {
+          ...apiDataResponse,
+          roomFacilities: allDataResponse?.room_facilities || [],
+        };
+        setApiData(enrichedApiData);
+        if (allDataResponse?.bed_types?.length) {
+          setAllDataBedTypes(allDataResponse.bed_types);
+        }
+      } catch {
+        // reference data optional — continue without it
+      }
+    };
+    loadReferenceData();
+  }, []); // empty deps: never re-fetches on search param changes
+
   // Load hotels from API
   useEffect(() => {
     const loadHotels = async () => {
       setLoading(true);
 
       try {
-        // Load combined API data + all-data (for bed type names) in parallel
-        const loadApiData = async () => {
-          try {
-            const [apiDataResponse, allDataResponse] = await Promise.all([
-              ApiService.getCombinedData(),
-              ApiService.getAllData(),
-            ]);
-            // Merge room_facilities from allData into the combined API data
-            const enrichedApiData = {
-              ...apiDataResponse,
-              roomFacilities: allDataResponse?.room_facilities || [],
-            };
-            setApiData(enrichedApiData);
-            if (allDataResponse?.bed_types?.length) {
-              setAllDataBedTypes(allDataResponse.bed_types);
-            }
-          } catch (error) {
-          }
-        };
-
-        // Start loading API data in parallel
-        loadApiData();
+        // Reference data is loaded separately above; just search here
 
         const today = new Date().toISOString().split('T')[0];
         const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -624,7 +626,7 @@ export default function SearchResults() {
           <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 overflow-hidden">
             {/* Sidebar - Desktop only, independently scrollable */}
             <div className="hidden lg:flex lg:flex-col lg:w-80 shrink-0 min-h-0">
-              <div className="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1">
+              <div className="flex-1 min-h-0 overflow-y-auto scrollbar-thin space-y-3 pr-1">
                 {/* Inline map preview above filters */}
                 {filteredHotels.length > 0 && (
                   <HotelsMapPreview

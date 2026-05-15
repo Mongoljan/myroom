@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import HotelPageContent from '@/components/hotels/HotelPageContent';
 import { ApiService } from '@/services/api';
-import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, PropertyImage, CancellationFee } from '@/types/api';
+import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, PropertyImage, CancellationFee, PropertyPolicy } from '@/types/api';
 
 // ISR-style revalidation - cache hotel data for 60 seconds
 export const revalidate = 60;
@@ -132,9 +132,12 @@ async function HotelContent({ id, searchParams }: {
   const propertyImages: PropertyImage[] =
     propertyImagesResult.status === 'fulfilled' ? propertyImagesResult.value : [];
 
+  const policies: PropertyPolicy[] =
+    policiesResult.status === 'fulfilled' ? policiesResult.value : [];
+
   const cancellationFee: CancellationFee | null =
-    policiesResult.status === 'fulfilled' && policiesResult.value.length > 0
-      ? policiesResult.value[0].cancellation_fee
+    policies.length > 0 && policies[0].cancellation_fee
+      ? policies[0].cancellation_fee
       : null;
 
   // Fetch additional info using the ID from property details
@@ -156,6 +159,7 @@ async function HotelContent({ id, searchParams }: {
       additionalInfo={additionalInfo}
       propertyImages={propertyImages}
       cancellationFee={cancellationFee}
+      policies={policies}
     />
   );
 }

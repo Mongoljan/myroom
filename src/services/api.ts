@@ -258,7 +258,7 @@ export class ApiService {
   // Removed hardcoded mock hotel data - using real API only
 
   // Get hotel details - using search API with specific hotel ID.
-  // Tries the given dates first, then falls back to future windows.
+  // Tries the given dates first, then runs fallback windows in parallel (not sequentially).
   // If the search API never returns the hotel (e.g. no availability configured),
   // falls back to building a minimal SearchHotelResult from property endpoints
   // so the hotel page can still render.
@@ -266,35 +266,36 @@ export class ApiService {
     const today = new Date();
     const fmt = (d: Date) => d.toISOString().split('T')[0];
 
-    // Build a list of date windows to try: requested dates first, then fallbacks
-    const windows: Array<[string, string]> = [];
-    if (checkIn && checkOut) windows.push([checkIn, checkOut]);
-    for (const offset of [0, 29, 59, 89]) {
+    // If caller provided dates, try those first (single request)
+    if (checkIn && checkOut) {
+      try {
+        const result = await this.searchHotels({
+          name_id: hotelId, check_in: checkIn, check_out: checkOut,
+          adults: 2, children: 0, rooms: 1, acc_type: 'hotel'
+        });
+        if (result.results && result.results.length > 0) return result.results[0];
+      } catch { /* fall through to parallel windows */ }
+    }
+
+    // Run fallback date windows in parallel instead of sequentially
+    const makeWindow = (offset: number): [string, string] => {
       const start = new Date(today);
       start.setDate(start.getDate() + offset);
       const end = new Date(start);
       end.setDate(end.getDate() + 1);
-      windows.push([fmt(start), fmt(end)]);
-    }
+      return [fmt(start), fmt(end)];
+    };
 
-    for (const [ci, co] of windows) {
-      try {
-        const result = await this.searchHotels({
-          name_id: hotelId,
-          check_in: ci,
-          check_out: co,
-          adults: 2,
-          children: 0,
-          rooms: 1,
-          acc_type: 'hotel'
-        });
-        if (result.results && result.results.length > 0) {
-          return result.results[0];
-        }
-      } catch {
-        // try next window
-      }
-    }
+    const fallbackWindows = [makeWindow(0), makeWindow(29), makeWindow(59), makeWindow(89)];
+    const searches = fallbackWindows.map(([ci, co]) =>
+      this.searchHotels({
+        name_id: hotelId, check_in: ci, check_out: co,
+        adults: 2, children: 0, rooms: 1, acc_type: 'hotel'
+      }).catch(() => null)
+    );
+    const results = await Promise.all(searches);
+    const found = results.find(r => r && r.results && r.results.length > 0);
+    if (found) return found.results[0];
 
     // Search API has no availability for this hotel across all windows.
     // Build a SearchHotelResult from the property-level endpoints instead.
@@ -453,58 +454,40 @@ export class ApiService {
     });
   }
 
-  // Get property policies
+  // Get property policies — cached per property (SHORT TTL: 60 s)
   static async getPropertyPolicies(propertyId: number): Promise<PropertyPolicy[]> {
-    try {
-      return this.request<PropertyPolicy[]>(`/property-policies/?property=${propertyId}`);
-    } catch (error) {
-      throw error;
-    }
+    const key = `/property-policies/?property=${propertyId}`;
+    return this.request<PropertyPolicy[]>(key, {}, { key, ttl: ApiCache.TTL.SHORT });
   }
 
-  // Get property basic info
+  // Get property basic info — cached per property (MED TTL: 5 min)
   static async getPropertyBasicInfo(propertyId: number): Promise<PropertyBasicInfo[]> {
-    try {
-      return this.request<PropertyBasicInfo[]>(`/property-basic-info/?property=${propertyId}`);
-    } catch (error) {
-      throw error;
-    }
+    const key = `/property-basic-info/?property=${propertyId}`;
+    return this.request<PropertyBasicInfo[]>(key, {}, { key, ttl: ApiCache.TTL.MED });
   }
 
-  // Get confirm address
+  // Get confirm address — cached per property (MED TTL: 5 min)
   static async getConfirmAddress(propertyId: number): Promise<ConfirmAddress[]> {
-    try {
-      return this.request<ConfirmAddress[]>(`/confirm-address?property=${propertyId}`);
-    } catch (error) {
-      throw error;
-    }
+    const key = `/confirm-address?property=${propertyId}`;
+    return this.request<ConfirmAddress[]>(key, {}, { key, ttl: ApiCache.TTL.MED });
   }
 
-  // Get property images
+  // Get property images — cached per property (MED TTL: 5 min)
   static async getPropertyImages(propertyId: number): Promise<PropertyImage[]> {
-    try {
-      return this.request<PropertyImage[]>(`/property-images/?property=${propertyId}`);
-    } catch (error) {
-      throw error;
-    }
+    const key = `/property-images/?property=${propertyId}`;
+    return this.request<PropertyImage[]>(key, {}, { key, ttl: ApiCache.TTL.MED });
   }
 
-  // Get property details
+  // Get property details — cached per property (MED TTL: 5 min)
   static async getPropertyDetails(propertyId: number): Promise<PropertyDetails[]> {
-    try {
-      return this.request<PropertyDetails[]>(`/property-details/?property=${propertyId}`);
-    } catch (error) {
-      throw error;
-    }
+    const key = `/property-details/?property=${propertyId}`;
+    return this.request<PropertyDetails[]>(key, {}, { key, ttl: ApiCache.TTL.MED });
   }
 
-  // Get additional info
+  // Get additional info — cached per info ID (MED TTL: 5 min)
   static async getAdditionalInfo(infoId: number): Promise<AdditionalInfo> {
-    try {
-      return this.request<AdditionalInfo>(`/additionalInfo/${infoId}`);
-    } catch (error) {
-      throw error;
-    }
+    const key = `/additionalInfo/${infoId}`;
+    return this.request<AdditionalInfo>(key, {}, { key, ttl: ApiCache.TTL.MED });
   }
 }
 

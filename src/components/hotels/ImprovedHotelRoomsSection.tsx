@@ -17,13 +17,15 @@ interface ImprovedHotelRoomsSectionProps {
   hotelName?: string;
   checkIn?: string;
   checkOut?: string;
+  initialPolicies?: import('@/types/api').PropertyPolicy[];
 }
 
 export default function ImprovedHotelRoomsSection({
   hotelId,
   hotelName = 'Hotel',
   checkIn,
-  checkOut
+  checkOut,
+  initialPolicies,
 }: ImprovedHotelRoomsSectionProps) {
   const { t } = useHydratedTranslation();
   const router = useRouter();
@@ -101,10 +103,12 @@ export default function ImprovedHotelRoomsSection({
       try {
         setLoading(true);
 
-        // Load enriched room data and property policy in parallel
+      // Load enriched room data; use passed-in policies if available to skip a fetch
         const [roomsData, policies] = await Promise.all([
           hotelRoomsService.getEnrichedHotelRooms(hotelId, effectiveCheckIn, effectiveCheckOut),
-          ApiService.getPropertyPolicies(hotelId).catch(() => []),
+          initialPolicies
+            ? Promise.resolve(initialPolicies)
+            : ApiService.getPropertyPolicies(hotelId).catch(() => []),
         ]);
         setRooms(roomsData);
         if (policies.length > 0 && policies[0].cancellation_fee) {

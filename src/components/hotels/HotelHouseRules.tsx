@@ -9,22 +9,26 @@ import { PropertyPolicy } from '@/types/api';
 interface HotelHouseRulesProps {
   hotelId: number;
   hotelName: string;
+  initialPolicies?: PropertyPolicy[];
 }
 
-export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
+export default function HotelHouseRules({ hotelId, initialPolicies }: HotelHouseRulesProps) {
   const { t } = useHydratedTranslation();
-  const [policies, setPolicies] = useState<PropertyPolicy[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [policies, setPolicies] = useState<PropertyPolicy[]>(initialPolicies ?? []);
+  const [loading, setLoading] = useState(!initialPolicies);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip fetch if policies were passed in from the server component
+    if (initialPolicies) return;
+
     const fetchPolicies = async () => {
       try {
         setLoading(true);
         setError(null);
         const data = await ApiService.getPropertyPolicies(hotelId);
         setPolicies(data);
-      } catch (err) {
+      } catch {
         setError('Failed to load property policies');
       } finally {
         setLoading(false);
@@ -32,7 +36,7 @@ export default function HotelHouseRules({ hotelId }: HotelHouseRulesProps) {
     };
 
     fetchPolicies();
-  }, [hotelId]);
+  }, [hotelId, initialPolicies]);
 
   if (loading) {
     return (
