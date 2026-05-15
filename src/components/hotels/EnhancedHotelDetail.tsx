@@ -484,7 +484,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           </div>
 
           {/* Right: Price and Book Button on same line */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex items-center gap-3 shrink-0">
      
                           {priceInfo && isAuthenticated && (
                 <WishlistHeart
@@ -533,11 +533,11 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
         </div>
       </div>
 
-      {/* Image Gallery and Info Sidebar - Compact Layout */}
-      <div className="flex gap-3">
-        {/* Left: Images Section */}
-        <div className="flex-1">
-          <div className="flex gap-1 h-[520px]">
+      {/* Main 2-column layout: Left (images + about + highlights) | Right (info sidebar + youtube) */}
+      <div className="flex gap-4 items-start">
+        {/* Left column: Images + About + Highlights */}
+        <div className="flex-1 min-w-0 space-y-4">
+          <div className="flex gap-1 h-96">
             {/* Main Large Image - Left side */}
             <div className="w-[55%] relative">
               <div className="relative bg-gray-100 dark:bg-gray-700 overflow-hidden rounded-l-xl h-full">
@@ -640,249 +640,236 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
               ))}
             </div>
           )}
+
+
+          {/* About + Highlights — single combined card */}
+          {(additionalInfo?.About || (() => {
+            const allFacs = [
+              ...(propertyDetails?.general_facilities || []),
+              ...(propertyDetails?.additional_facilities || []),
+              ...(propertyDetails?.activities || []),
+              ...(propertyDetails?.accessibility_feature || []),
+            ];
+            return allFacs.some(f => f.is_highlight && (f.name_mn || f.name_en));
+          })()) && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex flex-col">
+              {/* About */}
+              {additionalInfo?.About && (
+                <>
+                  <h2 className="text-h3 font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
+                  {basicInfo && (
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-sm">
+                      {basicInfo.start_date && (
+                        <span>🏢 {t('hotelDetails.operatingSince', 'Үйл ажиллагаа эхэлсэн')}: {new Date(basicInfo.start_date).getFullYear()}</span>
+                      )}
+                      {basicInfo.total_hotel_rooms > 0 && (
+                        <span>🛏 {t('hotelDetails.totalRooms', 'Нийт өрөө')}: {basicInfo.total_hotel_rooms}</span>
+                      )}
+                      {basicInfo.part_of_group && basicInfo.group_name && (
+                        <span>🌐 {t('hotelDetails.partOfGroup', 'Сүлжээний нэг хэсэг')}: {basicInfo.group_name}</span>
+                      )}
+                    </div>
+                  )}
+                  <div className="relative">
+                    <p ref={aboutRef} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4 text-justify">
+                      {additionalInfo.About}
+                    </p>
+                    {isAboutClamped && (
+                      <button
+                        onClick={() => setShowAboutModal(true)}
+                        className="absolute bottom-0 right-0 bg-white dark:bg-gray-800 pl-1 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium leading-relaxed"
+                      >
+                        ... {t('hotelDetails.showAll', 'Дэлгэрэнгүй')}
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {/* Highlights */}
+              {(() => {
+                const allFacilities: Array<{ name_en: string; name_mn: string; is_highlight: boolean }> = [
+                  ...(propertyDetails?.general_facilities || []),
+                  ...(propertyDetails?.additional_facilities || []),
+                  ...(propertyDetails?.activities || []),
+                  ...(propertyDetails?.accessibility_feature || []),
+                ];
+                const highlights = allFacilities.filter(f => f.is_highlight && (f.name_mn || f.name_en));
+                if (highlights.length === 0) return null;
+                return (
+                  <div className={additionalInfo?.About ? 'mt-6 pt-6 border-t border-gray-100 dark:border-gray-700' : ''}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Gem className="w-4 h-4 text-primary" />
+                      <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white">
+                        {t('hotelDetails.facilityGroups.highlights', 'Онцлох нь')}
+                      </h3>
+                    </div>
+                    <ul className="flex flex-wrap gap-2">
+                      {highlights.map((f, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-md px-2 py-1 whitespace-nowrap">
+                          <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
+                          <span className="leading-relaxed">{f.name_mn || f.name_en}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
         </div>
 
-        <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
-          <DialogContent className="max-w-6xl w-[95vw] p-0 border border-slate-200 dark:border-slate-700 bg-white dark:bg-gray-900 text-slate-900 dark:text-white shadow-2xl rounded-2xl overflow-hidden">
-            <DialogTitle className="sr-only">{hotelName} photos</DialogTitle>
-            <div className="flex flex-col h-[85vh]">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-gray-900/95">
-                <div className="text-sm font-semibold truncate text-slate-900 dark:text-white">{hotelName}</div>
-                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                  <span>{currentImageIndex + 1} / {allImages.length}</span>
-                  <DialogClose asChild>
-                    <button className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors" aria-label="Close">
-                      <X className="w-4 h-4 text-slate-700 dark:text-slate-300" />
-                    </button>
-                  </DialogClose>
-                </div>
-              </div>
+        {/* Right sidebar: ratings + nearby + property highlights + youtube */}
+        <div className="w-[288px] shrink-0 flex flex-col gap-3">
 
-              <div className="relative flex-1 bg-white dark:bg-gray-900">
-                {allImages[currentImageIndex]?.url && (
-                  <SafeImage
-                    src={allImages[currentImageIndex].url}
-                    alt={hotelName || 'Hotel'}
-                    fill
-                    className="object-contain"
-                  />
-                )}
-
-                {allImages.length > 1 && (
-                  <>
-                    <button
-                      onClick={prevImage}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-800 dark:text-slate-200 rounded-full p-3 shadow-lg"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={nextImage}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-800 dark:text-slate-200 rounded-full p-3 shadow-lg"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight className="w-5 h-5" />
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {allImages.length > 1 && (
-                <div className="p-4 bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-slate-700 overflow-x-auto">
-                  <div className="flex gap-2 min-w-full">
-                    {allImages.map((img, index) => (
-                      <button
-                        key={img.url + index}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={`relative w-20 h-14 rounded-md overflow-hidden border ${
-                          index === currentImageIndex ? 'border-slate-900' : 'border-slate-200'
-                        }`}
-                      >
-                        <SafeImage
-                          src={img.url}
-                          alt={hotelName || 'Hotel'}
-                          fill
-                          className="object-cover"
-                        />
+          {/* Gallery dialog — portal, location doesn't matter */}
+          <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
+            <DialogContent className="max-w-6xl w-[95vw] p-0 border border-slate-200 dark:border-slate-700 bg-white dark:bg-gray-900 text-slate-900 dark:text-white shadow-2xl rounded-2xl overflow-hidden">
+              <DialogTitle className="sr-only">{hotelName} photos</DialogTitle>
+              <div className="flex flex-col h-[85vh]">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-gray-900/95">
+                  <div className="text-sm font-semibold truncate text-slate-900 dark:text-white">{hotelName}</div>
+                  <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                    <span>{currentImageIndex + 1} / {allImages.length}</span>
+                    <DialogClose asChild>
+                      <button className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors" aria-label="Close">
+                        <X className="w-4 h-4 text-slate-700 dark:text-slate-300" />
                       </button>
-                    ))}
+                    </DialogClose>
                   </div>
                 </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Right: Info Sidebar - Separate Distinct Boxes */}
-        <div className="w-70 shrink-0 flex flex-col gap-3 h-[520px]">
-          {/* Box 1: Star Rating — only show search-API rating when no authoritative basicInfo.star_rating is available */}
-          {!basicInfo?.star_rating && hotel.rating_stars?.value && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 shrink-0">
-              <div className="flex items-center gap-2.5">
-                <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg">
-                  <span className="text-h3 font-bold">
-                    {parseFloat(hotel.rating_stars.value).toFixed(1)}
-                  </span>
+                <div className="relative flex-1 bg-white dark:bg-gray-900">
+                  {allImages[currentImageIndex]?.url && (
+                    <SafeImage
+                      src={allImages[currentImageIndex].url}
+                      alt={hotelName || 'Hotel'}
+                      fill
+                      className="object-contain"
+                    />
+                  )}
+                  {allImages.length > 1 && (
+                    <>
+                      <button onClick={prevImage} className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-800 dark:text-slate-200 rounded-full p-3 shadow-lg" aria-label="Previous image">
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button onClick={nextImage} className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-slate-50 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-800 dark:text-slate-200 rounded-full p-3 shadow-lg" aria-label="Next image">
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </>
+                  )}
                 </div>
-                {hotel.rating_stars.label && (
-                  <div>
-                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {hotel.rating_stars.label}
+                {allImages.length > 1 && (
+                  <div className="p-4 bg-white dark:bg-gray-900 border-t border-slate-200 dark:border-slate-700 overflow-x-auto">
+                    <div className="flex gap-2 min-w-full">
+                      {allImages.map((img, index) => (
+                        <button
+                          key={img.url + index}
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`relative w-20 h-14 rounded-md overflow-hidden border ${index === currentImageIndex ? 'border-slate-900' : 'border-slate-200'}`}
+                        >
+                          <SafeImage src={img.url} alt={hotelName || 'Hotel'} fill className="object-cover" />
+                        </button>
+                      ))}
                     </div>
                   </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Star Rating — only when no basicInfo.star_rating */}
+          {!basicInfo?.star_rating && hotel.rating_stars?.value && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+              <div className="flex items-center gap-2.5">
+                <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg">
+                  <span className="text-h3 font-bold">{parseFloat(hotel.rating_stars.value).toFixed(1)}</span>
+                </div>
+                {hotel.rating_stars.label && (
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white">{hotel.rating_stars.label}</div>
                 )}
               </div>
             </div>
           )}
 
-          {/* Box 1.5: Guest Rating placeholder — shown always (data coming soon) */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 shrink-0">
-            <div className="flex items-center gap-2 mb-1">
+          {/* Зочдын үнэлгээ */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 min-h-40">
+            <div className="flex items-center gap-2 mb-2">
               <Star className="w-4 h-4 text-yellow-400" />
-              <h3 className="text-[18px] font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-[16px] font-semibold text-gray-900 dark:text-white">
                 {t('hotelDetails.guestRating', 'Зочдын үнэлгээ')}
               </h3>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <div className=" font-bold text-gray-300 dark:text-gray-600">—</div>
-              <div className=" text-gray-400 dark:text-gray-500">{t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}</div>
+              <span className="font-bold text-gray-300 dark:text-gray-600">—</span>
+              <span className="text-gray-400 dark:text-gray-500">{t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}</span>
+
             </div>
+              <div className="mb-40"> </div>
           </div>
 
-          {/* Box 2: Surroundings */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
+          {/* Ойр орчимд */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 min-h-40">
             <div className="flex items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-blue-600" />
-              <h3 className="text-[18px] font-semibold text-gray-900 dark:text-white">
-                {t('hotelDetails.surroundings', 'Ойр орчим')}
+              <h3 className="text-[16px] font-semibold text-gray-900 dark:text-white">
+                {t('hotelDetails.surroundings', 'Ойр орчимд')}
               </h3>
             </div>
-            
             <div className="space-y-2.5">
               {getNearbyPlaces().filter(p => p.category === 'transport').slice(0, 2).map((place, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  {i === 0 ? <Plane className="w-3 h-3 mt-0.5 flex-shrink-0" /> : <Train className="w-3 h-3 mt-0.5 flex-shrink-0" />}
+                  {i === 0 ? <Plane className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-500" /> : <Train className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-500" />}
                   <span className="leading-snug">{place.name} <span className="text-gray-400">— {place.distance}</span></span>
                 </div>
               ))}
               {getNearbyPlaces().filter(p => p.category === 'landmarks').slice(0, 1).map((place, i) => (
                 <div key={i} className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <Landmark className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                  <Landmark className="w-3.5 h-3.5 mt-0.5 shrink-0 text-gray-500" />
                   <span className="leading-snug">{place.name} <span className="text-gray-400">— {place.distance}</span></span>
                 </div>
               ))}
             </div>
-
-            {/* View on map link */}
             {hotel.google_map && (
-              <button
-                onClick={() => setShowMapModal(true)}
-                className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
-              >
+              <button onClick={() => setShowMapModal(true)} className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium">
                 {t('hotelDetails.viewOnMap', 'Газрын зураг дээр харах')}
               </button>
             )}
           </div>
 
-          {/* Box 3: Property Highlights */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
-            <h4 className="text-[18px] font-semibold text-gray-900 dark:text-white mb-3">{t('hotelDetails.propertyHighlights', 'Буудлын онцлогууд')}</h4>
+          {/* Буудлын онцлог — proper icons, max 4 items */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+            <h4 className="text-[16px] font-semibold text-gray-900 dark:text-white mb-3">{t('hotelDetails.propertyHighlights', 'Буудлын онцлог')}</h4>
             <div className="space-y-2.5">
-              <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <MapPin className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
+              <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
                 <span>{hotel.location.province_city || 'City'} {t('hotelDetails.center', 'төвд')}</span>
               </div>
-              <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Car className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
+              <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
                 <span>{t('hotelDetails.airportTransfer', 'Нисэх онгоцны буудлын трансфер')}</span>
               </div>
-              <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <Clock className="w-3 h-3 mt-0.5 shrink-0 text-gray-400" />
+              <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                <Check className="w-3.5 h-3.5 text-green-600 shrink-0" />
                 <span>{t('hotelDetails.frontDesk24h', '24 цагийн хүлээн авалт')}</span>
               </div>
+              <div className="h-4"></div>
             </div>
           </div>
 
-          {/* Box 4: YouTube Video removed from sidebar — shown next to About text below */}
+          {/* YouTube video */}
+          {youtubeEmbedUrl && (
+            <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm" style={{ aspectRatio: '16/9' }}>
+              <iframe
+                src={youtubeEmbedUrl}
+                title={`${hotelName} video`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Description + Video Section — separate cards side by side */}
-      {(additionalInfo?.About || youtubeEmbedUrl) && (
-      <div className="flex gap-4 mt-3 items-stretch">
-        {additionalInfo?.About && (
-          <div className="flex-1 min-w-0 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex flex-col">
-            <h2 className="text-h3 font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
-            {/* Operation stats */}
-            {basicInfo && (
-              <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-sm ">
-                {basicInfo.start_date && (
-                  <span>🏢 {t('hotelDetails.operatingSince', 'Үйл ажиллагаа эхэлсэн')}: {new Date(basicInfo.start_date).getFullYear()}</span>
-                )}
-                {basicInfo.total_hotel_rooms > 0 && (
-                  <span>🛏 {t('hotelDetails.totalRooms', 'Нийт өрөө')}: {basicInfo.total_hotel_rooms}</span>
-                )}
-                {basicInfo.part_of_group && basicInfo.group_name && (
-                  <span>🌐 {t('hotelDetails.partOfGroup', 'Сүлжээний нэг хэсэг')}: {basicInfo.group_name}</span>
-                )}
-              </div>
-            )}
-            <p ref={aboutRef} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4 flex-1 text-justify">
-              {additionalInfo.About}
-            </p>
-            {isAboutClamped && (
-              <button
-                onClick={() => setShowAboutModal(true)}
-                className="mt-3 flex justify-end text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
-              >
-                {t('hotelDetails.showAll', 'Дэлгэрэнгүй харах')}
-              </button>
-            )}
-                  {/* Highlights — shown right below About / YouTube section */}
-      {(() => {
-        const allFacilities: Array<{ name_en: string; name_mn: string; is_highlight: boolean }> = [
-          ...(propertyDetails?.general_facilities || []),
-          ...(propertyDetails?.additional_facilities || []),
-          ...(propertyDetails?.activities || []),
-          ...(propertyDetails?.accessibility_feature || []),
-        ];
-        const highlights = allFacilities.filter(f => f.is_highlight && (f.name_mn || f.name_en));
-        if (highlights.length === 0) return null;
-        return (
-          <div className="mt-3 bg-white dark:bg-gray-800 rounded-lg ">
-            <div className="flex items-center gap-2 mb-3">
-              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white">
-                {t('hotelDetails.facilityGroups.highlights', 'Онцлох нь')}
-              </h3>
-              <span className="text-sm text-gray-500 dark:text-gray-400">({highlights.length})</span>
-            </div>
-            <ul className="flex flex-wrap gap-2">
-              {highlights.map((f, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-md px-2 py-1 whitespace-nowrap">
-                  {/* <Check className="w-3.5 h-3.5 text-green-600 mt-0.5 shrink-0" /> */}
-                  <span className="leading-relaxed">{f.name_mn || f.name_en}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-      })()}
-          </div>
-        )}
-        {youtubeEmbedUrl && (
-          <div className="shrink-0 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700" style={{ width: '288px', aspectRatio: '16/9' }}>
-            <iframe
-              src={youtubeEmbedUrl}
-              title={`${hotelName} video`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            />
-          </div>
-        )}
-      </div>
-      )}
 
 
       <Dialog open={showAboutModal} onOpenChange={setShowAboutModal}>
