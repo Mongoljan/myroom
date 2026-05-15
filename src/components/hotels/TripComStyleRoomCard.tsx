@@ -178,7 +178,7 @@ export default function TripComStyleRoomCard({
             {/* Main image */}
             <div
               className="relative bg-gray-100 dark:bg-gray-700 cursor-pointer group overflow-hidden"
-              style={{ height: '240px' }}
+              style={{ height: '160px' }}
               onClick={() => setDetailOpen(true)}
             >
               {hasImages ? (
@@ -222,32 +222,7 @@ export default function TripComStyleRoomCard({
               )}
             </div>
 
-            {/* Thumbnail strip */}
-            {images.length > 1 && (
-              <div className="flex gap-1.5 px-2 py-2 border-b border-gray-100 dark:border-gray-700">
-                {images.slice(0, 5).map((img, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setImageIndex(i)}
-                    className={`relative w-11 h-8 rounded overflow-hidden shrink-0 border-2 transition-all ${
-                      i === imageIndex
-                        ? 'border-primary-600'
-                        : 'border-transparent hover:border-gray-300 dark:hover:border-gray-500'
-                    }`}
-                  >
-                    <SafeImage src={img.image} alt="" fill className="object-cover" />
-                  </button>
-                ))}
-                {images.length > 5 && (
-                  <button
-                    onClick={() => setDetailOpen(true)}
-                    className="w-11 h-8 rounded shrink-0 border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs font-medium text-gray-500 dark:text-gray-400 flex items-center justify-center"
-                  >
-                    +{images.length - 5}
-                  </button>
-                )}
-              </div>
-            )}
+
 
             {/* Bed type + capacity + size */}
             <div className="px-3 pt-2 pb-1 space-y-1">

@@ -108,7 +108,7 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
         
         <div className="flex justify-between items-stretch space-x-6 h-full overflow-x-auto scrollbar-hide">
       
-      <div className="flex items-stretch"> {sections.map((section) => (
+      <div className="flex items-stretch pb-1"> {sections.map((section) => (
             <button
               key={section.id}
               onClick={() => scrollToSection(section.id)}
@@ -124,7 +124,7 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
             </button>
           ))}
           </div>   
-           <div className="flex items-center">
+           {isSticky && <div className="flex items-center">
               <div className="flex mr-3">
                 <div className=" text-gray-800 dark:text-gray-300">{t('hotel.priceFrom', 'Эхлэх үнэ ')}</div> :
                 <div className="font-bold text-slate-900 dark:text-white "> {price.toLocaleString()}₮</div>
@@ -135,7 +135,7 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
               >
                 {t('hotel.bookNow', 'Өрөө сонгох')}
               </button>
-            </div>
+            </div>}
         </div>
       </div>
     </nav>

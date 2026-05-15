@@ -11,6 +11,7 @@ import TripComStyleRoomCard from './TripComStyleRoomCard';
 import BookingSummary from './BookingSummary';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import DateRangePicker from '@/components/common/DateRangePicker';
+import CustomGuestSelector from '@/components/search/CustomGuestSelector';
 
 interface ImprovedHotelRoomsSectionProps {
   hotelId: number;
@@ -343,11 +344,11 @@ export default function ImprovedHotelRoomsSection({
 
   return (
     <div>
-      {/* Room Search Bar — matches SearchHeader style */}
+      {/* Room Search Bar */}
       <div className="mb-6 bg-white dark:bg-gray-800 border border-primary rounded-xl shadow-sm overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
-          {/* Date Range */}
-          <div className="flex-1 p-2.5">
+          {/* Date Range — flex-1 for equal half */}
+          <div className="lg:flex-1 p-2.5">
             <div className="flex items-center">
               <Calendar className="w-4.5 h-4.5 text-gray-700 dark:text-gray-300 mr-2.5 shrink-0" />
               <div className="flex-1 min-w-0">
@@ -369,34 +370,27 @@ export default function ImprovedHotelRoomsSection({
             </div>
           </div>
 
-          {/* Guests */}
-          <div className="p-2.5 lg:shrink-0">
-            <div className="flex items-center gap-4">
-              <div>
-                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.adults', 'Том хүн')}</div>
-                <div className="flex items-center border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
-                  <button type="button" onClick={() => setAdultsCount(c => Math.max(1, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
-                  <span className="min-w-8 text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{adultsCount}</span>
-                  <button type="button" onClick={() => setAdultsCount(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
-                </div>
-              </div>
-              <div>
-                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('hotelRooms.children', 'Хүүхэд')}</div>
-                <div className="flex items-center border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-700">
-                  <button type="button" onClick={() => setChildrenCountLocal(c => Math.max(0, c - 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">−</button>
-                  <span className="min-w-8 text-center text-sm font-semibold text-gray-900 dark:text-white select-none">{childrenCountLocal}</span>
-                  <button type="button" onClick={() => setChildrenCountLocal(c => Math.min(10, c + 1))} className="px-2.5 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium text-base leading-none select-none">+</button>
-                </div>
-              </div>
-              <div className="flex items-end">
-                <button
-                  type="button"
-                  onClick={handleSearch}
-                  className="px-5 py-2 bg-secondary hover:bg-secondary/90 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap"
-                >
-                  {t('search.title', 'Хайх')}
-                </button>
-              </div>
+          {/* Guests — flex-1 for equal half + search button */}
+          <div className="lg:flex-1 flex items-center divide-x divide-gray-200 dark:divide-gray-700">
+            <CustomGuestSelector
+              adults={adultsCount}
+              childrenCount={childrenCountLocal}
+              rooms={1}
+              onGuestChange={(a, c) => {
+                setAdultsCount(a);
+                setChildrenCountLocal(c);
+              }}
+              compact={true}
+              className="flex-1"
+            />
+            <div className="p-2.5 shrink-0">
+              <button
+                type="button"
+                onClick={handleSearch}
+                className="px-5 py-2 bg-secondary hover:bg-secondary/90 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap"
+              >
+                {t('search.title', 'Хайх')}
+              </button>
             </div>
           </div>
         </div>

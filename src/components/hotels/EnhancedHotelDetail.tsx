@@ -656,7 +656,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
               {/* About */}
               {additionalInfo?.About && (
                 <>
-                  <h2 className="text-h3 font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
+                  <h2 className="text-[16px] font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
                   {basicInfo && (
                     <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-sm">
                       {basicInfo.start_date && (
@@ -700,7 +700,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                   <div className={additionalInfo?.About ? 'mt-6 pt-6 border-t border-gray-100 dark:border-gray-700' : ''}>
                     <div className="flex items-center gap-2 mb-3">
                       <Gem className="w-4 h-4 text-primary" />
-                      <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white">
+                      <h3 className="text-[16px] font-semibold text-gray-900 dark:text-white">
                         {t('hotelDetails.facilityGroups.highlights', 'Онцлох нь')}
                       </h3>
                     </div>
@@ -874,7 +874,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
 
       <Dialog open={showAboutModal} onOpenChange={setShowAboutModal}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogTitle className="text-h3 font-semibold text-gray-900 dark:text-white mb-1">
+          <DialogTitle className="text-[16px] font-semibold text-gray-900 dark:text-white mb-1">
             {t('hotelDetails.aboutProperty', 'Тухай')}
           </DialogTitle>
           {basicInfo && (

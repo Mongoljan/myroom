@@ -73,7 +73,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
   return (
     <div className="bg-white dark:bg-gray-900 min-h-screen">
       {/* Hero section with ID for sticky nav detection */}
-      <div id="hotel-hero" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div id="hotel-hero" className="bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div id="overview">
             <EnhancedHotelDetail
