@@ -117,7 +117,8 @@ export default function TripComStyleRoomCard({
   const selectedQty =
     bookingItems.find((i) => i.room.id === room.id && i.priceType === 'base')?.quantity ?? 0;
 
-  const maxQty = room.number_of_rooms_to_sell;
+  // Use rooms_possible (date-specific from API) when > 0, else fall back to number_of_rooms_to_sell (total inventory)
+  const maxQty = room.rooms_possible > 0 ? room.rooms_possible : room.number_of_rooms_to_sell;
   const isLowStock = maxQty > 0 && maxQty <= 5;
 
   // Discount

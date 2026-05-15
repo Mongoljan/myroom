@@ -44,7 +44,7 @@ export default function RecommendedHotels() {
       'https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=400&h=300&fit=crop&auto=format',
       'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&h=300&fit=crop&auto=format'
     ];
-    return fallbacks[hotel.hotel.pk % fallbacks.length];
+    return fallbacks[(hotel.hotel?.pk ?? 0) % fallbacks.length];
   };
 
   // Get badge color for tab
@@ -234,7 +234,7 @@ export default function RecommendedHotels() {
                 }
               }}
             >
-              {hotels.slice(0, 8).map((hotel, index) => (
+              {hotels.slice(0, 8).filter(h => h.hotel?.pk != null).map((hotel, index) => (
                 <SectionHotelCard
                   key={hotel.hotel.pk}
                   id={hotel.hotel.pk.toString()}

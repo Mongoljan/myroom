@@ -103,7 +103,7 @@ export default function ImprovedHotelRoomsSection({
 
         // Load enriched room data and property policy in parallel
         const [roomsData, policies] = await Promise.all([
-          hotelRoomsService.getEnrichedHotelRooms(hotelId),
+          hotelRoomsService.getEnrichedHotelRooms(hotelId, effectiveCheckIn, effectiveCheckOut),
           ApiService.getPropertyPolicies(hotelId).catch(() => []),
         ]);
         setRooms(roomsData);
@@ -153,7 +153,7 @@ export default function ImprovedHotelRoomsSection({
     };
 
     loadRoomsAndPrices();
-  }, [hotelId]);
+  }, [hotelId, effectiveCheckIn, effectiveCheckOut]);
 
   // Booking management
   const updateRoomQuantity = (room: EnrichedHotelRoom, priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => {
@@ -292,9 +292,12 @@ export default function ImprovedHotelRoomsSection({
     );
   }
 
-  // Filter available rooms with pricing - BOTH inventory AND valid price_breakdown required
+  // Filter available rooms with pricing - use rooms_possible (date-specific) when available, else number_of_rooms_to_sell
   const availableRooms = rooms.filter(room => {
-    const hasInventory = room.number_of_rooms_to_sell > 0;
+    // rooms_possible is populated when dates are passed to the API; it reflects actual date availability.
+    // Fall back to number_of_rooms_to_sell (total inventory) when rooms_possible is 0/absent.
+    const effectiveAvailability = room.rooms_possible > 0 ? room.rooms_possible : room.number_of_rooms_to_sell;
+    const hasInventory = effectiveAvailability > 0;
     
     // Use the new hasValidPricing flag from enriched room data
     // This checks if room.price_breakdown.final_customer_price > 0

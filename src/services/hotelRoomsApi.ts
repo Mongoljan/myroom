@@ -181,9 +181,13 @@ class HotelRoomsService {
     };
   }
 
-  async getHotelRooms(hotelId: number): Promise<HotelRoom[]> {
+  async getHotelRooms(hotelId: number, checkIn?: string, checkOut?: string): Promise<HotelRoom[]> {
     try {
-      const response = await fetch(`https://dev.kacc.mn/api/roomsInHotels/?hotel=${hotelId}`, {
+      let url = `https://dev.kacc.mn/api/roomsInHotels/?hotel=${hotelId}`;
+      if (checkIn && checkOut) {
+        url += `&check_in=${checkIn}&check_out=${checkOut}`;
+      }
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -201,10 +205,10 @@ class HotelRoomsService {
     }
   }
 
-  async getEnrichedHotelRooms(hotelId: number): Promise<EnrichedHotelRoom[]> {
+  async getEnrichedHotelRooms(hotelId: number, checkIn?: string, checkOut?: string): Promise<EnrichedHotelRoom[]> {
     try {
       const [rooms, allData] = await Promise.all([
-        this.getHotelRooms(hotelId),
+        this.getHotelRooms(hotelId, checkIn, checkOut),
         this.getAllRoomData()
       ]);
 

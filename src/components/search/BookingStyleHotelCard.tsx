@@ -36,8 +36,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
     bed_types?: { id: number; name: string }[];
   }
   const [roomData, setRoomData] = useState<RoomReferenceData | null>(null);
-  const [roomAvailability, setRoomAvailability] = useState<number | null>(null);
-  const [availableRoomsWithPrice, setAvailableRoomsWithPrice] = useState<number>(0);
+
   
   // Get search parameters
   const rooms = parseInt(searchParams?.get('rooms') || '1');
@@ -222,40 +221,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                 const finalRoom = matchingRoom || rooms[0];
                 setCheapestRoom(finalRoom);
 
-                // Calculate rooms that have both price AND availability
-                const roomsWithPriceAndAvailability = rooms.filter(room => {
-                  // Check if this room has a price
-                  const hasPrice = prices.some(price =>
-                    price.room_type === room.room_type &&
-                    price.room_category === room.room_category &&
-                    price.base_price > 0
-                  );
-                  // Check if room has availability to sell
-                  const hasAvailability = room.number_of_rooms_to_sell > 0;
-                  return hasPrice && hasAvailability;
-                });
 
-                // Sum up available rooms with prices
-                const totalAvailableWithPrice = roomsWithPriceAndAvailability.reduce(
-                  (sum, room) => sum + room.number_of_rooms_to_sell, 0
-                );
-                setAvailableRoomsWithPrice(totalAvailableWithPrice);
-
-                // Check real-time availability for the cheapest room if dates provided
-                if (finalRoom && checkIn && checkOut) {
-                  try {
-                    const availabilityResponse = await ApiService.checkAvailability(
-                      hotel.hotel_id,
-                      cheapest.room_type,
-                      cheapest.room_category,
-                      checkIn,
-                      checkOut
-                    );
-                    setRoomAvailability(availabilityResponse.available_rooms);
-                  } catch (availError) {
-                    setRoomAvailability(null);
-                  }
-                }
               } else {
                 setCheapestRoom(null);
               }
@@ -406,10 +372,10 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         {t('hotel.freeCancellationUntil', { date: '10/31' }, '10/31-нээс өмнө цуцлах боломжтой.')}
                       </p>
 
-                      {/* Availability Warning */}
-                      {((roomAvailability !== null ? roomAvailability : availableRoomsWithPrice) > 0) && (
+                      {/* Availability Warning — from search API rooms_possible */}
+                      {hotel.rooms_possible > 0 && hotel.rooms_possible <= 5 && (
                         <p className="text-[13px] font-medium text-red-500 dark:text-red-400">
-                          {t('hotel.onlyRoomsLeft', { count: roomAvailability !== null ? roomAvailability : availableRoomsWithPrice }, `Сүүлийн ${roomAvailability !== null ? roomAvailability : availableRoomsWithPrice} өрөө үлдлээ.`)}
+                          {t('hotel.onlyRoomsLeft', { count: hotel.rooms_possible }, `Сүүлийн ${hotel.rooms_possible} өрөө үлдлээ.`)}
                         </p>
                       )}
 
