@@ -1,13 +1,12 @@
 'use client';
 
-import { Star, MapPin, Wifi, Car, Utensils, Users, Dumbbell, Clock, User, Bed, BedDouble, BedSingle, X, CalendarX } from 'lucide-react';
+import { Star, MapPin, User, X, CalendarX } from 'lucide-react';
 import { BedTypeIcon } from '@/utils/bedTypeIcons';
 import { FaChild } from 'react-icons/fa';
-import { SearchHotelResult, AdditionalInfo, PropertyDetails, RoomPrice, Room } from '@/types/api';
+import { SearchHotelResult } from '@/types/api';
 import { SEARCH_DESIGN_SYSTEM } from '@/styles/search-design-system';
-import { memo, useState, useEffect } from 'react';
+import { memo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import GoogleMapModal from '@/components/common/GoogleMapModal';
 import HotelImageGallery from './HotelImageGallery';
@@ -21,21 +20,8 @@ interface HotelCardProps {
 
 function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: HotelCardProps) {
   const { t } = useHydratedTranslation();
-  const [propertyDetails, setPropertyDetails] = useState<PropertyDetails | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_additionalInfo, setAdditionalInfo] = useState<AdditionalInfo | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_roomPrices, setRoomPrices] = useState<RoomPrice[]>([]);
-  const [cheapestRoom, setCheapestRoom] = useState<Room | null>(null);
-  const [cheapestPrice, setCheapestPrice] = useState<RoomPrice | null>(null);
   const [showAllFacilities, setShowAllFacilities] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
-  interface RoomReferenceData {
-    room_types?: { id: number; name: string }[];
-    room_rates?: { id: number; name: string }[];
-    bed_types?: { id: number; name: string }[];
-  }
-  const [roomData, setRoomData] = useState<RoomReferenceData | null>(null);
 
   
   // Get search parameters
@@ -53,63 +39,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
     return match ? parseInt(match[1]) : 0;
   };
 
-  // Helper functions to get names from IDs
-  const getRoomTypeName = (id: number) => {
-    return roomData?.room_types?.find(rt => rt.id === id)?.name || 'Room';
-  };
-
-  const getRoomCategoryName = (id: number) => {
-    return roomData?.room_rates?.find(rr => rr.id === id)?.name || 'Room';
-  };
-
   // Helper to render person icons based on capacity - Trip.com style
-  const renderPersonIcons = (adults: number, children: number = 0) => {
-    return (
-      <div className="flex items-center gap-0.5" title={`${adults} adults${children > 0 ? `, ${children} children` : ''}`}>
-        {/* Adult icons - larger */}
-        {Array.from({ length: adults }).map((_, i) => (
-          <User key={`adult-${i}`} className="w-4 h-4 text-gray-700 dark:text-gray-300" strokeWidth={2.5} />
-        ))}
-        {/* Child icons - smaller with different style */}
-        {children > 0 && Array.from({ length: children }).map((_, i) => (
-          <FaChild key={`child-${i}`} className="w-3 h-3 text-gray-500 dark:text-gray-400" />
-        ))}
-      </div>
-    );
-  };
-
-  // Helper to render bed icons - Trip.com style with appropriate bed types
-  const renderBedIcons = (bedTypeId: number, bedCount: number = 1) => {
-    const bedType = roomData?.bed_types?.find(bt => bt.id === bedTypeId);
-    const bedName = bedType?.name || 'Bed';
-
-    // Determine bed type based on name - Trip.com uses visual cues
-    const isSingleBed = bedName.toLowerCase().includes('single') ||
-                        bedName.toLowerCase().includes('1 хүний') ||
-                        bedName.toLowerCase().includes('ганц');
-
-    const isDoubleBed = bedName.toLowerCase().includes('double') ||
-                        bedName.toLowerCase().includes('king') ||
-                        bedName.toLowerCase().includes('queen') ||
-                        bedName.toLowerCase().includes('2 хүний') ||
-                        bedName.toLowerCase().includes('давхар');
-
-    // Use appropriate icon: BedSingle for single beds, BedDouble for double/king/queen
-    const BedIcon = isSingleBed ? BedSingle : isDoubleBed ? BedDouble : Bed;
-
-    return (
-      <div className="flex items-center gap-1" title={bedName}>
-        {Array.from({ length: bedCount }).map((_, i) => (
-          <BedIcon
-            key={i}
-            className={`${isDoubleBed ? 'w-5 h-5' : 'w-4 h-4'} text-gray-600 dark:text-gray-400`}
-            strokeWidth={2}
-          />
-        ))}
-      </div>
-    );
-  };
-
   const stars = getStarRating(hotel.rating_stars.value);
   
   // Calculate pricing with discount support
@@ -175,68 +105,8 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
     return `/search?${params.toString()}`;
   };
 
-  // Load property details, additional info, and room prices
-  useEffect(() => {
-    if (!hotel.hotel_id) return; // Guard against falsy hotel_id
-
-    const loadPropertyData = async () => {
-      try {
-        // Load room reference data from API
-        const roomDataResponse = await fetch('https://dev.kacc.mn/api/all-room-data/');
-        const roomDataJson = await roomDataResponse.json();
-        setRoomData(roomDataJson);
-
-        // Load property details
-        const detailsArray = await ApiService.getPropertyDetails(hotel.hotel_id);
-        const details = detailsArray?.[0];
-        if (details) {
-          setPropertyDetails(details);
-          if (details.Additional_Information) {
-            const addInfo = await ApiService.getAdditionalInfo(details.Additional_Information);
-            setAdditionalInfo(addInfo);
-          }
-        }
-
-        // Load room prices
-        const prices = await ApiService.getRoomPrices(hotel.hotel_id);
-        if (prices && prices.length > 0) {
-          setRoomPrices(prices);
-
-          // Find cheapest price
-          const sortedPrices = [...prices].sort((a, b) => a.base_price - b.base_price);
-          const cheapest = sortedPrices[0];
-          setCheapestPrice(cheapest);
-
-          // Load room details for cheapest room
-          if (cheapest) {
-            try {
-              const roomsResponse = await ApiService.getRoomsInHotel(hotel.hotel_id);
-              // Ensure we have a valid array response
-              const rooms = Array.isArray(roomsResponse) ? roomsResponse : [];
-
-              if (rooms.length > 0) {
-                const matchingRoom = rooms.find(
-                  r => r.room_type === cheapest.room_type && r.room_category === cheapest.room_category
-                );
-                const finalRoom = matchingRoom || rooms[0];
-                setCheapestRoom(finalRoom);
-
-
-              } else {
-                setCheapestRoom(null);
-              }
-            } catch (roomError) {
-              setCheapestRoom(null);
-            }
-          }
-        }
-      } catch (error) {
-      }
-    };
-
-    loadPropertyData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hotel.hotel_id]);
+  // Room info is sourced directly from the search API response (hotel.cheapest_room).
+  // No per-card API calls needed — eliminates 5 round trips to VPS per card.
 
 
   if (viewMode === 'list') {
@@ -309,62 +179,48 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
               </div>
 
               {/* Room Info + Pricing — single bordered box with vertical divider */}
-              {cheapestPrice && cheapestRoom && (
+              {hotel.cheapest_room && (
                 <div className="mt-auto pt-2">
                   <div className="rounded-lg border border-gray-200 dark:border-gray-700 flex overflow-hidden">
 
-                    {/* Left: Room info */}
+                    {/* Left: Room info — data sourced from search API, no extra fetch needed */}
                     <div className="flex-1 min-w-0 p-3">
 
                       {/* Room type · Room category */}
                       <div className="flex items-center gap-1.5 flex-wrap mb-1">
                         <h4 className="text-[14px] font-semibold text-gray-900 dark:text-white">
-                          {hotel.cheapest_room?.room_type_label || getRoomTypeName(cheapestRoom.room_type)}
+                          {hotel.cheapest_room.room_type_label}
                         </h4>
-                        {(() => {
-                          const cat = hotel.cheapest_room?.room_category_label || getRoomCategoryName(cheapestRoom.room_category);
-                          return cat && cat !== 'Room' ? (
-                            <span className="text-[14px] text-gray-600 dark:text-gray-400">{cat}</span>
-                          ) : null;
-                        })()}
-                        {cheapestRoom.room_size && (
-                          <>
-                            <span className="text-gray-300 dark:text-gray-600">·</span>
-                            <span className="text-[14px] text-gray-500 dark:text-gray-400">{cheapestRoom.room_size}м²</span>
-                          </>
+                        {hotel.cheapest_room.room_category_label && hotel.cheapest_room.room_category_label !== 'Room' && (
+                          <span className="text-[14px] text-gray-600 dark:text-gray-400">{hotel.cheapest_room.room_category_label}</span>
                         )}
                       </div>
 
                       {/* Capacity counts + bed icons */}
                       <div className="flex items-center gap-2 mb-1.5">
                         {/* Adult count */}
-                        {(cheapestRoom.adultQty || 2) > 0 && (
+                        {(hotel.cheapest_room.capacity_per_room_adults || 2) > 0 && (
                           <span className="flex items-center gap-0.5 text-[13px] text-gray-600 dark:text-gray-400">
                             <User className="w-3.5 h-3.5" strokeWidth={2} />
-                            <span>×{cheapestRoom.adultQty || 2}</span>
+                            <span>×{hotel.cheapest_room.capacity_per_room_adults || 2}</span>
                           </span>
                         )}
                         {/* Child count */}
-                        {(cheapestRoom.childQty || 0) > 0 && (
+                        {(hotel.cheapest_room.capacity_per_room_children || 0) > 0 && (
                           <span className="flex items-center gap-0.5 text-[13px] text-gray-500 dark:text-gray-400">
                             <FaChild className="w-3 h-3" />
-                            <span>×{cheapestRoom.childQty}</span>
+                            <span>×{hotel.cheapest_room.capacity_per_room_children}</span>
                           </span>
                         )}
-                        {/* Bed icons */}
-                        {hotel.bed_types && hotel.bed_types.length > 0 ? (
+                        {/* Bed icons from search API */}
+                        {hotel.bed_types && hotel.bed_types.length > 0 && (
                           <>
                             <span className="text-gray-300 dark:text-gray-600">|</span>
                             {hotel.bed_types.map(bt => (
                               <BedTypeIcon key={bt.id} name={bt.name} className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                             ))}
                           </>
-                        ) : cheapestRoom.bed_type ? (
-                          <>
-                            <span className="text-gray-300 dark:text-gray-600">|</span>
-                            {renderBedIcons(cheapestRoom.bed_type, 1)}
-                          </>
-                        ) : null}
+                        )}
                       </div>
 
                       {/* Cancellation Policy */}
@@ -491,7 +347,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
               )}
 
               {/* Not available banner */}
-              {hotel.is_available === false && !cheapestPrice && (
+              {hotel.is_available === false && !hotel.cheapest_room && (
                 <div className="mt-auto pt-2">
                   <div className="rounded-lg border border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/30 p-3">
                     <div className="flex items-center gap-2 mb-2">
