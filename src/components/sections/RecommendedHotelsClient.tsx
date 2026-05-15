@@ -17,11 +17,16 @@ interface Props {
 export default function RecommendedHotelsClient({ initialHotels }: Props) {
   const { t } = useHydratedTranslation();
   const [activeTab, setActiveTab] = useState<TabKey>('popular');
-  // isLoading starts false — the popular tab data arrives from the server.
-  const [isLoading, setIsLoading] = useState(false);
-  // Cache responses per-tab so switching back doesn't re-fetch.
+  // If server returned hotels, start ready. If empty (server fetch failed), show
+  // skeleton immediately and let the client-side fetch below pick it up.
+  const [isLoading, setIsLoading] = useState(initialHotels.length === 0);
+  // undefined  = not fetched yet  →  triggers client fetch
+  // []         = fetched, genuinely empty  →  shows empty state
+  // SuggestedHotel[]  = has data
   const [tabCache, setTabCache] = useState<Partial<Record<TabKey, SuggestedHotel[]>>>({
-    popular: initialHotels,
+    // Only pre-populate if server actually gave us data; otherwise leave undefined
+    // so the useEffect below fires a client-side fetch as a fallback.
+    popular: initialHotels.length > 0 ? initialHotels : undefined,
   });
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
