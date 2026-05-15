@@ -188,7 +188,7 @@ export default function SimilarHotels({ currentHotelId, checkIn, checkOut }: Sim
 
                 <div className="flex items-center gap-1">
                   <div className="flex items-center gap-1">
-                    {[...Array(Math.floor(parseFloat(hotel.rating_stars?.value || '0')))].map((_, i) => (
+                    {[...Array(Math.max(0, Math.floor(parseFloat(hotel.rating_stars?.value || '0') || 0)))].map((_, i) => (
                       <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>

@@ -327,7 +327,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   // Use basicInfo.star_rating (hotel category stars) if available, otherwise fall back to search API value
   // Normalize: if value > 5 it was stored as a rating ID (offset by 2), convert to actual star count
   const rawStarRating = basicInfo?.star_rating ?? getStarRating(hotel.rating_stars?.value || 0);
-  const starRating = rawStarRating > 5 ? rawStarRating - 2 : rawStarRating;
+  const starRating = Math.max(0, Math.floor(rawStarRating > 5 ? rawStarRating - 2 : rawStarRating));
 
   // Generate nearby places based on location
   const getNearbyPlaces = (): NearbyPlace[] => {
