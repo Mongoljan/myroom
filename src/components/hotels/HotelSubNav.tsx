@@ -100,20 +100,20 @@ export default function HotelSubNav({ activeSection, onSectionChange, hotelName,
 
   return (
     <nav className={`
-      ${isSticky ? 'fixed top-0 left-0 h-16 right-0 z-40 shadow-md bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm' : 'relative bg-white dark:bg-gray-800'} 
+      ${isSticky ? 'fixed top-0 left-0 h-20 right-0 z-40 shadow-md bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm' : 'relative bg-white dark:bg-gray-800'} 
       transition-all duration-300
     `}>
       <div className="max-w-7xl text-[16px] mx-auto px-4 sm:px-6 lg:px-8 h-full">
        
         
-        <div className="flex justify-between items-center space-x-6 h-full overflow-x-auto scrollbar-hide">
+        <div className="flex justify-between items-stretch space-x-6 h-full overflow-x-auto scrollbar-hide">
       
-      <div> {sections.map((section) => (
+      <div className="flex items-stretch"> {sections.map((section) => (
             <button
               key={section.id}
               onClick={() => scrollToSection(section.id)}
               className={`
-                py-3 px-2 font-medium border-b-2 whitespace-nowrap transition-colors duration-200
+                px-3 font-medium border-b-2 whitespace-nowrap transition-colors duration-200 flex items-center
                 ${activeSection === section.id
                   ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white'
                   : 'border-transparent text-gray-800 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-500'
