@@ -96,7 +96,7 @@ export class ApiService {
   private static async request<T>(
     endpoint: string,
     options: RequestInit = {},
-    cacheOpts?: { key: string; ttl: number }
+    cacheOpts?: { key: string; ttl: number; revalidate?: number }
   ): Promise<T> {
     try {
       const fullUrl = `${BASE_URL}${endpoint}`;
@@ -130,7 +130,13 @@ export class ApiService {
         headers['Content-Type'] = 'application/json';
       }
       
-  const fetchPromise = fetch(fullUrl, { ...options, headers });
+  // Add Next.js ISR hint so Vercel edge caches stable API responses.
+  // On the client this property is silently ignored by the browser.
+  const fetchOpts: RequestInit & { next?: { revalidate?: number | false } } = { ...options, headers };
+  if (cacheOpts?.revalidate !== undefined && isGet) {
+    fetchOpts.next = { revalidate: cacheOpts.revalidate };
+  }
+  const fetchPromise = fetch(fullUrl, fetchOpts);
   if (cacheOpts && isGet) ApiCache.setInFlight(cacheOpts.key, fetchPromise as unknown as Promise<T>);
   const response = await fetchPromise;
 
@@ -260,7 +266,7 @@ export class ApiService {
     return this.request(
       `/suggestHotels/?tab=${tab}`,
       {},
-      { key: cacheKey, ttl: ApiCache.TTL.MED }
+      { key: cacheKey, ttl: ApiCache.TTL.MED, revalidate: 300 }
     );
   }
 

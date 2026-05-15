@@ -1,5 +1,9 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
+
+// ISR: regenerate home page at most once every 5 minutes.
+// Vercel serves the cached HTML instantly to all users between revalidations.
+export const revalidate = 300;
 import WhyChooseUs from "@/components/sections/WhyChooseUs";
 import RecentlyViewed from "@/components/sections/RecentlyViewed";
 import RecommendedHotels from "@/components/sections/RecommendedHotels";
