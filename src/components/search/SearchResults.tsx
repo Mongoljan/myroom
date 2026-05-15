@@ -617,7 +617,7 @@ export default function SearchResults() {
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden mb-[40px]">
       <SearchHeader />
 
       {/* Main Results Container — fills remaining height */}

@@ -140,7 +140,7 @@ export default function HelpPageContent() {
       </section>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* FAQ Section */}
         <section id="faq" className="mb-12">
           <motion.div

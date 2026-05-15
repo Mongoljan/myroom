@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Star, MapPin, Wifi, ChevronLeft, ChevronRight, Building, Users,
@@ -43,6 +43,8 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   const [soumMap, setSoumMap] = useState<Map<number, string>>(new Map());
   const [showMapModal, setShowMapModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const [isAboutClamped, setIsAboutClamped] = useState(false);
+  const aboutRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     const fetchHotelDetails = async () => {
@@ -86,6 +88,12 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
 
     fetchHotelDetails();
   }, [hotel.hotel_id]);
+
+  useEffect(() => {
+    if (aboutRef.current) {
+      setIsAboutClamped(aboutRef.current.scrollHeight > aboutRef.current.clientHeight);
+    }
+  }, [additionalInfo?.About]);
 
   const getStarRating = (value: string | number) => {
     if (typeof value === 'number') return value;
@@ -747,7 +755,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             <div className="flex items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-blue-600" />
               <h3 className="text-[18px] font-semibold text-gray-900 dark:text-white">
-                {t('hotelDetails.surroundings', 'Орчин тойрон')}
+                {t('hotelDetails.surroundings', 'Ойр орчим')}
               </h3>
             </div>
             
@@ -778,7 +786,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           </div>
 
           {/* Box 3: Property Highlights */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 shrink-0">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 flex-1 min-h-0 overflow-hidden">
             <h4 className="text-[18px] font-semibold text-gray-900 dark:text-white mb-3">{t('hotelDetails.propertyHighlights', 'Буудлын онцлогууд')}</h4>
             <div className="space-y-2.5">
               <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -805,18 +813,10 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
       <div className="flex gap-4 mt-3 items-stretch">
         {additionalInfo?.About && (
           <div className="flex-1 min-w-0 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 flex flex-col">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-h3 font-semibold text-gray-900 dark:text-white">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
-              <button
-                onClick={() => setShowAboutModal(true)}
-                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium shrink-0 ml-4"
-              >
-                {t('hotelDetails.showAll', 'Бүгдийг харах')}
-              </button>
-            </div>
+            <h2 className="text-h3 font-semibold text-gray-900 dark:text-white mb-2">{t('hotelDetails.aboutProperty', 'Тухай')}</h2>
             {/* Operation stats */}
             {basicInfo && (
-              <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-sm ">
                 {basicInfo.start_date && (
                   <span>🏢 {t('hotelDetails.operatingSince', 'Үйл ажиллагаа эхэлсэн')}: {new Date(basicInfo.start_date).getFullYear()}</span>
                 )}
@@ -828,9 +828,46 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                 )}
               </div>
             )}
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4 flex-1 text-justify">
+            <p ref={aboutRef} className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-4 flex-1 text-justify">
               {additionalInfo.About}
             </p>
+            {isAboutClamped && (
+              <button
+                onClick={() => setShowAboutModal(true)}
+                className="mt-3 flex justify-end text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+              >
+                {t('hotelDetails.showAll', 'Дэлгэрэнгүй харах')}
+              </button>
+            )}
+                  {/* Highlights — shown right below About / YouTube section */}
+      {(() => {
+        const allFacilities: Array<{ name_en: string; name_mn: string; is_highlight: boolean }> = [
+          ...(propertyDetails?.general_facilities || []),
+          ...(propertyDetails?.additional_facilities || []),
+          ...(propertyDetails?.activities || []),
+          ...(propertyDetails?.accessibility_feature || []),
+        ];
+        const highlights = allFacilities.filter(f => f.is_highlight && (f.name_mn || f.name_en));
+        if (highlights.length === 0) return null;
+        return (
+          <div className="mt-3 bg-white dark:bg-gray-800 rounded-lg ">
+            <div className="flex items-center gap-2 mb-3">
+              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white">
+                {t('hotelDetails.facilityGroups.highlights', 'Онцлох нь')}
+              </h3>
+              <span className="text-sm text-gray-500 dark:text-gray-400">({highlights.length})</span>
+            </div>
+            <ul className="flex flex-wrap gap-2">
+              {highlights.map((f, i) => (
+                <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-md px-2 py-1 whitespace-nowrap">
+                  {/* <Check className="w-3.5 h-3.5 text-green-600 mt-0.5 shrink-0" /> */}
+                  <span className="leading-relaxed">{f.name_mn || f.name_en}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })()}
           </div>
         )}
         {youtubeEmbedUrl && (
@@ -847,43 +884,14 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
       </div>
       )}
 
-      {/* Highlights — shown right below About / YouTube section */}
-      {(() => {
-        const allFacilities: Array<{ name_en: string; name_mn: string; is_highlight: boolean }> = [
-          ...(propertyDetails?.general_facilities || []),
-          ...(propertyDetails?.additional_facilities || []),
-          ...(propertyDetails?.activities || []),
-          ...(propertyDetails?.accessibility_feature || []),
-        ];
-        const highlights = allFacilities.filter(f => f.is_highlight && (f.name_mn || f.name_en));
-        if (highlights.length === 0) return null;
-        return (
-          <div className="mt-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Gem className="w-4 h-4 text-amber-500 shrink-0" />
-              <h3 className="text-[15px] font-semibold text-gray-900 dark:text-white">
-                {t('hotelDetails.facilityGroups.highlights', 'Онцлох нь')}
-              </h3>
-              <span className="text-sm text-gray-500 dark:text-gray-400">({highlights.length})</span>
-            </div>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-2">
-              {highlights.map((f, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
-                  <Check className="w-3.5 h-3.5 text-green-600 mt-0.5 shrink-0" />
-                  <span className="leading-relaxed">{f.name_mn || f.name_en}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        );
-      })()}
+
       <Dialog open={showAboutModal} onOpenChange={setShowAboutModal}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogTitle className="text-h3 font-semibold text-gray-900 dark:text-white mb-1">
             {t('hotelDetails.aboutProperty', 'Тухай')}
           </DialogTitle>
           {basicInfo && (
-            <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4 text-sm font-bold">
               {basicInfo.start_date && (
                 <span>🏢 {t('hotelDetails.operatingSince', 'Үйл ажиллагаа эхэлсэн')}: {new Date(basicInfo.start_date).getFullYear()}</span>
               )}

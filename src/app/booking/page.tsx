@@ -194,7 +194,7 @@ function BookingContent() {
     };
 
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-8 print:bg-white print:py-0">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-10 print:bg-white print:py-0">
         <div className="max-w-4xl mx-auto px-4 print:px-0 print:max-w-full">
           {/* Action Buttons - Hidden on print */}
           <div className="mb-4 flex justify-between items-center print:hidden">

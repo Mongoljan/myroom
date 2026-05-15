@@ -74,7 +74,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
     <div className="bg-white dark:bg-gray-900 min-h-screen">
       {/* Hero section with ID for sticky nav detection */}
       <div id="hotel-hero" className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
           <div id="overview">
             <EnhancedHotelDetail
               hotel={hotel}
@@ -96,8 +96,8 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
       />
 
       {/* Content Sections - More Compact */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="space-y-10">
           {/* Rooms Section */}
           <div id="rooms" className="">
             <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-4">{t('hotelDetails.selectRoom', 'Өрөө сонгох')}</h2>
