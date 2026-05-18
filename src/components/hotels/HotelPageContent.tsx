@@ -42,7 +42,6 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
   const bannerMouseY = useMotionValue(0);
   const [isBannerHovered, setIsBannerHovered] = useState(false);
   const bannerMask = useMotionTemplate`radial-gradient(420px circle at ${bannerMouseX}px ${bannerMouseY}px, white, transparent 80%)`;
-  const bannerSpotlight = useMotionTemplate`radial-gradient(380px circle at ${bannerMouseX}px ${bannerMouseY}px, rgba(99,102,241,0.25), transparent 70%)`;
 
   const handleSectionChange = useCallback((section: string) => {
     setActiveSection(section);

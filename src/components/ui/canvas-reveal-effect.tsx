@@ -157,14 +157,14 @@ const ShaderMaterial = ({
     const timestamp = clock.getElapsedTime();
     if (timestamp - lastFrameTime < 1 / maxFps) return;
     lastFrameTime = timestamp;
-    const material: any = ref.current.material;
+    const material = ref.current.material as THREE.ShaderMaterial;
     material.uniforms.u_time.value = timestamp;
   });
 
   const getUniforms = () => {
-    const preparedUniforms: any = {};
+    const preparedUniforms: Record<string, { value: unknown; type?: string }> = {};
     for (const uniformName in uniforms) {
-      const uniform: any = uniforms[uniformName];
+      const uniform = uniforms[uniformName] as { value: number[] | number[][] | number; type: string };
       switch (uniform.type) {
         case "uniform1f":
           preparedUniforms[uniformName] = { value: uniform.value, type: "1f" };

@@ -45,7 +45,6 @@ export default function ModernHero() {
   const heroMouseY = useMotionValue(0);
   const [isHeroHovered, setIsHeroHovered] = useState(false);
   const heroMask = useMotionTemplate`radial-gradient(420px circle at ${heroMouseX}px ${heroMouseY}px, white, transparent 80%)`;
-  const heroSpotlight = useMotionTemplate`radial-gradient(420px circle at ${heroMouseX}px ${heroMouseY}px, rgba(99,102,241,0.22), transparent 70%)`;
   const locationRef = useRef<HTMLDivElement>(null);
   const locationInputRef = useRef<HTMLInputElement>(null);
   const locationDropdownRef = useRef<HTMLDivElement>(null);
