@@ -171,6 +171,9 @@ export default function ImprovedHotelRoomsSection({
       const priceOptions = roomPrices[priceKey];
       if (!priceOptions) return;
 
+      // Shared pool: rooms_possible (or fallback) minus what the other price type already holds
+      const maxQty = room.rooms_possible > 0 ? room.rooms_possible : room.number_of_rooms_to_sell;
+
       let price = priceOptions.basePrice;
       if (priceType === 'halfDay' && priceOptions.halfDayPrice) {
         price = priceOptions.halfDayPrice;
@@ -180,15 +183,22 @@ export default function ImprovedHotelRoomsSection({
         price = priceOptions.breakfastPrice;
       }
 
-      const newItem: BookingItem = {
-        room,
-        priceType,
-        quantity,
-        price,
-        maxQuantity: room.number_of_rooms_to_sell
-      };
-
       setBookingItems(prev => {
+        // Calculate how many rooms the OTHER price types for this room are using
+        const otherQty = prev
+          .filter(item => item.room.id === room.id && item.priceType !== priceType)
+          .reduce((sum, item) => sum + item.quantity, 0);
+        const cappedQty = Math.min(quantity, maxQty - otherQty);
+        if (cappedQty <= 0) return prev.filter(item => !(item.room.id === room.id && item.priceType === priceType));
+
+        const newItem: BookingItem = {
+          room,
+          priceType,
+          quantity: cappedQty,
+          price,
+          maxQuantity: maxQty,
+        };
+
         const existingIndex = prev.findIndex(item =>
           item.room.id === room.id && item.priceType === priceType
         );

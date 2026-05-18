@@ -464,7 +464,6 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
               </span>
               {hotel.google_map && (
                 <>
-                  <span className="text-gray-300 dark:text-gray-600">•</span>
                   <button
                     onClick={() => setShowMapModal(true)}
                     className="flex items-center gap-1  hover:text-slate-800 text-sm font-medium underline text-primary"
@@ -773,7 +772,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
 
           {/* Star Rating — only when no basicInfo.star_rating */}
           {!basicInfo?.star_rating && hotel.rating_stars?.value && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700  p-3">
               <div className="flex items-center gap-2.5">
                 <div className="bg-blue-600 text-white px-2.5 py-1.5 rounded-lg">
                   <span className="text-h3 font-bold">{parseFloat(hotel.rating_stars.value).toFixed(1)}</span>
@@ -786,7 +785,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           )}
 
           {/* Зочдын үнэлгээ */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 min-h-40">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-h-40">
             <div className="flex items-center gap-2 mb-2">
               <Star className="w-4 h-4 text-yellow-400" />
               <h3 className="text-[16px] font-semibold text-gray-900 dark:text-white">
@@ -802,7 +801,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           </div>
 
           {/* Ойр орчимд */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3 min-h-40">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700  p-3 min-h-40">
             <div className="flex items-center gap-2 mb-3">
               <MapPin className="w-4 h-4 text-blue-600" />
               <h3 className="text-[16px] font-semibold text-gray-900 dark:text-white">
@@ -831,7 +830,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           </div>
 
           {/* Буудлын онцлог — proper icons, max 4 items */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-3">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3">
             <h4 className="text-[16px] font-semibold text-gray-900 dark:text-white mb-3">{t('hotelDetails.propertyHighlights', 'Буудлын онцлог')}</h4>
             <div className="space-y-2.5">
               <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">

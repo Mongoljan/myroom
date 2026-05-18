@@ -31,7 +31,7 @@ export default function BookingSummary({
   const totalPriceWithNights = totalPrice * nights;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sticky top-[80px] max-h-[calc(100vh-88px)] overflow-y-auto">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sticky top-20 max-h-[calc(100vh-88px)] overflow-y-auto">
       {/* Date Range Display */}
       <div className="mb-2.5 pb-2.5 border-b border-gray-200 dark:border-gray-700">
        
@@ -65,7 +65,7 @@ export default function BookingSummary({
                 {/* Row 1: Room name + remove */}
                 <div className="flex justify-between items-center">
                   <h4 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">
-                    {item.room.roomTypeName}
+                {item.room.roomCategoryNameEn}    {item.room.roomTypeName} 
                   </h4>
                   <button
                     onClick={() => onRemoveRoom(item.room.id, item.priceType)}
@@ -98,7 +98,7 @@ export default function BookingSummary({
                     <span className="w-6 text-center font-semibold text-sm">{item.quantity}</span>
                     <button
                       onClick={() => onQuantityChange(item.room.id, item.priceType, item.quantity + 1)}
-                      disabled={item.quantity >= item.maxQuantity}
+                      disabled={items.filter(i => i.room.id === item.room.id).reduce((sum, i) => sum + i.quantity, 0) >= item.maxQuantity}
                       className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Plus className="w-3 h-3" />
@@ -117,8 +117,8 @@ export default function BookingSummary({
           </div>
         )}
 
-        <div className="">
-          <div className="flex justify-between items-center text-sm">
+        <div className="mt-4">
+          <div className="flex justify-between items-center text-sm mb-2">
             <span className="font-bold">{t('bookingExtra.totalRooms')}:</span>
             <span className="font-bold">{totalRooms}</span>
           </div>

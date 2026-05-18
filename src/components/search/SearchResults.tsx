@@ -362,7 +362,7 @@ export default function SearchResults() {
       const opts = newFilters.roomFeatures
         .map(id => apiData?.facilities?.find(f => f.id === id))
         .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
-      filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
+      if (opts.length > 0) filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
     }
 
     // Filter by general services (= Additional facilities, group 2)
@@ -370,7 +370,7 @@ export default function SearchResults() {
       const opts = newFilters.generalServices
         .map(id => apiData?.additionalFacilities?.find(f => f.id === id))
         .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
-      filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
+      if (opts.length > 0) filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
     }
 
     // Filter by outdoor areas (= Activities, group 3)
@@ -378,7 +378,7 @@ export default function SearchResults() {
       const opts = newFilters.outdoorAreas
         .map(id => apiData?.activities?.find(f => f.id === id))
         .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
-      filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
+      if (opts.length > 0) filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
     }
 
     // Filter by accessibility features (group 4)
@@ -386,7 +386,7 @@ export default function SearchResults() {
       const opts = newFilters.accessibilityFeatures
         .map(id => apiData?.accessibility_features?.find(f => f.id === id))
         .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
-      filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
+      if (opts.length > 0) filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
     }
 
     // Filter by bed types — hotel must have at least one matching bed type
@@ -676,86 +676,203 @@ export default function SearchResults() {
               {/* Scrollable hotel cards area */}
               <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
 
-              {/* Active filter chips — shown above hotel card list */}
+              {/* Sort + Active filter chips row */}
               {(() => {
-                const chips: { label: string; onRemove: () => void }[] = [];
                 const priceBounds: [number, number] = [facets.priceMin, facets.priceMax];
 
-                (filters.propertyTypes || []).forEach(id => {
-                  const t = apiData?.property_types?.find(pt => pt.id === id);
-                  if (t) chips.push({ label: t.name_mn, onRemove: () => handleFilterChange({ ...filters, propertyTypes: filters.propertyTypes.filter(i => i !== id) }) });
-                });
+                // Each group has a label, sub-items (label + onRemove), and an onClearAll
+                type SubItem = { label: string; onRemove: () => void };
+                type ChipGroup = { label: string; items: SubItem[]; onClearAll: () => void };
+                const groups: ChipGroup[] = [];
 
-                (filters.starRating || []).forEach(stars => {
-                  chips.push({ label: `${stars} ★`, onRemove: () => handleFilterChange({ ...filters, starRating: filters.starRating.filter(s => s !== stars) }) });
-                });
+                // Property types
+                const ptIds = filters.propertyTypes || [];
+                if (ptIds.length > 0) {
+                  const sub: SubItem[] = ptIds.flatMap(id => {
+                    const pt = apiData?.property_types?.find(p => p.id === id);
+                    return pt ? [{ label: pt.name_mn, onRemove: () => handleFilterChange({ ...filters, propertyTypes: filters.propertyTypes.filter(i => i !== id) }) }] : [];
+                  });
+                  groups.push({ label: ptIds.length > 1 ? `Буудлын төрөл · ${ptIds.length}` : (sub[0]?.label ?? 'Буудлын төрөл'), items: sub, onClearAll: () => handleFilterChange({ ...filters, propertyTypes: [] }) });
+                }
 
+                // Star rating
+                const stars = filters.starRating || [];
+                if (stars.length > 0) {
+                  const sub: SubItem[] = stars.map(s => ({ label: `${s} ★`, onRemove: () => handleFilterChange({ ...filters, starRating: filters.starRating.filter(r => r !== s) }) }));
+                  groups.push({ label: stars.length > 1 ? `Одны үнэлгээ · ${stars.length}` : sub[0].label, items: sub, onClearAll: () => handleFilterChange({ ...filters, starRating: [] }) });
+                }
+
+                // Discounted (single, no dropdown)
                 if (filters.discounted) {
-                  chips.push({ label: 'Хямдралтай', onRemove: () => handleFilterChange({ ...filters, discounted: false }) });
+                  groups.push({ label: 'Хямдралтай', items: [{ label: 'Хямдралтай', onRemove: () => handleFilterChange({ ...filters, discounted: false }) }], onClearAll: () => handleFilterChange({ ...filters, discounted: false }) });
                 }
 
+                // Price range (single)
                 if (priceBounds[1] > priceBounds[0] && filters.priceRange[1] < priceBounds[1]) {
-                  chips.push({ label: `≤₮${new Intl.NumberFormat('en-US').format(filters.priceRange[1])}`, onRemove: () => handleFilterChange({ ...filters, priceRange: [priceBounds[0], priceBounds[1]] }) });
+                  const lbl = `≤₮${new Intl.NumberFormat('en-US').format(filters.priceRange[1])}`;
+                  groups.push({ label: lbl, items: [{ label: lbl, onRemove: () => handleFilterChange({ ...filters, priceRange: [priceBounds[0], priceBounds[1]] }) }], onClearAll: () => handleFilterChange({ ...filters, priceRange: [priceBounds[0], priceBounds[1]] }) });
                 }
 
-                (filters.roomFeatures || []).forEach(id => {
-                  const f = apiData?.facilities?.find(fac => fac.id === id);
-                  if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, roomFeatures: filters.roomFeatures.filter(i => i !== id) }) });
-                });
+                // Room features
+                const rfIds = filters.roomFeatures || [];
+                if (rfIds.length > 0) {
+                  const sub: SubItem[] = rfIds.flatMap(id => {
+                    const f = apiData?.facilities?.find(fac => fac.id === id);
+                    return f ? [{ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, roomFeatures: filters.roomFeatures.filter(i => i !== id) }) }] : [];
+                  });
+                  groups.push({ label: rfIds.length > 1 ? `Үндсэн үйлчилгээ · ${rfIds.length}` : (sub[0]?.label ?? 'Үндсэн үйлчилгээ'), items: sub, onClearAll: () => handleFilterChange({ ...filters, roomFeatures: [] }) });
+                }
 
-                (filters.generalServices || []).forEach(id => {
-                  const f = apiData?.additionalFacilities?.find(fac => fac.id === id);
-                  if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, generalServices: filters.generalServices.filter(i => i !== id) }) });
-                });
+                // General services
+                const gsIds = filters.generalServices || [];
+                if (gsIds.length > 0) {
+                  const sub: SubItem[] = gsIds.flatMap(id => {
+                    const f = apiData?.additionalFacilities?.find(fac => fac.id === id);
+                    return f ? [{ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, generalServices: filters.generalServices.filter(i => i !== id) }) }] : [];
+                  });
+                  groups.push({ label: gsIds.length > 1 ? `Үйлчилгээ · ${gsIds.length}` : (sub[0]?.label ?? 'Үйлчилгээ'), items: sub, onClearAll: () => handleFilterChange({ ...filters, generalServices: [] }) });
+                }
 
-                (filters.outdoorAreas || []).forEach(id => {
-                  const f = apiData?.activities?.find(fac => fac.id === id);
-                  if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, outdoorAreas: filters.outdoorAreas.filter(i => i !== id) }) });
-                });
+                // Outdoor areas
+                const oaIds = filters.outdoorAreas || [];
+                if (oaIds.length > 0) {
+                  const sub: SubItem[] = oaIds.flatMap(id => {
+                    const f = apiData?.activities?.find(fac => fac.id === id);
+                    return f ? [{ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, outdoorAreas: filters.outdoorAreas.filter(i => i !== id) }) }] : [];
+                  });
+                  groups.push({ label: oaIds.length > 1 ? `Гадна байгууламж · ${oaIds.length}` : (sub[0]?.label ?? 'Гадна байгууламж'), items: sub, onClearAll: () => handleFilterChange({ ...filters, outdoorAreas: [] }) });
+                }
 
-                (filters.accessibilityFeatures || []).forEach(id => {
-                  const f = apiData?.accessibility_features?.find(fac => fac.id === id);
-                  if (f) chips.push({ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, accessibilityFeatures: filters.accessibilityFeatures.filter(i => i !== id) }) });
-                });
+                // Accessibility
+                const acIds = filters.accessibilityFeatures || [];
+                if (acIds.length > 0) {
+                  const sub: SubItem[] = acIds.flatMap(id => {
+                    const f = apiData?.accessibility_features?.find(fac => fac.id === id);
+                    return f ? [{ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, accessibilityFeatures: filters.accessibilityFeatures.filter(i => i !== id) }) }] : [];
+                  });
+                  groups.push({ label: acIds.length > 1 ? `Хүртээмж · ${acIds.length}` : (sub[0]?.label ?? 'Хүртээмж'), items: sub, onClearAll: () => handleFilterChange({ ...filters, accessibilityFeatures: [] }) });
+                }
 
-                (filters.bedTypes || []).forEach(id => {
-                  const bt = facets.narrowedApiData.bed_types?.find(b => b.id === id);
-                  if (bt) chips.push({ label: bt.name, onRemove: () => handleFilterChange({ ...filters, bedTypes: (filters.bedTypes || []).filter(i => i !== id) }) });
-                });
+                // Bed types
+                const btIds = filters.bedTypes || [];
+                if (btIds.length > 0) {
+                  const sub: SubItem[] = btIds.flatMap(id => {
+                    const bt = facets.narrowedApiData.bed_types?.find(b => b.id === id);
+                    return bt ? [{ label: bt.name, onRemove: () => handleFilterChange({ ...filters, bedTypes: (filters.bedTypes || []).filter(i => i !== id) }) }] : [];
+                  });
+                  groups.push({ label: btIds.length > 1 ? `Ортны төрөл · ${btIds.length}` : (sub[0]?.label ?? 'Ортны төрөл'), items: sub, onClearAll: () => handleFilterChange({ ...filters, bedTypes: [] }) });
+                }
 
-                (filters.neighbourhood || []).forEach(name => {
-                  chips.push({ label: name, onRemove: () => handleFilterChange({ ...filters, neighbourhood: (filters.neighbourhood || []).filter(n => n !== name) }) });
-                });
+                // Neighbourhood
+                const nbNames = filters.neighbourhood || [];
+                if (nbNames.length > 0) {
+                  const sub: SubItem[] = nbNames.map(name => ({ label: name, onRemove: () => handleFilterChange({ ...filters, neighbourhood: (filters.neighbourhood || []).filter(n => n !== name) }) }));
+                  groups.push({ label: nbNames.length > 1 ? `Дүүрэг · ${nbNames.length}` : sub[0].label, items: sub, onClearAll: () => handleFilterChange({ ...filters, neighbourhood: [] }) });
+                }
 
-                (filters.landmark || []).forEach(lmId => {
-                  const lm = UB_LANDMARKS.find(l => l.id === lmId);
-                  if (lm) chips.push({ label: lm.name_mn, onRemove: () => handleFilterChange({ ...filters, landmark: (filters.landmark || []).filter(l => l !== lmId) }) });
-                });
+                // Landmarks
+                const lmIds = filters.landmark || [];
+                if (lmIds.length > 0) {
+                  const sub: SubItem[] = lmIds.flatMap(lmId => {
+                    const lm = UB_LANDMARKS.find(l => l.id === lmId);
+                    return lm ? [{ label: lm.name_mn, onRemove: () => handleFilterChange({ ...filters, landmark: (filters.landmark || []).filter(l => l !== lmId) }) }] : [];
+                  });
+                  groups.push({ label: lmIds.length > 1 ? `Байршил · ${lmIds.length}` : (sub[0]?.label ?? 'Байршил'), items: sub, onClearAll: () => handleFilterChange({ ...filters, landmark: [] }) });
+                }
 
-                if (chips.length === 0) return null;
-
-                return (
-                  <div className="flex flex-wrap items-center gap-1.5 mb-3">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 shrink-0">
-                      {t('search.selectedFilters', 'Сонгосон шүүлтүүр')}:
-                    </span>
-                    {chips.map((chip, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 text-sm font-medium border border-primary-200 dark:border-primary-700"
-                      >
-                        {chip.label}
-                        <button onClick={chip.onRemove} className="hover:text-red-500 transition-colors">
+                // GroupChip: a chip that opens a popover listing sub-items
+                function GroupChip({ group }: { group: ChipGroup }) {
+                  const [open, setOpen] = useState(false);
+                  const isSingle = group.items.length <= 1;
+                  if (isSingle) {
+                    // Simple chip with direct × remove
+                    return (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium border border-blue-200 dark:border-blue-700">
+                        {group.label}
+                        <button onClick={group.onClearAll} className="hover:text-red-500 transition-colors ml-0.5">
                           <X className="w-3 h-3" />
                         </button>
                       </span>
-                    ))}
-                    <button
-                      onClick={clearAllFilters}
-                      className="text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 underline shrink-0"
-                    >
-                      {t('search.filtersSection.clearAll') || 'Бүгдийг арилгах'}
-                    </button>
+                    );
+                  }
+                  return (
+                    <div className="relative">
+                      <button
+                        onClick={() => setOpen(o => !o)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                      >
+                        {group.label}
+                        <svg className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+                      {open && (
+                        <>
+                          {/* Backdrop */}
+                          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+                          {/* Popover */}
+                          <div className="absolute top-full mt-1 left-0 z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl min-w-[180px] py-1 overflow-hidden">
+                            {group.items.map((item, idx) => (
+                              <div key={idx} className="flex items-center justify-between gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <span className="text-sm text-gray-800 dark:text-gray-200">{item.label}</span>
+                                <button
+                                  onClick={() => { item.onRemove(); if (group.items.length <= 1) setOpen(false); }}
+                                  className="text-gray-400 hover:text-red-500 transition-colors shrink-0"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            ))}
+                            <div className="border-t border-gray-100 dark:border-gray-700 mt-1 pt-1 px-3 pb-2">
+                              <button
+                                onClick={() => { group.onClearAll(); setOpen(false); }}
+                                className="text-xs text-red-500 hover:text-red-700 font-medium"
+                              >
+                                Бүгдийг арилгах
+                              </button>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                    {/* Sort dropdown as first chip-like control */}
+                    <div className="relative shrink-0">
+                      <select
+                        value={sortBy}
+                        onChange={(e) => handleSort(e.target.value)}
+                        className="appearance-none inline-flex items-center gap-1 pl-2.5 pr-7 py-1 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                      >
+                        <option value="default">{t('search.sortOptions.default', 'Санал болгох')}</option>
+                        <option value="price_low">{t('search.sortOptions.priceLowToHigh', 'Үнэ: багаас их')}</option>
+                        <option value="price_high">{t('search.sortOptions.priceHighToLow', 'Үнэ: ихээс бага')}</option>
+                        <option value="rating">{t('search.sortOptions.ratingHighToLow', 'Үнэлгээ: ихээс бага')}</option>
+                        <option value="recommended">{t('search.sortOptions.recommended', 'Санал болгох')}</option>
+                      </select>
+                      <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+                        <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Divider */}
+                    {groups.length > 0 && <span className="h-4 w-px bg-gray-300 dark:bg-gray-600 shrink-0" />}
+
+                    {groups.map((group, i) => <GroupChip key={i} group={group} />)}
+
+                    {groups.length > 0 && (
+                      <button
+                        onClick={clearAllFilters}
+                        className="text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 underline shrink-0"
+                      >
+                        {t('search.filtersSection.clearAll', 'Бүгдийг арилгах')}
+                      </button>
+                    )}
                   </div>
                 );
               })()

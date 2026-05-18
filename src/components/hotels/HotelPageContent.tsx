@@ -10,7 +10,6 @@ import SimilarHotels from '@/components/hotels/SimilarHotels';
 import ImprovedHotelRoomsSection from '@/components/hotels/ImprovedHotelRoomsSection';
 import HotelSubNav from '@/components/hotels/HotelSubNav';
 import HotelHouseRules from '@/components/hotels/HotelHouseRules';
-import HotelCancellationPolicy from '@/components/hotels/HotelCancellationPolicy';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
@@ -124,13 +123,6 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
           <div id="house-rules">
             <HotelHouseRules hotelId={hotel.hotel_id} hotelName={hotel.property_name} initialPolicies={policies} />
           </div>
-
-          {/* Cancellation Policy Section */}
-          {cancellationFee && (
-            <div id="cancellation-policy">
-              <HotelCancellationPolicy cancellationFee={cancellationFee} />
-            </div>
-          )}
 
           {/* Facilities Section */}
           <div id="facilities" className="">

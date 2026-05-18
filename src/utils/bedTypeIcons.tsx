@@ -4,7 +4,6 @@ import React from 'react';
 import { BedDouble, BedSingle, Sofa } from 'lucide-react';
 import { FaBedPulse, FaMattressPillow } from 'react-icons/fa6';
 import { MdSingleBed, MdKingBed } from 'react-icons/md';
-import { RiHotelBedFill } from 'react-icons/ri';
 import { GiBunkBeds, GiPersonInBed } from 'react-icons/gi';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -15,7 +14,7 @@ import { GiBunkBeds, GiPersonInBed } from 'react-icons/gi';
 //   FaMattressPillow  → semi-double (mattress+pillow silhouette, unique shape)
 //   BedDouble         → double  (lucide wide bed with center rail)
 //   MdKingBed         → queen   (Material wider bed, distinct from BedDouble)
-//   RiHotelBedFill    → king    (Remix bold filled hotel bed)
+//   MdGroups           → king    (family/group silhouette — king beds for families)
 //   GiPersonInBed     → super king (person lying on a bed, unmistakably luxury)
 //   GiBunkBeds        → triple  (bunk bed = 3-bed feel)
 //   Sofa              → sofa bed
@@ -74,7 +73,7 @@ const BED_MAP: Array<{ keys: string[]; entry: BedEntry }> = [
   {
     keys: ['king'],
     entry: {
-      Icon: RiHotelBedFill as IconComponent,
+      Icon: MdKingBed as IconComponent,
       count: 1,
       info: { descriptionMn: '1 нилээн өргөн ор', descriptionEn: '1 king bed' },
     },

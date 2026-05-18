@@ -116,29 +116,7 @@ export default function SearchResultsHeader({
 </div>
           {/* Controls Row - Trip.com style */}
           <div className="flex flex-col gap-2 items-end">
-            {/* Sort Dropdown - Top Row */}
-            <div className="flex items-center">
-              <div className="relative">
-                <select
-                  value={sortBy}
-                  onChange={(e) => onSort(e.target.value)}
-                  className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-4 pr-8 text-sm text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 dark:hover:border-gray-600 transition-colors min-w-[190px] h-10 "
-                >
-                  <option value="default">{t('search.sortOptions.default')}</option>
-                  <option value="price_low">{t('search.sortOptions.priceLowToHigh')}</option>
-                  <option value="price_high">{t('search.sortOptions.priceHighToLow')}</option>
-                  <option value="rating">{t('search.sortOptions.ratingHighToLow')}</option>
-                  <option value="recommended">{t('search.sortOptions.recommended')}</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            {/* Search by Name - Bottom Row */}
+            {/* Search by Name */}
             {onSearchByName && (
               <div className="relative">
                 <input

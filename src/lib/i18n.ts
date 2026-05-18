@@ -2431,7 +2431,7 @@ const resources = {
         discount: "Хямдрал",
         noRating: "Үнэлгээгүй",
         priceUnknown: "Үнэ тодорхойгүй",
-        from: "-с эхлэн"
+        from: "эхлэх үнэ"
       },
       hotelDetails: {
         starHotel: "{{count}} одтой зочид буудал",

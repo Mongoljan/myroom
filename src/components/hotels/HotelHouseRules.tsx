@@ -156,33 +156,54 @@ export default function HotelHouseRules({ hotelId, initialPolicies }: HotelHouse
 
               {/* 3. Cancellation */}
               {policy.cancellation_fee && (
-                <Row icon={<Info className="w-4 h-4" />} title="Цуцалтын нөхцөл">
+                <Row icon={<Info className="w-4 h-4" />} title="Цуцлалтын нөхцөл">
                   {(() => {
                     const cf = policy.cancellation_fee!;
-                    const beforePct = parseFloat(cf.single_before_time_percentage);
-                    const afterPct = parseFloat(cf.single_after_time_percentage);
-                    const time = formatTime(cf.cancel_time);
-                    const noRefund = beforePct >= 100;
-                    if (noRefund) {
-                      return <div className="text-red-500 font-medium">Цуцалгаа хийгдэхгүй (100% торгууль)</div>;
-                    }
+                    const cancelTime = cf.cancel_time?.substring(0, 5) ?? '—';
+                    const hasMulti =
+                      cf.multi_5days_before_percentage ||
+                      cf.multi_3days_before_percentage ||
+                      cf.multi_2days_before_percentage ||
+                      cf.multi_1day_before_percentage;
                     return (
                       <>
-                        <div>Орох өдрөөс <span className="font-medium">{time}</span>-с өмнө цуцалбал:{' '}
-                          <span className="text-green-600 dark:text-green-400 font-medium">{beforePct === 0 ? 'Үнэгүй' : `${beforePct}% торгууль`}</span>
+                        <div className="font-medium text-gray-800 dark:text-gray-100 mb-1 pb-1 border-b  border-gray-200">1 өрөөний захиалгад нийт төлбөрөөс суутгах хураамжийн хувь:</div>
+                        <div className="flex items-center justify-between">
+                          <span>Өмнөх өдрийн <span className="font-medium text-gray-900 dark:text-white">{cancelTime}</span> цагаас өмнө цуцалвал</span>
+                          <span className="font-semibold text-gray-900 dark:text-white shrink-0 ml-4">{cf.single_before_time_percentage}%</span>
                         </div>
-                        <div>
-                          {time}-с хойш цуцалбал:{' '}
-                          <span className="text-red-500 font-medium">{afterPct}% торгууль</span>
+                        <div className="flex items-center justify-between">
+                          <span>Өмнөх өдрийн <span className="font-medium text-gray-900 dark:text-white">{cancelTime}</span> цагаас хойш цуцалвал</span>
+                          <span className="font-semibold text-gray-900 dark:text-white shrink-0 ml-4">{cf.single_after_time_percentage}%</span>
                         </div>
-                        {cf.multi_5days_before_percentage && (
-                          <div>Олон өрөө — 5 хоногийн өмнө: {cf.multi_5days_before_percentage}%</div>
-                        )}
-                        {cf.multi_3days_before_percentage && (
-                          <div>Олон өрөө — 3 хоногийн өмнө: {cf.multi_3days_before_percentage}%</div>
-                        )}
-                        {cf.multi_1day_before_percentage && (
-                          <div>Олон өрөө — 1 хоногийн өмнө: {cf.multi_1day_before_percentage}%</div>
+                        {hasMulti && (
+                          <>
+                            <div className="font-medium text-gray-800 dark:text-gray-100 mt-2 mb-1 mb-1 pb-1 border-b  border-gray-200">2 болон түүнээс дээш өрөөнд нийт төлбөрөөс суутгах хураамжийн хувь:</div>
+                            {cf.multi_5days_before_percentage && (
+                              <div className="flex items-center justify-between">
+                                <span>Ирэх өдрөөсөө 5 хоногийн өмнөх хувь</span>
+                                <span className="font-semibold text-gray-900 dark:text-white shrink-0 ml-4">{cf.multi_5days_before_percentage}%</span>
+                              </div>
+                            )}
+                            {cf.multi_3days_before_percentage && (
+                              <div className="flex items-center justify-between">
+                                <span>Ирэх өдрөөсөө 3 хоногийн өмнөх хувь</span>
+                                <span className="font-semibold text-gray-900 dark:text-white shrink-0 ml-4">{cf.multi_3days_before_percentage}%</span>
+                              </div>
+                            )}
+                            {cf.multi_2days_before_percentage && (
+                              <div className="flex items-center justify-between">
+                                <span>Ирэх өдрөөсөө 2 хоногийн өмнөх хувь</span>
+                                <span className="font-semibold text-gray-900 dark:text-white shrink-0 ml-4">{cf.multi_2days_before_percentage}%</span>
+                              </div>
+                            )}
+                            {cf.multi_1day_before_percentage && (
+                              <div className="flex items-center justify-between">
+                                <span>Ирэх өдрөөсөө 1 хоногийн өмнөх хувь</span>
+                                <span className="font-semibold text-gray-900 dark:text-white shrink-0 ml-4">{cf.multi_1day_before_percentage}%</span>
+                              </div>
+                            )}
+                          </>
                         )}
                       </>
                     );
@@ -192,30 +213,36 @@ export default function HotelHouseRules({ hotelId, initialPolicies }: HotelHouse
 
               {/* 4. Children & extra bed */}
               {policy.child_policy && (
-                <Row icon={<Baby className="w-4 h-4" />} title="Хүүхэд болон нэмэлт ор">
-                  {policy.child_policy.allow_children ? (
+                <Row icon={<Baby className="w-4 h-4" />} title="Хүүхэд болон нэмэлт орны мэдээлэл">
+                  <div className={policy.child_policy.allow_children ? ' font-medium' : 'font-medium'}>
+                    {policy.child_policy.allow_children ? 'Хүүхэд үйлчлүүлэх боломжтой' : 'Хүүхэд үйлчлүүлэх боломжгүй'}
+                  </div>
+                  {policy.child_policy.allow_children && (
                     <>
-                      <div>Хүүхэдтэй зочдыг хүлээн авдаг.</div>
-                      {policy.child_policy.max_child_age && (
-                        <div>{policy.child_policy.max_child_age} нас хүртэлх хүүхэд насанд хүрэгчийн үнээр тооцогдоно.</div>
+                      {policy.child_policy.max_child_age != null && (
+                        <div>{policy.child_policy.max_child_age}+ наснaас дээш том хүнээр тооцогдоно</div>
                       )}
-                      {policy.child_policy.child_bed_available === 'yes' && (
-                        <div className="mt-1 font-medium text-gray-800 dark:text-gray-200">Хүүхдийн ор болон нэмэлт ор:</div>
-                      )}
-                      {policy.child_policy.allow_extra_bed && (
-                        <div className="flex  border-t border-gray-100 dark:border-gray-700 pt-1 mt-1">
-                          <span>Нэмэлт ор : </span>
-                          <span className="font-medium">
+                      <div>
+                        Хүүхдийн ор:{' '}
+                        {policy.child_policy.child_bed_available === 'yes'
+                          ? <span className="font-medium text-gray-900 dark:text-white">байгаа</span>
+                          : <span className="text-gray-500">байхгүй</span>
+                        }
+                      </div>
+                      <div>
+                        Нэмэлт ор:{' '}
+                        {policy.child_policy.allow_extra_bed ? (
+                          <span className="font-medium text-gray-900 dark:text-white">
                             {policy.child_policy.extra_bed_price && Number(policy.child_policy.extra_bed_price) > 0
                               ? `₮${Number(policy.child_policy.extra_bed_price).toLocaleString()}`
-                              : <span className="text-green-600 dark:text-green-400">Үнэгүй</span>
+                              : 'үнэгүй'
                             }
                           </span>
-                        </div>
-                      )}
+                        ) : (
+                          <span className="text-gray-500">байхгүй</span>
+                        )}
+                      </div>
                     </>
-                  ) : (
-                    <div>Хүүхэдтэй зочдыг хүлээн авдаггүй.</div>
                   )}
                 </Row>
               )}

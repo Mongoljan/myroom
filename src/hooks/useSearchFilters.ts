@@ -264,7 +264,8 @@ export function useSearchFilters({
     options: { saveRecent?: boolean } = {},
   ) => {
     const { saveRecent = true } = options;
-    const updated = { ...filtersRef.current, ...newFilters };
+    const prev = filtersRef.current; // capture BEFORE updating ref
+    const updated = { ...prev, ...newFilters };
     filtersRef.current = updated;
     setFilters(updated);
     // Call outside the state updater to avoid "setState during render" warning
@@ -273,7 +274,6 @@ export function useSearchFilters({
       localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       if (saveRecent) {
         saveToRecentFilters(updated);
-        const prev = filtersRef.current;
         const ts = Date.now();
         const track = (id: string, type: string, value: string | number | boolean, label: string) =>
           saveIndividualFilter({ id, type, value, label, timestamp: ts });
