@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { CanvasRevealEffect } from '@/components/ui/canvas-reveal-effect';
 import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useMotionTemplate } from 'framer-motion';
 import { Calendar, MapPin, Search, X, Clock, Hotel } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import CustomGuestSelector from '@/components/search/CustomGuestSelector';
@@ -37,38 +38,18 @@ export default function ModernHero() {
   const [locationSuggestions, setLocationSuggestions] = useState<LocationSuggestion[]>([]);
   const [selectedLocationSuggestion, setSelectedLocationSuggestion] = useState<LocationSuggestion | null>(null);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
-  const [isClient, setIsClient] = useState(false);
   const [locationModalPosition, setLocationModalPosition] = useState({ top: 0, left: 0 });
   const [showLocationTooltip, setShowLocationTooltip] = useState(false);
   const router = useRouter();
+  const heroMouseX = useMotionValue(0);
+  const heroMouseY = useMotionValue(0);
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
+  const heroMask = useMotionTemplate`radial-gradient(420px circle at ${heroMouseX}px ${heroMouseY}px, white, transparent 80%)`;
+  const heroSpotlight = useMotionTemplate`radial-gradient(420px circle at ${heroMouseX}px ${heroMouseY}px, rgba(99,102,241,0.22), transparent 70%)`;
   const locationRef = useRef<HTMLDivElement>(null);
   const locationInputRef = useRef<HTMLInputElement>(null);
   const locationDropdownRef = useRef<HTMLDivElement>(null);
   const dateContainerRef = useRef<HTMLDivElement>(null);
-
-  // Only render particles on client to avoid hydration mismatch
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Create deterministic particle positions
-  const particles = useMemo(() => {
-    if (!isClient) return [];
-    
-    const seededRandom = (seed: number) => {
-      const x = Math.sin(seed) * 10000;
-      return x - Math.floor(x);
-    };
-    
-    return Array.from({ length: 20 }, (_, i) => ({
-      id: i,
-      left: seededRandom(i * 123.456) * 100,
-      top: seededRandom(i * 789.012) * 100,
-      duration: 10 + seededRandom(i * 345.678) * 10,
-      delay: seededRandom(i * 901.234) * 5,
-      xOffset: seededRandom(i * 567.890) * 50 - 25,
-    }));
-  }, [isClient]);
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -258,134 +239,47 @@ export default function ModernHero() {
   };
 
   return (
-    <section className="relative pt-6  bg-slate-50/30">
+    <section className="relative pt-6 bg-slate-50/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl overflow-hidden shadow-2xl shadow-blue-900/20">
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          animate={{
-            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+        <div
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            heroMouseX.set(e.clientX - rect.left);
+            heroMouseY.set(e.clientY - rect.top);
           }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="absolute inset-0 opacity-50"
-          style={{
-            background: "linear-gradient(45deg, #3b82f6, #2563eb, #1e40af, #1d4ed8, #3b82f6)",
-            backgroundSize: "400% 400%"
-          }}
-        />
-      </div>
-
-      {/* Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {particles.map((particle) => (
-          <motion.div
-            key={particle.id}
-            className="absolute w-1.5 h-1.5 bg-white rounded-full opacity-30"
-            style={{
-              left: `${particle.left}%`,
-              top: `${particle.top}%`,
-            }}
-            animate={{
-              y: [0, -100, 0],
-              x: [0, particle.xOffset, 0],
-              opacity: [0, 0.6, 0],
-            }}
-            transition={{
-              duration: particle.duration,
-              repeat: Infinity,
-              delay: particle.delay,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Grid Pattern with Animation */}
-      <div className="absolute inset-0 opacity-5 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{
-            opacity: [0.05, 0.1, 0.05],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px'
-          }}
-        />
-      </div>
-
-      {/* Animated Orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{
-            x: [0, 150, -100, 0],
-            y: [0, -80, 100, 0],
-            scale: [1, 1.2, 0.8, 1],
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute top-1/4 left-1/4 w-72 h-72 bg-gradient-to-r from-blue-400/25 to-blue-500/25 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            x: [0, -120, 80, 0],
-            y: [0, 90, -60, 0],
-            scale: [0.8, 1.1, 0.9, 0.8],
-          }}
-          transition={{
-            duration: 35,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute bottom-1/3 right-1/3 w-96 h-96 bg-gradient-to-l from-blue-500/25 to-cyan-500/20 rounded-full blur-3xl"
-        />
-        <motion.div
-          animate={{
-            x: [0, 60, -90, 0],
-            y: [0, -120, 40, 0],
-            scale: [1, 0.7, 1.3, 1],
-          }}
-          transition={{
-            duration: 25,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute top-1/2 right-1/4 w-48 h-48 bg-gradient-to-br from-blue-400/20 to-blue-600/25 rounded-full blur-3xl"
-        />
-      </div>
-
-      {/* Spotlight Effect */}
-      <motion.div
-        animate={{
-          opacity: [0.2, 0.4, 0.2],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 12,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="absolute inset-0"
+          onMouseEnter={() => setIsHeroHovered(true)}
+          onMouseLeave={() => setIsHeroHovered(false)}
+          className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/60 group/hero"
+          style={{ backgroundColor: '#1e1b4b' }}
+        >
+      {/* Grain texture — always on */}
+      <div
+        className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 35%, transparent 70%)"
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.4'/%3E%3C/svg%3E")`,
+          backgroundRepeat: 'repeat',
+          backgroundSize: '300px 300px',
+          mixBlendMode: 'overlay',
+          opacity: 0.55,
         }}
       />
+      {/* Vignette */}
+      <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.4) 100%)' }} />
+      {/* Aceternity dot reveal — only shown through cursor mask */}
+      <motion.div
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/hero:opacity-100"
+        style={{ maskImage: heroMask }}
+      >
+        {isHeroHovered && (
+          <CanvasRevealEffect
+            animationSpeed={5}
+            containerClassName="bg-transparent"
+            colors={[[99, 102, 241], [139, 92, 246]]}
+            dotSize={3}
+            showGradient={false}
+          />
+        )}
+      </motion.div>
 
       <div className="relative z-10 py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
