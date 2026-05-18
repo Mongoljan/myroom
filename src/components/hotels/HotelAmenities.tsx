@@ -27,7 +27,7 @@ type GroupKey = 'general' | 'additional' | 'activities' | 'accessibility';
 type Group = {
   key: GroupKey;
   title: string;
-  Icon: React.ElementType;
+  Icon: React.FC<React.SVGProps<SVGSVGElement>>;
   items: { label: string; isHighlight: boolean }[];
 };
 
