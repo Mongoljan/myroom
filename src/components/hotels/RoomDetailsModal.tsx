@@ -37,7 +37,7 @@ export default function RoomDetailsModal({ open, onOpenChange, room }: RoomDetai
 
   const labelOf = (item: LocalizedItem) => (locale === 'mn' ? item.name_mn : item.name_en) || item.name_en || item.name_mn;
 
-  const sections: Array<{ key: string; title: string; Icon: React.ElementType; items: LocalizedItem[] }> = [
+  const sections: Array<{ key: string; title: string; Icon: React.FC<React.SVGProps<SVGSVGElement>>; items: LocalizedItem[] }> = [
     {
       key: 'facilities',
       title: t('roomDetails.facilities', 'Өрөөний тохижилт'),
