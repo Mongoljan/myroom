@@ -841,11 +841,11 @@ export default function SearchResults() {
                 return (
                   <div className="flex flex-wrap items-center gap-1.5 mb-3">
                     {/* Sort dropdown as first chip-like control */}
-                    <div className="relative shrink-0">
+                    <div className="relative shrink-0 inline-flex items-center border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-800 overflow-hidden">
                       <select
                         value={sortBy}
                         onChange={(e) => handleSort(e.target.value)}
-                        className="appearance-none inline-flex items-center gap-1 pl-2.5 pr-7 py-1 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                        className="appearance-none pl-3 pr-7 py-1 bg-transparent text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none cursor-pointer"
                       >
                         <option value="default">{t('search.sortOptions.default', 'Санал болгох')}</option>
                         <option value="price_low">{t('search.sortOptions.priceLowToHigh', 'Үнэ: багаас их')}</option>

@@ -3,19 +3,20 @@
 import { useState, useEffect, useRef } from 'react';
 import HotelSearchForm from './HotelSearchForm';
 
-export default function SearchHeader() {
+export default function SearchHeader({ disableSticky = false }: { disableSticky?: boolean } = {}) {
   const [isSticky, setIsSticky] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (disableSticky) return;
     const handleScroll = () => {
       setIsSticky(window.scrollY > 80);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [disableSticky]);
 
   const handleFocus = () => setIsSearchActive(true);
 
@@ -49,13 +50,13 @@ export default function SearchHeader() {
         onFocus={handleFocus}
         onBlur={handleBlur}
         className={`
-          ${isSticky ? 'fixed top-0 left-0 right-0 shadow-md' : 'relative'}
+          ${!disableSticky && isSticky ? 'fixed top-0 left-0 right-0 shadow-md' : 'relative'}
           z-40
           ${isSearchActive ? 'bg-transparent' : 'bg-white dark:bg-gray-900'}
           transition-all duration-300 ease-out
         `}
       >
-        <div className={`max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 transition-all duration-300 ease-out ${isSticky ? 'py-3' : 'py-4'}`}>
+        <div className={`max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 transition-all duration-300 ease-out ${!disableSticky && isSticky ? 'py-3' : 'py-4'}`}>
           <div className={`bg-white dark:bg-gray-800 border rounded-xl transition-all duration-200 ease-out overflow-hidden ${
             isSearchActive
               ? 'border-primary shadow-2xl ring-2 ring-primary/30'
@@ -67,7 +68,7 @@ export default function SearchHeader() {
       </div>
 
       {/* Spacer to prevent content jump when header becomes fixed */}
-      {isSticky && <div className="h-[80px]" />}
+      {!disableSticky && isSticky && <div className="h-[80px]" />}
     </>
   );
 }

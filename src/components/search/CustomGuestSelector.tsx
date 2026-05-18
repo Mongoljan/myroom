@@ -335,18 +335,6 @@ export default function CustomGuestSelector({
                   </motion.button>
                 </div>
               </div>
-
-              {/* Done Button - Matching site theme */}
-              <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
-                <motion.button
-                  onClick={() => { setIsOpen(false); onOpenChange?.(false); }}
-                  whileHover={{ scale: 1.01, y: -1 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-lg font-semibold transition-colors text-sm shadow-sm"
-                >
-                  {t('common.done', 'Болсон')}
-                </motion.button>
-              </div>
             </div>
           </motion.div>
         </AnimatePresence>,

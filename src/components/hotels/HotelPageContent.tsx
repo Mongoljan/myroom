@@ -10,6 +10,7 @@ import SimilarHotels from '@/components/hotels/SimilarHotels';
 import ImprovedHotelRoomsSection from '@/components/hotels/ImprovedHotelRoomsSection';
 import HotelSubNav from '@/components/hotels/HotelSubNav';
 import HotelHouseRules from '@/components/hotels/HotelHouseRules';
+import SearchHeader from '@/components/search/SearchHeader';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
@@ -74,6 +75,9 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
 
   return (
     <div className="bg-white dark:bg-gray-900 min-h-screen">
+      {/* Main search bar */}
+      <SearchHeader disableSticky />
+
       {/* Hero section with ID for sticky nav detection */}
       <div id="hotel-hero" className="bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-5">

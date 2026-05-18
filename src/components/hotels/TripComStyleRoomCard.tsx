@@ -141,8 +141,7 @@ function RoomCountSelect({
   const dropdownStyle: React.CSSProperties = rect
     ? {
         position: 'fixed',
-        // open above the button
-        bottom: window.innerHeight - rect.top + 4,
+        top: rect.bottom + 4,
         left: rect.left,
         width: Math.max(rect.width, 200),
         zIndex: 9999,
