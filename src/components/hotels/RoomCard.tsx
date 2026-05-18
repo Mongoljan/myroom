@@ -12,6 +12,7 @@ export interface RoomPriceOptions {
   basePriceRaw?: number; // Original price before discount (base_price from API)
   halfDayPrice?: number;
   singlePersonPrice?: number;
+  breakfastPrice?: number; // Per-night price with breakfast included
   discount?: {
     type: 'PERCENT' | 'FIXED';
     value: number;
@@ -21,7 +22,7 @@ export interface RoomPriceOptions {
 
 export interface BookingItem {
   room: EnrichedHotelRoom;
-  priceType: 'base' | 'halfDay' | 'singlePerson';
+  priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast';
   quantity: number;
   price: number;
   maxQuantity: number;
@@ -31,7 +32,7 @@ interface RoomCardProps {
   room: EnrichedHotelRoom;
   priceOptions?: RoomPriceOptions;
   bookingItems: BookingItem[];
-  onQuantityChange: (priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => void;
+  onQuantityChange: (priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast', quantity: number) => void;
   nights?: number;
   showOnlyBasePrice?: boolean; // Only show full day price
 }

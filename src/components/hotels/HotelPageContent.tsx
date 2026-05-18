@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 
 import EnhancedHotelDetail from '@/components/hotels/EnhancedHotelDetail';
 import HotelAmenities from '@/components/hotels/HotelAmenities';
@@ -33,6 +35,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
   const [activeSection, setActiveSection] = useState('overview');
   const { addRecentlyViewed } = useRecentlyViewed();
   const { t } = useHydratedTranslation();
+  const router = useRouter();
 
   const handleSectionChange = useCallback((section: string) => {
     setActiveSection(section);
@@ -74,7 +77,14 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
     <div className="bg-white dark:bg-gray-900 min-h-screen">
       {/* Hero section with ID for sticky nav detection */}
       <div id="hotel-hero" className="bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-5">
+          <button
+            onClick={() => router.push('/search')}
+            className="flex items-center gap-1.5 text-sm font-bold text-primary dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 text-primary font-bold" />
+            Буцах
+          </button>
           <div id="overview">
             <EnhancedHotelDetail
               hotel={hotel}

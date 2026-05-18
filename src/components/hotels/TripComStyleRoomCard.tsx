@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { BedTypeIcon } from '@/utils/bedTypeIcons';
 import {
-  Users,
   User,
+  Users,
   Baby,
-  Maximize2,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  Coffee,
   Wifi,
   Wind,
   Tv,
@@ -35,6 +37,7 @@ export interface RoomPriceOptions {
   basePriceRaw?: number;
   halfDayPrice?: number;
   singlePersonPrice?: number;
+  breakfastPrice?: number; // Per-night price with breakfast included
   discount?: {
     type: 'PERCENT' | 'FIXED';
     value: number;
@@ -44,7 +47,7 @@ export interface RoomPriceOptions {
 
 export interface BookingItem {
   room: EnrichedHotelRoom;
-  priceType: 'base' | 'halfDay' | 'singlePerson';
+  priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast';
   quantity: number;
   price: number;
   maxQuantity: number;
@@ -54,9 +57,10 @@ interface TripComStyleRoomCardProps {
   room: EnrichedHotelRoom;
   priceOptions?: RoomPriceOptions;
   bookingItems: BookingItem[];
-  onQuantityChange: (priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => void;
+  onQuantityChange: (priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast', quantity: number) => void;
   nights?: number;
   cancellationFee?: CancellationFee | null;
+  checkIn?: string; // YYYY-MM-DD
 }
 
 // Priority facility list shown in the LEFT column, max 4
@@ -95,6 +99,92 @@ function getPriorityFacilities(room: EnrichedHotelRoom, limit = 4) {
   return result;
 }
 
+function RoomCountSelect({
+  value,
+  maxQty,
+  pricePerNight,
+  nights,
+  onChange,
+  accentClass = 'focus:ring-primary/50',
+}: {
+  value: number;
+  maxQty: number;
+  pricePerNight: number;
+  nights: number;
+  onChange: (qty: number) => void;
+  accentClass?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (
+        btnRef.current && !btnRef.current.contains(e.target as Node) &&
+        dropRef.current && !dropRef.current.contains(e.target as Node)
+      ) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const handleToggle = () => {
+    if (!open && btnRef.current) setRect(btnRef.current.getBoundingClientRect());
+    setOpen((o) => !o);
+  };
+
+  const options = [0, ...Array.from({ length: maxQty }, (_, i) => i + 1)];
+
+  const dropdownStyle: React.CSSProperties = rect
+    ? {
+        position: 'fixed',
+        // open above the button
+        bottom: window.innerHeight - rect.top + 4,
+        left: rect.left,
+        width: Math.max(rect.width, 200),
+        zIndex: 9999,
+      }
+    : { display: 'none' };
+
+  return (
+    <div className="relative w-14">
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={handleToggle}
+        className={`w-full flex items-center justify-between border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 ${accentClass} cursor-pointer`}
+      >
+        <span>{value}</span>
+        <ChevronDown className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+      </button>
+      {open && typeof window !== 'undefined' && createPortal(
+        <div
+          ref={dropRef}
+          style={dropdownStyle}
+          className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl overflow-hidden"
+        >
+          {options.map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => { onChange(n); setOpen(false); }}
+              className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                n === value ? 'bg-gray-100 dark:bg-gray-700 font-medium' : 'text-gray-800 dark:text-gray-200'
+              }`}
+            >
+              {n} өрөө{n > 0 ? ` · ₮${(pricePerNight * n * nights).toLocaleString()}` : ''}
+            </button>
+          ))}
+        </div>,
+        document.body
+      )}
+    </div>
+  );
+}
+
 export default function TripComStyleRoomCard({
   room,
   priceOptions,
@@ -102,6 +192,7 @@ export default function TripComStyleRoomCard({
   onQuantityChange,
   nights = 1,
   cancellationFee = null,
+  checkIn,
 }: TripComStyleRoomCardProps) {
   const { t, i18n } = useHydratedTranslation();
   const [imageIndex, setImageIndex] = useState(0);
@@ -116,6 +207,8 @@ export default function TripComStyleRoomCard({
 
   const selectedQty =
     bookingItems.find((i) => i.room.id === room.id && i.priceType === 'base')?.quantity ?? 0;
+  const breakfastQty =
+    bookingItems.find((i) => i.room.id === room.id && i.priceType === 'withBreakfast')?.quantity ?? 0;
 
   // Use rooms_possible (date-specific from API) when > 0, else fall back to number_of_rooms_to_sell (total inventory)
   const maxQty = room.rooms_possible > 0 ? room.rooms_possible : room.number_of_rooms_to_sell;
@@ -148,32 +241,35 @@ export default function TripComStyleRoomCard({
     (room.outdoorAndViewDetails?.length ?? 0);
   const hasMoreToShow = totalFacilityCount > shownFacilities.length;
 
+  console.log(room);
   return (
     <>
       <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
 
         {/* ── Header ── */}
         <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-gray-100 dark:border-gray-700">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-            {room.roomTypeName}
-            {categoryName && categoryName !== 'Unknown' && (
-              <span className="ml-1 font-normal text-sm text-gray-500 dark:text-gray-400">
-                / {categoryName}
-              </span>
-            )}
-          </h3>
+          <div className="" >
+   
+      <h3 className="text-[18px] font-bold text-gray-900 dark:text-white leading-tight pb-1 border-b border-solid border-gray-200 mb-1">  {room.roomCategoryNameEn } { room.roomTypeName}</h3>   
+        
+     <div className="text-[14px] leading-tight text-gray-500 dark:text-gray-400">   {i18n.language === 'mn' &&
+  `${room.roomCategoryNameMn} ${room.roomTypeName}`
+  
+}</div>  
+   </div>
+     
           {isLowStock && (
-            <span className="text-red-500 text-sm font-semibold whitespace-nowrap ml-3">
+            <span className="text-red-500 bg-red-100 px-2 py-1 rounded-sm text-sm font-medium whitespace-nowrap ml-3">
               *{t('roomCard.lastRooms', 'Сүүлийн')} {maxQty} {t('roomCard.rooms', 'өрөө')}
             </span>
           )}
         </div>
 
         {/* ── Body: Left | Middle | Right ── */}
-        <div className="flex">
+        <div className="flex items-stretch">
 
           {/* ── LEFT: image + thumbnails + bed + amenities ── */}
-          <div className="w-80 shrink-0 flex flex-col border-r border-gray-100 dark:border-gray-700">
+          <div className="w-50 shrink-0 flex flex-col border-r border-gray-100 dark:border-gray-700">
 
             {/* Main image */}
             <div
@@ -235,31 +331,21 @@ export default function TripComStyleRoomCard({
                   </span>
                 </div>
               ))}
-              <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
-                <div className="flex items-center gap-0.5">
-                  <Users className="w-3 h-3" />
-                  <span>{room.adultQty + room.childQty}</span>
-                </div>
-                {room.room_size && Number(room.room_size) > 0 && (
-                  <div className="flex items-center gap-0.5">
-                    <Maximize2 className="w-3 h-3" />
-                    <span>{Number(room.room_size)}m²</span>
-                  </div>
-                )}
-              </div>
+
             </div>
 
-            {/* Priority amenities (max 4) */}
-            {shownFacilities.length > 0 && (
-              <div className="px-3 pb-1 space-y-1 border-t border-gray-50 dark:border-gray-700 pt-1.5">
-                {shownFacilities.map((f, i) => (
-                  <div key={i} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-                    <span className="shrink-0 text-gray-400 dark:text-gray-500">{f.icon}</span>
-                    <span>{f.labelMn}</span>
+            {/* Priority amenities — always 4 slots so height is consistent */}
+            <div className="px-3 pb-1 space-y-1 border-t border-gray-50 dark:border-gray-700 pt-1.5">
+              {Array.from({ length: 4 }).map((_, i) => {
+                const f = shownFacilities[i];
+                return (
+                  <div key={i} className={`flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400 ${!f ? 'invisible' : ''}`}>
+                    <span className="shrink-0 text-gray-400 dark:text-gray-500">{f?.icon}</span>
+                    <span>{f?.labelMn}</span>
                   </div>
-                ))}
-              </div>
-            )}
+                );
+              })}
+            </div>
 
             {/* Дэлгэрэнгүй link */}
             <div className="px-3 pb-3">
@@ -272,110 +358,126 @@ export default function TripComStyleRoomCard({
             </div>
           </div>
 
-          {/* ── MIDDLE: Your Choices ── */}
-          <div className="flex-1 min-w-0 p-4 flex flex-col gap-3 border-r border-gray-100 dark:border-gray-700">
+          {/* ── MIDDLE + RIGHT: price rows + booking conditions ── */}
+          <div className="flex-1 min-w-0 flex flex-col">
 
-            {/* Guest capacity icons */}
-            <div className="flex items-center gap-0.5">
-              {Array.from({ length: room.adultQty }).map((_, i) => (
-                <User key={`a${i}`} className="w-4 h-4 text-gray-600 dark:text-gray-300" strokeWidth={2} />
-              ))}
-              {room.childQty > 0 && Array.from({ length: room.childQty }).map((_, i) => (
-                <Baby key={`c${i}`} className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
-              ))}
-              <span className="ml-1 text-sm text-gray-600 dark:text-gray-400">
-                ×{room.adultQty + room.childQty}
-              </span>
-            </div>
+            {/* ── Compute cancellation info once ── */}
+            {(() => {
+              const time = cancellationFee?.cancel_time?.slice(0, 5) ?? '';
+              const beforePct = parseFloat(cancellationFee?.single_before_time_percentage ?? '0');
+              let cancelDateStr = '';
+              if (checkIn) {
+                const d = new Date(checkIn);
+                d.setDate(d.getDate() - 1);
+                cancelDateStr = d.toISOString().slice(0, 10);
+              }
+              const dateLabel = cancelDateStr ? `${cancelDateStr} ${time}` : time;
+              const canCancel = cancellationFee ? beforePct < 100 : null;
 
-            <div className="border-t border-gray-100 dark:border-gray-700" />
-
-            {/* Booking conditions */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm font-medium text-green-600 dark:text-green-400">
-                <Zap className="w-4 h-4 shrink-0" />
-                <span>Шууд баталгаажилт</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm font-medium text-green-600 dark:text-green-400">
-                <Shield className="w-4 h-4 shrink-0" />
-                <span>100% урьдчилгаа төлөлт</span>
-              </div>
-              {/* Cancellation policy — using Hotel_front naming */}
-              {cancellationFee ? (() => {
-                // Format "HH:MM:SS" → "HH:MM"
-                const time = cancellationFee.cancel_time?.slice(0, 5) ?? '';
-                const beforePct = parseFloat(cancellationFee.single_before_time_percentage ?? '0');
-                const afterPct = parseFloat(cancellationFee.single_after_time_percentage ?? '100');
-                return (
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                      <CheckCircle className="w-3.5 h-3.5 shrink-0" />
-                      <span>{t('roomCard.cancellationPolicy', 'Цуцлалтын бодлого')}</span>
+              // Conditions stacked inside each row (below breakfast label)
+              const Conditions = () => (
+                <div className="space-y-0.5">
+                  {canCancel !== null && (
+                    <div className={`flex items-center gap-1 text-sm ${canCancel ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
+                      <CheckCircle className="w-3 h-3 shrink-0" />
+                      <span>{canCancel ? `${dateLabel} цагаас өмнө цуцлах боломжтой` : 'Цуцлах боломжгүй'}</span>
                     </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 pl-5.5">
-                      {`${t('roomCard.beforeCancelLabelPrefix', 'Өмнөх өдрийн')} ${time} ${t('roomCard.beforeCancelLabelSuffix', 'цагаас өмнө')}`}
-                      {': '}<span className={beforePct === 0 ? 'text-green-600 dark:text-green-400 font-medium' : 'text-orange-500 font-medium'}>{beforePct === 0 ? t('roomCard.freeCancelShort', 'үнэгүй') : `${beforePct}%`}</span>
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 pl-5.5">
-                      {`${t('roomCard.beforeCancelLabelPrefix', 'Өмнөх өдрийн')} ${time} ${t('roomCard.afterCancelLabelSuffix', 'цагаас хойш')}`}
-                      {': '}<span className="text-orange-500 font-medium">{afterPct}%</span>
-                    </p>
+                  )}
+                  <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                    <Zap className="w-3 h-3 shrink-0" />
+                    <span>Шууд баталгаажилт</span>
                   </div>
-                );
-              })() : (
-                <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
-                  <CheckCircle className="w-4 h-4 shrink-0" />
-                  <span>{t('roomCard.cancellationPolicy', 'Цуцлалтын бодлого')}</span>
+                  <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                    <Shield className="w-3 h-3 shrink-0" />
+                    <span>100% урьдчилгаа төлөлт</span>
+                  </div>
                 </div>
-              )}
-            </div>
-          </div>
+              );
 
-          {/* ── RIGHT: Price + Selector ── */}
-          <div className="w-48 shrink-0 p-4 flex flex-col justify-between">
-
-            {/* Price block — at top */}
-            <div className="space-y-1">
-              {hasDiscount && (
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-sm text-gray-400 dark:text-gray-500 line-through">
-                    ₮{rawPrice.toLocaleString()}
-                  </span>
-                  <span className="bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                    {discountPct}% OFF
-                  </span>
+              const GuestBlock = () => (
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <Users className="w-3 h-3 text-gray-600 dark:text-gray-400" strokeWidth={2} />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">×{room.adultQty}</span>
+                  {room.childQty > 0 && (
+                    <>
+                      <Baby className="w-3 h-3 text-gray-600 dark:text-gray-400 ml-1" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">×{room.childQty}</span>
+                    </>
+                  )}
                 </div>
-              )}
-              <div className="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
-                ₮{finalPrice.toLocaleString()}
-              </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                {nights > 1
-                  ? `₮${(finalPrice * nights).toLocaleString()} · ${nights} ${t('roomCard.nights', 'шөнө')}`
-                  : t('roomCard.perNight', 'шөнийн үнэ')}
-              </div>
-              {isLowStock && (
-                <p className="text-orange-500 text-xs font-semibold">
-                  {t('roomCard.onlyLeft', { count: maxQty, defaultValue: 'Зөвхөн {{count}} үлдлээ!' })}
-                </p>
-              )}
-            </div>
+              );
 
-            {/* Room selector — at bottom */}
-            <div className="mt-4">
-              <select
-                value={selectedQty}
-                onChange={(e) => onQuantityChange('base', Number(e.target.value))}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-2 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
-              >
-                <option value={0}>{t('roomCard.selectRooms', 'Өрөө сонгох')}</option>
-                {Array.from({ length: maxQty }, (_, i) => i + 1).map((n) => (
-                  <option key={n} value={n}>
-                    {n} {t('roomCard.rooms', 'өрөө')} (₮{(finalPrice * n).toLocaleString()})
-                  </option>
-                ))}
-              </select>
-            </div>
+              return (
+                <div className="font-medium flex flex-col flex-1">
+                  {/* ── Row 1: WITH breakfast (first, per Figma) ── */}
+                  {priceOptions.breakfastPrice && priceOptions.breakfastPrice > 0 && (
+                    <div className="flex flex-1 justify-between gap-4 px-4 py-3 border-b border-gray-100 dark:border-gray-700 ">
+                      {/* LEFT: guests + label + conditions */}
+                      <div className="flex flex-col gap-1 min-w-0">
+                        <GuestBlock />
+                        <span className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400"><Coffee className="w-3 h-3 shrink-0" />Өглөөний цай багтсан</span>
+                        <Conditions />
+                      </div>
+                      {/* RIGHT: price + selector */}
+                      <div className="flex  items-center gap-6 shrink-0 my-auto">
+                        <div className="text-right">
+                          <div className="text-lg font-bold text-gray-900 dark:text-white">₮{priceOptions.breakfastPrice.toLocaleString()}</div>
+                          <div className="text-[12px] text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                            {nights > 1
+                              ? `${nights} шөнө · нийт ₮${(priceOptions.breakfastPrice * nights).toLocaleString()}`
+                              : '1 шөнийн үнэ'}
+                          </div>
+                        </div>
+                        <RoomCountSelect
+                          value={breakfastQty}
+                          maxQty={maxQty}
+                          pricePerNight={priceOptions.breakfastPrice!}
+                          nights={nights}
+                          onChange={(qty) => onQuantityChange('withBreakfast', qty)}
+                          accentClass="focus:ring-green-500/50"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ── Row 2: WITHOUT breakfast ── */}
+                  <div className="flex flex-1 justify-between gap-4 px-4 py-3 mb-1 ">
+                    {/* LEFT: guests + label + conditions */}
+                    <div className="flex flex-col gap-1 min-w-0">
+                      <GuestBlock />
+                      <span className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400"><Coffee className="w-3 h-3 shrink-0 " />Өглөөний цай багтаагүй</span>
+                      <Conditions />
+                    </div>
+                    {/* RIGHT: price + selector */}
+                    <div className="flex  items-end gap-6 shrink-0 my-auto">
+                      <div className="text-right">
+                        {hasDiscount && (
+                          <div className="flex items-center justify-end gap-1 mb-0.5">
+                            <span className="text-xs text-gray-400 line-through">₮{rawPrice.toLocaleString()}</span>
+                            <span className="bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded">{discountPct}% OFF</span>
+                          </div>
+                        )}
+                        <div className="text-lg font-bold text-gray-900 dark:text-white">₮{finalPrice.toLocaleString()}</div>
+                        <div className="text-[12px] text-gray-400 dark:text-gray-500 whitespace-nowrap">
+                          {nights > 1
+                            ? `${nights} шөнө · нийт ₮${(finalPrice * nights).toLocaleString()}`
+                            : '1 шөнийн үнэ'}
+                        </div>
+                      </div>
+                      <div className="-translate-y-1.5">
+                      <RoomCountSelect
+                        value={selectedQty}
+                        maxQty={maxQty}
+                        pricePerNight={finalPrice}
+                        nights={nights}
+                        onChange={(qty) => onQuantityChange('base', qty)}
+                      />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
 
         </div>

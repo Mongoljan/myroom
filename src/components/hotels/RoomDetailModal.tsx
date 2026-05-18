@@ -56,11 +56,11 @@ function CheckIcon() {
 function SectionBlock({ title, items }: { title: string; items: string[] }) {
   if (items.length === 0) return null;
   return (
-    <div className="mb-5">
-      <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-2 border-b border-gray-100 dark:border-gray-700 pb-1">
+    <div className="mb-4">
+      <h4 className="text-[16px] font-semibold text-gray-800 dark:text-gray-100 mb-2">
         {title}
       </h4>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
         {items.map((item, i) => (
           <div key={i} className="flex items-start gap-1.5">
             <CheckIcon />
@@ -86,6 +86,16 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
   useEffect(() => {
     if (isOpen) setImgIdx(0);
   }, [isOpen, room?.id]);
+
+  // Lock background scroll while modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -153,7 +163,7 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
       <div className="relative z-10 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+          <h2 className="text-[20px] font-semibold text-gray-900 dark:text-white truncate">
             {room.roomTypeName}
             {categoryName && categoryName !== 'Unknown' && (
               <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
@@ -310,7 +320,7 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
             {/* Description */}
             {room.room_Description && room.room_Description !== 'room detailed description' && room.room_Description !== 'testing' && (
               <div className="pt-2">
-                <h4 className="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1 border-b border-gray-100 dark:border-gray-700 pb-1">
+                <h4 className="text-[16px] font-semibold text-gray-800 dark:text-gray-100 mb-2">
                   {t('roomDetail.description', 'Тайлбар')}
                 </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">

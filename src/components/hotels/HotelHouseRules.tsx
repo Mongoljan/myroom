@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, Info, Loader2, AlertCircle, Car, Coffee, Baby } from 'lucide-react';
+import { Calendar, Info, Loader2, AlertCircle, Car, Coffee, Baby, PawPrint, CreditCard, UserCheck } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { PropertyPolicy } from '@/types/api';
@@ -85,197 +85,176 @@ export default function HotelHouseRules({ hotelId, initialPolicies }: HotelHouse
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Check-in / Check-out */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
-          <div className="flex gap-3">
-            <div className="flex-shrink-0 mt-0.5">
-              <Calendar className="w-4 h-4 text-gray-900 dark:text-gray-200" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
-                {t('houseRules.checkInOut', 'Орох цаг / Гарах цаг')}
-              </h3>
-              <div className="space-y-1">
-                <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                  <span>{t('houseRules.checkIn', 'Орох цаг:')}</span>{' '}
-                  <span className="text-gray-900 dark:text-white">{formatTime(policy.check_in_from)}</span>
-                </div>
-                <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                  <span>{t('houseRules.checkOut', 'Гарах цаг:')}</span>{' '}
-                  <span className="text-gray-900 dark:text-white">{formatTime(policy.check_out_from)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
 
-        {/* Parking Policy */}
-        {policy.parking_policy && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
-            <div className="flex gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <Car className="w-4 h-4 text-gray-900 dark:text-gray-200" />
+        {/* Row helper */}
+        {(() => {
+          const Row = ({
+            icon,
+            title,
+            children,
+          }: {
+            icon: React.ReactNode;
+            title: string;
+            children: React.ReactNode;
+          }) => (
+            <div className="flex items-start gap-6 px-5 py-4">
+              <div className="flex items-center gap-2 w-48 shrink-0 pt-0.5">
+                <span className="text-gray-500 dark:text-gray-400 shrink-0">{icon}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{title}</span>
               </div>
-              <div className="flex-1">
-                <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
-                  {t('houseRules.parking', 'Зогсоол')}
-                </h3>
-                <div className="space-y-1">
-                  {policy.parking_policy.outdoor_parking !== 'no' && (
-                    <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                      <span className="font-medium">{t('houseRules.outdoorParking', 'Гадна зогсоол:')}</span>{' '}
-                      {policy.parking_policy.outdoor_parking === 'free'
-                        ? t('houseRules.free', 'Үнэгүй')
-                        : `${t('houseRules.paid', 'Төлбөртэй')}${policy.parking_policy.outdoor_price ? ` — ₮${Number(policy.parking_policy.outdoor_price).toLocaleString()}` : ''}`
-                      }
-                    </div>
-                  )}
-                  {policy.parking_policy.indoor_parking !== 'no' && (
-                    <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                      <span className="font-medium">{t('houseRules.indoorParking', 'Дотоод зогсоол:')}</span>{' '}
-                      {policy.parking_policy.indoor_parking === 'free'
-                        ? t('houseRules.free', 'Үнэгүй')
-                        : `${t('houseRules.paid', 'Төлбөртэй')}${policy.parking_policy.indoor_price ? ` — ₮${Number(policy.parking_policy.indoor_price).toLocaleString()}` : ''}`
-                      }
-                    </div>
-                  )}
-                  {policy.parking_policy.outdoor_parking === 'no' && policy.parking_policy.indoor_parking === 'no' && (
-                    <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                      {t('houseRules.noParking', 'Зогсоол байхгүй')}
-                    </div>
-                  )}
-                </div>
+              <div className="flex-1 text-sm text-gray-700 dark:text-gray-300 space-y-1 leading-relaxed">
+                {children}
               </div>
             </div>
-          </div>
-        )}
+          );
 
-        {/* Cancellation Policy */}
-        {policy.cancellation_fee && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
-            <div className="flex gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <Info className="w-4 h-4 text-gray-900 dark:text-gray-200" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
-                  {t('houseRules.cancellation', 'Цуцлалтын нөхцөл')}
-                </h3>
-                <div className="space-y-1">
-                  <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                    <span className="font-medium">{t('houseRules.cancelTime', 'Цуцлах хугацаа:')}</span>{' '}
-                    {formatTime(policy.cancellation_fee.cancel_time)}
-                  </div>
-                  <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                    <span className="font-medium">{t('houseRules.beforeCancelTime', 'Цуцлах хугацааны өмнө:')}</span>{' '}
-                    {policy.cancellation_fee.single_before_time_percentage}%
-                  </div>
-                  <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                    <span className="font-medium">{t('houseRules.afterCancelTime', 'Цуцлах хугацааны дараа:')}</span>{' '}
-                    {policy.cancellation_fee.single_after_time_percentage}%
-                  </div>
-                  {policy.cancellation_fee.multi_5days_before_percentage && (
-                    <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                      <span className="font-medium">{t('houseRules.multi5days', '5 хоногийн өмнө (олон өрөө):')}</span>{' '}
-                      {policy.cancellation_fee.multi_5days_before_percentage}%
-                    </div>
-                  )}
-                  {policy.cancellation_fee.multi_3days_before_percentage && (
-                    <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                      <span className="font-medium">{t('houseRules.multi3days', '3 хоногийн өмнө (олон өрөө):')}</span>{' '}
-                      {policy.cancellation_fee.multi_3days_before_percentage}%
-                    </div>
-                  )}
-                  {policy.cancellation_fee.multi_1day_before_percentage && (
-                    <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                      <span className="font-medium">{t('houseRules.multi1day', '1 хоногийн өмнө (олон өрөө):')}</span>{' '}
-                      {policy.cancellation_fee.multi_1day_before_percentage}%
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+          const feeType = (type: 'hour' | 'day' | null) =>
+            type === 'hour' ? 'цагийн' : type === 'day' ? 'өдрийн' : '';
 
-        {/* Children Policy */}
-        {policy.child_policy && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
-            <div className="flex gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <Baby className="w-4 h-4 text-gray-900 dark:text-gray-200" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
-                  {t('houseRules.children', 'Хүүхэд')}
-                </h3>
-                <div className="space-y-1">
-                  <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                    {policy.child_policy.allow_children
-                      ? t('houseRules.childrenAllowed', 'Хүүхэдтэй зочдыг хүлээн авдаг')
-                      : t('houseRules.childrenNotAllowed', 'Хүүхэдтэй зочдыг хүлээн авдаггүй')
-                    }
-                  </div>
-                  {policy.child_policy.allow_children && policy.child_policy.max_child_age && (
-                    <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                      <span className="font-medium">{t('houseRules.maxChildAge', 'Хүүхдийн дээд нас:')}</span>{' '}
-                      {policy.child_policy.max_child_age} {t('houseRules.years', 'нас')}
-                    </div>
-                  )}
-                  {policy.child_policy.allow_extra_bed && (
-                    <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                      {t('houseRules.extraBedAvailable', 'Нэмэлт ор байна')}
-                      {policy.child_policy.extra_bed_price && Number(policy.child_policy.extra_bed_price) > 0 && (
-                        <span> — ₮{Number(policy.child_policy.extra_bed_price).toLocaleString()}</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+          const bp = typeof policy.breakfast_policy === 'object' && policy.breakfast_policy !== null && 'status' in policy.breakfast_policy
+            ? policy.breakfast_policy
+            : null;
 
+          return (
+            <>
+              {/* 1. Check-in / Check-out */}
+              <Row icon={<Calendar className="w-4 h-4" />} title="Орох цаг / Гарах цаг">
+                <div>Орох цаг: <span className="font-medium text-gray-900 dark:text-white">{formatTime(policy.check_in_from)}</span></div>
+                <div>Гарах цаг: <span className="font-medium text-gray-900 dark:text-white">{formatTime(policy.check_out_from)}</span></div>
+              </Row>
 
-
-        {/* Breakfast Policy */}
-        {policy.breakfast_policy && (
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-4">
-            <div className="flex gap-3">
-              <div className="flex-shrink-0 mt-0.5">
-                <Coffee className="w-4 h-4 text-gray-900 dark:text-gray-200" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-[14px] font-semibold text-gray-900 dark:text-white mb-2">
-                  {t('houseRules.breakfast', 'Өглөөний цай')}
-                </h3>
-                <div className="text-[13px] text-gray-700 dark:text-gray-300">
-                  {typeof policy.breakfast_policy === 'string' 
-                    ? policy.breakfast_policy 
-                    : policy.breakfast_policy.status 
-                      ? (
-                        <div className="space-y-1">
-                          <div>{t('houseRules.breakfastAvailable', 'Өглөөний цай байна')}</div>
-                          {policy.breakfast_policy.start_time && policy.breakfast_policy.end_time && (
-                            <div>
-                              {t('houseRules.breakfastTime', 'Цаг:')} {formatTime(policy.breakfast_policy.start_time)} - {formatTime(policy.breakfast_policy.end_time)}
-                            </div>
-                          )}
-                          {policy.breakfast_policy.price && Number(policy.breakfast_policy.price) > 0 && (
-                            <div>
-                              {t('houseRules.breakfastPrice', 'Үнэ:')} {Number(policy.breakfast_policy.price).toLocaleString()}₮
-                            </div>
-                          )}
+              {/* 2. Parking */}
+              {policy.parking_policy && (
+                <Row icon={<Car className="w-4 h-4" />} title="Зогсоол">
+                  {policy.parking_policy.outdoor_parking === 'no' && policy.parking_policy.indoor_parking === 'no' ? (
+                    <div>Зогсоол байхгүй</div>
+                  ) : (
+                    <>
+                      {policy.parking_policy.outdoor_parking !== 'no' && (
+                        <div>
+                          Гадна зогсоол:{' '}
+                          {policy.parking_policy.outdoor_parking === 'free'
+                            ? <span className="text-green-600 dark:text-green-400 font-medium">Үнэгүй</span>
+                            : <span>Төлбөртэй{policy.parking_policy.outdoor_price ? ` / ${feeType(policy.parking_policy.outdoor_fee_type)}: ₮${Number(policy.parking_policy.outdoor_price).toLocaleString()}` : ''}</span>
+                          }
                         </div>
-                      )
-                      : t('houseRules.noBreakfast', 'Өглөөний цай байхгүй')
-                  }
+                      )}
+                      {policy.parking_policy.indoor_parking !== 'no' && (
+                        <div>
+                          Дотоод зогсоол:{' '}
+                          {policy.parking_policy.indoor_parking === 'free'
+                            ? <span className="text-green-600 dark:text-green-400 font-medium">Үнэгүй</span>
+                            : <span>Төлбөртэй{policy.parking_policy.indoor_price ? ` / ${feeType(policy.parking_policy.indoor_fee_type)}: ₮${Number(policy.parking_policy.indoor_price).toLocaleString()}` : ''}</span>
+                          }
+                        </div>
+                      )}
+                    </>
+                  )}
+                </Row>
+              )}
+
+              {/* 3. Cancellation */}
+              {policy.cancellation_fee && (
+                <Row icon={<Info className="w-4 h-4" />} title="Цуцалтын нөхцөл">
+                  {(() => {
+                    const cf = policy.cancellation_fee!;
+                    const beforePct = parseFloat(cf.single_before_time_percentage);
+                    const afterPct = parseFloat(cf.single_after_time_percentage);
+                    const time = formatTime(cf.cancel_time);
+                    const noRefund = beforePct >= 100;
+                    if (noRefund) {
+                      return <div className="text-red-500 font-medium">Цуцалгаа хийгдэхгүй (100% торгууль)</div>;
+                    }
+                    return (
+                      <>
+                        <div>Орох өдрөөс <span className="font-medium">{time}</span>-с өмнө цуцалбал:{' '}
+                          <span className="text-green-600 dark:text-green-400 font-medium">{beforePct === 0 ? 'Үнэгүй' : `${beforePct}% торгууль`}</span>
+                        </div>
+                        <div>
+                          {time}-с хойш цуцалбал:{' '}
+                          <span className="text-red-500 font-medium">{afterPct}% торгууль</span>
+                        </div>
+                        {cf.multi_5days_before_percentage && (
+                          <div>Олон өрөө — 5 хоногийн өмнө: {cf.multi_5days_before_percentage}%</div>
+                        )}
+                        {cf.multi_3days_before_percentage && (
+                          <div>Олон өрөө — 3 хоногийн өмнө: {cf.multi_3days_before_percentage}%</div>
+                        )}
+                        {cf.multi_1day_before_percentage && (
+                          <div>Олон өрөө — 1 хоногийн өмнө: {cf.multi_1day_before_percentage}%</div>
+                        )}
+                      </>
+                    );
+                  })()}
+                </Row>
+              )}
+
+              {/* 4. Children & extra bed */}
+              {policy.child_policy && (
+                <Row icon={<Baby className="w-4 h-4" />} title="Хүүхэд болон нэмэлт ор">
+                  {policy.child_policy.allow_children ? (
+                    <>
+                      <div>Хүүхэдтэй зочдыг хүлээн авдаг.</div>
+                      {policy.child_policy.max_child_age && (
+                        <div>{policy.child_policy.max_child_age} нас хүртэлх хүүхэд насанд хүрэгчийн үнээр тооцогдоно.</div>
+                      )}
+                      {policy.child_policy.child_bed_available === 'yes' && (
+                        <div className="mt-1 font-medium text-gray-800 dark:text-gray-200">Хүүхдийн ор болон нэмэлт ор:</div>
+                      )}
+                      {policy.child_policy.allow_extra_bed && (
+                        <div className="flex  border-t border-gray-100 dark:border-gray-700 pt-1 mt-1">
+                          <span>Нэмэлт ор : </span>
+                          <span className="font-medium">
+                            {policy.child_policy.extra_bed_price && Number(policy.child_policy.extra_bed_price) > 0
+                              ? `₮${Number(policy.child_policy.extra_bed_price).toLocaleString()}`
+                              : <span className="text-green-600 dark:text-green-400">Үнэгүй</span>
+                            }
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div>Хүүхэдтэй зочдыг хүлээн авдаггүй.</div>
+                  )}
+                </Row>
+              )}
+
+              {/* 5. Breakfast */}
+              {bp && bp.status && (
+                <Row icon={<Coffee className="w-4 h-4" />} title="Өглөөний цай">
+                  {bp.start_time && bp.end_time && (
+                    <div>Цаг: <span className="font-medium">{formatTime(bp.start_time)} – {formatTime(bp.end_time)}</span></div>
+                  )}
+                  {bp.price && Number(bp.price) > 0 && (
+                    <div>Үнэ: <span className="font-medium">₮{Number(bp.price).toLocaleString()}</span></div>
+                  )}
+                </Row>
+              )}
+
+              {/* 6. Age requirement — static default */}
+              <Row icon={<UserCheck className="w-4 h-4" />} title="Насны шаардлага">
+                <div>Бүртгэлд насны шаардлага байхгүй.</div>
+              </Row>
+
+              {/* 7. Pets — static default */}
+              <Row icon={<PawPrint className="w-4 h-4" />} title="Тэжээвэр амьтан">
+                <div>Тэжээвэр амьтан авчрахыг зөвшөөрдөггүй.</div>
+              </Row>
+
+              {/* 8. Payment methods — static */}
+              <Row icon={<CreditCard className="w-4 h-4" />} title="Зөвшөөрөх төлбөрийн хэрэгсэл">
+                <div className="flex flex-wrap gap-2 items-center">
+                  {['Visa', 'Mastercard', 'JCB', 'UnionPay', 'Cash'].map((m) => (
+                    <span key={m} className="inline-flex items-center px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
+                      {m}
+                    </span>
+                  ))}
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
+              </Row>
+            </>
+          );
+        })()}
       </div>
     </section>
   );

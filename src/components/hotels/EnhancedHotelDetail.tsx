@@ -437,13 +437,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   return (
     <div className="space-y-4">
       {/* Back Button */}
-      <button
-        onClick={handleBack}
-        className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4 text-primary" />
-        <span className="font-bold text-primary">{t('common.back', 'Буцах')}</span>
-      </button>
+ 
 
       {/* Hotel Header Section */}
       <div className="space-y-3">

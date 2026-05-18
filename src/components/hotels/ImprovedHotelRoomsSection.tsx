@@ -41,8 +41,12 @@ export default function ImprovedHotelRoomsSection({
   const [selectedCheckIn, setSelectedCheckIn] = useState(checkIn || today.toISOString().split('T')[0]);
   const [selectedCheckOut, setSelectedCheckOut] = useState(checkOut || tomorrow.toISOString().split('T')[0]);
 
-  const effectiveCheckIn = selectedCheckIn;
-  const effectiveCheckOut = selectedCheckOut;
+  // Committed dates — only updated when user clicks Хайх. useEffect watches these, not the picker state.
+  const [committedCheckIn, setCommittedCheckIn] = useState(checkIn || today.toISOString().split('T')[0]);
+  const [committedCheckOut, setCommittedCheckOut] = useState(checkOut || tomorrow.toISOString().split('T')[0]);
+
+  const effectiveCheckIn = committedCheckIn;
+  const effectiveCheckOut = committedCheckOut;
 
   // Guest state — no router.push on every keystroke (fixes lag bug)
   const [adultsCount, setAdultsCount] = useState(Math.max(1, parseInt(searchParams.get('adults') || '2', 10)));
@@ -63,31 +67,22 @@ export default function ImprovedHotelRoomsSection({
     router.push(`?${params.toString()}`, { scroll: false });
   };
 
-  // Handle date changes
+  // Handle date changes — only update local state, URL is pushed on Search click
   const handleCheckInChange = (date: string) => {
     setSelectedCheckIn(date);
-    // If check-out is before new check-in, update it
+    // If check-out is before or equal to new check-in, push it forward
     if (new Date(date) >= new Date(selectedCheckOut)) {
       const newCheckOut = new Date(date);
       newCheckOut.setDate(newCheckOut.getDate() + 1);
-      const newCheckOutStr = newCheckOut.toISOString().split('T')[0];
-      setSelectedCheckOut(newCheckOutStr);
-      updateURLWithDates(date, newCheckOutStr);
-    } else {
-      updateURLWithDates(date, selectedCheckOut);
+      setSelectedCheckOut(newCheckOut.toISOString().split('T')[0]);
     }
-    // Clear booking items when dates change
-    setBookingItems([]);
   };
 
   const handleCheckOutChange = (date: string) => {
     setSelectedCheckOut(date);
-    updateURLWithDates(selectedCheckIn, date);
-    // Clear booking items when dates change
-    setBookingItems([]);
   };
 
-  // Unified search — only pushes to URL when user explicitly clicks Search
+  // Unified search — only pushes to URL and triggers room fetch when user explicitly clicks Search
   const handleSearch = () => {
     const params = new URLSearchParams(searchParams.toString());
     params.set('check_in', selectedCheckIn);
@@ -95,6 +90,8 @@ export default function ImprovedHotelRoomsSection({
     params.set('adults', adultsCount.toString());
     params.set('children', childrenCountLocal.toString());
     router.push(`?${params.toString()}`, { scroll: false });
+    setCommittedCheckIn(selectedCheckIn);
+    setCommittedCheckOut(selectedCheckOut);
     setBookingItems([]);
   };
 
@@ -137,15 +134,16 @@ export default function ImprovedHotelRoomsSection({
               : 0;
             
             pricesData[key] = {
-              basePrice: final_customer_price, // Customer-facing price (what they pay)
-              basePriceRaw: base_price, // Original price for strikethrough display
+              basePrice: final_customer_price,
+              basePriceRaw: base_price,
               halfDayPrice: room.half_day_price && room.half_day_price > 0 ? room.half_day_price : undefined,
               singlePersonPrice: room.single_person_price && room.single_person_price > 0 ? room.single_person_price : undefined,
+              breakfastPrice: room.price_breakdown.breakfast_price > 0 ? room.price_breakdown.price_with_breakfast : undefined,
               discount: hotel_discount_amount > 0 ? {
                 type: 'PERCENT' as const,
                 value: discountPercent
               } : undefined,
-              priceBreakdown: room.price_breakdown // Include full breakdown for detailed display
+              priceBreakdown: room.price_breakdown
             };
           }
         });
@@ -161,7 +159,7 @@ export default function ImprovedHotelRoomsSection({
   }, [hotelId, effectiveCheckIn, effectiveCheckOut]);
 
   // Booking management
-  const updateRoomQuantity = (room: EnrichedHotelRoom, priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => {
+  const updateRoomQuantity = (room: EnrichedHotelRoom, priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast', quantity: number) => {
     if (quantity === 0) {
       // Remove item
       setBookingItems(prev =>
@@ -178,6 +176,8 @@ export default function ImprovedHotelRoomsSection({
         price = priceOptions.halfDayPrice;
       } else if (priceType === 'singlePerson' && priceOptions.singlePersonPrice) {
         price = priceOptions.singlePersonPrice;
+      } else if (priceType === 'withBreakfast' && priceOptions.breakfastPrice) {
+        price = priceOptions.breakfastPrice;
       }
 
       const newItem: BookingItem = {
@@ -204,14 +204,14 @@ export default function ImprovedHotelRoomsSection({
     }
   };
 
-  const handleQuantityChange = (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => {
+  const handleQuantityChange = (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast', quantity: number) => {
     const room = rooms.find(r => r.id === roomId);
     if (room) {
       updateRoomQuantity(room, priceType, quantity);
     }
   };
 
-  const handleRemoveRoom = (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson') => {
+  const handleRemoveRoom = (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast') => {
     const room = rooms.find(r => r.id === roomId);
     if (room) {
       updateRoomQuantity(room, priceType, 0);
@@ -409,6 +409,7 @@ export default function ImprovedHotelRoomsSection({
                 onQuantityChange={(priceType, quantity) => updateRoomQuantity(room, priceType, quantity)}
                 nights={getNumberOfNights()}
                 cancellationFee={cancellationFee}
+                checkIn={effectiveCheckIn}
               />
             ))}
           </div>

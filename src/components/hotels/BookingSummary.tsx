@@ -11,8 +11,8 @@ interface BookingSummaryProps {
   checkIn: string;
   checkOut: string;
   nights?: number;
-  onQuantityChange: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson', quantity: number) => void;
-  onRemoveRoom: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson') => void;
+  onQuantityChange: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast', quantity: number) => void;
+  onRemoveRoom: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast') => void;
   onBookNow: () => void;
 }
 
@@ -30,39 +30,108 @@ export default function BookingSummary({
   const { t } = useHydratedTranslation();
   const totalPriceWithNights = totalPrice * nights;
 
-  const priceTypeLabels = {
-    base: t('hotelRooms.standardRate', 'Үндсэн үнэ'),
-    halfDay: t('hotelRooms.halfDayRate', 'Хагас хоногийн үнэ'),
-    singlePerson: t('hotelRooms.singleGuestRate', '1 хүний үнэ')
-  };
-
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sticky top-4">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sticky top-[80px] max-h-[calc(100vh-88px)] overflow-y-auto">
       {/* Date Range Display */}
-      <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">{t('bookingExtra.stayDates')}</div>
+      <div className="mb-2.5 pb-2.5 border-b border-gray-200 dark:border-gray-700">
+       
         <div className="flex items-center justify-between text-sm">
           <div>
-            <div className="font-medium text-gray-900 dark:text-white">{new Date(checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">{t('bookingExtra.checkIn')}</div>
+               <div className="text-sm text-gray-600 dark:text-gray-400">{t('bookingExtra.checkIn')}</div>
+            <div className=" text-[16px] font-bold dark:text-white">{checkIn}</div>
           </div>
-          <div className="flex-1 border-t border-gray-300 dark:border-gray-600 mx-3 relative">
-            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 px-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex-1 mx-3 relative flex items-center">
+            <div className="w-full h-px bg-gray-200 dark:bg-gray-600" />
+            <div className="absolute left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 px-2 text-[12px] text-gray-500 dark:text-gray-400 whitespace-nowrap">
               {nights} {nights !== 1 ? t('bookingExtra.nights') : t('bookingExtra.night')}
             </div>
           </div>
           <div>
-            <div className="font-medium text-gray-900 dark:text-white">{new Date(checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+  
             <div className="text-sm text-gray-600 dark:text-gray-400">{t('bookingExtra.checkOut')}</div>
+                      <div className=" text-[16px] font-bold dark:text-white">{checkOut}</div>
+          </div>
+        </div>
+      </div>
+        <div className="">
+        <h3 className="font-bold text-sm text-gray-900 dark:text-white mb-3">{t('bookingExtra.selectedRooms')}</h3>
+
+        {items.length === 0 ? (
+          <p className="text-gray-500 dark:text-gray-400 text-sm">{t('bookingExtra.noRoomsSelected')}</p>
+        ) : (
+          <div className="space-y-3 overflow-y-auto scroll-auto h-80">
+            {items.map((item) => (
+              <div key={`${item.room.id}-${item.priceType}`} className="rounded-lg p-3 bg-gray-100 dark:bg-gray-700/50 space-y-2">
+                {/* Row 1: Room name + remove */}
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">
+                    {item.room.roomTypeName}
+                  </h4>
+                  <button
+                    onClick={() => onRemoveRoom(item.room.id, item.priceType)}
+                    className="p-1 hover:bg-red-100 dark:hover:bg-red-900/40 rounded-full transition-colors text-red-500"
+                    title={t('common.delete', 'Устгах')}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                {/* Row 2: Breakfast status */}
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-400 dark:text-gray-500">Өглөөний цай</span>
+                  {item.priceType === 'withBreakfast' ? (
+                    <span className="text-xs font-medium text-green-600 dark:text-green-400">Багтсан</span>
+                  ) : (
+                    <span className="text-xs font-medium text-gray-400 dark:text-gray-500">Багтаагүй</span>
+                  )}
+                </div>
+                {/* Row 3: Quantity controls */}
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Өрөөний тоо:</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => onQuantityChange(item.room.id, item.priceType, Math.max(1, item.quantity - 1))}
+                      disabled={item.quantity <= 1}
+                      className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <span className="w-6 text-center font-semibold text-sm">{item.quantity}</span>
+                    <button
+                      onClick={() => onQuantityChange(item.room.id, item.priceType, item.quantity + 1)}
+                      disabled={item.quantity >= item.maxQuantity}
+                      className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+                {/* Row 4: Price */}
+                <div className="flex justify-between items-center pt-1 border-t border-gray-200 dark:border-gray-600">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">Үнэ:</span>
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">
+                    ₮{(item.price * item.quantity).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="">
+          <div className="flex justify-between items-center text-sm">
+            <span className="font-bold">{t('bookingExtra.totalRooms')}:</span>
+            <span className="font-bold">{totalRooms}</span>
           </div>
         </div>
       </div>
 
-      <div className="text-center mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">{t('bookingExtra.totalPrice')}</div>
-        <div className="text-h1 font-bold text-gray-900 dark:text-white">₮{totalPriceWithNights.toLocaleString()}</div>
-        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+      <div className="text-left flex justify-between mb-4 pb-4">
+        <div className="text-[16px]  mb-1 font-bold">{t('bookingExtra.totalPrice')}</div>
+        <div>
+        <div className="text-[16px] font-bold text-gray-900 dark:text-white text-right">₮{totalPriceWithNights.toLocaleString()}</div>
+        <div className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 text-right">
           ₮{totalPrice.toLocaleString()} × {nights} {nights !== 1 ? t('bookingExtra.nights') : t('bookingExtra.night')}
+        </div>
         </div>
       </div>
 
@@ -71,72 +140,10 @@ export default function BookingSummary({
         disabled={items.length === 0}
         className="w-full bg-secondary text-white py-3 px-4 rounded-lg font-medium hover:bg-secondary/90 transition-colors mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {t('hotel.bookNow')} ({totalRooms} {totalRooms !== 1 ? t('bookingExtra.rooms') : t('bookingExtra.room')})
+        {t('hotel.bookNow')}
       </button>
 
-      <div className="border-t dark:border-gray-700 pt-4">
-        <h3 className="font-medium text-gray-900 dark:text-white mb-3">{t('bookingExtra.selectedRooms')}</h3>
-
-        {items.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400 text-sm">{t('bookingExtra.noRoomsSelected')}</p>
-        ) : (
-          <div className="space-y-3">
-            {items.map((item) => (
-              <div key={`${item.room.id}-${item.priceType}`} className="border dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex-1">
-                    <h4 className="font-medium text-gray-900 dark:text-white text-sm mb-1">
-                      {item.room.roomTypeName}
-                    </h4>
-                    <div className="text-sm text-slate-900 dark:text-slate-300 mb-1">
-                      {priceTypeLabels[item.priceType]}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      ₮{item.price.toLocaleString()} × {item.quantity} = ₮{(item.price * item.quantity).toLocaleString()}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => onRemoveRoom(item.room.id, item.priceType)}
-                    className="p-1 hover:bg-red-100 rounded-full transition-colors text-red-600"
-                    title={t('common.delete', 'Устгах')}
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{t('bookingExtra.quantity')}:</span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => onQuantityChange(item.room.id, item.priceType, Math.max(1, item.quantity - 1))}
-                      disabled={item.quantity <= 1}
-                      className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="w-8 text-center font-medium text-sm">{item.quantity}</span>
-                    <button
-                      onClick={() => onQuantityChange(item.room.id, item.priceType, item.quantity + 1)}
-                      disabled={item.quantity >= item.maxQuantity}
-                      className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                      title={item.quantity >= item.maxQuantity ? t('bookingExtra.maxRoomsAvailable', 'Maximum {{count}} rooms available').replace('{{count}}', String(item.maxQuantity)) : t('bookingExtra.increaseQuantity')}
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="border-t dark:border-gray-700 pt-3 mt-4">
-          <div className="flex justify-between items-center">
-            <span className="font-medium text-sm">{t('bookingExtra.totalRooms')}:</span>
-            <span className="font-bold">{totalRooms}</span>
-          </div>
-        </div>
-      </div>
+    
     </div>
   );
 }
