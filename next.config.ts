@@ -8,9 +8,10 @@ const nextConfig: NextConfig = {
   },
 
   images: {
-    // Cache optimized images for 30 days instead of 60 seconds (default).
-    // This is the primary lever to reduce Vercel Image Optimization Cache Writes.
-    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    // Cache optimized images for 31 days (Vercel recommended minimum).
+    minimumCacheTTL: 2678400, // 31 days
+    // Allowlist only the quality values actually used — fewer variants = fewer cache writes.
+    qualities: [75, 85],
     // Only generate the sizes your UI actually uses — fewer variants = fewer cache writes.
     deviceSizes: [640, 828, 1080, 1280, 1920],
     imageSizes: [16, 32, 64, 128, 256],

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Calendar } from 'lucide-react';
+import { ArrowLeft, Clock, Calendar, Check, Star, MapPin, ChevronDown, Receipt, Users } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { BookingService } from '@/services/bookingApi';
 import { ApiService } from '@/services/api';
 import { CreateBookingRequest, CreateBookingResponse, PropertyPolicy } from '@/types/api';
@@ -18,6 +19,8 @@ interface BookingRoom {
   room_name: string;
   price_per_night: number;
   total_price: number;
+  max_adults?: number;
+  max_children?: number;
 }
 
 function BookingContent() {
@@ -33,6 +36,8 @@ function BookingContent() {
   const urlCheckOut = searchParams.get('checkOut') || '';
   const urlTotalPrice = parseInt(searchParams.get('totalPrice') || '0');
   const urlNights = parseInt(searchParams.get('nights') || '1');
+  const adultsCount = parseInt(searchParams.get('adults') || '2');
+  const childrenCount = parseInt(searchParams.get('children') || '0');
 
   // Parse rooms data from URL
   const roomsData = searchParams.get('rooms');
@@ -48,6 +53,30 @@ function BookingContent() {
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [customerLastName, setCustomerLastName] = useState('');
+
+  // E-баримт (UI only, not sent to API)
+  type EbarimtType = 'individual' | 'organization' | 'taxpayer' | null;
+  const [ebarimtType, setEbarimtType] = useState<EbarimtType>(null);
+  const [orgRegister, setOrgRegister] = useState('');
+  const [orgName, setOrgName] = useState('');
+  const [taxpayerRegisterPrefix1, setTaxpayerRegisterPrefix1] = useState('');
+  const [taxpayerRegisterPrefix2, setTaxpayerRegisterPrefix2] = useState('');
+  const [taxpayerRegisterNumber, setTaxpayerRegisterNumber] = useState('');
+
+  // Cancellation policy + ToS state
+  const [cancellationAccepted, setCancellationAccepted] = useState(false);
+  const [tosAccepted, setTosAccepted] = useState(false);
+  const [tosModalOpen, setTosModalOpen] = useState(false);
+  const [tosScrolledToEnd, setTosScrolledToEnd] = useState(false);
+  const tosScrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Guest / room mismatch warning
+  const [mismatchModalOpen, setMismatchModalOpen] = useState(false);
+
+  // Promo code (UI only)
+  const [promoCode, setPromoCode] = useState('');
+  const [promoMessage, setPromoMessage] = useState<string | null>(null);
 
   // Hotel data state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,8 +92,21 @@ function BookingContent() {
   useEffect(() => {
     if (roomsData) {
       try {
-        const parsedRooms = JSON.parse(decodeURIComponent(roomsData));
+        const parsedRooms: BookingRoom[] = JSON.parse(decodeURIComponent(roomsData));
         setRooms(parsedRooms);
+
+        // Check if searched guest count exceeds total room capacity
+        const totalAdultCapacity = parsedRooms.reduce(
+          (sum, r) => sum + (r.max_adults ?? 1) * r.room_count, 0
+        );
+        const totalChildCapacity = parsedRooms.reduce(
+          (sum, r) => sum + (r.max_children ?? 0) * r.room_count, 0
+        );
+        const searchedAdults = parseInt(searchParams.get('adults') || '2');
+        const searchedChildren = parseInt(searchParams.get('children') || '0');
+        if (searchedAdults > totalAdultCapacity || (searchedChildren > 0 && searchedChildren > totalChildCapacity)) {
+          setMismatchModalOpen(true);
+        }
       } catch {
         // ignore malformed rooms data
       }
@@ -99,6 +141,7 @@ function BookingContent() {
   useEffect(() => {
     if (isAuthenticated && user) {
       if (!customerName) setCustomerName(user.first_name || '');
+      if (!customerLastName) setCustomerLastName(user.last_name || '');
       if (!customerPhone) setCustomerPhone(user.phone || '');
       if (!customerEmail) setCustomerEmail(user.email || '');
     }
@@ -135,6 +178,33 @@ function BookingContent() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkIn, checkOut]);
+
+  // Auto-accept ToS once user scrolls to bottom of modal content
+  const handleTosScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 8) {
+      setTosScrolledToEnd(true);
+      setTosAccepted(true);
+    }
+  };
+
+  // Reset scroll state when modal closes/opens
+  useEffect(() => {
+    if (tosModalOpen) {
+      setTosScrolledToEnd(false);
+      requestAnimationFrame(() => {
+        if (tosScrollRef.current) tosScrollRef.current.scrollTop = 0;
+      });
+    }
+  }, [tosModalOpen]);
+
+  const handleApplyPromo = () => {
+    if (!promoCode.trim()) {
+      setPromoMessage(null);
+      return;
+    }
+    setPromoMessage('Энэ промо код хүчингүй байна.');
+  };
 
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -261,7 +331,7 @@ function BookingContent() {
                   </div>
                   {hotelDetails?.location && (
                     <div className="text-gray-700 dark:text-gray-300 flex items-start gap-1">
-                      <svg className="w-3 h-3 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 h-3 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
@@ -475,200 +545,876 @@ function BookingContent() {
     );
   }
 
+  // Cheapest single image fallback
+  const heroImage = (() => {
+    try {
+      const cover = hotelDetails?.images?.cover;
+      if (typeof cover === 'string') return cover;
+      if (cover?.url) return cover.url;
+      const first = hotelDetails?.images?.gallery?.[0]?.url;
+      return first || '';
+    } catch {
+      return '';
+    }
+  })();
+
+  const ratingValue: number | undefined = hotelDetails?.rating_stars?.value;
+  const ratingLabel: string | undefined = hotelDetails?.rating_stars?.label;
+
+  const cf = hotelPolicy?.cancellation_fee;
+  const cancelTimeShort = cf?.cancel_time?.substring(0, 5);
+
+  const formatDateShort = (d: string) => {
+    if (!d) return '';
+    const date = new Date(d);
+    const wkMap = ['Ня', 'Да', 'Мя', 'Лха', 'Пү', 'Ба', 'Бя'];
+    return `${date.getFullYear()} -${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${wkMap[date.getDay()]}`;
+  };
+
+  const checkInTimeRange = hotelPolicy
+    ? `${hotelPolicy.check_in_from.substring(0, 5)} — ${hotelPolicy.check_in_until.substring(0, 5)}`
+    : '15:00 — 23:00';
+  const checkOutTimeRange = hotelPolicy
+    ? `${hotelPolicy.check_out_from.substring(0, 5)} — ${hotelPolicy.check_out_until.substring(0, 5)}`
+    : '01:00 — 11:00';
+
+  const canSubmit =
+    !!customerName &&
+    !!customerPhone &&
+    !!customerEmail &&
+    tosAccepted &&
+    !bookingInProgress;
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <button
-            onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            {t('common.back')}
-          </button>
-          <h1 className="text-h1 font-bold text-gray-900 dark:text-white">{t('booking.confirmBooking')}</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">{hotelName}</p>
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Stepper */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                <Check className="w-4 h-4" />
+              </div>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Өрөө сонгох</span>
+            </div>
+            <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700 mx-4" />
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
+                2
+              </div>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Хувийн мэдээлэл</span>
+            </div>
+            <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700 mx-4" />
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 flex items-center justify-center text-sm font-semibold">
+                3
+              </div>
+              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Төлбөр баталгаажуулах</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white mb-4"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {t('common.back', 'Буцах')}
+        </button>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Form Column */}
+          <div className="lg:col-span-2 space-y-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
             >
-              <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-6">{t('booking.guestDetails')}</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-5">
+                Захиалагчийн мэдээлэл
+              </h2>
 
               {bookingError && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg"
-                >
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                    <div>
-                      <h3 className="text-sm font-semibold text-red-800 mb-1">
-                        {t('errors.bookingFailed', 'Захиалга үүсгэх явцад алдаа гарлаа')}
-                      </h3>
-                      <p className="text-sm text-red-700">{bookingError}</p>
-                    </div>
-                  </div>
-                </motion.div>
+                <div className="mb-5 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                  <p className="text-sm text-red-700">{bookingError}</p>
+                </div>
               )}
 
-              <form onSubmit={handleBookingSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('booking.firstName')} *</label>
+              <form onSubmit={handleBookingSubmit} id="booking-form" className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    value={customerLastName}
+                    onChange={(e) => setCustomerLastName(e.target.value)}
+                    required
+                    disabled={bookingInProgress}
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
+                    placeholder="Таны овог"
+                  />
+                  <div className="relative">
                     <input
                       type="text"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
                       required
                       disabled={bookingInProgress}
-                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
-                      placeholder={t('booking.namePlaceholder', 'Нэр')}
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
+                      placeholder="Таны нэр"
                     />
+                    <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('booking.phone')} *</label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      required
+                      disabled={bookingInProgress}
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
+                      placeholder="И-мэйл хаяг"
+                    />
+                    <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
+                  </div>
+                  <div className="relative">
                     <input
                       type="tel"
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       required
                       disabled={bookingInProgress}
-                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
-                      placeholder="99001122"
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
+                      placeholder="Утасны дугаар"
                     />
+                    <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('booking.email')} *</label>
-                  <input
-                    type="email"
-                    value={customerEmail}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
-                    required
-                    disabled={bookingInProgress}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-slate-500 focus:border-slate-500 disabled:opacity-50"
-                    placeholder={t('booking.emailPlaceholder', 'email@example.com')}
-                  />
-                </div>
+                {/* E-Баримт */}
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg bg-indigo-50/40 dark:bg-gray-700/30 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-6 h-6 rounded-full bg-white border border-gray-200 flex items-center justify-center">
+                      <Receipt className="w-3.5 h-3.5 text-gray-600" />
+                    </div>
+                    <span className="text-sm font-semibold text-gray-900 dark:text-white">И-Баримт</span>
+                  </div>
 
-                  <div className="pt-6 border-t dark:border-gray-700">
-                  <button
-                    type="submit"
-                    disabled={bookingInProgress || !customerName || !customerPhone || !customerEmail}
-                    className="w-full bg-primary text-white py-4 px-6 rounded-lg font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {bookingInProgress ? (
-                      <div className="flex items-center justify-center gap-2">
-                        <Clock className="w-5 h-5 animate-spin" />
-                        {t('bookingExtra.bookingInProgress')}
-                      </div>
-                    ) : (
-                      t('bookingExtra.confirmCTA')
-                    )}
-                  </button>
+                  <div className="space-y-2">
+                    {/* Individual */}
+                    <label
+                      className={`flex items-center gap-3 p-3 rounded-md border cursor-pointer transition-colors ${
+                        ebarimtType === 'individual'
+                          ? 'bg-white border-primary'
+                          : 'bg-white border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="ebarimt"
+                        checked={ebarimtType === 'individual'}
+                        onChange={() => setEbarimtType('individual')}
+                        className="sr-only"
+                      />
+                      <span
+                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                          ebarimtType === 'individual' ? 'border-emerald-500' : 'border-gray-300'
+                        }`}
+                      >
+                        {ebarimtType === 'individual' && (
+                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                        )}
+                      </span>
+                      <span className="text-sm text-gray-800">Хувь хүн</span>
+                    </label>
+
+                    {/* Organization */}
+                    <div
+                      className={`rounded-md border transition-colors ${
+                        ebarimtType === 'organization' ? 'bg-white border-primary' : 'bg-white border-gray-200'
+                      }`}
+                    >
+                      <label className="flex items-center gap-3 p-3 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="ebarimt"
+                          checked={ebarimtType === 'organization'}
+                          onChange={() => setEbarimtType('organization')}
+                          className="sr-only"
+                        />
+                        <span
+                          className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                            ebarimtType === 'organization' ? 'border-emerald-500' : 'border-gray-300'
+                          }`}
+                        >
+                          {ebarimtType === 'organization' && (
+                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                          )}
+                        </span>
+                        <span className="text-sm text-gray-800">Албан байгууллага</span>
+                      </label>
+                      {ebarimtType === 'organization' && (
+                        <div className="px-4 pb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Регистрийн дугаар</label>
+                            <input
+                              value={orgRegister}
+                              onChange={(e) => setOrgRegister(e.target.value)}
+                              className="w-full p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Байгууллагын нэр</label>
+                            <input
+                              value={orgName}
+                              onChange={(e) => setOrgName(e.target.value)}
+                              disabled
+                              className="w-full p-2.5 border border-gray-200 rounded-md text-sm bg-gray-100"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Taxpayer */}
+                    <div
+                      className={`rounded-md border transition-colors ${
+                        ebarimtType === 'taxpayer' ? 'bg-white border-primary' : 'bg-white border-gray-200'
+                      }`}
+                    >
+                      <label className="flex items-center gap-3 p-3 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="ebarimt"
+                          checked={ebarimtType === 'taxpayer'}
+                          onChange={() => setEbarimtType('taxpayer')}
+                          className="sr-only"
+                        />
+                        <span
+                          className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                            ebarimtType === 'taxpayer' ? 'border-emerald-500' : 'border-gray-300'
+                          }`}
+                        >
+                          {ebarimtType === 'taxpayer' && (
+                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                          )}
+                        </span>
+                        <span className="text-sm text-gray-800">Татвар төлөгч иргэн</span>
+                      </label>
+                      {ebarimtType === 'taxpayer' && (
+                        <div className="px-4 pb-4">
+                          <label className="block text-xs text-gray-600 mb-1">Регистрийн дугаар</label>
+                          <div className="flex gap-2">
+                            <input
+                              value={taxpayerRegisterPrefix1}
+                              onChange={(e) => setTaxpayerRegisterPrefix1(e.target.value.slice(0, 1).toUpperCase())}
+                              maxLength={1}
+                              className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
+                            />
+                            <input
+                              value={taxpayerRegisterPrefix2}
+                              onChange={(e) => setTaxpayerRegisterPrefix2(e.target.value.slice(0, 1).toUpperCase())}
+                              maxLength={1}
+                              className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
+                            />
+                            <input
+                              value={taxpayerRegisterNumber}
+                              onChange={(e) => setTaxpayerRegisterNumber(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                              maxLength={8}
+                              className="flex-1 p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </form>
             </motion.div>
+
+            {/* Cancellation policy */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
+            >
+              <label className="flex items-start gap-3 cursor-pointer mb-3">
+                <input
+                  type="checkbox"
+                  checked={cancellationAccepted}
+                  onChange={(e) => setCancellationAccepted(e.target.checked)}
+                  className="mt-1 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                  Би захиалга цуцлах нөхцлийг хүлээн зөвшөөрч байна.
+                </span>
+              </label>
+
+              <p className="text-xs text-gray-600 dark:text-gray-400 ml-7 mb-4">
+                Захиалга цуцлах тохиолдолд дараах нөхцлийн дагуу үйлчилгээний хураамжийг суутган буцаан олголт хийгдэх эсвэл цуцлах боломжгүй болохыг анхаарна уу.
+              </p>
+
+              <div className="ml-7">
+                <div className="text-xs font-semibold text-gray-900 dark:text-white mb-2">
+                  1 өрөө тутмаас тооцох цуцлалтын хураамж:
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-gray-600 dark:text-gray-400">
+                        <th className="text-left font-normal py-2"></th>
+                        <th className="text-right font-normal py-2 px-3">
+                          {cancelTimeShort ? `${cancelTimeShort}-ээс өмнө:` : 'Цуцлах хугацааны өмнө:'}
+                        </th>
+                        <th className="text-right font-normal py-2 px-3">
+                          {cancelTimeShort ? `${cancelTimeShort}-ээс хойш:` : 'Цуцлах хугацааны дараа:'}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-dashed divide-gray-200 dark:divide-gray-700">
+                      {rooms.length > 0 ? (
+                        rooms.map((room, i) => {
+                          const beforePct = cf ? parseFloat(cf.single_before_time_percentage) : null;
+                          const afterPct = cf ? parseFloat(cf.single_after_time_percentage) : null;
+                          const beforeFee = beforePct !== null ? Math.round((room.price_per_night * beforePct) / 100) : null;
+                          const afterFee = afterPct !== null ? Math.round((room.price_per_night * afterPct) / 100) : null;
+                          return (
+                            <tr key={i} className="text-gray-800 dark:text-gray-200">
+                              <td className="py-2">{room.room_name}</td>
+                              <td className="text-right py-2 px-3">
+                                {beforeFee !== null ? `${beforeFee.toLocaleString()} ₮` : '—'}
+                              </td>
+                              <td className="text-right py-2 px-3 text-gray-500">
+                                {afterFee !== null && afterPct! > 0 ? `${afterFee.toLocaleString()} ₮` : 'Цуцлах боломжгүй'}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={3} className="py-3 text-gray-500 text-center">
+                            Өрөөний мэдээлэл алга
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">
+                  *Тухайн буудлын дотоод бодлогоос хамааран буудал бүрийн цуцлалтын хураамж харилцан адилгүй өөр байна.
+                </p>
+              </div>
+            </motion.div>
           </div>
 
-          {/* Booking Summary Sidebar */}
+          {/* Sidebar */}
           <div className="lg:col-span-1">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 sticky top-8"
+              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 sticky top-6"
             >
-              <h3 className="text-h3 font-semibold text-gray-900 dark:text-white mb-4">{t('bookingExtra.detailsTitle')}</h3>
+              <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
+                Захиалгын мэдээлэл
+              </h3>
 
-              {/* Date Info - Display Only */}
-              <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-                <div className="flex items-center gap-2 mb-3">
-                  <Calendar className="w-4 h-4 text-slate-900" />
-                  <span className="text-sm font-medium text-slate-900">{t('bookingExtra.stayDates')}</span>
+              {/* Hotel summary */}
+              <div className="flex gap-3 mb-4">
+                {heroImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={heroImage}
+                    alt={hotelName}
+                    className="w-24 h-24 object-cover rounded-lg shrink-0"
+                  />
+                ) : (
+                  <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-lg shrink-0" />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-0.5 mb-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2">
+                    {hotelName}
+                  </h4>
+                  {hotelDetails?.location && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <MapPin className="w-3 h-3" />
+                      <span className="truncate">
+                        {hotelDetails.location.district || hotelDetails.location.soum || hotelDetails.location.province_city}
+                      </span>
+                    </div>
+                  )}
+                  {ratingValue && (
+                    <div className="inline-flex items-center gap-1.5 mt-1.5">
+                      <span className="bg-primary text-white text-xs font-semibold px-1.5 py-0.5 rounded">
+                        {ratingValue}
+                      </span>
+                      <span className="text-xs text-gray-700 dark:text-gray-300">{ratingLabel || ''}</span>
+                    </div>
+                  )}
                 </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-800">{t('hotel.checkIn', 'Check-in')}</span>
-                    <span className="text-sm font-medium text-slate-900">
-                      {new Date(checkIn).toLocaleDateString('en-US', { 
-                        weekday: 'short', 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </span>
+              </div>
+
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Орох цаг</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {formatDateShort(checkIn)}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-0.5">{checkInTimeRange}</div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-slate-800">{t('hotel.checkOut', 'Check-out')}</span>
-                    <span className="text-sm font-medium text-slate-900">
-                      {new Date(checkOut).toLocaleDateString('en-US', { 
-                        weekday: 'short', 
-                        year: 'numeric', 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </span>
+                  <div className="flex flex-col items-center px-2 pt-2">
+                    <span className="text-xs text-gray-500">{nights} шөнө</span>
+                    <div className="w-px h-6 bg-gray-300 mt-1" />
                   </div>
-                  <div className="pt-2 border-t border-slate-200 flex justify-between items-center">
-                    <span className="text-xs text-slate-800">{t('bookingExtra.duration', 'Duration')}</span>
-                    <span className="text-sm font-semibold text-slate-900">
-                      {nights} {nights !== 1 ? t('bookingExtra.nights', 'nights') : t('bookingExtra.night', 'night')}
-                    </span>
+                  <div className="text-right">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Гарах цаг</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                      {formatDateShort(checkOut)}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-0.5">{checkOutTimeRange}</div>
                   </div>
                 </div>
               </div>
 
-              {/* Rooms */}
-              <div className="space-y-3 mb-6">
-                <h4 className="font-medium text-gray-900 dark:text-white">{t('bookingExtra.selectedRooms')}</h4>
+              {/* Guest count — info only */}
+              <div className="flex items-center gap-2 mb-4 text-sm text-gray-700 dark:text-gray-300">
+                <Users className="w-4 h-4 text-gray-400 shrink-0" />
+                <span>{adultsCount} том хүн{Number(childrenCount) > 0 ? `, ${childrenCount} хүүхэд` : ''}</span>
+              </div>
+
+              {/* Selected rooms */}
+              <div className="mb-4">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">Таны сонгосон өрөө:</div>
                 {rooms.map((room, index) => (
-                  <div key={index} className="border dark:border-gray-600 rounded-lg p-3 bg-gray-50 dark:bg-gray-700">
-                    <div className="flex justify-between items-start mb-2">
-                      <h5 className="font-medium text-gray-900 dark:text-white text-sm">{room.room_name}</h5>
-                      <div className="text-right">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          ₮{room.price_per_night.toLocaleString()}
-                        </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400">{t('hotel.pricePerNight', 'per night')} × {room.room_count}</div>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-gray-600 dark:text-gray-400">{nights} {nights !== 1 ? t('hotel.nights', 'nights') : t('hotel.night', 'night')}</span>
-                      <span className="font-medium text-gray-900 dark:text-white">
-                        ₮{room.total_price.toLocaleString()}
-                      </span>
-                    </div>
+                  <div key={index} className="flex justify-between items-center py-1">
+                    <span className="text-sm font-semibold text-gray-900 dark:text-white truncate pr-2">
+                      {room.room_name}
+                    </span>
+                    <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                      x{room.room_count} өрөө
+                    </span>
                   </div>
                 ))}
               </div>
 
-              {/* Total */}
-              <div className="border-t dark:border-gray-700 pt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-h3 font-semibold text-gray-900 dark:text-white">{t('bookingExtra.totalPrice')}</span>
-                  <span className="text-h2 font-bold text-slate-900">₮{totalPrice.toLocaleString()}</span>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1.5 mb-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 dark:text-gray-400">Үндсэн үнэ</span>
+                  <span className="text-gray-900 dark:text-white">{totalPrice.toLocaleString()} ₮</span>
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('bookingExtra.taxesIncluded')}</div>
               </div>
+
+              {/* Promo code */}
+              <div className="mb-4">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                    placeholder="Промо кодоо оруулна уу."
+                    className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyPromo}
+                    disabled={!promoCode.trim()}
+                    className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Ашиглах
+                  </button>
+                </div>
+                {promoMessage && (
+                  <p className="text-xs text-red-600 mt-1">{promoMessage}</p>
+                )}
+              </div>
+
+              {/* Total */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mb-4">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                    Нийт төлөх дүн
+                  </span>
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">
+                    {totalPrice.toLocaleString()}₮
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500 text-right mt-0.5">*НӨАТ багтсан үнэ</div>
+              </div>
+
+              {/* Terms acceptance */}
+              <label className="flex items-start gap-2 mb-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={tosAccepted}
+                  onChange={(e) => {
+                    if (!tosAccepted) {
+                      // Open modal instead of allowing direct check
+                      e.preventDefault();
+                      setTosModalOpen(true);
+                    } else {
+                      setTosAccepted(false);
+                    }
+                  }}
+                  onClick={(e) => {
+                    if (!tosAccepted) {
+                      e.preventDefault();
+                      setTosModalOpen(true);
+                    }
+                  }}
+                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <span className="text-xs text-gray-700 dark:text-gray-300">
+                  Үйлчилгээний нөхцөл зөвшөөрөх
+                </span>
+              </label>
+
+              <button
+                type="submit"
+                form="booking-form"
+                disabled={!canSubmit}
+                className="w-full bg-primary text-white py-3 px-4 rounded-md font-medium hover:bg-primary/90 transition-colors disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+              >
+                {bookingInProgress ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Clock className="w-4 h-4 animate-spin" />
+                    {t('bookingExtra.bookingInProgress', 'Уншиж байна...')}
+                  </span>
+                ) : (
+                  'Төлбөр төлөх'
+                )}
+              </button>
             </motion.div>
           </div>
         </div>
       </div>
+
+      {/* Guest / room mismatch warning modal */}
+      <Dialog open={mismatchModalOpen} onOpenChange={setMismatchModalOpen}>
+        <DialogContent className="w-[92vw] max-w-md p-0 overflow-hidden">
+          <div className="p-6">
+            <DialogHeader className="mb-4">
+              <DialogTitle className="text-base font-semibold text-gray-900 dark:text-white">
+                Зочдын тоо таарахгүй байна
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-3 space-y-1.5">
+                <div className="flex justify-between">
+                  <span className="text-gray-500 dark:text-gray-400">Таны хайлт:</span>
+                  <span className="font-medium">
+                    {adultsCount} том хүн{childrenCount > 0 ? `, ${childrenCount} хүүхэд` : ''}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500 dark:text-gray-400">Сонгосон өрөөний багтаамж:</span>
+                  <span className="font-medium">
+                    {rooms.reduce((s, r) => s + (r.max_adults ?? 1) * r.room_count, 0)} том хүн
+                    {rooms.reduce((s, r) => s + (r.max_children ?? 0) * r.room_count, 0) > 0
+                      ? `, ${rooms.reduce((s, r) => s + (r.max_children ?? 0) * r.room_count, 0)} хүүхэд`
+                      : ''}
+                  </span>
+                </div>
+              </div>
+              <p className="text-gray-600 dark:text-gray-400">
+                Таны хайлтын зочдын тоо сонгосон өрөөний нийт багтаамжаас давж байна.
+                Та өрөөнд буцаж нэмэлт өрөө нэмэх эсвэл зочдын тоог дахин шалгана уу.
+              </p>
+            </div>
+            <div className="mt-5 flex gap-2">
+              <button
+                type="button"
+                onClick={() => router.back()}
+                className="flex-1 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                Өрөө сонгох хуудас руу буцах
+              </button>
+              <button
+                type="button"
+                onClick={() => setMismatchModalOpen(false)}
+                className="flex-1 px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary/90"
+              >
+                Үргэлжлүүлэх
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Terms of Service Modal */}
+      <Dialog open={tosModalOpen} onOpenChange={setTosModalOpen}>
+        <DialogContent className="w-[92vw] max-w-2xl p-0 overflow-hidden">
+          <div className="flex flex-col" style={{ maxHeight: '85vh' }}>
+          <DialogHeader className="px-6 pt-6 pb-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
+            <DialogTitle>Үйлчилгээний нөхцөл</DialogTitle>
+            <p className="text-xs text-gray-500 mt-1">
+              Доош гүйлгэж бүх нөхцөлтэй танилцана уу.
+            </p>
+          </DialogHeader>
+
+          <div
+            ref={tosScrollRef}
+            onScroll={handleTosScroll}
+            className="overflow-y-auto px-6 py-4 text-sm text-gray-700 dark:text-gray-300 space-y-3 flex-1 min-h-0"
+          >
+            {/* ─── Section 1 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">1. Ерөнхий заалт</h4>
+            <p>
+              MyRoom.mn нь Монгол Улсад үйл ажиллагаа явуулж буй зочид буудлын онлайн
+              захиалгын платформ бөгөөд (&ldquo;Платформ&rdquo;) энэхүү Үйлчилгээний нөхцөл нь
+              платформыг ашиглах бүх хэрэглэгч, захиалагч (&ldquo;Та&rdquo;) болон MyRoom ХХК
+              (&ldquo;Бид&rdquo;) хоёрын хоорондох харилцааг зохицуулна.
+            </p>
+            <p>
+              Платформд нэвтрэх, захиалга үүсгэх, үйлчилгээг ашиглах замаар та энэхүү
+              нөхцлийг бүрэн уншсан, ойлгосон, зөвшөөрсөн гэж тооцогдоно. Хэрэв та
+              нөхцлийн аль нэг заалттай санал нийлэхгүй бол платформыг ашиглахаас татгалзана уу.
+            </p>
+
+            {/* ─── Section 2 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">2. Захиалга хийх</h4>
+            <p>
+              Захиалга нь таны хүсэлтийн дагуу MyRoom платформоор дамжуулан тухайн буудалд
+              илгээгдэх ба захиалга амжилттай баталгаажсан тохиолдолд захиалгын баталгаажуулах
+              и-мэйл таны бүртгэлтэй и-мэйл хаягт ирнэ.
+            </p>
+            <p>
+              Захиалга нь дараах тохиолдолд биелэгдсэн гэж тооцогдоно:
+            </p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>Буудлаас захиалгыг батлагдсан эсэхийг и-мэйлээр мэдэгдсэн</li>
+              <li>Системд захиалгын дугаар болон PIN код үүссэн</li>
+              <li>Захиалгын хураамж амжилттай суутгагдсан эсвэл баталгаажсан</li>
+            </ul>
+            <p>
+              MyRoom нь буудлын өрөөний боломжгүй байдал, системийн алдаа болон бусад гадны
+              нөлөөллөөс шалтгаалан захиалгыг цуцлах эрхтэй бөгөөд тийм тохиолдолд
+              урьдчилгаа төлбөрийг бүрэн буцаан олгоно.
+            </p>
+
+            {/* ─── Section 3 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">3. Захиалагчийн мэдээлэл</h4>
+            <p>
+              Захиалга хийхдээ та дараах мэдээллийг үнэн зөвөөр оруулах үүрэгтэй:
+            </p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>Овог нэр (паспорт, иргэний үнэмлэхтэй нийцсэн)</li>
+              <li>Холбоо барих утасны дугаар</li>
+              <li>Идэвхтэй и-мэйл хаяг</li>
+            </ul>
+            <p>
+              Буруу эсвэл дутуу мэдээлэл оруулснаас үүдэлтэй аливаа хохирол, асуудлыг
+              захиалагч өөрөө бүрэн хариуцна. MyRoom нь мэдээллийн зөрүүнээс болж
+              баталгаажсан захиалгыг буцаах эрхгүй.
+            </p>
+
+            {/* ─── Section 4 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">4. Төлбөр ба үнэ</h4>
+            <p>
+              Платформд харагдах бүх үнэ нь НӨАТ-ийг багтаасан Монгол төгрөгөөр
+              илэрхийлэгдэнэ. Захиалгын төлбөрийг дараах аргаар хийж болно:
+            </p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>Банкны апп / QR код (TDB, Khan Bank, Golomt Bank, MBank гэх мэт)</li>
+              <li>Дансаар шилжүүлэх</li>
+              <li>Цахим хэтэвчний үйлчилгээ</li>
+              <li>Картаар төлөх</li>
+            </ul>
+            <p>
+              Төлбөр хийхдээ гүйлгээний утгыг үнэн зөв бичнэ үү. Буруу гүйлгээний утгаас
+              болж захиалга баталгаажихгүй байвал MyRoom хариуцлага хүлээхгүй. Илүү
+              төлөгдсөн дүнг ажлын 3–5 өдрийн дотор буцаан олгоно.
+            </p>
+
+            {/* ─── Section 5 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">5. Цуцлалт ба буцаан олголт</h4>
+            <p>
+              Захиалга цуцлах нөхцөл нь тухайн буудлын бодлогоос хамаарна. Ерөнхийдөө
+              дараах дүрмийг баримтална:
+            </p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>
+                <strong>Үнэгүй цуцлалт:</strong> Зарим өрөөний төрлийг тодорхой хугацааны
+                өмнө цуцалвал 100% буцаан олгоно.
+              </li>
+              <li>
+                <strong>Хэсэгчилсэн буцаан олголт:</strong> Цуцлах хугацаа дууссаны дараа
+                буудлын нөхцлийн дагуу хувь суутгаж үлдсэн дүнг буцаана.
+              </li>
+              <li>
+                <strong>Буцаахгүй:</strong> Зарим тусгай үнийн санал нь огт буцаахгүй
+                нөхцөлтэй байдаг тул захиалгын дэлгэрэнгүйг сайтар уншина уу.
+              </li>
+              <li>
+                <strong>Ирэхгүй бол (No-show):</strong> Мэдэгдэлгүйгээр ирэхгүй бол
+                захиалга хүчингүй болж, нийт дүн суутгагдаж болно.
+              </li>
+            </ul>
+            <p>
+              Цуцлах хүсэлтийг &ldquo;Захиалга удирдах&rdquo; хэсгээр эсвэл info@myroom.mn
+              и-мэйл хаягт бичгээр илгээнэ үү. Буцаан олголт нь гүйцэтгэх банкны ажлын
+              цагаас хамааран 3–7 ажлын өдөр шаардагдаж болно.
+            </p>
+
+            {/* ─── Section 6 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">6. Захиалагчийн үүрэг хариуцлага</h4>
+            <p>Та платформыг ашиглахдаа дараах зүйлийг хүлээн зөвшөөрч байна:</p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>Бүртгэлийн мэдээлэл болон нэвтрэх нууц үгийн аюулгүй байдлыг хангах</li>
+              <li>Бусдын мэдээллийг зөвшөөрөлгүйгээр ашиглахгүй байх</li>
+              <li>Платформыг хууль бус зорилгоор ашиглахгүй байх</li>
+              <li>Захиалга хийхдээ өөрийн нэр дээр, өөрийнхөө хариуцлагаар хийх</li>
+              <li>Буудлын дотоод журам, дүрэм, цагийн хуваарийг дагаж мөрдөх</li>
+              <li>Бусад зочид болон ажилтнуудад хүндэтгэлтэй хандах</li>
+            </ul>
+
+            {/* ─── Section 7 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">7. MyRoom-ийн хариуцлага</h4>
+            <p>
+              MyRoom нь захиалагч болон буудлын хооронд зуучлагчийн үүрэг гүйцэтгэнэ.
+              Дараах тохиолдлуудад MyRoom хариуцлага хүлээхгүй:
+            </p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>Буудлын үйлчилгээний чанар, дутагдал, гомдол</li>
+              <li>Буудлаас мэдэгдэлгүйгээр хаагдах, өрөө солих</li>
+              <li>Гуравдагч этгээдийн санхүүгийн үйл ажиллагаанаас үүдэлтэй хохирол</li>
+              <li>Интернэт холболт, системийн доголдлоос шалтгаалан алдагдсан мэдээлэл</li>
+              <li>Давагдашгүй хүчин зүйл (байгалийн гамшиг, цар тахал, дайн дажин гэх мэт)</li>
+            </ul>
+            <p>
+              MyRoom-ийн нийт хариуцлага нь ямар ч тохиолдолд тухайн захиалгын нийт
+              дүнгээс хэтрэхгүй.
+            </p>
+
+            {/* ─── Section 8 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">8. Хувийн мэдээллийн нууцлал</h4>
+            <p>
+              Та платформд оруулсан хувийн мэдээлэл (нэр, утас, и-мэйл, төлбөрийн
+              мэдээлэл) нь Монгол Улсын Хувийн мэдээлэл хамгаалах тухай хуулийн
+              дагуу хамгаалагдана.
+            </p>
+            <p>Бид таны мэдээллийг:</p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>Захиалга боловсруулах, баталгаажуулахад ашиглана</li>
+              <li>Буудалд захиалгын мэдээлэл дамжуулахад ашиглана</li>
+              <li>Таны зөвшөөрлөөр маркетингийн зорилгоор ашиглаж болно</li>
+              <li>Хуульд заасан тохиолдолоос бусад үед гуравдагч этгээдэд дамжуулахгүй</li>
+            </ul>
+            <p>
+              Та хэдийд ч өөрийн мэдээллийг харах, засах, устгуулахыг хүсэх эрхтэй.
+              Хүсэлтийг privacy@myroom.mn хаягт илгээнэ үү.
+            </p>
+
+            {/* ─── Section 9 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">9. Оюуны өмч</h4>
+            <p>
+              MyRoom платформын бүх агуулга, дизайн, лого, тэмдэглэгээ, программ хангамж нь
+              MyRoom ХХК-ийн оюуны өмчийн объект болно. Зөвшөөрөлгүйгээр хуулбарлах,
+              тарааx, арилжааны зорилгоор ашиглахыг хориглоно.
+            </p>
+
+            {/* ─── Section 10 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">10. И-Баримт ба татварын нөхцөл</h4>
+            <p>
+              MyRoom нь Монгол Улсын татварын хуулийн дагуу и-баримт олгоно.
+              Захиалгын төлбөр бүрэн хийгдсэний дараа электрон баримт таны и-мэйл
+              хаягт автоматаар илгээгдэнэ. Байгууллагын нэр дээр и-баримт авах бол
+              захиалга хийхдээ байгууллагын регистрийн дугаарыг үнэн зөв оруулна уу.
+            </p>
+
+            {/* ─── Section 11 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">11. Гомдол гаргах</h4>
+            <p>
+              Захиалга, үйлчилгээтэй холбоотой гомдол, санал хүсэлтийг дараах
+              сувгуудаар хүлээн авна:
+            </p>
+            <ul className="list-disc ml-5 space-y-1">
+              <li>И-мэйл: support@myroom.mn</li>
+              <li>Утас: 7777-7777 (Ажлын өдөр 09:00–18:00)</li>
+              <li>Платформын &ldquo;Тусламж&rdquo; хэсэг</li>
+            </ul>
+            <p>
+              Гомдлыг хүлээн авснаас хойш ажлын 2 өдрийн дотор хариу өгөхийг зорино.
+              Шийдвэрлэхэд нарийн судалгаа шаардлагатай тохиолдолд 7 хүртэл ажлын
+              өдөр зарцуулж болно.
+            </p>
+
+            {/* ─── Section 12 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">12. Маргаан шийдвэрлэх</h4>
+            <p>
+              Энэхүү нөхцөлтэй холбоотой аливаа маргааныг талууд эхлээд эв зүйгээр
+              шийдвэрлэхийг эрмэлзэнэ. Зөвшилцөлд хүрэхгүй бол Монгол Улсын
+              хууль тогтоомж, Улаанбаатар хотын шүүхийн харьяалалд захирагдана.
+            </p>
+
+            {/* ─── Section 13 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">13. Нөхцлийн өөрчлөлт</h4>
+            <p>
+              MyRoom нь энэхүү үйлчилгээний нөхцлийг урьдчилан мэдэгдэлгүйгээр
+              шинэчлэх эрхтэй. Өөрчлөлтийг платформд нийтэлсэн өдрөөс хүчин
+              төгөлдөр болно. Та платформыг үргэлжлүүлэн ашигласнаар шинэчлэгдсэн
+              нөхцлийг хүлээн зөвшөөрсөн гэж тооцогдоно. Тиймээс нөхцлийг тогтмол
+              шалгаж байхыг зөвлөж байна.
+            </p>
+
+            {/* ─── Section 14 ─── */}
+            <h4 className="font-semibold text-gray-900 dark:text-white">14. Хүчин төгөлдөр байдал</h4>
+            <p>
+              Энэхүү нөхцлийн аль нэг заалт хүчингүй болсон тохиолдолд бусад заалтууд
+              бүрэн хүчин төгөлдөр хэвээр үлдэнэ. Энэхүү нөхцөл нь 2024 оны 01 дүгээр
+              сарын 01-ний өдрөөс хүчин төгөлдөр болсон бөгөөд хамгийн сүүлийн
+              шинэчлэлт 2026 оны 01 дүгээр сарын 01-нд хийгдсэн.
+            </p>
+
+            <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                <strong>MyRoom ХХК</strong><br />
+                Улаанбаатар хот, Сүхбаатар дүүрэг, 3-р хороо, Сарора төв<br />
+                Утас: 7777-7777 | И-мэйл: contact@myroom.mn | Вэбсайт: myroom.mn
+              </p>
+            </div>
+
+            <p className="text-xs text-gray-400 italic pt-1">
+              ↓ Доош гүйлгэж дуусгасны дараа &ldquo;Зөвшөөрөх&rdquo; товч идэвхжинэ.
+            </p>
+          </div>
+
+          <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between gap-3 shrink-0">
+            <p className={`text-xs ${tosScrolledToEnd ? 'text-emerald-600' : 'text-gray-500'}`}>
+              {tosScrolledToEnd
+                ? '✓ Та нөхцөлтэй танилцлаа'
+                : 'Үргэлжлүүлэхийн тулд доош гүйлгэнэ үү...'}
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setTosAccepted(false);
+                  setTosModalOpen(false);
+                }}
+                className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                Цуцлах
+              </button>
+              <button
+                type="button"
+                disabled={!tosScrolledToEnd}
+                onClick={() => {
+                  setTosAccepted(true);
+                  setTosModalOpen(false);
+                }}
+                className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/90 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
+              >
+                Зөвшөөрөх
+              </button>
+            </div>
+          </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

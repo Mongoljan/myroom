@@ -138,7 +138,7 @@ export default function HotelAmenities({
   const hasMore = groups.some(g => g.items.length > PREVIEW_COUNT);
 
   return (
-    <div className="bg-white dark:bg-transparent">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-6">
         {groups.map(({ key, title, Icon, items }) => (
           <div key={key}>

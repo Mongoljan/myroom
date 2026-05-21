@@ -276,8 +276,8 @@ export interface CombinedData {
   }>;
   languages: Array<{
     id: number;
-    name_en: string;
-    name_mn: string;
+    languages_name_en: string;
+    languages_name_mn: string;
   }>;
 }
 
@@ -516,7 +516,7 @@ export interface ChildPolicy {
 // Breakfast policy object structure from API
 export interface BreakfastPolicy {
   id: number;
-  status: boolean;
+  status: boolean | string;
   start_time: string;
   end_time: string;
   price: string | number;

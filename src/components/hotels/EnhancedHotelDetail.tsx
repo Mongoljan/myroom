@@ -433,6 +433,12 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   };
 
   const priceInfo = getCheapestPrice();
+  console.log("hotel",hotel);
+
+  const CITY_NAMES = ['Улаанбаатар', 'Эрдэнэт', 'Дархан'];
+  const isCity = !!hotel.location.province_city && CITY_NAMES.includes(hotel.location.province_city);
+  const provinceLabel = isCity ? 'хот' : 'аймаг';
+  const soumLabel = hotel.location.province_city === 'Улаанбаатар' ? 'дүүрэг' : 'сум';
 
   return (
     <div className="space-y-4">
@@ -458,9 +464,11 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             </div>
 
             {/* City, Province and View on Map on same line */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+               <MapPin className="w-4 h-4" />
               <span className="text-gray-700 dark:text-gray-300 text-sm">
-                {hotel.location.province_city}{hotel.location.soum && `, ${hotel.location.soum}`}
+            Монгол, {hotel.location.province_city} {provinceLabel}{hotel.location.soum && `, ${hotel.location.soum} ${soumLabel}`}
+                
               </span>
               {hotel.google_map && (
                 <>
@@ -468,7 +476,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                     onClick={() => setShowMapModal(true)}
                     className="flex items-center gap-1  hover:text-slate-800 text-sm font-medium underline text-primary"
                   >
-                    <MapPin className="w-4 h-4" />
+                   
                     {t('hotelDetails.viewOnMap', 'Газрын зураг дээр харах')}
                   </button>
                 </>

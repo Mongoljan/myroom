@@ -171,7 +171,65 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
 
           {/* House Rules Section */}
           <div id="house-rules">
-            <HotelHouseRules hotelId={hotel.hotel_id} hotelName={hotel.property_name} initialPolicies={policies} />
+            <HotelHouseRules hotelId={hotel.hotel_id} hotelName={hotel.property_name} initialPolicies={policies} basicInfo={basicInfo} />
+          </div>
+
+          {/* Guest Reviews Section */}
+          <div id="reviews">
+            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-4">{t('hotel.reviews', 'Шүүмж, үнэлгээ')}</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+              {/* Score + Category bars */}
+              <div className="flex gap-8">
+                {/* Left: overall score */}
+                <div className="flex flex-col items-center justify-center bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-6 min-w-[160px]">
+                  <span className="text-[52px] font-extrabold text-indigo-700 dark:text-indigo-300 leading-none">—</span>
+                  <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 mt-2">{t('hotel.noRatingsYet', 'Үнэлгээ байхгүй')}</span>
+                  <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">0 {t('hotel.reviews_count', 'үнэлгээ')}</span>
+                </div>
+
+                {/* Right: category bars */}
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-4 content-center">
+                  {[
+                    { label: 'Байршил', key: 'location' },
+                    { label: 'Ажилтан', key: 'staff' },
+                    { label: 'Цэвэрлэгээ', key: 'cleanliness' },
+                    { label: 'Үнэ / чанарын харьцаа', key: 'value' },
+                    { label: 'Тав тух', key: 'comfort' },
+                    { label: 'Тоног төхөөрөмж', key: 'facilities' },
+                    { label: 'Үнэгүй Wi-Fi', key: 'wifi' },
+                  ].map(({ label, key }) => (
+                    <div key={key}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-700 dark:text-gray-300">{label}</span>
+                        <span className="text-gray-400 dark:text-gray-500 font-medium">—</span>
+                      </div>
+                      <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
+                        <div className="h-1.5 w-0 bg-indigo-600 rounded-full" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-200 dark:border-gray-700 my-5" />
+
+              {/* Comments */}
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
+                  {t('hotel.comments', 'Сэтгэгдэл')}
+                </h3>
+                <div className="flex flex-col items-center justify-center py-10 text-center">
+                  <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-3">
+                    <svg className="w-7 h-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 4v-4z" />
+                    </svg>
+                  </div>
+                  <p className="text-gray-500 dark:text-gray-400 font-medium">{t('hotel.noComments', 'Одоогоор сэтгэгдэл байхгүй байна')}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{t('hotel.noCommentsDesc', 'Энэ буудалд анхны сэтгэгдлийг үлдээгээрэй')}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Facilities Section */}

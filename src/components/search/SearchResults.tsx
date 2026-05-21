@@ -381,12 +381,17 @@ export default function SearchResults() {
       if (opts.length > 0) filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
     }
 
-    // Filter by accessibility features (group 4)
+    // Filter by accessibility features (group 4) — check both general_facilities and hotel.accessibility_features
     if (newFilters.accessibilityFeatures && newFilters.accessibilityFeatures.length > 0) {
       const opts = newFilters.accessibilityFeatures
         .map(id => apiData?.accessibility_features?.find(f => f.id === id))
         .filter(Boolean) as Array<{ id: number; name_en: string; name_mn: string }>;
-      if (opts.length > 0) filtered = filtered.filter(hotel => opts.some(opt => hotelHasFacility(hotel, opt)));
+      if (opts.length > 0) filtered = filtered.filter(hotel =>
+        opts.some(opt =>
+          hotelHasFacility(hotel, opt) ||
+          (hotel.accessibility_features || []).some(af => typeof af === 'object' && af !== null && (af as { id?: number }).id === opt.id)
+        )
+      );
     }
 
     // Filter by bed types — hotel must have at least one matching bed type
@@ -760,7 +765,7 @@ export default function SearchResults() {
                     const bt = facets.narrowedApiData.bed_types?.find(b => b.id === id);
                     return bt ? [{ label: bt.name, onRemove: () => handleFilterChange({ ...filters, bedTypes: (filters.bedTypes || []).filter(i => i !== id) }) }] : [];
                   });
-                  groups.push({ label: btIds.length > 1 ? `Ортны төрөл · ${btIds.length}` : (sub[0]?.label ?? 'Ортны төрөл'), items: sub, onClearAll: () => handleFilterChange({ ...filters, bedTypes: [] }) });
+                  groups.push({ label: btIds.length > 1 ? `Орны төрөл · ${btIds.length}` : (sub[0]?.label ?? 'Орны төрөл'), items: sub, onClearAll: () => handleFilterChange({ ...filters, bedTypes: [] }) });
                 }
 
                 // Neighbourhood

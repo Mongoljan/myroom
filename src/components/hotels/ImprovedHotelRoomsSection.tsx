@@ -51,6 +51,17 @@ export default function ImprovedHotelRoomsSection({
   // Guest state — no router.push on every keystroke (fixes lag bug)
   const [adultsCount, setAdultsCount] = useState(Math.max(1, parseInt(searchParams.get('adults') || '2', 10)));
   const [childrenCountLocal, setChildrenCountLocal] = useState(Math.max(0, parseInt(searchParams.get('children') || '0', 10)));
+  const [roomsCountLocal, setRoomsCountLocal] = useState(Math.max(1, parseInt(searchParams.get('rooms') || '1', 10)));
+  const [childrenAges, setChildrenAges] = useState<number[]>([]);
+  const [showChildAgeError, setShowChildAgeError] = useState(false);
+
+  // Max child age from hotel policy — initialize immediately from pre-fetched initialPolicies,
+  // updated again after async room load in case initialPolicies didn't include child_policy
+  const [maxChildAge, setMaxChildAge] = useState<number | undefined>(() =>
+    initialPolicies
+      ?.map(p => p.child_policy?.max_child_age)
+      .find((age): age is number => age != null)
+  );
 
   // State
   const [rooms, setRooms] = useState<EnrichedHotelRoom[]>([]);
@@ -58,6 +69,20 @@ export default function ImprovedHotelRoomsSection({
   const [bookingItems, setBookingItems] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancellationFee, setCancellationFee] = useState<CancellationFee | null>(null);
+
+  // Sync from URL when the top SearchHeader bar changes dates/guests
+  useEffect(() => {
+    const urlCheckIn = searchParams.get('check_in');
+    const urlCheckOut = searchParams.get('check_out');
+    const urlAdults = searchParams.get('adults');
+    const urlChildren = searchParams.get('children');
+    const urlRooms = searchParams.get('rooms');
+    if (urlCheckIn) { setSelectedCheckIn(urlCheckIn); setCommittedCheckIn(urlCheckIn); }
+    if (urlCheckOut) { setSelectedCheckOut(urlCheckOut); setCommittedCheckOut(urlCheckOut); }
+    if (urlAdults) setAdultsCount(Math.max(1, parseInt(urlAdults, 10)));
+    if (urlChildren) setChildrenCountLocal(Math.max(0, parseInt(urlChildren, 10)));
+    if (urlRooms) setRoomsCountLocal(Math.max(1, parseInt(urlRooms, 10)));
+  }, [searchParams]);
 
   // Update URL when dates change
   const updateURLWithDates = (newCheckIn: string, newCheckOut: string) => {
@@ -84,11 +109,18 @@ export default function ImprovedHotelRoomsSection({
 
   // Unified search — only pushes to URL and triggers room fetch when user explicitly clicks Search
   const handleSearch = () => {
+    // Block search when any child age is not yet selected
+    if (childrenCountLocal > 0 && childrenAges.some((a) => a === -1)) {
+      setShowChildAgeError(true);
+      return;
+    }
+    setShowChildAgeError(false);
     const params = new URLSearchParams(searchParams.toString());
     params.set('check_in', selectedCheckIn);
     params.set('check_out', selectedCheckOut);
     params.set('adults', adultsCount.toString());
     params.set('children', childrenCountLocal.toString());
+    params.set('rooms', roomsCountLocal.toString());
     router.push(`?${params.toString()}`, { scroll: false });
     setCommittedCheckIn(selectedCheckIn);
     setCommittedCheckOut(selectedCheckOut);
@@ -101,17 +133,19 @@ export default function ImprovedHotelRoomsSection({
       try {
         setLoading(true);
 
-      // Load enriched room data; use passed-in policies if available to skip a fetch
+      // Load enriched room data; always fetch fresh policies to guarantee child_policy is present
         const [roomsData, policies] = await Promise.all([
           hotelRoomsService.getEnrichedHotelRooms(hotelId, effectiveCheckIn, effectiveCheckOut),
-          initialPolicies
-            ? Promise.resolve(initialPolicies)
-            : ApiService.getPropertyPolicies(hotelId).catch(() => []),
+          ApiService.getPropertyPolicies(hotelId).catch(() => initialPolicies ?? []),
         ]);
         setRooms(roomsData);
         if (policies.length > 0 && policies[0].cancellation_fee) {
           setCancellationFee(policies[0].cancellation_fee);
         }
+        const childAgeLimit = policies
+          .map(p => p.child_policy?.max_child_age)
+          .find(age => age != null);
+        if (childAgeLimit != null) setMaxChildAge(childAgeLimit);
 
         // Build price data from room's own price_breakdown (new API structure)
         const pricesData: Record<string, RoomPriceOptions> = {};
@@ -264,7 +298,9 @@ export default function ImprovedHotelRoomsSection({
       room_count: item.quantity,
       room_name: item.room.roomTypeName,
       price_per_night: item.price,
-      total_price: item.price * item.quantity * nights
+      total_price: item.price * item.quantity * nights,
+      max_adults: item.room.adultQty ?? 1,
+      max_children: item.room.childQty ?? 0,
     }));
 
     // Calculate total price including nights
@@ -279,7 +315,9 @@ export default function ImprovedHotelRoomsSection({
       rooms: JSON.stringify(roomsData),
       totalPrice: totalPriceWithNights.toString(),
       totalRooms: getTotalRooms().toString(),
-      nights: nights.toString()
+      nights: nights.toString(),
+      adults: adultsCount.toString(),
+      children: childrenCountLocal.toString()
     });
 
     router.push(`/booking?${params.toString()}`);
@@ -385,15 +423,27 @@ export default function ImprovedHotelRoomsSection({
             <CustomGuestSelector
               adults={adultsCount}
               childrenCount={childrenCountLocal}
-              rooms={1}
-              onGuestChange={(a, c) => {
+              rooms={roomsCountLocal}
+              onGuestChange={(a, c, r) => {
                 setAdultsCount(a);
                 setChildrenCountLocal(c);
+                setRoomsCountLocal(r);
+                if (c === 0) { setChildrenAges([]); setShowChildAgeError(false); }
               }}
+              onChildrenAgesChange={(ages) => {
+                setChildrenAges(ages);
+                if (ages.every((a) => a !== -1)) setShowChildAgeError(false);
+              }}
+              maxChildAge={maxChildAge}
               compact={true}
               className="flex-1"
             />
-            <div className="p-2.5 shrink-0">
+            <div className="p-2.5 shrink-0 flex flex-col items-end gap-1">
+              {showChildAgeError && (
+                <p className="text-xs text-red-500 font-medium text-right">
+                  {t('search.childAgeRequired', 'Хүүхдийн насыг оруулна уу')}
+                </p>
+              )}
               <button
                 type="button"
                 onClick={handleSearch}
@@ -434,6 +484,8 @@ export default function ImprovedHotelRoomsSection({
             checkIn={effectiveCheckIn}
             checkOut={effectiveCheckOut}
             nights={getNumberOfNights()}
+            adults={adultsCount}
+            children={childrenCountLocal}
             onQuantityChange={handleQuantityChange}
             onRemoveRoom={handleRemoveRoom}
             onBookNow={handleBookNow}

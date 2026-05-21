@@ -1,22 +1,44 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, Info, Loader2, AlertCircle, Car, Coffee, Baby, PawPrint, CreditCard, UserCheck } from 'lucide-react';
+import { Calendar, Info, Loader2, AlertCircle, Car, Coffee, Baby, PawPrint, CreditCard, UserCheck, Globe } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
-import { PropertyPolicy } from '@/types/api';
+import { PropertyPolicy, PropertyBasicInfo } from '@/types/api';
 
 interface HotelHouseRulesProps {
   hotelId: number;
   hotelName: string;
   initialPolicies?: PropertyPolicy[];
+  basicInfo?: PropertyBasicInfo | null;
 }
 
-export default function HotelHouseRules({ hotelId, initialPolicies }: HotelHouseRulesProps) {
+export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }: HotelHouseRulesProps) {
   const { t } = useHydratedTranslation();
   const [policies, setPolicies] = useState<PropertyPolicy[]>(initialPolicies ?? []);
   const [loading, setLoading] = useState(!initialPolicies);
   const [error, setError] = useState<string | null>(null);
+  const [spokenLanguages, setSpokenLanguages] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!basicInfo) return;
+    if (!basicInfo.languages?.length) {
+      // No languages configured — default to Mongolian
+      setSpokenLanguages(['Монгол']);
+      return;
+    }
+    ApiService.getCombinedData()
+      .then((data) => {
+        const langs = data.languages ?? [];
+        const langMap = new Map(langs.map((l) => [l.id, l.languages_name_mn || l.languages_name_en]));
+        const resolved = basicInfo.languages.map((id) => langMap.get(id)).filter(Boolean) as string[];
+        // If IDs didn't resolve, fall back to Mongolian
+        setSpokenLanguages(resolved.length > 0 ? resolved : ['Монгол']);
+      })
+      .catch(() => {
+        setSpokenLanguages(['Монгол']);
+      });
+  }, [basicInfo]);
 
   useEffect(() => {
     // Skip fetch if policies were passed in from the server component
@@ -250,6 +272,37 @@ export default function HotelHouseRules({ hotelId, initialPolicies }: HotelHouse
               {/* 5. Breakfast */}
               {bp && bp.status && (
                 <Row icon={<Coffee className="w-4 h-4" />} title="Өглөөний цай">
+                  {/* Status: paid / free / included */}
+                  <div>
+                    {(() => {
+                      const st = String(bp.status).toLowerCase();
+                      if (st === 'paid') return <span>Нөхцөл: <span className="font-medium text-amber-600 dark:text-amber-400">Төлбөртэй</span></span>;
+                      if (st === 'free' || st === 'true') return <span>Нөхцөл: <span className="font-medium text-green-600 dark:text-green-400">Үнэгүй (багтсан)</span></span>;
+                      return <span>Нөхцөл: <span className="font-medium">{bp.status}</span></span>;
+                    })()}
+                  </div>
+                  {/* Breakfast type */}
+                  {bp.breakfast_type && (
+                    <div>
+                      Төрөл:{' '}
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {(() => {
+                          const typeMap: Record<string, string> = {
+                            buffet: 'Буффет',
+                            continental: 'Континентал',
+                            american: 'Америк хэв маяг',
+                            full: 'Бүрэн өглөөний цай',
+                            english: 'Англи хэв маяг',
+                            asian: 'Азийн хэв маяг',
+                            box: 'Хайрцагт өглөөний цай',
+                            room_service: 'Өрөөний үйлчилгээ',
+                          };
+                          const key = String(bp.breakfast_type).toLowerCase();
+                          return typeMap[key] || bp.breakfast_type;
+                        })()}
+                      </span>
+                    </div>
+                  )}
                   {bp.start_time && bp.end_time && (
                     <div>Цаг: <span className="font-medium">{formatTime(bp.start_time)} – {formatTime(bp.end_time)}</span></div>
                   )}
@@ -259,7 +312,20 @@ export default function HotelHouseRules({ hotelId, initialPolicies }: HotelHouse
                 </Row>
               )}
 
-              {/* 6. Age requirement — static default */}
+              {/* 6. Spoken languages */}
+              {spokenLanguages.length > 0 && (
+                <Row icon={<Globe className="w-4 h-4" />} title="Харилцах хэл">
+                  <div className="flex flex-wrap gap-2">
+                    {spokenLanguages.map((lang) => (
+                      <span key={lang} className="inline-flex items-center px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
+                        {lang}
+                      </span>
+                    ))}
+                  </div>
+                </Row>
+              )}
+
+              {/* 7. Age requirement — static default */}
               <Row icon={<UserCheck className="w-4 h-4" />} title="Насны шаардлага">
                 <div>Бүртгэлд насны шаардлага байхгүй.</div>
               </Row>

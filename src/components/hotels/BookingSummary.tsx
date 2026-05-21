@@ -11,6 +11,8 @@ interface BookingSummaryProps {
   checkIn: string;
   checkOut: string;
   nights?: number;
+  adults?: number;
+  children?: number;
   onQuantityChange: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast', quantity: number) => void;
   onRemoveRoom: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast') => void;
   onBookNow: () => void;
@@ -23,12 +25,18 @@ export default function BookingSummary({
   checkIn,
   checkOut,
   nights = 1,
+  adults,
+  children,
   onQuantityChange,
   onRemoveRoom,
   onBookNow
 }: BookingSummaryProps) {
   const { t } = useHydratedTranslation();
   const totalPriceWithNights = totalPrice * nights;
+
+  // Calculate total capacity of selected rooms
+  const totalAdultCapacity = items.reduce((sum, item) => sum + (item.room.adultQty || 0) * item.quantity, 0);
+  const totalChildCapacity = items.reduce((sum, item) => sum + (item.room.childQty || 0) * item.quantity, 0);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sticky top-20 max-h-[calc(100vh-88px)] overflow-y-auto">
@@ -122,6 +130,14 @@ export default function BookingSummary({
             <span className="font-bold">{t('bookingExtra.totalRooms')}:</span>
             <span className="font-bold">{totalRooms}</span>
           </div>
+
+          {/* Selected rooms capacity */}
+          {items.length > 0 && (
+            <div className="mt-2 mb-2 space-y-0.5">
+              <div className="flex justify-between items-center text-sm"><span className="font-bold">Том хүн:</span><span className="font-bold">{totalAdultCapacity} хүн</span></div>
+              {totalChildCapacity > 0 && <div className="flex justify-between items-center text-sm"><span className="font-bold">Хүүхэд:</span><span className="font-bold">{totalChildCapacity} хүн</span></div>}
+            </div>
+          )}
         </div>
       </div>
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Calendar } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import CustomGuestSelector from './CustomGuestSelector';
 import DateRangePicker from '@/components/common/DateRangePicker';
 import SearchFormContainer from './SearchFormContainer';
@@ -23,6 +23,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
   const { recentSearches, saveSearch } = useRecentSearches();
   const urlSearchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   
   const [destination, setDestination] = useState('');
   const [checkIn, setCheckIn] = useState('');
@@ -216,6 +217,17 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
     setAdults(newAdults);
     setChildren(newChildren);
     setRooms(newRooms);
+
+    // On hotel detail pages, immediately sync guest params to the URL so the
+    // room-search bar (ImprovedHotelRoomsSection) stays in sync without needing
+    // the user to re-submit the top search form.
+    if (pathname?.startsWith('/hotel/')) {
+      const params = new URLSearchParams(urlSearchParams.toString());
+      params.set('adults', newAdults.toString());
+      params.set('children', newChildren.toString());
+      params.set('rooms', newRooms.toString());
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
   };
 
   const handleLocationFocus = async () => {

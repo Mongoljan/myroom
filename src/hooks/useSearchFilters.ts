@@ -294,6 +294,12 @@ export function useSearchFilters({
           .forEach(n => track(`neighbourhood_${n}`, 'neighbourhood', n, n));
         (updated.landmark || []).filter(l => !(prev.landmark || []).includes(l))
           .forEach(l => { const lm = UB_LANDMARKS.find(x => x.id === l); if (lm) track(`landmark_${l}`, 'landmark', l, lm.name_mn); });
+        (updated.roomFacilities || []).filter(id => !(prev.roomFacilities || []).includes(id))
+          .forEach(id => { const f = apiData?.roomFacilities?.find(x => x.id === id); if (f) track(`roomFac_${id}`, 'roomFacilities', id, f.name_mn); });
+        (updated.bedTypes || []).filter(id => !(prev.bedTypes || []).includes(id))
+          .forEach(id => { const bt = apiData?.bed_types?.find(x => x.id === id); if (bt) track(`bedType_${id}`, 'bedTypes', id, bt.name); });
+        (updated.accessibilityFeatures || []).filter(id => !(prev.accessibilityFeatures || []).includes(id))
+          .forEach(id => { const f = apiData?.accessibility_features?.find(x => x.id === id); if (f) track(`access_${id}`, 'accessibilityFeatures', id, f.name_mn); });
       }
     } catch { /* ignore */ }
   }, [saveToRecentFilters, saveIndividualFilter, apiData]);
@@ -313,6 +319,8 @@ export function useSearchFilters({
       case 'generalServices':      return (filters.generalServices || []).includes(item.value as number);
       case 'outdoorAreas':         return (filters.outdoorAreas || []).includes(item.value as number);
       case 'accessibilityFeatures':return (filters.accessibilityFeatures || []).includes(item.value as number);
+      case 'roomFacilities':       return (filters.roomFacilities || []).includes(item.value as number);
+      case 'bedTypes':             return (filters.bedTypes || []).includes(item.value as number);
       case 'neighbourhood':        return (filters.neighbourhood || []).includes(item.value as string);
       case 'landmark':             return (filters.landmark || []).includes(item.value as string);
       default:                     return false;
@@ -332,6 +340,9 @@ export function useSearchFilters({
       case 'outdoorAreas':  { const v = item.value as number; updateFilters({ outdoorAreas:  active ? off(filters.outdoorAreas || [], v)  : on(filters.outdoorAreas || [], v)  }, { saveRecent: false }); break; }
       case 'neighbourhood': { const v = item.value as string; updateFilters({ neighbourhood: active ? off(filters.neighbourhood || [], v) : on(filters.neighbourhood || [], v) }, { saveRecent: false }); break; }
       case 'landmark':      { const v = item.value as string; updateFilters({ landmark:      active ? off(filters.landmark || [], v)      : on(filters.landmark || [], v)      }, { saveRecent: false }); break; }
+      case 'roomFacilities': { const v = item.value as number; updateFilters({ roomFacilities: active ? off(filters.roomFacilities || [], v) : on(filters.roomFacilities || [], v) }, { saveRecent: false }); break; }
+      case 'bedTypes':       { const v = item.value as number; updateFilters({ bedTypes:       active ? off(filters.bedTypes || [], v)       : on(filters.bedTypes || [], v)       }, { saveRecent: false }); break; }
+      case 'accessibilityFeatures': { const v = item.value as number; updateFilters({ accessibilityFeatures: active ? off(filters.accessibilityFeatures || [], v) : on(filters.accessibilityFeatures || [], v) }, { saveRecent: false }); break; }
     }
   }, [filters, isItemActive, updateFilters]);
 

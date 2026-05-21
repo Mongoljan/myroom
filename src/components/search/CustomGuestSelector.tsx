@@ -16,6 +16,7 @@ interface CustomGuestSelectorProps {
   className?: string;
   compact?: boolean;
   onOpenChange?: (open: boolean) => void;
+  maxChildAge?: number;
 }
 
 export default function CustomGuestSelector({
@@ -27,6 +28,7 @@ export default function CustomGuestSelector({
   className = '',
   compact = false,
   onOpenChange,
+  maxChildAge = 17,
 }: CustomGuestSelectorProps) {
   const { t } = useHydratedTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -40,6 +42,8 @@ export default function CustomGuestSelector({
   const [localRooms, setLocalRooms] = useState(rooms);
   // Per-child ages: array length == localChildren, value -1 means not yet set
   const [childAges, setChildAges] = useState<number[]>(() => Array(childrenCount).fill(-1));
+  // Whether to show red validation errors on unset age selects
+  const [showAgeErrors, setShowAgeErrors] = useState(false);
 
   // Debounce timer ref - reduced delay for better UX
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
@@ -70,15 +74,25 @@ export default function CustomGuestSelector({
     const handleOutsideInteraction = (event: Event) => {
       const isClick = event.type === 'mousedown';
       const isScroll = event.type === 'scroll';
-      
+
+      const agesIncomplete = localChildren > 0 && childAges.some((a) => a === -1);
+
       if (isClick) {
         const mouseEvent = event as MouseEvent;
         if (dropdownRef.current && !dropdownRef.current.contains(mouseEvent.target as Node) && 
             buttonRef.current && !buttonRef.current.contains(mouseEvent.target as Node)) {
+          if (agesIncomplete) {
+            setShowAgeErrors(true);
+            return;
+          }
           setIsOpen(false);
           onOpenChange?.(false);
         }
       } else if (isScroll) {
+        if (agesIncomplete) {
+          setShowAgeErrors(true);
+          return;
+        }
         setIsOpen(false);
         onOpenChange?.(false);
       }
@@ -92,7 +106,7 @@ export default function CustomGuestSelector({
       document.removeEventListener('mousedown', handleOutsideInteraction);
       window.removeEventListener('scroll', handleOutsideInteraction);
     };
-  }, [isOpen]);
+  }, [isOpen, localChildren, childAges]);
 
   // Sync local state with props
   useEffect(() => {
@@ -165,7 +179,12 @@ export default function CustomGuestSelector({
             calculatePosition();
             setIsOpen(true);
             onOpenChange?.(true);
+            setShowAgeErrors(false);
           } else {
+            if (localChildren > 0 && childAges.some((a) => a === -1)) {
+              setShowAgeErrors(true);
+              return;
+            }
             setIsOpen(false);
             onOpenChange?.(false);
           }
@@ -208,10 +227,10 @@ export default function CustomGuestSelector({
               <div className="flex items-center justify-between">
                 <div>
                   <div className={`${TYPOGRAPHY.modal.title} text-gray-900 dark:text-white`}>
-                    {t('search.adults', 'Adults')}
+                    {t('search.adults', 'Том хүн')}
                   </div>
-                  <div className="text-xs text-gray-900 dark:text-gray-300">
-                    {t('search.adultsAgeNote', 'Age 13 or above')}
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {maxChildAge != null ? `${maxChildAge + 1}-аас дээш нас` : '18-аас дээш нас'}
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -238,10 +257,10 @@ export default function CustomGuestSelector({
               <div className="flex items-center justify-between">
                 <div>
                   <div className={`${TYPOGRAPHY.modal.title} text-gray-900 dark:text-white`}>
-                    {t('search.children', 'Children')}
+                    {t('search.children', 'Хүүхэд')}
                   </div>
-                  <div className="text-xs text-gray-900 dark:text-gray-300">
-                    {t('search.childrenAgeNote', 'Age 0-17')}
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {maxChildAge != null ? `0–${maxChildAge} нас` : '0–17 нас'}
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -271,8 +290,9 @@ export default function CustomGuestSelector({
               {/* Per-child age inputs */}
               {localChildren > 0 && (
                 <div className="space-y-2 pt-1">
-                  <p className="text-xs text-amber-600 dark:text-amber-400 leading-snug">
+                  <p className={`text-xs leading-snug ${showAgeErrors && childAges.some(a => a === -1) ? 'text-red-600 dark:text-red-400 font-medium' : 'text-amber-600 dark:text-amber-400'}`}>
                     Өрөөний үнийг үнэн зөв тооцоолоход шаардлагатай тул хүүхэд бүрийн насыг үнэн зөв оруулна уу.
+                    {showAgeErrors && childAges.some(a => a === -1) && ' Бүх хүүхэдийн насыг сонгоно уу.'}
                   </p>
                   {childAges.map((age, idx) => (
                     <div key={idx} className="flex items-center justify-between gap-2">
@@ -290,10 +310,14 @@ export default function CustomGuestSelector({
                             return next;
                           });
                         }}
-                        className="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 cursor-pointer"
+                        className={`flex-1 border rounded-lg px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 cursor-pointer ${
+                          showAgeErrors && age === -1
+                            ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
+                            : 'border-gray-300 dark:border-gray-600'
+                        }`}
                       >
                         <option value="">Нас оруулах</option>
-                        {Array.from({ length: 18 }, (_, i) => (
+                        {Array.from({ length: maxChildAge + 1 }, (_, i) => (
                           <option key={i} value={i}>{i} нас</option>
                         ))}
                       </select>
@@ -336,6 +360,7 @@ export default function CustomGuestSelector({
                 </div>
               </div>
             </div>
+
           </motion.div>
         </AnimatePresence>,
         document.body

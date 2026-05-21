@@ -124,6 +124,19 @@ export function deriveFacets(
       }
     }
 
+    // Accessibility features — add their IDs to presentFacilityIds so isFacilityPresent passes
+    for (const af of h.accessibility_features || []) {
+      const id = facilityIdOf(af as HotelFacility);
+      if (id != null) {
+        presentFacilityIds.add(id);
+        const k = `facility_${id}`;
+        if (!seenForHotel.has(k)) {
+          counts[k] = (counts[k] || 0) + 1;
+          seenForHotel.add(k);
+        }
+      }
+    }
+
     // Bed types — build presentBedTypeIds; use all-data canonical names when available
     for (const bt of h.bed_types || []) {
       if (bt.id) {
