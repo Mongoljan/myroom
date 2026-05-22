@@ -502,7 +502,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
                 </div>
                 {hotel.cheapest_room && (hotel.cheapest_room.pricing?.total?.nights ?? hotel.nights ?? 0) > 1 && (
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {t('hotelDetails.totalForStay', 'Нийт')} {hotel.cheapest_room.pricing?.total?.nights ?? hotel.nights} {t('hotelDetails.nights', 'шөнө')}: <span className="font-semibold text-gray-700 dark:text-gray-300">₮{(hotel.cheapest_room.pricing.total.without_breakfast).toLocaleString()}</span>
+                    {t('hotelDetails.totalForStay', 'Нийт')} {hotel.cheapest_room.pricing?.total?.nights ?? hotel.nights} {t('hotelDetails.nights', 'шөнө')}: <span className="font-semibold text-gray-700 dark:text-gray-300">₮{(hotel.cheapest_room.pricing?.total?.without_breakfast ?? 0).toLocaleString()}</span>
                   </span>
                 )}
               </div>

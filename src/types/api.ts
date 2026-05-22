@@ -350,17 +350,17 @@ export interface CheapestRoom {
 
 /** Read the selling price per night (without breakfast) from a CheapestRoom */
 export function getRoomSellingPrice(room: CheapestRoom): number {
-  return room.pricing.per_night.without_breakfast.selling_price;
+  return room.pricing?.per_night?.without_breakfast?.selling_price ?? 0;
 }
 
 /** Read the original/base price per night (before discount) from a CheapestRoom */
 export function getRoomOriginalPrice(room: CheapestRoom): number {
-  return room.pricing.per_night.without_breakfast.original_price;
+  return room.pricing?.per_night?.without_breakfast?.original_price ?? 0;
 }
 
 /** Read the discount percent from a CheapestRoom */
 export function getRoomDiscountPercent(room: CheapestRoom): number {
-  return room.pricing.per_night.without_breakfast.discount_percent;
+  return room.pricing?.per_night?.without_breakfast?.discount_percent ?? 0;
 }
 
 export interface HotelImage {

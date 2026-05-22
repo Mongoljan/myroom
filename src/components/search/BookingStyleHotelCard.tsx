@@ -55,9 +55,9 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
     };
 
     const p = cheapest.pricing;
-    const selling = p.per_night.without_breakfast.selling_price;
-    const original = p.per_night.without_breakfast.original_price;
-    const discountPercent = p.per_night.without_breakfast.discount_percent;
+    const selling = p?.per_night?.without_breakfast?.selling_price ?? 0;
+    const original = p?.per_night?.without_breakfast?.original_price ?? 0;
+    const discountPercent = p?.per_night?.without_breakfast?.discount_percent ?? 0;
     const hasDiscount = discountPercent > 0;
 
     return {

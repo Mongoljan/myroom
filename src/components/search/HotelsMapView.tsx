@@ -88,9 +88,9 @@ function HotelSidebarCard({ hotel, isSelected, onClick, searchParams }: HotelSid
     if (!cheapest) return { hasDiscount: false, price: 0, originalPrice: 0, discountPercent: 0 };
     
     const p = cheapest.pricing;
-    const selling = p.per_night.without_breakfast.selling_price;
-    const original = p.per_night.without_breakfast.original_price;
-    const discountPercent = Math.round(p.per_night.without_breakfast.discount_percent);
+    const selling = p?.per_night?.without_breakfast?.selling_price ?? 0;
+    const original = p?.per_night?.without_breakfast?.original_price ?? 0;
+    const discountPercent = Math.round(p?.per_night?.without_breakfast?.discount_percent ?? 0);
     const hasDiscount = discountPercent > 0;
     
     return { hasDiscount, price: selling, originalPrice: original, discountPercent };
@@ -214,8 +214,8 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
           const cheapest = hotel.cheapest_room;
           if (!cheapest) return { price: 0, hasDiscount: false, discountPercent: 0 };
           const p = cheapest.pricing;
-          const selling = p.per_night.without_breakfast.selling_price;
-          const discountPercent = Math.round(p.per_night.without_breakfast.discount_percent);
+          const selling = p?.per_night?.without_breakfast?.selling_price ?? 0;
+          const discountPercent = Math.round(p?.per_night?.without_breakfast?.discount_percent ?? 0);
           const hasDiscount = discountPercent > 0;
           return { price: selling, hasDiscount, discountPercent };
         })()

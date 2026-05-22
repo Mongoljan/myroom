@@ -69,16 +69,16 @@ export default function HotelPricingSection({
       <div className="space-y-2 mb-4">
         <div className="flex items-baseline gap-2">
           <span className="text-h1 font-bold text-slate-900 dark:text-white">
-          {formatPrice(cheapestRoom.pricing.per_night.without_breakfast.selling_price)}
+          {formatPrice(cheapestRoom.pricing?.per_night?.without_breakfast?.selling_price ?? 0)}
           </span>
           <span className="text-body-md text-slate-600 dark:text-slate-400">/ {t('hotel.night')}</span>
         </div>
 
-        {(cheapestRoom.pricing.total.nights) > 1 && (
+        {(cheapestRoom.pricing?.total?.nights ?? 0) > 1 && (
           <div className="text-sm text-slate-600 dark:text-slate-400">
-            {t('hotel.totalEstimate')}: {cheapestRoom.pricing.total.nights} {t('hotel.nights')}: {' '}
+            {t('hotel.totalEstimate')}: {cheapestRoom.pricing?.total?.nights} {t('hotel.nights')}: {' '}
             <span className="font-semibold text-slate-900 dark:text-white">
-              {formatPrice(cheapestRoom.pricing.total.without_breakfast)}
+              {formatPrice(cheapestRoom.pricing?.total?.without_breakfast ?? 0)}
             </span>
           </div>
         )}

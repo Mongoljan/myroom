@@ -123,7 +123,7 @@ export default function SearchResults() {
   // Helper function to get price from cheapest_room
   const getRoomPrice = (room: SearchHotelResult['cheapest_room']): number => {
     if (!room) return 0;
-    return room.pricing.per_night.without_breakfast.selling_price;
+    return room.pricing?.per_night?.without_breakfast?.selling_price ?? 0;
   };
 
   // Track when header becomes sticky
@@ -316,7 +316,7 @@ export default function SearchResults() {
       filtered = filtered.filter(hotel => {
         const r = hotel.cheapest_room;
         if (!r) return false;
-        const discount = r.pricing.per_night.without_breakfast.discount_percent;
+        const discount = r.pricing?.per_night?.without_breakfast?.discount_percent ?? 0;
         return discount > 0;
       });
     }
