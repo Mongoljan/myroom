@@ -87,12 +87,13 @@ function HotelSidebarCard({ hotel, isSelected, onClick, searchParams }: HotelSid
     const cheapest = hotel.cheapest_room;
     if (!cheapest) return { hasDiscount: false, price: 0, originalPrice: 0, discountPercent: 0 };
     
-    const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night || 0;
-    const adjustedPrice = cheapest.price_per_night_final || cheapest.price_per_night || 0;
-    const hasDiscount = rawPrice > adjustedPrice;
-    const discountPercent = hasDiscount ? Math.round((1 - adjustedPrice / rawPrice) * 100) : 0;
+    const p = cheapest.pricing;
+    const selling = p.per_night.without_breakfast.selling_price;
+    const original = p.per_night.without_breakfast.original_price;
+    const discountPercent = Math.round(p.per_night.without_breakfast.discount_percent);
+    const hasDiscount = discountPercent > 0;
     
-    return { hasDiscount, price: adjustedPrice, originalPrice: rawPrice, discountPercent };
+    return { hasDiscount, price: selling, originalPrice: original, discountPercent };
   };
 
   const pricing = getPricingInfo();
@@ -212,11 +213,11 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
         pricing: (() => {
           const cheapest = hotel.cheapest_room;
           if (!cheapest) return { price: 0, hasDiscount: false, discountPercent: 0 };
-          const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night || 0;
-          const adjustedPrice = cheapest.price_per_night_final || cheapest.price_per_night || 0;
-          const hasDiscount = rawPrice > adjustedPrice;
-          const discountPercent = hasDiscount ? Math.round((1 - adjustedPrice / rawPrice) * 100) : 0;
-          return { price: adjustedPrice, hasDiscount, discountPercent };
+          const p = cheapest.pricing;
+          const selling = p.per_night.without_breakfast.selling_price;
+          const discountPercent = Math.round(p.per_night.without_breakfast.discount_percent);
+          const hasDiscount = discountPercent > 0;
+          return { price: selling, hasDiscount, discountPercent };
         })()
       }))
       .filter(item => item.coords !== null) as Array<{

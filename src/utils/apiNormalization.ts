@@ -291,8 +291,9 @@ interface HotelPriceData {
   min_price?: number;
   min_estimated_total?: number;
   cheapest_room?: {
-    final_price?: number;
-    price_per_night_final?: number;
+    pricing?: {
+      per_night?: { without_breakfast?: { selling_price?: number } };
+    };
   };
   [key: string]: unknown;
 }
@@ -301,10 +302,9 @@ interface HotelPriceData {
  * Extract minimum price from various API response formats
  */
 export function extractMinPrice(hotelData: HotelPriceData): number | null {
-  return hotelData.min_price || 
-         hotelData.min_estimated_total || 
-         hotelData.cheapest_room?.final_price || 
-         hotelData.cheapest_room?.price_per_night_final ||
+  return hotelData.min_price ||
+         hotelData.min_estimated_total ||
+         hotelData.cheapest_room?.pricing?.per_night?.without_breakfast?.selling_price ||
          null;
 }
 

@@ -120,10 +120,10 @@ export default function SearchResults() {
   const [isHeaderSticky, setIsHeaderSticky] = useState(false);
   const [nameSearchQuery, setNameSearchQuery] = useState('');
 
-  // Helper function to get price from cheapest_room (handles different API response formats)
+  // Helper function to get price from cheapest_room
   const getRoomPrice = (room: SearchHotelResult['cheapest_room']): number => {
     if (!room) return 0;
-    return room.price_per_night_final || room.price_per_night || room.price_per_night_raw || 0;
+    return room.pricing.per_night.without_breakfast.selling_price;
   };
 
   // Track when header becomes sticky
@@ -316,9 +316,8 @@ export default function SearchResults() {
       filtered = filtered.filter(hotel => {
         const r = hotel.cheapest_room;
         if (!r) return false;
-        const raw = r.price_per_night_raw || r.price_per_night || 0;
-        const adj = r.price_per_night_final || r.price_per_night || 0;
-        return raw > 0 && adj > 0 && raw > adj;
+        const discount = r.pricing.per_night.without_breakfast.discount_percent;
+        return discount > 0;
       });
     }
 

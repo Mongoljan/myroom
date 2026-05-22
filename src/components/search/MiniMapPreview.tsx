@@ -50,8 +50,8 @@ export default function MiniMapPreview({ hotels, onShowFullMap, className = '' }
       .map(hotel => {
         const coords = extractCoordinates(hotel.google_map);
         const cheapest = hotel.cheapest_room;
-        const rawPrice = cheapest?.price_per_night_raw || cheapest?.price_per_night || 0;
-        const adjustedPrice = cheapest?.price_per_night_final || cheapest?.price_per_night || 0;
+        const rawPrice = cheapest?.pricing?.per_night?.without_breakfast?.original_price ?? 0;
+        const adjustedPrice = cheapest?.pricing?.per_night?.without_breakfast?.selling_price ?? 0;
         const hasDiscount = rawPrice > adjustedPrice;
         
         return { hotel, coords, hasDiscount };

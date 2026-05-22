@@ -54,39 +54,19 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
       originalPricePerNight: 0
     };
 
-    const pricesetting = cheapest.pricesetting;
-    const hasDiscount = pricesetting && pricesetting.adjustment_type === 'SUB';
-
-    // Use the raw and adjusted prices from API if available
-    const rawPrice = cheapest.price_per_night_raw || cheapest.price_per_night || 0;
-    const adjustedPrice = cheapest.price_per_night_final || cheapest.price_per_night || 0;
-
-    let discountPercent = 0;
-
-    // Calculate discount percentage regardless of whether pricesetting exists
-    // This handles cases where API provides raw/adjusted prices but pricesetting might be missing
-    if (rawPrice > 0 && adjustedPrice < rawPrice) {
-      const actualDiscount = rawPrice - adjustedPrice;
-      const calculatedPercent = (actualDiscount / rawPrice) * 100;
-      // Use Math.ceil to ensure even small discounts show at least 1%
-      discountPercent = calculatedPercent > 0 ? Math.max(1, Math.round(calculatedPercent)) : 0;
-    }
-
-    // If pricesetting exists and is PERCENT type, use the API value for accuracy
-    if (hasDiscount && pricesetting && pricesetting.value_type === 'PERCENT' && pricesetting.value !== null) {
-      discountPercent = Math.max(1, Math.round(pricesetting.value));
-    }
-
-    // Determine if there's an actual discount (either from pricesetting or price difference)
-    const hasActualDiscount = hasDiscount || (rawPrice > adjustedPrice && discountPercent > 0);
+    const p = cheapest.pricing;
+    const selling = p.per_night.without_breakfast.selling_price;
+    const original = p.per_night.without_breakfast.original_price;
+    const discountPercent = p.per_night.without_breakfast.discount_percent;
+    const hasDiscount = discountPercent > 0;
 
     return {
-      hasDiscount: hasActualDiscount,
-      originalPrice: rawPrice * nights * rooms,
-      discountedPrice: adjustedPrice * nights * rooms,
-      discountPercent,
-      pricePerNight: adjustedPrice || 0,
-      originalPricePerNight: rawPrice || 0
+      hasDiscount,
+      originalPrice: original * nights * rooms,
+      discountedPrice: selling * nights * rooms,
+      discountPercent: Math.round(discountPercent),
+      pricePerNight: selling,
+      originalPricePerNight: original
     };
   };
 

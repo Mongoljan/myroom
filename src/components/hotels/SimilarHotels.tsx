@@ -77,7 +77,7 @@ export default function SimilarHotels({ currentHotelId, checkIn, checkOut }: Sim
 
               // If we already have pricing data from suggestHotels, don't overwrite with getRoomPrices
               // (getRoomPrices only gives base_price before commission, causing a mismatch)
-              if (hotel.cheapest_room?.pricing || hotel.cheapest_room?.price_per_night_final) {
+              if (hotel.cheapest_room?.pricing) {
                 return hotel;
               }
               

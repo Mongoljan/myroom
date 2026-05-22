@@ -345,57 +345,22 @@ export interface CheapestRoom {
   capacity_per_room_adults: number;
   capacity_per_room_children: number;
   capacity_per_room_total: number;
-  /** New nested pricing structure (current API) */
-  pricing?: RoomPricing;
-  /** @deprecated — flat fields from old API, kept for backward compat */
-  price_per_night_raw?: number;
-  /** @deprecated */
-  breakfast_price?: number;
-  /** @deprecated */
-  price_per_night_with_breakfast?: number;
-  /** @deprecated */
-  price_per_night_final?: number;
-  /** @deprecated */
-  price_per_night?: number;
-  /** @deprecated */
-  nights?: number;
-  /** @deprecated */
-  estimated_total_raw?: number;
-  /** @deprecated */
-  estimated_total_adjusted?: number;
-  /** @deprecated */
-  estimated_total_final?: number;
-  /** @deprecated */
-  estimated_total_for_requested_rooms?: number;
-  /** @deprecated */
-  pricesetting?: PriceSetting | null;
-  /** @deprecated */
-  commission?: Commission | null;
+  pricing: RoomPricing;
 }
 
-/** Read the selling price (without breakfast) from a CheapestRoom, handling both old and new API shape */
+/** Read the selling price per night (without breakfast) from a CheapestRoom */
 export function getRoomSellingPrice(room: CheapestRoom): number {
-  return (
-    room.pricing?.per_night?.without_breakfast?.selling_price ??
-    room.price_per_night_final ??
-    room.price_per_night ??
-    room.price_per_night_raw ??
-    0
-  );
+  return room.pricing.per_night.without_breakfast.selling_price;
 }
 
-/** Read the original/base price (before discount) from a CheapestRoom */
+/** Read the original/base price per night (before discount) from a CheapestRoom */
 export function getRoomOriginalPrice(room: CheapestRoom): number {
-  return (
-    room.pricing?.per_night?.without_breakfast?.original_price ??
-    room.price_per_night_raw ??
-    0
-  );
+  return room.pricing.per_night.without_breakfast.original_price;
 }
 
 /** Read the discount percent from a CheapestRoom */
 export function getRoomDiscountPercent(room: CheapestRoom): number {
-  return room.pricing?.per_night?.without_breakfast?.discount_percent ?? 0;
+  return room.pricing.per_night.without_breakfast.discount_percent;
 }
 
 export interface HotelImage {
