@@ -396,13 +396,15 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   const getCheapestPrice = () => {
     if (hotel.cheapest_room?.pricing) {
       const p = hotel.cheapest_room.pricing;
-      const selling = p.per_night.without_breakfast.selling_price;
-      const original = p.per_night.without_breakfast.original_price;
-      const discount = p.per_night.without_breakfast.discount_percent;
-      if (discount > 0) {
-        return { current: selling, original, discount: Math.round(discount) };
+      const selling = p?.per_night?.without_breakfast?.selling_price ?? 0;
+      const original = p?.per_night?.without_breakfast?.original_price ?? 0;
+      const discount = p?.per_night?.without_breakfast?.discount_percent ?? 0;
+      if (selling > 0) {
+        if (discount > 0) {
+          return { current: selling, original, discount: Math.round(discount) };
+        }
+        return { current: selling, original: null, discount: null };
       }
-      return { current: selling, original: null, discount: null };
     }
 
     // Fallback to min_estimated_total
