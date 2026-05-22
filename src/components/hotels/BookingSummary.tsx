@@ -12,7 +12,7 @@ interface BookingSummaryProps {
   checkOut: string;
   nights?: number;
   adults?: number;
-  children?: number;
+  childrenCount?: number;
   onQuantityChange: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast', quantity: number) => void;
   onRemoveRoom: (roomId: number, priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast') => void;
   onBookNow: () => void;
@@ -26,7 +26,7 @@ export default function BookingSummary({
   checkOut,
   nights = 1,
   adults,
-  children,
+  childrenCount,
   onQuantityChange,
   onRemoveRoom,
   onBookNow

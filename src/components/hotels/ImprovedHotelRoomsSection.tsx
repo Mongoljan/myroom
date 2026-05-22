@@ -485,7 +485,7 @@ export default function ImprovedHotelRoomsSection({
             checkOut={effectiveCheckOut}
             nights={getNumberOfNights()}
             adults={adultsCount}
-            children={childrenCountLocal}
+            childrenCount={childrenCountLocal}
             onQuantityChange={handleQuantityChange}
             onRemoveRoom={handleRemoveRoom}
             onBookNow={handleBookNow}
