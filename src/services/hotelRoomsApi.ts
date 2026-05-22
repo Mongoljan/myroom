@@ -55,7 +55,7 @@ export interface RoomImage {
   description: string;
 }
 
-// Price breakdown structure from the API
+// Price breakdown structure from the API (legacy — some older endpoints may return this)
 export interface PriceBreakdown {
   base_price: number;
   breakfast_price: number;
@@ -63,6 +63,34 @@ export interface PriceBreakdown {
   hotel_discount_amount: number;
   platform_markup_amount: number;
   final_customer_price: number;
+}
+
+// Pricing structure returned by the rooms endpoint (new format)
+export interface RoomPricingBreakdown {
+  original_price: number;
+  selling_price: number;
+  discount_percent: number;
+}
+
+export interface RoomPricing {
+  base_price: number;
+  breakfast_price: number;
+  per_night: {
+    without_breakfast: RoomPricingBreakdown;
+    with_breakfast: RoomPricingBreakdown;
+  };
+  total: {
+    nights: number;
+    rooms: number;
+    without_breakfast: number;
+    with_breakfast: number;
+  };
+  commission: number | null;
+  pricesetting?: {
+    value: number | null;
+    value_type: string | null;
+    adjustment_type: string | null;
+  };
 }
 
 export interface HotelRoom {
@@ -95,9 +123,10 @@ export interface HotelRoom {
   breakfast_include_price: number | null;
   final_price: number | null;
   rooms_possible: number;
-  breakfast_price: number;
-  price_with_breakfast: number;
-  price_breakdown: PriceBreakdown;
+  breakfast_price?: number;
+  price_with_breakfast?: number;
+  price_breakdown?: PriceBreakdown; // legacy, may be absent
+  pricing?: RoomPricing;            // new format from rooms endpoint
 }
 
 export interface AllRoomData {
@@ -260,12 +289,12 @@ class HotelRoomsService {
     const foodAndDrinkDetails = resolve<FoodAndDrink>(room.food_And_Drink, allData.food_and_drink);
     const outdoorAndViewDetails = resolve<OutdoorAndView>(room.outdoor_And_View, allData.outdoor_and_view);
 
-    // Check if room has valid pricing based on price_breakdown
-    // A room is valid if it has a price_breakdown with final_customer_price > 0
-    const hasValidPricing = Boolean(
-      room.price_breakdown &&
-      room.price_breakdown.final_customer_price > 0
-    );
+    // Check if room has valid pricing.
+    // Prefer the new `pricing` field; fall back to legacy `price_breakdown`.
+    const sellingPrice = room.pricing?.per_night?.without_breakfast?.selling_price
+      ?? room.price_breakdown?.final_customer_price
+      ?? 0;
+    const hasValidPricing = sellingPrice > 0;
 
     return {
       ...room,

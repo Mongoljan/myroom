@@ -147,35 +147,33 @@ export default function ImprovedHotelRoomsSection({
           .find(age => age != null);
         if (childAgeLimit != null) setMaxChildAge(childAgeLimit);
 
-        // Build price data from room's own price_breakdown (new API structure)
+        // Build price data from room's pricing field (new API structure)
         const pricesData: Record<string, RoomPriceOptions> = {};
 
         roomsData.forEach(room => {
           const key = `${room.room_type}-${room.room_category}`;
           
-          // Use price_breakdown from the room API response
-          if (room.price_breakdown && room.price_breakdown.final_customer_price > 0) {
-            const { base_price, final_customer_price, hotel_discount_amount } = room.price_breakdown;
-            
-            // Price structure:
-            // - base_price: Base room price (strikethrough price)
-            // - hotel_discount_amount: The discount amount from our contract with hotel
-            // - final_customer_price: What customer actually pays (main displayed price)
-            
-            // Calculate discount percentage: (base_price - final_customer_price) / base_price * 100
-            const discountPercent = base_price > 0 
-              ? Math.round(((base_price - final_customer_price) / base_price) * 100)
-              : 0;
-            
+          // New API returns `pricing`; legacy fallback to `price_breakdown`
+          const selling = room.pricing?.per_night?.without_breakfast?.selling_price
+            ?? room.price_breakdown?.final_customer_price
+            ?? 0;
+          const original = room.pricing?.per_night?.without_breakfast?.original_price
+            ?? room.price_breakdown?.base_price
+            ?? selling;
+          const discountPercent = room.pricing?.per_night?.without_breakfast?.discount_percent ?? 0;
+          const withBreakfastPrice = room.pricing?.per_night?.with_breakfast?.selling_price ?? 0;
+          const breakfastAddOn = room.pricing?.breakfast_price ?? 0;
+
+          if (selling > 0) {
             pricesData[key] = {
-              basePrice: final_customer_price,
-              basePriceRaw: base_price,
+              basePrice: selling,
+              basePriceRaw: original,
               halfDayPrice: room.half_day_price && room.half_day_price > 0 ? room.half_day_price : undefined,
               singlePersonPrice: room.single_person_price && room.single_person_price > 0 ? room.single_person_price : undefined,
-              breakfastPrice: room.price_breakdown.breakfast_price > 0 ? room.price_breakdown.price_with_breakfast : undefined,
-              discount: hotel_discount_amount > 0 ? {
+              breakfastPrice: withBreakfastPrice > 0 ? withBreakfastPrice : (breakfastAddOn > 0 ? selling + breakfastAddOn : undefined),
+              discount: discountPercent > 0 ? {
                 type: 'PERCENT' as const,
-                value: discountPercent
+                value: Math.round(discountPercent)
               } : undefined,
               priceBreakdown: room.price_breakdown
             };
