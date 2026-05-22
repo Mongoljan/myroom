@@ -149,6 +149,7 @@ async function HotelContent({ id, searchParams }: {
       // non-fatal – show page without about text
     }
   }
+  
 
   return (
     <HotelPageContent
