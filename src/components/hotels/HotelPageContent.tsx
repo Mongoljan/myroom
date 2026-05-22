@@ -16,7 +16,7 @@ import { CanvasRevealEffect } from '@/components/ui/canvas-reveal-effect';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
-import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, HotelFacility, PropertyImage, CancellationFee, PropertyPolicy } from '@/types/api';
+import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, HotelFacility, PropertyImage, CancellationFee, PropertyPolicy, getRoomSellingPrice } from '@/types/api';
 
 interface HotelPageContentProps {
   hotel: SearchHotelResult;
@@ -151,7 +151,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
         activeSection={activeSection}
         onSectionChange={handleSectionChange}
         hotelName={hotel.property_name}
-        price={hotel.cheapest_room?.price_per_night_final || hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 0}
+        price={hotel.cheapest_room ? getRoomSellingPrice(hotel.cheapest_room) : (hotel.min_estimated_total || 0)}
       />
 
       {/* Content Sections - More Compact */}

@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
-import { SearchHotelResult } from '@/types/api';
+import { SearchHotelResult, getRoomSellingPrice } from '@/types/api';
 
 type TabKey = 'popular' | 'discount' | 'top_rated' | 'cheapest' | 'new';
 
@@ -39,8 +39,8 @@ function getLocation(hotel: SearchHotelResult): string {
 
 function getPrice(hotel: SearchHotelResult): number {
   const r = hotel.cheapest_room;
-  if (!r) return 0;
-  return r.price_per_night_final ?? r.estimated_total_final ?? 0;
+  if (!r) return hotel.min_estimated_total || 0;
+  return getRoomSellingPrice(r) || hotel.min_estimated_total || 0;
 }
 
 export default function RecommendedHotelsClient({ initialHotels }: Props) {

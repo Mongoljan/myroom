@@ -1,4 +1,5 @@
 import type { SearchHotelResult, HotelFacility } from '@/types/api';
+import { getRoomSellingPrice, getRoomOriginalPrice, getRoomDiscountPercent } from '@/types/api';
 
 export const STATIC_PROPERTY_TYPES = [
   { id: 1,  name_en: 'Hotel',          name_mn: 'Зочид буудал' },
@@ -65,7 +66,7 @@ const facilityNameOf = (f: HotelFacility, locale: 'en' | 'mn'): string => {
 const getRoomPrice = (hotel: SearchHotelResult): number => {
   const r = hotel.cheapest_room;
   if (!r) return 0;
-  return r.price_per_night_final || r.price_per_night || r.price_per_night_raw || 0;
+  return getRoomSellingPrice(r);
 };
 
 /**
@@ -167,9 +168,10 @@ export function deriveFacets(
     // Discount
     const r = h.cheapest_room;
     if (r) {
-      const raw = r.price_per_night_raw || r.price_per_night || 0;
-      const final = r.price_per_night_final || r.price_per_night || 0;
-      if (raw > 0 && final > 0 && raw > final) {
+      const discountPct = getRoomDiscountPercent(r);
+      const raw = getRoomOriginalPrice(r);
+      const final = getRoomSellingPrice(r);
+      if ((discountPct > 0) || (raw > 0 && final > 0 && raw > final)) {
         discountedCount++;
       }
     }

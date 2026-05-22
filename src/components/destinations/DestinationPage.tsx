@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { MapPin, Filter, SlidersHorizontal } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
-import { SearchHotelResult } from '@/types/api';
+import { SearchHotelResult, getRoomSellingPrice } from '@/types/api';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
 import { text } from '@/styles/design-system';
 
@@ -80,7 +80,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
 
     // Price filter
     filtered = filtered.filter(hotel => {
-      const price = hotel.cheapest_room?.price_per_night_final || hotel.cheapest_room?.price_per_night || hotel.min_estimated_total || 0;
+      const price = hotel.cheapest_room ? getRoomSellingPrice(hotel.cheapest_room) : (hotel.min_estimated_total || 0);
       return price >= priceRange[0] && price <= priceRange[1];
     });
 
@@ -334,7 +334,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                       location={hotel.location.province_city}
                       rating={parseFloat(hotel.rating_stars?.value || '0') || 0}
                       ratingLabel={hotel.rating_stars?.label || ''}
-                      price={hotel.cheapest_room?.price_per_night_final || hotel.cheapest_room?.price_per_night || 0}
+                      price={hotel.cheapest_room ? getRoomSellingPrice(hotel.cheapest_room) : (hotel.min_estimated_total || 0)}
                       image={
                         typeof hotel.images?.cover === 'string'
                           ? hotel.images.cover

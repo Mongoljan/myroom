@@ -308,6 +308,29 @@ export interface Commission {
   platform_markup_amount: number;
 }
 
+export interface RoomPriceBreakdown {
+  original_price: number;
+  selling_price: number;
+  discount_percent: number;
+}
+
+export interface RoomPricing {
+  base_price: number;
+  breakfast_price: number;
+  pricesetting: PriceSetting;
+  per_night: {
+    without_breakfast: RoomPriceBreakdown;
+    with_breakfast: RoomPriceBreakdown;
+  };
+  total: {
+    nights: number;
+    rooms: number;
+    without_breakfast: number;
+    with_breakfast: number;
+  };
+  commission: Commission | null;
+}
+
 export interface CheapestRoom {
   room_type_id: number;
   room_category_id: number;
@@ -318,24 +341,61 @@ export interface CheapestRoom {
   free_toiletries: RoomFacilityItem[];
   food_and_drink: RoomFacilityItem[];
   outdoor_and_view: RoomFacilityItem[];
-  price_per_night_raw: number;
-  breakfast_price: number;
-  price_per_night_with_breakfast: number;
-  price_per_night_final: number;
-  /** @deprecated use price_per_night_final */
-  price_per_night?: number;
-  nights: number;
-  estimated_total_raw: number;
-  estimated_total_adjusted: number;
-  estimated_total_final: number;
-  /** @deprecated use estimated_total_final */
-  estimated_total_for_requested_rooms?: number;
   available_in_this_type: number;
   capacity_per_room_adults: number;
   capacity_per_room_children: number;
   capacity_per_room_total: number;
-  pricesetting: PriceSetting | null;
-  commission: Commission;
+  /** New nested pricing structure (current API) */
+  pricing?: RoomPricing;
+  /** @deprecated — flat fields from old API, kept for backward compat */
+  price_per_night_raw?: number;
+  /** @deprecated */
+  breakfast_price?: number;
+  /** @deprecated */
+  price_per_night_with_breakfast?: number;
+  /** @deprecated */
+  price_per_night_final?: number;
+  /** @deprecated */
+  price_per_night?: number;
+  /** @deprecated */
+  nights?: number;
+  /** @deprecated */
+  estimated_total_raw?: number;
+  /** @deprecated */
+  estimated_total_adjusted?: number;
+  /** @deprecated */
+  estimated_total_final?: number;
+  /** @deprecated */
+  estimated_total_for_requested_rooms?: number;
+  /** @deprecated */
+  pricesetting?: PriceSetting | null;
+  /** @deprecated */
+  commission?: Commission | null;
+}
+
+/** Read the selling price (without breakfast) from a CheapestRoom, handling both old and new API shape */
+export function getRoomSellingPrice(room: CheapestRoom): number {
+  return (
+    room.pricing?.per_night?.without_breakfast?.selling_price ??
+    room.price_per_night_final ??
+    room.price_per_night ??
+    room.price_per_night_raw ??
+    0
+  );
+}
+
+/** Read the original/base price (before discount) from a CheapestRoom */
+export function getRoomOriginalPrice(room: CheapestRoom): number {
+  return (
+    room.pricing?.per_night?.without_breakfast?.original_price ??
+    room.price_per_night_raw ??
+    0
+  );
+}
+
+/** Read the discount percent from a CheapestRoom */
+export function getRoomDiscountPercent(room: CheapestRoom): number {
+  return room.pricing?.per_night?.without_breakfast?.discount_percent ?? 0;
 }
 
 export interface HotelImage {

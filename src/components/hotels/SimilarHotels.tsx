@@ -6,7 +6,7 @@ import { Star, MapPin } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import SafeImage from '@/components/common/SafeImage';
 import { ApiService } from '@/services/api';
-import { SearchHotelResult } from '@/types/api';
+import { SearchHotelResult, getRoomSellingPrice } from '@/types/api';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 
 interface HotelWithPrices extends SearchHotelResult {
@@ -75,9 +75,9 @@ export default function SimilarHotels({ currentHotelId, checkIn, checkOut }: Sim
                 return hotel;
               }
 
-              // If we already have price_per_night_final from suggestHotels, don't overwrite with getRoomPrices
+              // If we already have pricing data from suggestHotels, don't overwrite with getRoomPrices
               // (getRoomPrices only gives base_price before commission, causing a mismatch)
-              if (hotel.cheapest_room?.price_per_night_final) {
+              if (hotel.cheapest_room?.pricing || hotel.cheapest_room?.price_per_night_final) {
                 return hotel;
               }
               
@@ -201,8 +201,8 @@ export default function SimilarHotels({ currentHotelId, checkIn, checkOut }: Sim
                 <div className="flex items-baseline gap-1">
                   <span className="text-sm font-semibold">
                     {(() => {
-                      // Prefer price_per_night_final (post-commission) from search/suggest APIs
-                      const finalPrice = hotel.cheapest_room?.price_per_night_final;
+                      // Prefer selling price from new pricing structure, falling back to min_estimated_total
+                      const finalPrice = hotel.cheapest_room ? getRoomSellingPrice(hotel.cheapest_room) : 0;
                       if (finalPrice && finalPrice > 0) {
                         return `₮${finalPrice.toLocaleString()}`;
                       }
