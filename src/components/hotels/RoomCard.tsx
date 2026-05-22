@@ -12,7 +12,8 @@ export interface RoomPriceOptions {
   basePriceRaw?: number; // Original price before discount (base_price from API)
   halfDayPrice?: number;
   singlePersonPrice?: number;
-  breakfastPrice?: number; // Per-night price with breakfast included
+  breakfastPrice?: number; // Per-night selling price with breakfast
+  breakfastPriceRaw?: number; // Original price with breakfast (before discount)
   discount?: {
     type: 'PERCENT' | 'FIXED';
     value: number;

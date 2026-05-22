@@ -37,7 +37,8 @@ export interface RoomPriceOptions {
   basePriceRaw?: number;
   halfDayPrice?: number;
   singlePersonPrice?: number;
-  breakfastPrice?: number; // Per-night price with breakfast included
+  breakfastPrice?: number; // Per-night selling price with breakfast
+  breakfastPriceRaw?: number; // Original price with breakfast (before discount)
   discount?: {
     type: 'PERCENT' | 'FIXED';
     value: number;
@@ -425,6 +426,14 @@ export default function TripComStyleRoomCard({
                       </div>
                       {/* COL 2: price */}
                       <div className="flex flex-col mx-auto text-right">
+                        {priceOptions.breakfastPriceRaw && priceOptions.breakfastPriceRaw > priceOptions.breakfastPrice && (
+                          <div className="flex items-center justify-end gap-1 mb-0.5">
+                            <span className="text-xs text-gray-400 line-through">₮{priceOptions.breakfastPriceRaw.toLocaleString()}</span>
+                            <span className="bg-red-500 text-white text-[10px] font-bold px-1 py-0.5 rounded">
+                              {Math.round((1 - priceOptions.breakfastPrice / priceOptions.breakfastPriceRaw) * 100)}% OFF
+                            </span>
+                          </div>
+                        )}
                         <div className="text-lg font-bold text-gray-900 dark:text-white">₮{priceOptions.breakfastPrice.toLocaleString()}</div>
                         {breakfastQty > 0 && (
                           <div className="text-[12px] text-gray-400 dark:text-gray-500 whitespace-nowrap">

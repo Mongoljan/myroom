@@ -171,6 +171,7 @@ export default function ImprovedHotelRoomsSection({
               halfDayPrice: room.half_day_price && room.half_day_price > 0 ? room.half_day_price : undefined,
               singlePersonPrice: room.single_person_price && room.single_person_price > 0 ? room.single_person_price : undefined,
               breakfastPrice: withBreakfastPrice > 0 ? withBreakfastPrice : (breakfastAddOn > 0 ? selling + breakfastAddOn : undefined),
+          breakfastPriceRaw: room.pricing?.per_night?.with_breakfast?.original_price ?? undefined,
               discount: discountPercent > 0 ? {
                 type: 'PERCENT' as const,
                 value: Math.round(discountPercent)
