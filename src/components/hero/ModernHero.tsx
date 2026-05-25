@@ -299,7 +299,7 @@ export default function ModernHero() {
               <FlipWords
                 words={["Тав тух", "Хямд", "Найдвартай", "Тохилог", "Шилдэг"]}
                 duration={2500}
-                className="text-white font-(family-name:--font-lobster) [text-shadow:0_0_10px_rgba(255,255,255,0.2),0_0_28px_rgba(255,255,255,0.2),0_0_55px_rgba(255,255,255,0.12)]"
+                className="text-white font-(family-name:--font-lobster) [text-shadow:0_0_11px_rgba(255,255,255,0.3),0_0_28px_rgba(255,255,255,0.3),0_0_55px_rgba(255,255,255,0.12)]"
               />
               таны сонголт
             </motion.h1>
