@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const res = await fetch(
-      `https://info.ebarimt.mn/rest/merchant/info?regno=${encodeURIComponent(regno)}`,
+      `https://dev.kacc.mn/api/ebarimt/?regno=${encodeURIComponent(regno)}`,
       { headers: { Accept: 'application/json' }, cache: 'no-store' }
     );
     const data = await res.json();

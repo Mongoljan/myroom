@@ -263,6 +263,7 @@ export default function ModernHero() {
           opacity: 0.55,
         }}
       />
+      
       {/* Vignette */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.4) 100%)' }} />
       {/* Aceternity dot reveal — only shown through cursor mask */}
