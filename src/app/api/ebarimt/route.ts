@@ -13,7 +13,8 @@ export async function GET(request: NextRequest) {
     );
     const data = await res.json();
     return NextResponse.json(data);
-  } catch {
+  } catch (err) {
+    console.error('[ebarimt] fetch failed:', err);
     return NextResponse.json({ found: false, error: 'lookup failed' }, { status: 500 });
   }
 }

@@ -233,7 +233,7 @@ function BookingContent() {
     setEbarimtLoading(true);
     setEbarimtError(null);
     try {
-      const res = await fetch(`/api/ebarimt?regno=${encodeURIComponent(regno)}`);
+      const res = await fetch(`https://info.ebarimt.mn/rest/merchant/info?regno=${encodeURIComponent(regno)}`);
       const data = await res.json();
       if (data.found && data.name) {
         return data.name as string;
