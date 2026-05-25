@@ -435,7 +435,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
       {/* Hotel Header Section */}
       <div className="space-y-3">
         {/* Hotel Name with Star Rating, Location, and View on Map */}
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start justify-between gap-3 sm:gap-4">
           {/* Left: Hotel Name with Star Rating and Location */}
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-1">
@@ -522,12 +522,12 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
       </div>
 
       {/* Main 2-column layout: Left (images + about + highlights) | Right (info sidebar + youtube) */}
-      <div className="flex gap-4 items-start">
+      <div className="flex flex-col lg:flex-row gap-4 items-start">
         {/* Left column: Images + About + Highlights */}
         <div className="flex-1 min-w-0 space-y-4">
-          <div className="flex gap-1 h-96">
+          <div className="flex gap-1 h-56 sm:h-72 lg:h-96">
             {/* Main Large Image - Left side */}
-            <div className="w-[55%] relative">
+            <div className="w-full lg:w-[55%] relative">
               <div className="relative bg-gray-100 dark:bg-gray-700 overflow-hidden rounded-l-xl h-full">
                 <button
                   type="button"
@@ -563,8 +563,8 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
               </div>
             </div>
 
-            {/* Right side images - 2x2 Grid */}
-            <div className="w-[45%] grid grid-cols-2 grid-rows-2 gap-1">
+            {/* Right side images - 2x2 Grid — hidden on mobile */}
+            <div className="hidden lg:grid w-[45%] grid-cols-2 grid-rows-2 gap-1">
               {allImages.filter(img => img.url).slice(1, 5).map((image, index) => (
                 <div
                   key={index}
@@ -708,7 +708,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
         </div>
 
         {/* Right sidebar: ratings + nearby + property highlights + youtube */}
-        <div className="w-[288px] shrink-0 flex flex-col gap-3">
+        <div className="w-full lg:w-[288px] lg:shrink-0 flex flex-col gap-3">
 
           {/* Gallery dialog — portal, location doesn't matter */}
           <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>

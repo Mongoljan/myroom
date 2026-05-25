@@ -101,7 +101,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
         >
           <div className="flex flex-col md:flex-row">
             {/* Hotel Image with gallery modal */}
-            <div className="relative w-64 self-stretch flex-shrink-0 overflow-hidden min-h-[220px]">
+            <div className="relative w-full md:w-64 self-stretch shrink-0 overflow-hidden min-h-50 md:min-h-55">
               <HotelImageGallery
                 images={hotel.images}
                 hotelName={hotel.property_name}

@@ -193,7 +193,7 @@ export default function RoomDetailsModal({ open, onOpenChange, room }: RoomDetai
               </div>
               {room.is_Bathroom && (
                 <div className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <Bath className="w-4 h-4 text-blue-600" />
+                  <Bath className="w-4 h-4 text-primary-600" />
                   <span className="text-gray-800 dark:text-gray-200">
                     {t('roomCard.privateBathroom', 'Хувийн угаалгын өрөө')}
                   </span>

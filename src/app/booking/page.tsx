@@ -11,6 +11,7 @@ import { ApiService } from '@/services/api';
 import { CreateBookingRequest, CreateBookingResponse, PropertyPolicy } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useAuth } from '@/contexts/AuthContext';
+import BookingPaymentStep from '@/components/booking/BookingPaymentStep';
 
 interface BookingRoom {
   room_category_id: number;
@@ -55,7 +56,7 @@ function BookingContent() {
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerLastName, setCustomerLastName] = useState('');
 
-  // E-баримт (UI only, not sent to API)
+  // E-баримт
   type EbarimtType = 'individual' | 'organization' | 'taxpayer' | null;
   const [ebarimtType, setEbarimtType] = useState<EbarimtType>(null);
   const [orgRegister, setOrgRegister] = useState('');
@@ -63,6 +64,9 @@ function BookingContent() {
   const [taxpayerRegisterPrefix1, setTaxpayerRegisterPrefix1] = useState('');
   const [taxpayerRegisterPrefix2, setTaxpayerRegisterPrefix2] = useState('');
   const [taxpayerRegisterNumber, setTaxpayerRegisterNumber] = useState('');
+  const [taxpayerName, setTaxpayerName] = useState('');
+  const [ebarimtLoading, setEbarimtLoading] = useState(false);
+  const [ebarimtError, setEbarimtError] = useState<string | null>(null);
 
   // Cancellation policy + ToS state
   const [cancellationAccepted, setCancellationAccepted] = useState(false);
@@ -83,6 +87,10 @@ function BookingContent() {
   const [hotelDetails, setHotelDetails] = useState<any | null>(null);
   const [hotelPolicy, setHotelPolicy] = useState<PropertyPolicy | null>(null);
   const [loadingHotelData, setLoadingHotelData] = useState(true);
+
+  // Multi-step state
+  const [step, setStep] = useState<2 | 3>(2);
+  const [paymentConfirmed, setPaymentConfirmed] = useState(false);
 
   // Booking state
   const [bookingInProgress, setBookingInProgress] = useState(false);
@@ -198,6 +206,21 @@ function BookingContent() {
     }
   }, [tosModalOpen]);
 
+  // Auto-lookup taxpayer name when all parts are filled
+  useEffect(() => {
+    const fullRegno = taxpayerRegisterPrefix1 + taxpayerRegisterPrefix2 + taxpayerRegisterNumber;
+    if (taxpayerRegisterPrefix1.length === 1 && taxpayerRegisterPrefix2.length === 1 && taxpayerRegisterNumber.length === 8) {
+      setTaxpayerName('');
+      lookupEbarimt(fullRegno).then(name => {
+        if (name) setTaxpayerName(name);
+      });
+    } else {
+      setTaxpayerName('');
+      setEbarimtError(null);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taxpayerRegisterPrefix1, taxpayerRegisterPrefix2, taxpayerRegisterNumber]);
+
   const handleApplyPromo = () => {
     if (!promoCode.trim()) {
       setPromoMessage(null);
@@ -206,12 +229,44 @@ function BookingContent() {
     setPromoMessage('Энэ промо код хүчингүй байна.');
   };
 
+  const lookupEbarimt = async (regno: string): Promise<string | null> => {
+    setEbarimtLoading(true);
+    setEbarimtError(null);
+    try {
+      const res = await fetch(`/api/ebarimt?regno=${encodeURIComponent(regno)}`);
+      const data = await res.json();
+      if (data.found && data.name) {
+        return data.name as string;
+      }
+      setEbarimtError('Бүртгэл олдсонгүй');
+      return null;
+    } catch {
+      setEbarimtError('Холболтын алдаа гарлаа');
+      return null;
+    } finally {
+      setEbarimtLoading(false);
+    }
+  };
+
+  const handleOrgSearch = async () => {
+    const trimmed = orgRegister.trim();
+    if (!trimmed) return;
+    const name = await lookupEbarimt(trimmed);
+    if (name) setOrgName(name);
+  };
+
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBookingInProgress(true);
     setBookingError(null);
 
     try {
+      // Map frontend ebarimtType to API value
+      const apiEbarimtType: 'person' | 'organization' | 'taxpayer' =
+        ebarimtType === 'organization' ? 'organization'
+        : ebarimtType === 'taxpayer' ? 'taxpayer'
+        : 'person';
+
       const bookingRequest: CreateBookingRequest = {
         hotel_id: hotelId,
         check_in: checkIn,
@@ -219,6 +274,15 @@ function BookingContent() {
         customer_name: customerName,
         customer_phone: customerPhone,
         customer_email: customerEmail,
+        ebarimt_type: apiEbarimtType,
+        ...(ebarimtType === 'organization' && {
+          org_register: orgRegister,
+          org_name: orgName,
+        }),
+        ...(ebarimtType === 'taxpayer' && {
+          taxpayer_register_prefix: taxpayerRegisterPrefix1 + taxpayerRegisterPrefix2,
+          taxpayer_register_number: taxpayerRegisterNumber,
+        }),
         rooms: rooms.map(room => ({
           room_category_id: room.room_category_id,
           room_type_id: room.room_type_id,
@@ -228,6 +292,7 @@ function BookingContent() {
 
       const result = await BookingService.createBooking(bookingRequest);
       setBookingResult(result);
+      setStep(3);
     } catch (error) {
       // Extract and format error message
       let errorMessage = t('errors.booking');
@@ -254,7 +319,7 @@ function BookingContent() {
     }
   };
 
-  if (bookingResult) {
+  if (paymentConfirmed && bookingResult) {
     const handlePrint = () => {
       window.print();
     };
@@ -545,6 +610,62 @@ function BookingContent() {
     );
   }
 
+  // ─── Step 3: Payment ───────────────────────────────────────────
+  if (step === 3 && bookingResult) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          {/* Stepper */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                  <Check className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">Өрөө сонгох</span>
+              </div>
+              <div className="flex-1 h-px bg-primary mx-4" />
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                  <Check className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">Хувийн мэдээлэл</span>
+              </div>
+              <div className="flex-1 h-px bg-primary mx-4" />
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
+                  3
+                </div>
+                <span className="text-sm font-medium text-gray-900 dark:text-white">Төлбөр баталгаажуулах</span>
+              </div>
+            </div>
+          </div>
+
+          <BookingPaymentStep
+            bookingCode={bookingResult.booking_code}
+            totalPrice={totalPrice}
+            rooms={rooms}
+            checkIn={checkIn}
+            checkOut={checkOut}
+            nights={nights}
+            hotelName={hotelName}
+            hotelDetails={hotelDetails}
+            adultsCount={adultsCount}
+            childrenCount={childrenCount}
+            customerName={customerName}
+            customerLastName={customerLastName}
+            customerPhone={customerPhone}
+            customerEmail={customerEmail}
+            orgName={orgName}
+            orgRegister={orgRegister}
+            onCancelBooking={() => router.push(`/hotel/${hotelId}`)}
+            onPaymentConfirmed={() => setPaymentConfirmed(true)}
+          />
+        </div>
+      </div>
+    );
+  }
+
   // Cheapest single image fallback
   const heroImage = (() => {
     try {
@@ -564,6 +685,14 @@ function BookingContent() {
   const cf = hotelPolicy?.cancellation_fee;
   const cancelTimeShort = cf?.cancel_time?.substring(0, 5);
 
+  // Compute actual cutoff dates for multi-night cancellation tiers
+  const multiCutoffDate = (daysBeforeCheckIn: number): string => {
+    if (!checkIn) return `${daysBeforeCheckIn} хоногийн өмнө`;
+    const d = new Date(checkIn);
+    d.setDate(d.getDate() - daysBeforeCheckIn);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
+
   const formatDateShort = (d: string) => {
     if (!d) return '';
     const date = new Date(d);
@@ -578,10 +707,19 @@ function BookingContent() {
     ? `${hotelPolicy.check_out_from.substring(0, 5)} — ${hotelPolicy.check_out_until.substring(0, 5)}`
     : '01:00 — 11:00';
 
+  const ebarimtValid =
+    ebarimtType === 'individual' ||
+    (ebarimtType === 'organization' && !!orgRegister.trim() && !!orgName) ||
+    (ebarimtType === 'taxpayer' &&
+      taxpayerRegisterPrefix1.length === 1 &&
+      taxpayerRegisterPrefix2.length === 1 &&
+      taxpayerRegisterNumber.length === 8);
+
   const canSubmit =
     !!customerName &&
     !!customerPhone &&
     !!customerEmail &&
+    ebarimtValid &&
     tosAccepted &&
     !bookingInProgress;
 
@@ -646,7 +784,6 @@ function BookingContent() {
                     type="text"
                     value={customerLastName}
                     onChange={(e) => setCustomerLastName(e.target.value)}
-                    required
                     disabled={bookingInProgress}
                     className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
                     placeholder="Таны овог"
@@ -716,11 +853,11 @@ function BookingContent() {
                       />
                       <span
                         className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                          ebarimtType === 'individual' ? 'border-emerald-500' : 'border-gray-300'
+                          ebarimtType === 'individual' ? 'border-primary' : 'border-gray-300'
                         }`}
                       >
                         {ebarimtType === 'individual' && (
-                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                          <span className="w-2 h-2 rounded-full bg-primary" />
                         )}
                       </span>
                       <span className="text-sm text-gray-800">Хувь хүн</span>
@@ -737,39 +874,50 @@ function BookingContent() {
                           type="radio"
                           name="ebarimt"
                           checked={ebarimtType === 'organization'}
-                          onChange={() => setEbarimtType('organization')}
+                          onChange={() => { setEbarimtType('organization'); setOrgName(''); setEbarimtError(null); }}
                           className="sr-only"
                         />
                         <span
                           className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                            ebarimtType === 'organization' ? 'border-emerald-500' : 'border-gray-300'
+                            ebarimtType === 'organization' ? 'border-primary' : 'border-gray-300'
                           }`}
                         >
                           {ebarimtType === 'organization' && (
-                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                            <span className="w-2 h-2 rounded-full bg-primary" />
                           )}
                         </span>
                         <span className="text-sm text-gray-800">Албан байгууллага</span>
                       </label>
                       {ebarimtType === 'organization' && (
-                        <div className="px-4 pb-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="px-4 pb-4 space-y-3">
                           <div>
                             <label className="block text-xs text-gray-600 mb-1">Регистрийн дугаар</label>
-                            <input
-                              value={orgRegister}
-                              onChange={(e) => setOrgRegister(e.target.value)}
-                              className="w-full p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary"
-                            />
+                            <div className="flex gap-2">
+                              <input
+                                value={orgRegister}
+                                onChange={(e) => { setOrgRegister(e.target.value); setOrgName(''); setEbarimtError(null); }}
+                                placeholder="0000000"
+                                className="flex-1 p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                              />
+                              <button
+                                type="button"
+                                onClick={handleOrgSearch}
+                                disabled={ebarimtLoading || !orgRegister.trim()}
+                                className="px-3 py-2 text-xs font-medium bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50 whitespace-nowrap"
+                              >
+                                {ebarimtLoading ? '...' : 'Хайх'}
+                              </button>
+                            </div>
+                            {ebarimtError && <p className="text-xs text-red-500 mt-1">{ebarimtError}</p>}
                           </div>
-                          <div>
-                            <label className="block text-xs text-gray-600 mb-1">Байгууллагын нэр</label>
-                            <input
-                              value={orgName}
-                              onChange={(e) => setOrgName(e.target.value)}
-                              disabled
-                              className="w-full p-2.5 border border-gray-200 rounded-md text-sm bg-gray-100"
-                            />
-                          </div>
+                          {orgName && (
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Байгууллагын нэр</label>
+                              <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-md text-sm text-emerald-800">
+                                {orgName}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -785,43 +933,59 @@ function BookingContent() {
                           type="radio"
                           name="ebarimt"
                           checked={ebarimtType === 'taxpayer'}
-                          onChange={() => setEbarimtType('taxpayer')}
+                          onChange={() => { setEbarimtType('taxpayer'); setTaxpayerName(''); setEbarimtError(null); }}
                           className="sr-only"
                         />
                         <span
                           className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                            ebarimtType === 'taxpayer' ? 'border-emerald-500' : 'border-gray-300'
+                            ebarimtType === 'taxpayer' ? 'border-primary' : 'border-gray-300'
                           }`}
                         >
                           {ebarimtType === 'taxpayer' && (
-                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                            <span className="w-2 h-2 rounded-full bg-primary" />
                           )}
                         </span>
                         <span className="text-sm text-gray-800">Татвар төлөгч иргэн</span>
                       </label>
                       {ebarimtType === 'taxpayer' && (
-                        <div className="px-4 pb-4">
-                          <label className="block text-xs text-gray-600 mb-1">Регистрийн дугаар</label>
-                          <div className="flex gap-2">
-                            <input
-                              value={taxpayerRegisterPrefix1}
-                              onChange={(e) => setTaxpayerRegisterPrefix1(e.target.value.slice(0, 1).toUpperCase())}
-                              maxLength={1}
-                              className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
-                            />
-                            <input
-                              value={taxpayerRegisterPrefix2}
-                              onChange={(e) => setTaxpayerRegisterPrefix2(e.target.value.slice(0, 1).toUpperCase())}
-                              maxLength={1}
-                              className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
-                            />
-                            <input
-                              value={taxpayerRegisterNumber}
-                              onChange={(e) => setTaxpayerRegisterNumber(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                              maxLength={8}
-                              className="flex-1 p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary"
-                            />
+                        <div className="px-4 pb-4 space-y-3">
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Регистрийн дугаар</label>
+                            <div className="flex gap-2">
+                              <input
+                                value={taxpayerRegisterPrefix1}
+                                onChange={(e) => setTaxpayerRegisterPrefix1(e.target.value.slice(0, 1).toUpperCase())}
+                                maxLength={1}
+                                placeholder="Э"
+                                className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
+                              />
+                              <input
+                                value={taxpayerRegisterPrefix2}
+                                onChange={(e) => setTaxpayerRegisterPrefix2(e.target.value.slice(0, 1).toUpperCase())}
+                                maxLength={1}
+                                placeholder="Н"
+                                className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
+                              />
+                              <input
+                                value={taxpayerRegisterNumber}
+                                onChange={(e) => setTaxpayerRegisterNumber(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                                maxLength={8}
+                                placeholder="00000000"
+                                className="flex-1 p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                              />
+                            </div>
+                            {ebarimtLoading && (
+                              <p className="text-xs text-gray-500 mt-1">Хайж байна...</p>
+                            )}
+                            {ebarimtError && (
+                              <p className="text-xs text-red-500 mt-1">{ebarimtError}</p>
+                            )}
                           </div>
+                          {taxpayerName && (
+                            <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-md text-sm text-emerald-800">
+                              {taxpayerName}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -857,46 +1021,112 @@ function BookingContent() {
                   1 өрөө тутмаас тооцох цуцлалтын хураамж:
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-xs">
-                    <thead>
-                      <tr className="text-gray-600 dark:text-gray-400">
-                        <th className="text-left font-normal py-2"></th>
-                        <th className="text-right font-normal py-2 px-3">
-                          {cancelTimeShort ? `${cancelTimeShort}-ээс өмнө:` : 'Цуцлах хугацааны өмнө:'}
-                        </th>
-                        <th className="text-right font-normal py-2 px-3">
-                          {cancelTimeShort ? `${cancelTimeShort}-ээс хойш:` : 'Цуцлах хугацааны дараа:'}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-dashed divide-gray-200 dark:divide-gray-700">
-                      {rooms.length > 0 ? (
-                        rooms.map((room, i) => {
-                          const beforePct = cf ? parseFloat(cf.single_before_time_percentage) : null;
-                          const afterPct = cf ? parseFloat(cf.single_after_time_percentage) : null;
-                          const beforeFee = beforePct !== null ? Math.round((room.price_per_night * beforePct) / 100) : null;
-                          const afterFee = afterPct !== null ? Math.round((room.price_per_night * afterPct) / 100) : null;
-                          return (
-                            <tr key={i} className="text-gray-800 dark:text-gray-200">
-                              <td className="py-2">{room.room_name}</td>
-                              <td className="text-right py-2 px-3">
-                                {beforeFee !== null ? `${beforeFee.toLocaleString()} ₮` : '—'}
-                              </td>
-                              <td className="text-right py-2 px-3 text-gray-500">
-                                {afterFee !== null && afterPct! > 0 ? `${afterFee.toLocaleString()} ₮` : 'Цуцлах боломжгүй'}
-                              </td>
+                  {(() => {
+                    const todayMs = new Date().setHours(0, 0, 0, 0);
+                    const checkInMs = checkIn ? new Date(checkIn + 'T00:00:00').getTime() : null;
+
+                    if (nights <= 1) {
+                      /* ── Single-night: before / after cancel_time ── */
+                      const windowClosed = checkInMs ? todayMs >= checkInMs : false;
+                      if (windowClosed) return (
+                        <p className="text-sm text-red-500 dark:text-red-400 font-medium py-1">Цуцлах боломжгүй</p>
+                      );
+                      return (
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="text-gray-600 dark:text-gray-400">
+                              <th className="text-left font-normal py-2"></th>
+                              <th className="text-right font-normal py-2 px-3">
+                                {cancelTimeShort ? `${cancelTimeShort}-ээс өмнө:` : 'Цуцлах хугацааны өмнө:'}
+                              </th>
+                              <th className="text-right font-normal py-2 px-3">
+                                {cancelTimeShort ? `${cancelTimeShort}-ээс хойш:` : 'Цуцлах хугацааны дараа:'}
+                              </th>
                             </tr>
-                          );
-                        })
-                      ) : (
-                        <tr>
-                          <td colSpan={3} className="py-3 text-gray-500 text-center">
-                            Өрөөний мэдээлэл алга
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
+                          </thead>
+                          <tbody className="divide-y divide-dashed divide-gray-200 dark:divide-gray-700">
+                            {rooms.length > 0 ? rooms.map((room, i) => {
+                              const feeBase = room.price_per_night * room.room_count;
+                              const beforePct = cf ? parseFloat(cf.single_before_time_percentage) : null;
+                              const afterPct  = cf ? parseFloat(cf.single_after_time_percentage)  : null;
+                              const beforeFee = beforePct !== null ? Math.round((feeBase * beforePct) / 100) : null;
+                              const afterFee  = afterPct  !== null ? Math.round((feeBase * afterPct)  / 100) : null;
+                              const afterDisplay =
+                                afterPct === null  ? '—'
+                                : afterPct >= 100  ? 'Цуцлах боломжгүй'
+                                : afterPct === 0   ? 'Үнэгүй'
+                                : `${afterFee!.toLocaleString()} ₮`;
+                              return (
+                                <tr key={i} className="text-gray-800 dark:text-gray-200">
+                                  <td className="py-2">{room.room_name}{room.room_count > 1 ? ` ×${room.room_count}` : ''}</td>
+                                  <td className="text-right py-2 px-3">
+                                    {beforeFee !== null ? `${beforeFee.toLocaleString()} ₮` : '—'}
+                                  </td>
+                                  <td className={`text-right py-2 px-3 ${afterPct !== null && afterPct >= 100 ? 'text-red-500 dark:text-red-400 font-medium' : afterPct === 0 ? 'text-emerald-600 dark:text-emerald-400' : ''}`}>
+                                    {afterDisplay}
+                                  </td>
+                                </tr>
+                              );
+                            }) : (
+                              <tr><td colSpan={3} className="py-3 text-gray-500 text-center">Өрөөний мэдээлэл алга</td></tr>
+                            )}
+                          </tbody>
+                        </table>
+                      );
+                    }
+
+                    /* ── Multi-night: show only future tiers ── */
+                    const allTiers = [
+                      { days: 5, label: multiCutoffDate(5), pct: cf?.multi_5days_before_percentage != null ? parseFloat(cf.multi_5days_before_percentage) : null },
+                      { days: 3, label: multiCutoffDate(3), pct: cf?.multi_3days_before_percentage != null ? parseFloat(cf.multi_3days_before_percentage) : null },
+                      { days: 2, label: multiCutoffDate(2), pct: cf?.multi_2days_before_percentage != null ? parseFloat(cf.multi_2days_before_percentage) : null },
+                      { days: 1, label: multiCutoffDate(1), pct: cf?.multi_1day_before_percentage  != null ? parseFloat(cf.multi_1day_before_percentage)  : null },
+                    ];
+                    const futureTiers = allTiers.filter(t => {
+                      if (!checkIn) return true;
+                      const cutoff = new Date(checkIn + 'T00:00:00');
+                      cutoff.setDate(cutoff.getDate() - t.days);
+                      return todayMs < cutoff.getTime();
+                    });
+
+                    if (futureTiers.length === 0) return (
+                      <p className="text-sm text-red-500 dark:text-red-400 font-medium py-1">Цуцлах боломжгүй</p>
+                    );
+
+                    const fmt = (pct: number | null, feeBase: number) =>
+                      pct === null   ? <span>—</span>
+                      : pct >= 100   ? <span className="text-red-500 dark:text-red-400 font-medium">Цуцлах боломжгүй</span>
+                      : pct === 0    ? <span className="text-emerald-600 dark:text-emerald-400">Үнэгүй</span>
+                      : <span>{Math.round((feeBase * pct) / 100).toLocaleString()} ₮</span>;
+
+                    return (
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="text-gray-600 dark:text-gray-400">
+                            <th className="text-left font-normal py-2"></th>
+                            {futureTiers.map(t => (
+                              <th key={t.days} className="text-right font-normal py-2 px-2">{t.label}-с өмнө</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-dashed divide-gray-200 dark:divide-gray-700">
+                          {rooms.length > 0 ? rooms.map((room, i) => {
+                            const feeBase = room.total_price;
+                            return (
+                              <tr key={i} className="text-gray-800 dark:text-gray-200">
+                                <td className="py-2">{room.room_name}{room.room_count > 1 ? ` ×${room.room_count}` : ''}</td>
+                                {futureTiers.map(t => (
+                                  <td key={t.days} className="text-right py-2 px-2">{fmt(t.pct, feeBase)}</td>
+                                ))}
+                              </tr>
+                            );
+                          }) : (
+                            <tr><td colSpan={futureTiers.length + 1} className="py-3 text-gray-500 text-center">Өрөөний мэдээлэл алга</td></tr>
+                          )}
+                        </tbody>
+                      </table>
+                    );
+                  })()}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">
                   *Тухайн буудлын дотоод бодлогоос хамааран буудал бүрийн цуцлалтын хураамж харилцан адилгүй өөр байна.
@@ -1084,7 +1314,7 @@ function BookingContent() {
                     {t('bookingExtra.bookingInProgress', 'Уншиж байна...')}
                   </span>
                 ) : (
-                  'Төлбөр төлөх'
+                  'Захиалга баталгаажуулах'
                 )}
               </button>
             </motion.div>

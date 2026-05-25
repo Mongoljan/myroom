@@ -12,6 +12,7 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { locationService, type LocationSuggestion } from '@/services/locationApi';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
 import { TYPOGRAPHY } from '@/styles/containers';
+import { FlipWords } from '@/components/ui/flip-words';
 
 export default function ModernHero() {
   const { t } = useHydratedTranslation();
@@ -248,8 +249,8 @@ export default function ModernHero() {
           }}
           onMouseEnter={() => setIsHeroHovered(true)}
           onMouseLeave={() => setIsHeroHovered(false)}
-          className="relative rounded-2xl overflow-hidden shadow-2xl shadow-black/60 group/hero"
-          style={{ backgroundColor: '#1e1b4b' }}
+          className="relative rounded-2xl overflow-hidden  shadow-black/60 group/hero"
+          style={{ backgroundColor: 'var(--color-navy)' }}
         >
       {/* Grain texture — always on */}
       <div
@@ -280,7 +281,7 @@ export default function ModernHero() {
         )}
       </motion.div>
 
-      <div className="relative z-10 py-6 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 py-14 sm:py-14 lg:py-18 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Hero Content */}
           <motion.div
@@ -293,18 +294,14 @@ export default function ModernHero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className={`${TYPOGRAPHY.hero.title} text-white mb-6 leading-tight relative`}
+              className={`${TYPOGRAPHY.hero.title} text-white mb-10 leading-tight font-(family-name:--font-lobster)`}
             >
-              <motion.span
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className="block relative"
-              >
-                <span className="">
-                  {t('hero.hotelStay')}
-                </span>
-              </motion.span>
+              <FlipWords
+                words={["Тав тух", "Хямд", "Найдвартай", "Тохилог", "Шилдэг"]}
+                duration={2500}
+                className="text-white font-(family-name:--font-lobster) [text-shadow:0_0_10px_rgba(255,255,255,0.2),0_0_28px_rgba(255,255,255,0.2),0_0_55px_rgba(255,255,255,0.12)]"
+              />
+              таны сонголт
             </motion.h1>
           </motion.div>
 
@@ -317,7 +314,7 @@ export default function ModernHero() {
             style={{ overflow: 'visible' }}
           >
             <motion.div
-              className="backdrop-blur-md bg-white/95 dark:bg-gray-800/95 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 relative transition-[border-color,box-shadow] duration-300 hover:border-blue-400/60 dark:hover:border-blue-500/60 hover:shadow-[0_20px_25px_-5px_rgba(59,130,246,0.15),0_10px_10px_-5px_rgba(59,130,246,0.08)]"
+              className="backdrop-blur-md bg-white/95 dark:bg-gray-800/95 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 relative transition-[border-color,box-shadow] duration-300 hover:border-primary-400/60 dark:hover:border-primary-500/60 hover:shadow-[0_20px_25px_-5px_rgba(14,165,233,0.15),0_10px_10px_-5px_rgba(14,165,233,0.08)]"
               style={{
                 overflow: 'visible',
                 boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 10px 10px -5px rgb(0 0 0 / 0.04)"
@@ -507,8 +504,8 @@ export default function ModernHero() {
                                       onClick={() => handleLocationSelect(suggestion)}
                                       className="w-full flex items-center p-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
                                     >
-                                      <div className="mr-3 shrink-0 w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-                                        <Hotel className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                      <div className="mr-3 shrink-0 w-8 h-8 rounded-md bg-primary-50 dark:bg-primary-900/30 flex items-center justify-center">
+                                        <Hotel className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                                       </div>
                                       <div className="flex-1 min-w-0">
                                         <div className={`${TYPOGRAPHY.modal.content} font-medium text-gray-900 dark:text-white truncate`}>
@@ -575,13 +572,13 @@ export default function ModernHero() {
                     onClick={handleSearch}
                     whileHover={{
                       scale: 1.05,
-                      boxShadow: "0 8px 16px -4px rgba(59, 130, 246, 0.4)"
+                      boxShadow: "0 8px 16px -4px rgba(59, 150, 232, 0.4)"
                     }}
                     whileTap={{
                       scale: 0.98,
-                      boxShadow: "0 2px 4px -1px rgba(59, 130, 246, 0.2)"
+                      boxShadow: "0 2px 4px -1px rgba(59, 150, 232, 0.2)"
                     }}
-                    className="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-sm shadow-lg shadow-primary-600/30"
+                    className="bg-primary hover:bg-primary-600 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 font-semibold text-sm shadow-lg shadow-primary/30"
                   >
                     <Search className="w-5 h-5" />
                     <span className="hidden text-base xl:inline tracking-wide">{t('search.searchButton', 'Хайх')}</span>

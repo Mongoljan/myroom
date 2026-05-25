@@ -277,6 +277,9 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
                       {bed.quantity > 1 ? `${bed.quantity}× ` : ''}
                       {bed.name || t('roomCard.standardBed', 'Стандарт ор')}
                     </span>
+                    {bed.bed_size?.size && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">({bed.bed_size.size})</span>
+                    )}
                   </div>
                 ))}
               </div>

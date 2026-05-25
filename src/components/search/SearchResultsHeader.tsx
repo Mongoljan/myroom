@@ -82,7 +82,7 @@ export default function SearchResultsHeader({
       {/* Main Header */}
       <div className=" backdrop-blur-sm rounded-lg p-1.5 relative overflow-hidden">
         {/* Subtle gradient background */}
-        <div className="relative flex justify-between items-center gap-x-4 border-b border-gray-100 dark:border-gray-700 mb-2 pb-2">
+        <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-gray-100 dark:border-gray-700 mb-2 pb-2">
 
           {/* Search Info Row - Trip.com style */}
           <div>
@@ -127,7 +127,7 @@ export default function SearchResultsHeader({
                     onSearchByName(e.target.value);
                   }}
                   placeholder={t('search.searchByNamePlaceholder')}
-                  className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-3 text-sm text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 dark:hover:border-gray-600 transition-colors min-w-[240px] h-10"
+                  className="appearance-none bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-3 text-sm text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary focus:border-primary hover:border-gray-300 dark:hover:border-gray-600 transition-colors w-full sm:min-w-50 h-10"
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                   <Search className="w-4 h-4 text-gray-400" />

@@ -222,11 +222,11 @@ export default function GoogleMapModal({
                   {/* Rating Badge */}
                   {hotelInfo?.reviewScore && (
                     <div className="flex items-center gap-2">
-                      <span className="bg-blue-600 text-white text-sm font-bold px-2 py-1 rounded">
+                      <span className="bg-primary text-white text-sm font-bold px-2 py-1 rounded">
                         {hotelInfo.reviewScore.toFixed(1)}
                       </span>
                       <div>
-                        <span className="text-blue-600 font-semibold text-sm">
+                        <span className="text-primary-600 font-semibold text-sm">
                           {hotelInfo.reviewLabel || t('hotelDetails.veryGood', 'Very good')}
                         </span>
                         {hotelInfo.reviewCount && (
@@ -255,7 +255,7 @@ export default function GoogleMapModal({
                 onClick={() => setActiveTab('surroundings')}
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'surroundings'
-                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50'
+                    ? 'text-primary-600 border-b-2 border-primary-600 bg-primary-50/50'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
@@ -265,7 +265,7 @@ export default function GoogleMapModal({
                 onClick={() => setActiveTab('nearby')}
                 className={`flex-1 py-3 text-sm font-medium transition-colors ${
                   activeTab === 'nearby'
-                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50'
+                    ? 'text-primary-600 border-b-2 border-primary-600 bg-primary-50/50'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
               >
@@ -287,14 +287,14 @@ export default function GoogleMapModal({
                       onClick={() => setActiveCategory(cat)}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
                         activeCategory === cat
-                          ? 'bg-blue-600 text-white shadow-sm'
+                          ? 'bg-primary text-white shadow-sm'
                           : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-600'
                       }`}
                     >
                       <Icon className="w-3.5 h-3.5" />
                       {t(`hotelDetails.${cat}`, config.label)}
                       {count > 0 && (
-                        <span className={`text-xs ${activeCategory === cat ? 'text-blue-200' : 'text-gray-400'}`}>
+                        <span className={`text-xs ${activeCategory === cat ? 'text-primary-200' : 'text-gray-400'}`}>
                           ({count})
                         </span>
                       )}
@@ -309,7 +309,7 @@ export default function GoogleMapModal({
               {/* Loading State */}
               {isLoadingPlaces && (
                 <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
-                  <Loader2 className="w-8 h-8 animate-spin text-blue-600 mb-3" />
+                  <Loader2 className="w-8 h-8 animate-spin text-primary-600 mb-3" />
                   <p className="text-sm">{t('hotelDetails.loadingNearbyPlaces', 'Loading nearby places...')}</p>
                 </div>
               )}

@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { X } from 'lucide-react';
+import { X, SlidersHorizontal } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import BookingStyleHotelCard from './BookingStyleHotelCard';
 import { ApiService } from '@/services/api';
-import { SearchResponse, SearchHotelResult } from '@/types/api';
+import { SearchResponse, SearchHotelResult, NextAvailableDate } from '@/types/api';
 import SearchHeader from './SearchHeader';
 import SearchResultsHeader from './SearchResultsHeader';
 import SearchFilters, { UB_LANDMARKS } from './SearchFilters';
@@ -114,6 +114,7 @@ export default function SearchResults() {
   });
   const [loading, setLoading] = useState(true);
   const [showMapView, setShowMapView] = useState(false);
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [sortBy, setSortBy] = useState('price_low');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -235,6 +236,46 @@ export default function SearchResults() {
 
           setHotels(finalResults);
           setFilteredHotels(finalResults);
+
+          // For hotels the search API returned as unavailable, fetch next-available date in background
+          const unavailable = finalResults.filter(
+            (h: SearchHotelResult) => h.is_available === false && !h.cheapest_room
+          );
+          if (unavailable.length > 0) {
+            Promise.allSettled(
+              unavailable.map((hotel: SearchHotelResult) =>
+                ApiService.getNextAvailable(
+                  hotel.hotel_id,
+                  params.check_in,
+                  params.check_out,
+                  params.rooms ?? 1,
+                  params.adults ?? 2,
+                  params.children ?? 0
+                )
+                  .then(res => res ? { hotelId: hotel.hotel_id, nextDate: res.next_available_date } : null)
+                  .catch(() => null)
+              )
+            ).then(results => {
+              const nextDateMap: Record<number, NextAvailableDate> = {};
+              results.forEach(r => {
+                if (r.status === 'fulfilled' && r.value) {
+                  nextDateMap[r.value.hotelId] = r.value.nextDate;
+                }
+              });
+              if (Object.keys(nextDateMap).length > 0) {
+                setHotels(prev =>
+                  prev.map(h =>
+                    nextDateMap[h.hotel_id] ? { ...h, next_available_date: nextDateMap[h.hotel_id] } : h
+                  )
+                );
+                setFilteredHotels(prev =>
+                  prev.map(h =>
+                    nextDateMap[h.hotel_id] ? { ...h, next_available_date: nextDateMap[h.hotel_id] } : h
+                  )
+                );
+              }
+            });
+          }
         } catch (apiError) {
           if (isSpecificQuery) {
             // For specific queries, do NOT fallback to mock - show empty to be accurate
@@ -677,10 +718,8 @@ export default function SearchResults() {
               </div>
               <div className="h-2 shrink-0"></div>
 
-              {/* Scrollable hotel cards area */}
-              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
-
-              {/* Sort + Active filter chips row */}
+              {/* Sort + Active filter chips row — pinned above scrollable cards */}
+              <div className="shrink-0">
               {(() => {
                 const priceBounds: [number, number] = [facets.priceMin, facets.priceMax];
 
@@ -791,7 +830,7 @@ export default function SearchResults() {
                   if (isSingle) {
                     // Simple chip with direct × remove
                     return (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium border border-blue-200 dark:border-blue-700">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium border border-primary-200 dark:border-primary-700">
                         {group.label}
                         <button onClick={group.onClearAll} className="hover:text-red-500 transition-colors ml-0.5">
                           <X className="w-3 h-3" />
@@ -803,7 +842,7 @@ export default function SearchResults() {
                     <div className="relative">
                       <button
                         onClick={() => setOpen(o => !o)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium border border-primary-200 dark:border-primary-700 hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors"
                       >
                         {group.label}
                         <svg className={`w-3 h-3 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -844,6 +883,14 @@ export default function SearchResults() {
 
                 return (
                   <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                    {/* Mobile filter button — only shown on small screens */}
+                    <button
+                      onClick={() => setShowMobileFilters(true)}
+                      className="lg:hidden shrink-0 inline-flex items-center gap-1.5 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
+                      Шүүлт
+                    </button>
                     {/* Sort dropdown as first chip-like control */}
                     <div className="relative shrink-0 inline-flex items-center border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-800 overflow-hidden">
                       <select
@@ -879,9 +926,11 @@ export default function SearchResults() {
                     )}
                   </div>
                 );
-              })()
-              }
+              })()}
+              </div>
 
+              {/* Scrollable hotel cards area */}
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
               {/* Results Layout */}
               {filteredHotels.length > 0 ? (
                 <>
@@ -944,6 +993,47 @@ export default function SearchResults() {
           onClose={() => setShowMapView(false)}
           searchParams={searchParams}
         />
+      )}
+
+      {/* Mobile Filters Overlay */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-white dark:bg-gray-900">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Шүүлт</h2>
+            <button
+              onClick={() => setShowMobileFilters(false)}
+              className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            </button>
+          </div>
+          {/* Scrollable filter content */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            <SearchFilters
+              isOpen={true}
+              onClose={() => setShowMobileFilters(false)}
+              onFilterChange={handleFilterChange}
+              embedded={true}
+              apiData={facets.narrowedApiData}
+              filters={filters}
+              filterCounts={facets.filterCounts}
+              priceBounds={[facets.priceMin, facets.priceMax]}
+              discountedCount={facets.discountedCount}
+              totalResults={hotels.length}
+              hotels={hotels}
+            />
+          </div>
+          {/* Footer: apply button */}
+          <div className="shrink-0 px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <button
+              onClick={() => setShowMobileFilters(false)}
+              className="w-full py-2.5 bg-primary text-white font-semibold rounded-lg text-sm hover:bg-primary/90 transition-colors"
+            >
+              Хэрэглэх ({filteredHotels.length} буудал)
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

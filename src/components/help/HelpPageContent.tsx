@@ -72,7 +72,7 @@ export default function HelpPageContent() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Section - Blue gradient like main search */}
-      <section className="relative py-12 overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800">
+      <section className="relative py-12 overflow-hidden bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700">
         {/* Animated gradient background */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
@@ -86,7 +86,7 @@ export default function HelpPageContent() {
             }}
             className="absolute inset-0 opacity-30"
             style={{
-              background: "linear-gradient(45deg, #3b82f6, #2563eb, #1e40af, #1d4ed8, #3b82f6)",
+              background: "linear-gradient(45deg, #38bdf8, #0ea5e9, #0284c7, #0369a1, #38bdf8)",
               backgroundSize: "400% 400%"
             }}
           />
@@ -105,7 +105,7 @@ export default function HelpPageContent() {
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-400/20 rounded-full blur-3xl"
+            className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary-400/20 rounded-full blur-3xl"
           />
           <motion.div
             animate={{
@@ -132,7 +132,7 @@ export default function HelpPageContent() {
             <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
               Тусламж
             </h1>
-            <p className="text-sm md:text-base text-blue-100">
+            <p className="text-sm md:text-base text-primary-100">
               Танд бид өөр юугаар туслах вэ?
             </p>
           </motion.div>

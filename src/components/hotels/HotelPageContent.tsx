@@ -91,7 +91,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
         onMouseEnter={() => setIsBannerHovered(true)}
         onMouseLeave={() => setIsBannerHovered(false)}
         className="relative w-full overflow-hidden py-6 group/banner"
-        style={{ backgroundColor: '#1e1b4b' }}
+        style={{ backgroundColor: 'var(--color-navy)' }}
       >
         {/* Grain texture — always on, gives the tactile feel */}
         <div
@@ -179,9 +179,9 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
             <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-4">{t('hotel.reviews', 'Шүүмж, үнэлгээ')}</h2>
             <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
               {/* Score + Category bars */}
-              <div className="flex gap-8">
+              <div className="flex flex-col sm:flex-row gap-6 sm:gap-8">
                 {/* Left: overall score */}
-                <div className="flex flex-col items-center justify-center bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-6 min-w-[160px]">
+                <div className="flex flex-col items-center justify-center bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-6 sm:min-w-40">
                   <span className="text-[52px] font-extrabold text-indigo-700 dark:text-indigo-300 leading-none">—</span>
                   <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 mt-2">{t('hotel.noRatingsYet', 'Үнэлгээ байхгүй')}</span>
                   <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">0 {t('hotel.reviews_count', 'үнэлгээ')}</span>

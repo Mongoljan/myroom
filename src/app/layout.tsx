@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Manrope } from "next/font/google";
+import { Manrope, Lobster } from "next/font/google";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { ToastProvider } from "@/components/common/ToastContainer";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -9,6 +9,13 @@ import NavigationProgress from "@/components/common/NavigationProgress";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
 import ScrollToTop from "@/components/common/ScrollToTop";
 import "./globals.css";
+
+const lobster = Lobster({
+  variable: "--font-lobster",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
+});
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -97,7 +104,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${manrope.variable} font-(family-name:--font-manrope) antialiased bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
+        className={`${manrope.variable} ${lobster.variable} font-(family-name:--font-manrope) antialiased  dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
       >
         <ThemeProvider>
           <AuthProvider>

@@ -44,7 +44,7 @@ export default function Toast({ message, type = 'info', duration = 5000, onClose
   const icons = {
     success: <CheckCircle size={20} className="text-green-600" />,
     error: <AlertCircle size={20} className="text-red-600" />,
-    info: <Info size={20} className="text-blue-600" />,
+    info: <Info size={20} className="text-primary-600" />,
     warning: <AlertTriangle size={20} className="text-yellow-600" />,
   };
 

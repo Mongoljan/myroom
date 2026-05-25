@@ -386,6 +386,27 @@ export class ApiService {
     return this.request<RoomFeature[]>(endpoint, {}, { key: endpoint, ttl: ApiCache.TTL.LONG });
   }
 
+  // Get next available date for a hotel when it is fully booked for the searched dates
+  static async getNextAvailable(
+    hotelId: number,
+    checkIn: string,
+    checkOut: string,
+    rooms: number,
+    adults: number,
+    children: number
+  ): Promise<{ hotel_id: number; next_available_date: import('@/types/api').NextAvailableDate } | null> {
+    const params = new URLSearchParams({
+      check_in: checkIn,
+      check_out: checkOut,
+      rooms: rooms.toString(),
+      adults: adults.toString(),
+      children: children.toString(),
+    });
+    return this.request<{ hotel_id: number; next_available_date: import('@/types/api').NextAvailableDate }>(
+      `/hotels/${hotelId}/next-available/?${params.toString()}`
+    );
+  }
+
   // Check room availability
   static async checkAvailability(
     hotelId: number,

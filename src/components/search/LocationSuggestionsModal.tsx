@@ -164,7 +164,7 @@ export default function LocationSuggestionsModal({
                       className="w-full flex items-center p-2 text-left hover:bg-slate-50/50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
                     >
                       <div className="mr-3 shrink-0 w-8 h-8 rounded-md bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-                        <Hotel className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <Hotel className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">

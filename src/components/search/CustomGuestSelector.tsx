@@ -131,17 +131,12 @@ export default function CustomGuestSelector({
     } else if (type === 'children') {
       newChildren = increment ? localChildren + 1 : Math.max(0, localChildren - 1);
       setLocalChildren(newChildren);
-      // Adjust child ages array
-      setChildAges((prev) => {
-        let next: number[];
-        if (newChildren > prev.length) {
-          next = [...prev, ...Array(newChildren - prev.length).fill(-1)];
-        } else {
-          next = prev.slice(0, newChildren);
-        }
-        onChildrenAgesChange?.(next);
-        return next;
-      });
+      // Compute new ages array outside the updater to avoid calling a prop callback during setState
+      const newAges = newChildren > childAges.length
+        ? [...childAges, ...Array(newChildren - childAges.length).fill(-1)]
+        : childAges.slice(0, newChildren);
+      setChildAges(newAges);
+      onChildrenAgesChange?.(newAges);
     } else if (type === 'rooms') {
       newRooms = increment ? localRooms + 1 : Math.max(1, localRooms - 1);
       setLocalRooms(newRooms);
@@ -156,7 +151,7 @@ export default function CustomGuestSelector({
     debounceRef.current = setTimeout(() => {
       onGuestChange(newAdults, newChildren, newRooms);
     }, 150);
-  }, [localAdults, localChildren, localRooms, onGuestChange, onChildrenAgesChange]);
+  }, [localAdults, localChildren, localRooms, childAges, onGuestChange, onChildrenAgesChange]);
 
   const getGuestText = () => {
     const parts = [];
@@ -303,12 +298,10 @@ export default function CustomGuestSelector({
                         value={age === -1 ? '' : age}
                         onChange={(e) => {
                           const val = e.target.value === '' ? -1 : parseInt(e.target.value);
-                          setChildAges((prev) => {
-                            const next = [...prev];
-                            next[idx] = val;
-                            onChildrenAgesChange?.(next);
-                            return next;
-                          });
+                          const next = [...childAges];
+                          next[idx] = val;
+                          setChildAges(next);
+                          onChildrenAgesChange?.(next);
                         }}
                         className={`flex-1 border rounded-lg px-2 py-1.5 text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500/50 cursor-pointer ${
                           showAgeErrors && age === -1

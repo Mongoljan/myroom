@@ -80,7 +80,7 @@ const PRIORITY_FACILITIES: Array<{
   { facilityId: 49, key: 'kitchen',     labelMn: 'Гал тогооны хэсэг',       labelEn: 'Kitchen',          icon: <UtensilsCrossed className="w-3.5 h-3.5" /> },
   { facilityId: 13, key: 'smoking',     labelMn: 'Тамхилах өрөө',           labelEn: 'Smoking room',     icon: <Cigarette className="w-3.5 h-3.5 text-orange-400" /> },
   { facilityId: 16, key: 'non_smoking', labelMn: 'Тамхи татдаггүй өрөө',   labelEn: 'Non-smoking',      icon: <CigaretteOff className="w-3.5 h-3.5 text-green-500" /> },
-  { key: 'bathroom',                    labelMn: 'Угаалгын өрөө',           labelEn: 'Bathroom',         icon: <Bath className="w-3.5 h-3.5 text-blue-400" /> },
+  { key: 'bathroom',                    labelMn: 'Угаалгын өрөө',           labelEn: 'Bathroom',         icon: <Bath className="w-3.5 h-3.5 text-primary-400" /> },
   { bathroomId: 4,  key: 'hairdryer',   labelMn: 'Үсний сэнс',              labelEn: 'Hairdryer',        icon: <Scissors className="w-3.5 h-3.5" /> },
   { facilityId: 35, key: 'fan',         labelMn: 'Сэнс',                    labelEn: 'Fan',              icon: <Fan className="w-3.5 h-3.5" /> },
   { facilityId: 40, key: 'mosquito',    labelMn: 'Шумуулны тор',            labelEn: 'Mosquito net',     icon: <Bug className="w-3.5 h-3.5" /> },
@@ -122,14 +122,19 @@ function RoomCountSelect({
 
   useEffect(() => {
     if (!open) return;
-    const handler = (e: MouseEvent) => {
+    const handleMouseDown = (e: MouseEvent) => {
       if (
         btnRef.current && !btnRef.current.contains(e.target as Node) &&
         dropRef.current && !dropRef.current.contains(e.target as Node)
       ) setOpen(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    const handleScroll = () => setOpen(false);
+    document.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [open]);
 
   const handleToggle = () => {
@@ -210,8 +215,9 @@ export default function TripComStyleRoomCard({
   const breakfastQty =
     bookingItems.find((i) => i.room.id === room.id && i.priceType === 'withBreakfast')?.quantity ?? 0;
 
-  // Use rooms_possible (date-specific from API) when > 0, else fall back to number_of_rooms_to_sell (total inventory)
-  const maxQty = room.rooms_possible > 0 ? room.rooms_possible : room.number_of_rooms_to_sell;
+  // rooms_possible is always date-specific (dates are always passed when fetching rooms).
+  // Do NOT fall back to number_of_rooms_to_sell — rooms_possible === 0 means fully booked.
+  const maxQty = room.rooms_possible;
   const isLowStock = maxQty > 0 && maxQty <= 5;
 
   // Discount
@@ -265,10 +271,10 @@ export default function TripComStyleRoomCard({
         </div>
 
         {/* ── Body: Left | Middle | Right ── */}
-        <div className="flex items-stretch">
+        <div className="flex flex-col sm:flex-row items-stretch">
 
           {/* ── LEFT: image + thumbnails + bed + amenities ── */}
-          <div className="w-1/3 shrink-0 flex flex-col border-r border-gray-100 dark:border-gray-700">
+          <div className="w-full sm:w-1/3 sm:shrink-0 flex flex-col border-b sm:border-b-0 sm:border-r border-gray-100 dark:border-gray-700">
 
             {/* Main image */}
             <div
@@ -328,6 +334,9 @@ export default function TripComStyleRoomCard({
                     {bed.quantity > 1 ? `${bed.quantity}× ` : ''}
                     {bed.name || t('roomCard.standardBed', 'Стандарт ор')}
                   </span>
+                  {bed.bed_size?.size && (
+                    <span className="text-gray-400 dark:text-gray-500 shrink-0">({bed.bed_size.size})</span>
+                  )}
                 </div>
               ))}
 
@@ -371,7 +380,10 @@ export default function TripComStyleRoomCard({
                 cancelDateStr = d.toISOString().slice(0, 10);
               }
               const dateLabel = cancelDateStr ? `${cancelDateStr} ${time}` : time;
-              const canCancel = cancellationFee ? beforePct < 100 : null;
+              const today = new Date(); today.setHours(0, 0, 0, 0);
+              const cancelDeadline = cancelDateStr ? new Date(cancelDateStr + 'T00:00:00') : null;
+              const deadlinePassed = cancelDeadline ? today > cancelDeadline : false;
+              const canCancel = cancellationFee ? (beforePct < 100 && !deadlinePassed) : null;
 
               // Conditions stacked inside each row (below breakfast label)
               const Conditions = () => (

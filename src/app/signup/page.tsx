@@ -226,7 +226,7 @@ export default function SignupPage() {
               <button
                 type="submit"
                 disabled={isLoading || !termsAgreed}
-                className="w-full h-10 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-body-md font-medium transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-10 bg-primary hover:bg-primary-600 text-white rounded-lg text-body-md font-medium transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? 'Бүртгэж байна...' : 'Бүртгүүлэх'}
               </button>

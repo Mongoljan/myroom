@@ -344,12 +344,11 @@ export default function ImprovedHotelRoomsSection({
     );
   }
 
-  // Filter available rooms with pricing - use rooms_possible (date-specific) when available, else number_of_rooms_to_sell
+  // Filter available rooms with pricing.
+  // rooms_possible is always date-specific here (dates are always passed to getEnrichedHotelRooms).
+  // rooms_possible === 0 means the room is fully booked for the selected dates — do NOT fall back to total inventory.
   const availableRooms = rooms.filter(room => {
-    // rooms_possible is populated when dates are passed to the API; it reflects actual date availability.
-    // Fall back to number_of_rooms_to_sell (total inventory) when rooms_possible is 0/absent.
-    const effectiveAvailability = room.rooms_possible > 0 ? room.rooms_possible : room.number_of_rooms_to_sell;
-    const hasInventory = effectiveAvailability > 0;
+    const hasInventory = room.rooms_possible > 0;
     
     // Use the new hasValidPricing flag from enriched room data
     // This checks if room.price_breakdown.final_customer_price > 0
@@ -366,10 +365,6 @@ export default function ImprovedHotelRoomsSection({
           <div className="text-center">
             <Bed className="w-16 h-16 mx-auto text-gray-400 mb-4" />
             <p className="text-gray-600 dark:text-gray-400 text-lg mb-2">{t('hotelRooms.noRoomsAvailable', 'No rooms available')}</p>
-            <p className="text-gray-500 dark:text-gray-400">
-              {t('hotelRooms.loaded', 'Loaded')} {rooms.length} {t('hotelRooms.roomsLoaded', 'room(s), but none meet availability criteria.')}
-            </p>
-            <p className="text-gray-500 dark:text-gray-400">{t('hotelRooms.tryDifferentDates', 'Please try different dates or contact the hotel directly.')}</p>
           </div>
         </div>
         <div className="w-80">
@@ -455,9 +450,9 @@ export default function ImprovedHotelRoomsSection({
         </div>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Rooms List */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <div className="space-y-4">
             {availableRooms.map((room) => (
               <TripComStyleRoomCard
@@ -475,7 +470,7 @@ export default function ImprovedHotelRoomsSection({
         </div>
 
         {/* Booking Summary Sidebar */}
-        <div className="w-80">
+        <div className="w-full lg:w-80 lg:shrink-0">
           <BookingSummary
             items={bookingItems}
             totalRooms={getTotalRooms()}

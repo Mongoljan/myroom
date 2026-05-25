@@ -62,7 +62,9 @@ export default function Home() {
   return (
     <>
       {/* Static content - prerendered in shell */}
+      <div className="py-10">
       <ModernHero />
+      </div>
       <WhyChooseUs />
       
       {/* Dynamic content - streamed at request time */}

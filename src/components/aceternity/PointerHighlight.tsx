@@ -13,7 +13,7 @@ interface PointerHighlightProps {
 export const PointerHighlight: React.FC<PointerHighlightProps> = ({
   children,
   className = "",
-  highlightColor = "rgba(59, 130, 246, 0.1)"
+  highlightColor = "rgba(59, 150, 232, 0.1)"
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);

@@ -7,31 +7,37 @@
  */
 
 :root {
-  /* ─── PRIMARY: Blue / Indigo (#3D52D5) ─── */
-  --color-primary-50:  #eef0fb;
-  --color-primary-100: #d5d9f5;
-  --color-primary-200: #abb3eb;
-  --color-primary-300: #818de1;
-  --color-primary-400: #5767d7;
-  --color-primary-500: #3D52D5;  /* main brand hue            */
-  --color-primary-600: #3347c4;  /* CTA buttons (bg-primary)  */
-  --color-primary-700: #2a3bab;  /* hover state               */
-  --color-primary-800: #1f2d88;
-  --color-primary-900: #172066;
-  --color-primary-950: #0d1340;
+  /* ─── PRIMARY: Soft Sky Blue (#8EC5FF family) ─── */
+  --color-primary-50:  #F0F8FF;
+  --color-primary-100: #D8EFFE;
+  --color-primary-200: #B8DCFE;
+  --color-primary-300: #8EC5FF;  /* airy accent                */
+  --color-primary-400: #5AABF5;
+  --color-primary-500: #3B96E8;  /* main brand hue             */
+  --color-primary-600: #1A78C8;  /* CTA buttons (bg-primary)   */
+  --color-primary-700: #1260A4;  /* hover state                */
+  --color-primary-800: #0B4A80;
+  --color-primary-900: #07345C;
+  --color-primary-950: #041D38;
 
-  /* ─── SECONDARY: Dark Navy (nav, secondary buttons, dark bg) ─── */
-  --color-secondary-50:  #f8fafc;
-  --color-secondary-100: #f1f5f9;
-  --color-secondary-200: #e2e8f0;
-  --color-secondary-300: #cbd5e1;
-  --color-secondary-400: #94a3b8;
-  --color-secondary-500: #64748b;
-  --color-secondary-600: #475569;
-  --color-secondary-700: #334155;
-  --color-secondary-800: #1e293b;  /* secondary buttons         */
-  --color-secondary-900: #0f172a;  /* dark nav (≈ slate-900)    */
-  --color-secondary-950: #020617;
+  /* ─── SECONDARY: Soft Mint / Seafoam (#B9E7D6 family) ─── */
+  --color-secondary-50:  #F0FAF6;
+  --color-secondary-100: #D9F5EC;
+  --color-secondary-200: #B9E7D6;  /* airy accent              */
+  --color-secondary-300: #87D4BB;
+  --color-secondary-400: #55BCA0;
+  --color-secondary-500: #35A285;
+  --color-secondary-600: #288A6E;  /* secondary buttons        */
+  --color-secondary-700: #1D6E57;  /* hover state              */
+  --color-secondary-800: #145542;
+  --color-secondary-900: #0C3B2D;
+  --color-secondary-950: #072219;
+
+  /* ─── Cream surface ─── */
+  --color-cream: #FFF6ED;
+
+  /* ─── Brand Navy (logo text color) ─── */
+  --color-navy: #152244;
 
   /* Neutral/Gray Scale - Professional */
   --color-neutral-50: #f9fafb;
@@ -133,8 +139,8 @@
   --button-primary-bg: var(--color-primary-600);
   --button-primary-hover: var(--color-primary-700);
   --button-primary-text: white;
-  --button-secondary-bg: var(--color-secondary-800);
-  --button-secondary-hover: var(--color-secondary-900);
+  --button-secondary-bg: var(--color-navy);
+  --button-secondary-hover: #0E1832;
   --button-secondary-text: white;
   --button-outline-bg: transparent;
   --button-outline-border: var(--color-primary-600);

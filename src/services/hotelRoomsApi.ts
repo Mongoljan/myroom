@@ -101,7 +101,7 @@ export interface HotelRoom {
   room_category: number;
   room_size: string;
   bed_type?: number;
-  bed_details?: Array<{ id?: number; bed_type?: number; name?: string; quantity: number }>;
+  bed_details?: Array<{ id?: number; bed_type?: number; name?: string; bed_size?: { id: number; size: string } | null; quantity: number }>;
   is_Bathroom: boolean;
   room_Facilities: Array<number | RoomFacility>;
   bathroom_Items: Array<number | BathroomItem>;
@@ -214,7 +214,8 @@ class HotelRoomsService {
     try {
       let url = `https://dev.kacc.mn/api/roomsInHotels/?hotel=${hotelId}`;
       if (checkIn && checkOut) {
-        url += `&check_in=${checkIn}&check_out=${checkOut}`;
+        // API expects `start` and `end`, not `check_in`/`check_out`
+        url += `&start=${checkIn}&end=${checkOut}`;
       }
       const response = await fetch(url, {
         method: 'GET',
@@ -259,6 +260,7 @@ class HotelRoomsService {
       normalizedBedDetails = room.bed_details.map(b => ({
         ...b,
         name: b.name || allData.bed_types.find(bt => bt.id === (b.bed_type ?? b.id))?.name || '',
+        bed_size: b.bed_size ?? null,
       }));
       bedTypeName = normalizedBedDetails
         .map(b => (b.name ? (b.quantity > 1 ? `${b.quantity}× ${b.name}` : b.name) : null))

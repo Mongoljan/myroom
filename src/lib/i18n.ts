@@ -2411,10 +2411,10 @@ const resources = {
         checkInDate: "Орох огноо",
         checkOutDate: "Гарах огноо",
         pricesPerNight: "Үнэ нь нэг шөнөөр тооцогдоно",
-        noRoomsAvailable: "Боломжтой өрөө байхгүй байна",
+        noRoomsAvailable: "Таны сонгосон өдөр бүх өрөө дүүрсэн байна",
         loaded: "Ачааллагдсан",
         roomsLoaded: "өрөө(нүүд), гэхдээ хэн нь боломжит шалгуурыг хангахгүй байна.",
-        tryDifferentDates: "Өөр огноо турших эсвэл зочид буудалтай шууд холбогдоно уу.",
+        tryDifferentDates: "Та өдрөө сольж үзээрэй",
         totalPrice: "Нийт үнэ",
         bookRoom: "Өрөө захиалах",
         numberOfRooms: "Өрөөний тоо"

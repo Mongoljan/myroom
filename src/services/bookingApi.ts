@@ -113,7 +113,9 @@ export class BookingService {
       message: 'Захиалга амжилттай үүслээ!',
       booking_code: bookingCode,
       pin_code: pinCode,
-      booking_ids: [Math.floor(Math.random() * 10000)]
+      booking_ids: [Math.floor(Math.random() * 10000)],
+      nights: 1,
+      total_rooms: 1
     };
   }
 

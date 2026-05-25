@@ -259,14 +259,14 @@ export class IconMappingService {
   static getRoomTypeIcon(typeId?: number, typeName?: string): React.ReactNode {
     if (typeId) {
       const iconMap: { [key: number]: React.ReactNode } = {
-        6: <Bed className="w-4 h-4 text-indigo-600" />, // Single
-        7: <Bed className="w-4 h-4 text-indigo-600" />, // Double
-        8: <Bed className="w-4 h-4 text-indigo-600" />, // Twin
-        9: <Bed className="w-4 h-4 text-indigo-600" />, // Twin / Double
-        10: <Bed className="w-4 h-4 text-indigo-600" />, // Triple
-        11: <Users className="w-4 h-4 text-indigo-600" />, // Family
-        13: <Home className="w-4 h-4 text-indigo-600" />, // Apartment
-  15: <Bed className="w-4 h-4 text-indigo-600" />, // King (generic bed)
+        6: <Bed className="w-4 h-4 text-primary-600" />, // Single
+        7: <Bed className="w-4 h-4 text-primary-600" />, // Double
+        8: <Bed className="w-4 h-4 text-primary-600" />, // Twin
+        9: <Bed className="w-4 h-4 text-primary-600" />, // Twin / Double
+        10: <Bed className="w-4 h-4 text-primary-600" />, // Triple
+        11: <Users className="w-4 h-4 text-primary-600" />, // Family
+        13: <Home className="w-4 h-4 text-primary-600" />, // Apartment
+  15: <Bed className="w-4 h-4 text-primary-600" />, // King (generic bed)
       };
       
       if (iconMap[typeId]) {
@@ -274,7 +274,7 @@ export class IconMappingService {
       }
     }
     
-    return <Bed className="w-4 h-4 text-indigo-600" />;
+    return <Bed className="w-4 h-4 text-primary-600" />;
   }
 
   // Bed types icons - all 9 types from /api/all-data/

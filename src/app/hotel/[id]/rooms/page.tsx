@@ -49,6 +49,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
         customer_name: customerName,
         customer_phone: customerPhone,
         customer_email: customerEmail,
+        ebarimt_type: 'person',
         rooms: [{
           room_category_id: room.room_category,
           room_type_id: room.room_type,

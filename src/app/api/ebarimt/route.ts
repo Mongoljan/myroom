@@ -1,0 +1,19 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function GET(request: NextRequest) {
+  const regno = request.nextUrl.searchParams.get('regno');
+  if (!regno) {
+    return NextResponse.json({ found: false, error: 'regno required' }, { status: 400 });
+  }
+
+  try {
+    const res = await fetch(
+      `https://info.ebarimt.mn/rest/merchant/info?regno=${encodeURIComponent(regno)}`,
+      { headers: { Accept: 'application/json' }, cache: 'no-store' }
+    );
+    const data = await res.json();
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json({ found: false, error: 'lookup failed' }, { status: 500 });
+  }
+}

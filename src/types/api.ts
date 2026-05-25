@@ -134,6 +134,11 @@ export interface CreateBookingRequest {
   customer_name: string;
   customer_phone: string;
   customer_email: string;
+  ebarimt_type: 'person' | 'organization' | 'taxpayer';
+  org_register?: string;
+  org_name?: string;
+  taxpayer_register_prefix?: string;
+  taxpayer_register_number?: string;
   rooms: BookingRoom[];
 }
 
@@ -142,6 +147,8 @@ export interface CreateBookingResponse {
   booking_code: string;
   pin_code: string;
   booking_ids: number[];
+  nights: number;
+  total_rooms: number;
 }
 
 export interface BookingUser {

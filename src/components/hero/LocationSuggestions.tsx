@@ -121,7 +121,7 @@ export default function LocationSuggestions(props: LocationSuggestionsProps) {
                 key={index}
                 onClick={() => onLocationSelect(suggestion)}
                 className="w-full text-left p-3 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-3"
-                whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.05)' }}
+                whileHover={{ backgroundColor: 'rgba(59, 150, 232, 0.05)' }}
               >
                 <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0" />
                 <div className="flex-1 min-w-0">

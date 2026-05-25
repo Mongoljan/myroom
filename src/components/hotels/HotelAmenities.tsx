@@ -227,7 +227,7 @@ export default function HotelAmenities({
             <div className="px-5 py-4 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setOpenPanel(null)}
-                className="w-full py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors"
+                className="w-full py-2.5 bg-primary hover:bg-primary-600 text-white text-sm font-medium rounded-lg transition-colors"
               >
                 Хаах
               </button>
