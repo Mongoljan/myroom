@@ -97,10 +97,19 @@ export default function BookingPaymentStep({
 }: BookingPaymentStepProps) {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('bankApp');
   const [transferBank, setTransferBank] = useState<TransferBank>('tdb');
-  const [timeLeft, setTimeLeft] = useState(INITIAL_SECONDS);
-  const [timerExpired, setTimerExpired] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const expiry = sessionStorage.getItem('qpay_expiry');
+    if (!expiry) return INITIAL_SECONDS;
+    const remaining = Math.round((parseInt(expiry) - Date.now()) / 1000);
+    return Math.max(0, remaining);
+  });
+  const [timerExpired, setTimerExpired] = useState(() => {
+    const expiry = sessionStorage.getItem('qpay_expiry');
+    return expiry ? Date.now() >= parseInt(expiry) : false;
+  });
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
+  const [checkMessage, setCheckMessage] = useState<string | null>(null);
 
   // QPay state
   const [invoiceId, setInvoiceId] = useState<string | null>(null);
@@ -114,8 +123,17 @@ export default function BookingPaymentStep({
   const [invoiceType, setInvoiceType] = useState<'individual' | 'company' | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
 
-  // Create QPay invoice on mount
+  // Create QPay invoice on mount (or restore from sessionStorage if refreshed)
   useEffect(() => {
+    const storedId = sessionStorage.getItem('qpay_invoice_id');
+    const storedQr = sessionStorage.getItem('qpay_qr');
+    const storedExpiry = sessionStorage.getItem('qpay_expiry');
+    if (storedId && storedQr && storedExpiry && Date.now() < parseInt(storedExpiry)) {
+      // Restore previous invoice — timer already initialized from sessionStorage
+      setInvoiceId(storedId);
+      setQrImage(storedQr);
+      return;
+    }
     const createInvoice = async () => {
       setQpayLoading(true);
       setQpayError(null);
@@ -124,11 +142,14 @@ export default function BookingPaymentStep({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: totalPrice,
+            amount: Math.max(1, Math.round(totalPrice)),
             description: `Захиалга #${bookingCode} - ${hotelName}`,
           }),
         });
         const data = await res.json();
+        sessionStorage.setItem('qpay_invoice_id', data.id);
+        sessionStorage.setItem('qpay_qr', data.qr_image ?? '');
+        sessionStorage.setItem('qpay_expiry', String(Date.now() + INITIAL_SECONDS * 1000));
         setInvoiceId(data.id);
         setQrImage(data.qr_image ?? null);
         setBankUrls(data.urls ?? []);
@@ -168,6 +189,7 @@ export default function BookingPaymentStep({
   const handleCheckPayment = async () => {
     if (!invoiceId) return;
     setCheckingPayment(true);
+    setCheckMessage(null);
     try {
       const res = await fetch('https://dev.kacc.mn/api/qpay/check/', {
         method: 'POST',
@@ -177,9 +199,11 @@ export default function BookingPaymentStep({
       const data = await res.json();
       if (data.is_paid) {
         onPaymentConfirmed();
+      } else {
+        setCheckMessage('Төлбөр төлөгдөөгүй байна.');
       }
     } catch {
-      // silently ignore
+      setCheckMessage('Шалгахад алдаа гарлаа. Дахин оролдоно уу.');
     } finally {
       setCheckingPayment(false);
     }
@@ -304,7 +328,7 @@ export default function BookingPaymentStep({
 
               {/* Check payment button */}
               {!timerExpired && (
-                <div className="mt-6 flex justify-center">
+                <div className="mt-6 flex flex-col items-center gap-2">
                   <button
                     onClick={handleCheckPayment}
                     disabled={checkingPayment}
@@ -319,6 +343,9 @@ export default function BookingPaymentStep({
                       'Төлбөр шалгах ...'
                     )}
                   </button>
+                  {checkMessage && (
+                    <p className="text-sm text-red-500 dark:text-red-400">{checkMessage}</p>
+                  )}
                 </div>
               )}
 

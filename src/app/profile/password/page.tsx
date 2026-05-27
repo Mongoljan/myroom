@@ -92,7 +92,7 @@ export default function PasswordPage() {
               onClick={() => toggle('old')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
-              {show.old ? <EyeOff size={16} /> : <Eye size={16} />}
+              {show.old ? <Eye size={16} /> : <EyeOff size={16} />}
             </button>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function PasswordPage() {
               onClick={() => toggle('new_')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
-              {show.new_ ? <EyeOff size={16} /> : <Eye size={16} />}
+              {show.new_ ? <Eye size={16} /> : <EyeOff size={16} />}
             </button>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function PasswordPage() {
               onClick={() => toggle('confirm')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
             >
-              {show.confirm ? <EyeOff size={16} /> : <Eye size={16} />}
+              {show.confirm ? <Eye size={16} /> : <EyeOff size={16} />}
             </button>
           </div>
         </div>

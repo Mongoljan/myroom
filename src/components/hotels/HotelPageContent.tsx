@@ -163,6 +163,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
             <ImprovedHotelRoomsSection
               hotelId={hotel.hotel_id}
               hotelName={hotel.property_name}
+              locationName={hotel.location?.province_city ?? undefined}
               checkIn={searchParams?.check_in}
               checkOut={searchParams?.check_out}
               initialPolicies={policies}

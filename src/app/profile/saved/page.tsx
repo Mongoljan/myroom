@@ -1,51 +1,47 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { Heart, Star, MapPin, Trash2, RefreshCw } from 'lucide-react';
+import { Heart, Star, RefreshCw } from 'lucide-react';
 import { useWishlist } from '@/hooks/useCustomer';
 import { useAuth } from '@/contexts/AuthContext';
-import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { WishlistItem } from '@/types/customer';
-import { motion } from 'framer-motion';
 
 export default function SavedPage() {
-  const { t } = useHydratedTranslation();
-  const { token, isAuthenticated } = useAuth();
+  const { token } = useAuth();
   const { wishlist, loading, refresh, removeHotel } = useWishlist(token || undefined);
   const [removingIds, setRemovingIds] = useState<Set<number>>(new Set());
 
+  const [activeProvince, setActiveProvince] = useState<string>('all');
+
   const handleRemove = async (hotelId: number) => {
     if (!token) return;
-
     setRemovingIds(prev => new Set(prev).add(hotelId));
     try {
-      const result = await removeHotel(hotelId);
-      if (!result.success) {
-      }
-    } catch (error) {
+      await removeHotel(hotelId);
     } finally {
       setRemovingIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(hotelId);
-        return newSet;
+        const s = new Set(prev);
+        s.delete(hotelId);
+        return s;
       });
     }
   };
 
-  const formatPrice = (price: number | null) => {
-    if (!price) return t('common.priceNotAvailable', 'Price not available');
-    return new Intl.NumberFormat('mn-MN').format(price) + '₮';
-  };
+  // Group by province
+  const provinces = Array.from(
+    new Set(wishlist.map((item: WishlistItem) => item.hotel.location?.province_city).filter(Boolean))
+  ) as string[];
+
+  const filtered = activeProvince === 'all'
+    ? wishlist
+    : wishlist.filter((item: WishlistItem) => item.hotel.location?.province_city === activeProvince);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="text-center">
-          <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 dark:text-gray-400">
-            {t('saved.loading', 'Loading your saved hotels...')}
-          </p>
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+        <div className="flex justify-center py-16">
+          <RefreshCw className="w-7 h-7 text-blue-600 animate-spin" />
         </div>
       </div>
     );
@@ -53,155 +49,132 @@ export default function SavedPage() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
-      <div className="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-h2 font-semibold text-gray-900 dark:text-gray-100">
-              {t('saved.title', 'Saved Hotels')}
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {wishlist.length} {t('saved.hotelsCount', 'hotels saved')}
-            </p>
-          </div>
-          <button
-            onClick={refresh}
-            disabled={loading}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-          >
-            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+      {/* Header */}
+      <div className="px-6 pt-6 pb-0">
+        <div className="flex items-center justify-between mb-5">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Хадгалсан</h1>
+          <button onClick={refresh} className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
+
+        {/* Province tabs */}
+        {provinces.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <button
+              onClick={() => setActiveProvince('all')}
+              className={`px-4 py-1.5 text-sm rounded-full whitespace-nowrap border transition ${
+                activeProvince === 'all'
+                  ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent'
+                  : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+              }`}
+            >
+              Бүгд ({wishlist.length})
+            </button>
+            {provinces.map(province => {
+              const count = wishlist.filter((i: WishlistItem) => i.hotel.location?.province_city === province).length;
+              return (
+                <button
+                  key={province}
+                  onClick={() => setActiveProvince(province)}
+                  className={`px-4 py-1.5 text-sm rounded-full whitespace-nowrap border transition ${
+                    activeProvince === province
+                      ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent'
+                      : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {province}({count})
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
+      {/* Card grid */}
       <div className="p-6">
-        {wishlist.length === 0 ? (
-          <div className="text-center py-12">
-            <Heart className="w-16 h-16 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-              {t('saved.empty.title', 'No saved hotels yet')}
-            </h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">
-              {t('saved.empty.description', 'Start exploring and save your favorite hotels!')}
-            </p>
-            <Link
-              href="/search"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              {t('saved.empty.browseHotels', 'Browse Hotels')}
+        {filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-4">
+            <Heart className="w-14 h-14 text-gray-200 dark:text-gray-600" />
+            <p className="text-gray-400 dark:text-gray-500 text-sm">Хадгалсан буудал байхгүй байна</p>
+            <Link href="/search" className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+              Буудал хайх
             </Link>
           </div>
         ) : (
-          <div className="grid gap-4">
-            {wishlist.map((item: WishlistItem) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start gap-4">
-                  {/* Hotel Image */}
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
-                    <img
-                      src={item.hotel.profile_image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop&auto=format'}
-                      alt={item.hotel.PropertyName}
-                      className="w-full h-full object-cover rounded-lg"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=300&fit=crop&auto=format';
-                      }}
-                    />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map((item: WishlistItem) => {
+              const h = item.hotel;
+              const isRemoving = removingIds.has(h.id);
+              return (
+                <div key={item.id} className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 flex flex-col">
+                  {/* Image */}
+                  <div className="relative h-48 bg-gray-100 dark:bg-gray-700 shrink-0">
+                    <Link href={`/hotel/${h.id}`} className="block w-full h-full">
+                      {/* Gradient placeholder always behind */}
+                      <div className="absolute inset-0 bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700" />
+                      {/* Image overlays placeholder; hidden on error */}
+                      {h.profile_image && (
+                        <img
+                          src={h.profile_image.startsWith('/') ? `https://dev.kacc.mn${h.profile_image}` : h.profile_image}
+                          alt={h.PropertyName}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      )}
+                    </Link>
+                    {/* Heart remove button */}
+                    <button
+                      onClick={() => handleRemove(h.id)}
+                      disabled={isRemoving}
+                      className="absolute top-2.5 right-2.5 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow hover:bg-white transition disabled:opacity-60"
+                      aria-label="Хадгалсанаас хасах"
+                    >
+                      {isRemoving
+                        ? <RefreshCw className="w-4 h-4 text-gray-400 animate-spin" />
+                        : <Heart className="w-4 h-4 text-red-500 fill-red-500" />}
+                    </button>
                   </div>
 
-                  {/* Hotel Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1 truncate">
-                          {item.hotel.PropertyName}
-                        </h3>
-                        
-                        {item.hotel.CompanyName && (
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                            {item.hotel.CompanyName}
-                          </p>
-                        )}
+                  {/* Body */}
+                  <Link href={`/hotel/${h.id}`} className="flex flex-col flex-1 p-4 gap-1">
+                    <h3 className="font-bold text-sm text-gray-900 dark:text-white leading-snug line-clamp-1">{h.PropertyName}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {[h.location?.province_city, h.location?.soum].filter(Boolean).join(', ')}
+                    </p>
 
-                        <div className="flex items-center gap-2 mb-2">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            {item.hotel.location?.province_city || t('common.locationUnknown', 'Location unknown')}
-                            {item.hotel.location?.soum && `, ${item.hotel.location.soum}`}
+                    {/* Stars + rating */}
+                    <div className="flex items-center gap-2 mt-1">
+                      {h.star_rating != null && h.star_rating > 0 && (
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: h.star_rating }).map((_, i) => (
+                            <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                          ))}
+                        </div>
+                      )}
+                      {h.avg_rating != null && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                          {h.avg_rating}/5
+                          <span className="font-normal ml-1">{h.review_count} сэтгэгдэл</span>
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Price */}
+                    {h.min_price != null && (
+                      <div className="mt-auto pt-3">
+                        <div className="flex items-baseline justify-end gap-1">
+                          <span className="text-lg font-bold text-primary">
+                            {new Intl.NumberFormat('mn-MN').format(h.min_price)}₮
                           </span>
                         </div>
-
-                        <div className="flex items-center gap-4">
-                          {item.hotel.star_rating && (
-                            <div className="flex items-center gap-1">
-                              {Array.from({ length: item.hotel.star_rating }).map((_, i) => (
-                                <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                              ))}
-                            </div>
-                          )}
-                          
-                          {item.hotel.avg_rating && (
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                {item.hotel.avg_rating}
-                              </span>
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                ({item.hotel.review_count} {t('common.reviews', 'reviews')})
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                        <p className="text-right text-xs text-gray-400 dark:text-gray-500">1 шөнийн үнэ (НӨАТ багтсан)</p>
                       </div>
-
-                      <div className="flex items-start gap-2">
-                        {item.hotel.min_price && (
-                          <div className="text-right">
-                            <div className="text-h3 font-semibold text-gray-900 dark:text-gray-100">
-                              {formatPrice(item.hotel.min_price)}
-                            </div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
-                              {t('common.perNight', 'per night')}
-                            </div>
-                          </div>
-                        )}
-
-                        <button
-                          onClick={() => handleRemove(item.hotel.id)}
-                          disabled={removingIds.has(item.hotel.id)}
-                          className="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors disabled:opacity-50"
-                          title={t('saved.remove', 'Remove from saved')}
-                        >
-                          {removingIds.has(item.hotel.id) ? (
-                            <RefreshCw className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="w-4 h-4" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {t('saved.addedOn', 'Added on')} {new Date(item.created_at).toLocaleDateString()}
-                        </span>
-                        <Link
-                          href={`/hotel/${item.hotel.id}?from=profile-saved`}
-                          className="inline-flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                        >
-                          {t('common.viewDetails', 'View Details')}
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                    )}
+                  </Link>
                 </div>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

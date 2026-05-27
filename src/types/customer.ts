@@ -89,6 +89,7 @@ export interface CustomerBooking {
   id: number;
   hotel: number;
   hotel_name: string;
+  hotel_image?: string | null;
   room_type: string;
   check_in: string;
   check_out: string;

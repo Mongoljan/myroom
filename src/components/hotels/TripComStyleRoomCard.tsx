@@ -62,6 +62,7 @@ interface TripComStyleRoomCardProps {
   nights?: number;
   cancellationFee?: CancellationFee | null;
   checkIn?: string; // YYYY-MM-DD
+  totalSelectedRooms?: number;
 }
 
 // Priority facility list shown in the LEFT column, max 4
@@ -198,6 +199,7 @@ export default function TripComStyleRoomCard({
   nights = 1,
   cancellationFee = null,
   checkIn,
+  totalSelectedRooms = 0,
 }: TripComStyleRoomCardProps) {
   const { t, i18n } = useHydratedTranslation();
   const [imageIndex, setImageIndex] = useState(0);
@@ -383,7 +385,33 @@ export default function TripComStyleRoomCard({
               const today = new Date(); today.setHours(0, 0, 0, 0);
               const cancelDeadline = cancelDateStr ? new Date(cancelDateStr + 'T00:00:00') : null;
               const deadlinePassed = cancelDeadline ? today > cancelDeadline : false;
-              const canCancel = cancellationFee ? (beforePct < 100 && !deadlinePassed) : null;
+
+              // Multi-room mode: 2+ total rooms selected across all room types
+              const isMultiRoom = totalSelectedRooms >= 2;
+              let canCancel: boolean | null;
+              let multiRoomPct: number | null = null;
+              if (isMultiRoom) {
+                // Multi-room rule: can cancel if today is before check-in day
+                const checkInMs = checkIn ? new Date(checkIn + 'T00:00:00').getTime() : null;
+                canCancel = checkInMs ? today.getTime() < checkInMs : null;
+
+                // Find the applicable tier percentage based on days until check-in
+                if (canCancel && checkIn && cancellationFee) {
+                  const msPerDay = 1000 * 60 * 60 * 24;
+                  const daysUntil = Math.ceil((new Date(checkIn + 'T00:00:00').getTime() - today.getTime()) / msPerDay);
+                  const cf = cancellationFee;
+                  if (daysUntil >= 5 && cf.multi_5days_before_percentage != null)
+                    multiRoomPct = parseFloat(cf.multi_5days_before_percentage);
+                  else if (daysUntil >= 3 && cf.multi_3days_before_percentage != null)
+                    multiRoomPct = parseFloat(cf.multi_3days_before_percentage);
+                  else if (daysUntil >= 2 && cf.multi_2days_before_percentage != null)
+                    multiRoomPct = parseFloat(cf.multi_2days_before_percentage);
+                  else if (daysUntil >= 1 && cf.multi_1day_before_percentage != null)
+                    multiRoomPct = parseFloat(cf.multi_1day_before_percentage);
+                }
+              } else {
+                canCancel = cancellationFee ? (beforePct < 100 && !deadlinePassed) : null;
+              }
 
               // Conditions stacked inside each row (below breakfast label)
               const Conditions = () => (
@@ -392,10 +420,22 @@ export default function TripComStyleRoomCard({
                     <div className={`flex items-center gap-1 text-sm ${canCancel ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
                       <CheckCircle className="w-3 h-3 shrink-0 self-start mt-0.5" />
                       {canCancel ? (
-                        <span className="flex flex-col leading-tight">
-                          <span>{dateLabel}</span>
-                          <span>цагаас өмнө цуцлах боломжтой</span>
-                        </span>
+                        isMultiRoom ? (
+                          <span className="flex flex-col leading-tight">
+                            <span>Цуцлах боломжтой</span>
+                            {multiRoomPct !== null && multiRoomPct > 0 && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400">{multiRoomPct}% цуцлалтын хураамж</span>
+                            )}
+                            {multiRoomPct === 0 && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400">Үнэгүй цуцлах боломжтой</span>
+                            )}
+                          </span>
+                        ) : (
+                          <span className="flex flex-col leading-tight">
+                            <span>{dateLabel}</span>
+                            <span>цагаас өмнө цуцлах боломжтой</span>
+                          </span>
+                        )
                       ) : (
                         <span>Цуцлах боломжгүй</span>
                       )}

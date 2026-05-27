@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
+import { ApiService } from '@/services/api';
 import { CustomerBooking } from '@/types/customer';
 
 type StatusFilter = 'all' | 'pending' | 'confirmed' | 'canceled' | 'finished';
@@ -38,6 +39,9 @@ export default function BookingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // hotelMeta: keyed by hotel_name → { imageUrl, id }
+  const [hotelMeta, setHotelMeta] = useState<Record<string, { imageUrl: string; id: number }>>({});
+
   const [cancelTarget, setCancelTarget] = useState<CustomerBooking | null>(null);
   const [pinCode, setPinCode] = useState('');
   const [isCanceling, setIsCanceling] = useState(false);
@@ -53,6 +57,37 @@ export default function BookingsPage() {
         activeTab === 'all' ? undefined : activeTab
       );
       setBookings(res.bookings);
+
+      // Bookings API has no hotel ID — search by hotel name to get ID + cover image
+      const uniqueNames = [...new Set(res.bookings.map((b) => b.hotel_name).filter(Boolean))];
+      const today = new Date();
+      const ci = new Date(today); ci.setDate(ci.getDate() + 30);
+      const co = new Date(today); co.setDate(co.getDate() + 31);
+      const fmt = (d: Date) => d.toISOString().split('T')[0];
+
+      const metaEntries = await Promise.all(
+        uniqueNames.map(async (name) => {
+          try {
+            const result = await ApiService.searchHotels({
+              name,
+              check_in: fmt(ci),
+              check_out: fmt(co),
+              adults: 2, children: 0, rooms: 1, acc_type: 'hotel',
+            });
+            const hotel = result.results?.[0];
+            if (!hotel) return null;
+            const cover = hotel.images?.cover;
+            const rawUrl = typeof cover === 'string' ? cover : (cover as { url?: string })?.url ?? '';
+            const imageUrl = rawUrl
+              ? (rawUrl.startsWith('/') ? `https://dev.kacc.mn${rawUrl}` : rawUrl)
+              : '';
+            return [name, { imageUrl, id: hotel.hotel_id }] as [string, { imageUrl: string; id: number }];
+          } catch {
+            return null;
+          }
+        })
+      );
+      setHotelMeta(Object.fromEntries(metaEntries.filter(Boolean) as [string, { imageUrl: string; id: number }][]));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Алдаа гарлаа.');
     } finally {
@@ -124,7 +159,12 @@ export default function BookingsPage() {
           </div>
         )}
 
-        {!isLoading && bookings.map((booking) => (
+        {!isLoading && bookings.map((booking) => {
+          const nights = booking.check_in && booking.check_out
+            ? Math.round((new Date(booking.check_out).getTime() - new Date(booking.check_in).getTime()) / (1000 * 60 * 60 * 24))
+            : 0;
+
+          return (
           <div key={booking.id} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
             {/* Booking card header */}
             <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
@@ -138,63 +178,66 @@ export default function BookingsPage() {
             </div>
 
             {/* Booking card body */}
-            <div className="flex items-start gap-4 p-4">
-              {/* Hotel image placeholder */}
-              <div className="w-16 h-16 rounded-lg bg-gray-200 dark:bg-gray-600 shrink-0 overflow-hidden relative">
-                <div className="w-full h-full bg-gray-200 dark:bg-gray-600" />
+            <div className="flex items-center gap-4 p-4">
+              {/* Hotel image */}
+              <div className="w-24 h-20 rounded-lg bg-gray-200 dark:bg-gray-600 shrink-0 overflow-hidden relative">
+                {hotelMeta[booking.hotel_name]?.imageUrl && (
+                  <img
+                    src={hotelMeta[booking.hotel_name].imageUrl}
+                    alt={booking.hotel_name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                )}
               </div>
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{booking.hotel_name}</h3>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{booking.room_type}</p>
-                <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
-                  <div>
-                    <span className="text-blue-600 font-medium">{formatDate(booking.check_in)}</span>
-                    <span className="mx-1.5">-</span>
-                    <span className="text-blue-600 font-medium">{formatDate(booking.check_out)}</span>
-                  </div>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{booking.hotel_name}</h3>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{booking.room_type}</p>
+                <div className="flex items-center gap-2 mt-2 text-xs">
+                  <span className="text-blue-600 font-medium">{formatDate(booking.check_in)}</span>
+                  <span className="text-gray-400">→</span>
+                  <span className="text-blue-600 font-medium">{formatDate(booking.check_out)}</span>
                 </div>
-
               </div>
 
               {/* Price + actions */}
               <div className="flex flex-col items-end gap-3 shrink-0">
                 <div className="text-right">
-                  <div className="text-base font-semibold text-gray-900 dark:text-white">{formatPrice(booking.total_price)}</div>
+                  <div className="text-base font-bold text-gray-900 dark:text-white">{formatPrice(booking.total_price)}</div>
+                  {nights > 0 && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{nights} шөнө</p>}
                 </div>
 
                 <div className="flex gap-2 flex-wrap justify-end">
-                  {/* Details link — always visible; manage page lets user enter pin */}
                   <Link
-                    href={`/booking/manage?booking_code=${booking.booking_code}`}
-                    className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    href={`/hotel/${hotelMeta[booking.hotel_name]?.id ?? booking.hotel}`}
+                    className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >
                     Дэлгэрэнгүй
                   </Link>
-                  {/* Write review — only for finished bookings without a review */}
                   {booking.status === 'finished' && !booking.has_review && (
                     <Link
                       href="/profile/reviews"
-                      className="px-3 py-1.5 border border-blue-300 dark:border-blue-600 rounded-lg text-xs text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
-                    >
-                      Үнэлгээ бичих
-                    </Link>
-                  )}
-                  {/* Re-book — link to hotel page */}
-                  {(booking.status === 'finished' || booking.status === 'canceled') && (
-                    <Link
-                      href={`/hotel/${booking.hotel}`}
                       className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs transition"
                     >
-                      Дахин захиалах
+                      Үнэлгээ өгөх
                     </Link>
+                  )}
+                  {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                    <button
+                      onClick={() => setCancelTarget(booking)}
+                      className="px-3 py-1.5 border border-red-300 dark:border-red-700 rounded-lg text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                    >
+                      Цуцлах
+                    </button>
                   )}
                 </div>
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Cancel modal */}

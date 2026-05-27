@@ -16,6 +16,7 @@ import CustomGuestSelector from '@/components/search/CustomGuestSelector';
 interface ImprovedHotelRoomsSectionProps {
   hotelId: number;
   hotelName?: string;
+  locationName?: string;
   checkIn?: string;
   checkOut?: string;
   initialPolicies?: import('@/types/api').PropertyPolicy[];
@@ -24,6 +25,7 @@ interface ImprovedHotelRoomsSectionProps {
 export default function ImprovedHotelRoomsSection({
   hotelId,
   hotelName = 'Hotel',
+  locationName,
   checkIn,
   checkOut,
   initialPolicies,
@@ -69,6 +71,25 @@ export default function ImprovedHotelRoomsSection({
   const [bookingItems, setBookingItems] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [cancellationFee, setCancellationFee] = useState<CancellationFee | null>(null);
+
+  // Inject default params into URL on first mount when missing (e.g. clicking from suggestions/recently viewed)
+  useEffect(() => {
+    const hasCheckIn = searchParams.get('check_in');
+    const hasCheckOut = searchParams.get('check_out');
+    const hasName = searchParams.get('name');
+    const needsUpdate = !hasCheckIn || !hasCheckOut || (!hasName && locationName);
+    if (needsUpdate) {
+      const params = new URLSearchParams(searchParams.toString());
+      if (!hasCheckIn) params.set('check_in', selectedCheckIn);
+      if (!hasCheckOut) params.set('check_out', selectedCheckOut);
+      if (!searchParams.get('adults')) params.set('adults', adultsCount.toString());
+      if (!searchParams.get('children')) params.set('children', childrenCountLocal.toString());
+      if (!searchParams.get('rooms')) params.set('rooms', roomsCountLocal.toString());
+      if (!hasName && locationName) params.set('name', locationName);
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Sync from URL when the top SearchHeader bar changes dates/guests
   useEffect(() => {
@@ -316,7 +337,8 @@ export default function ImprovedHotelRoomsSection({
       totalRooms: getTotalRooms().toString(),
       nights: nights.toString(),
       adults: adultsCount.toString(),
-      children: childrenCountLocal.toString()
+      children: childrenCountLocal.toString(),
+      searchedRooms: roomsCountLocal.toString()
     });
 
     router.push(`/booking?${params.toString()}`);
@@ -360,25 +382,88 @@ export default function ImprovedHotelRoomsSection({
 
   if (availableRooms.length === 0) {
     return (
-      <div className="flex items-center justify-between min-h-100">
-        <div className="flex-1 flex flex-col items-center justify-center">
-          <div className="text-center">
-            <Bed className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-            <p className="text-gray-600 dark:text-gray-400 text-lg mb-2">{t('hotelRooms.noRoomsAvailable', 'No rooms available')}</p>
+      <div>
+        {/* Room Search Bar — always visible even when no rooms */}
+        <div className="mb-6 bg-white dark:bg-gray-800 border border-primary rounded-xl shadow-sm overflow-hidden">
+          <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
+            <div className="lg:flex-1 p-2.5">
+              <div className="flex items-center">
+                <Calendar className="w-4.5 h-4.5 text-gray-700 dark:text-gray-300 mr-2.5 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-0.5">
+                    {t('search.dateLabel', 'Орох - Гарах')}
+                  </div>
+                  <DateRangePicker
+                    checkIn={selectedCheckIn}
+                    checkOut={selectedCheckOut}
+                    onDateChange={(ci, co) => {
+                      setSelectedCheckIn(ci);
+                      setSelectedCheckOut(co);
+                      updateURLWithDates(ci, co);
+                      setBookingItems([]);
+                    }}
+                    minimal={true}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="lg:flex-1 flex items-center divide-x divide-gray-200 dark:divide-gray-700">
+              <CustomGuestSelector
+                adults={adultsCount}
+                childrenCount={childrenCountLocal}
+                rooms={roomsCountLocal}
+                onGuestChange={(a, c, r) => {
+                  setAdultsCount(a);
+                  setChildrenCountLocal(c);
+                  setRoomsCountLocal(r);
+                  if (c === 0) { setChildrenAges([]); setShowChildAgeError(false); }
+                }}
+                onChildrenAgesChange={(ages) => {
+                  setChildrenAges(ages);
+                  if (ages.every((a) => a !== -1)) setShowChildAgeError(false);
+                }}
+                maxChildAge={maxChildAge}
+                compact={true}
+                className="flex-1"
+              />
+              <div className="p-2.5 shrink-0 flex flex-col items-end gap-1">
+                {showChildAgeError && (
+                  <p className="text-xs text-red-500 font-medium text-right">
+                    {t('search.childAgeRequired', 'Хүүхдийн насыг оруулна уу')}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={handleSearch}
+                  className="px-5 py-2 bg-secondary hover:bg-secondary/90 text-white text-sm font-semibold rounded-lg transition-colors whitespace-nowrap"
+                >
+                  {t('search.title', 'Хайх')}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="w-80">
-          <BookingSummary
-            items={bookingItems}
-            totalRooms={getTotalRooms()}
-            totalPrice={getTotalPrice()}
-            checkIn={effectiveCheckIn}
-            checkOut={effectiveCheckOut}
-            nights={getNumberOfNights()}
-            onQuantityChange={handleQuantityChange}
-            onRemoveRoom={handleRemoveRoom}
-            onBookNow={handleBookNow}
-          />
+
+        <div className="flex items-center justify-between min-h-100">
+          <div className="flex-1 flex flex-col items-center justify-center">
+            <div className="text-center">
+              <Bed className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+              <p className="text-gray-600 dark:text-gray-400 text-lg mb-2">{t('hotelRooms.noRoomsAvailable', 'No rooms available')}</p>
+            </div>
+          </div>
+          <div className="w-80">
+            <BookingSummary
+              items={bookingItems}
+              totalRooms={getTotalRooms()}
+              totalPrice={getTotalPrice()}
+              checkIn={effectiveCheckIn}
+              checkOut={effectiveCheckOut}
+              nights={getNumberOfNights()}
+              onQuantityChange={handleQuantityChange}
+              onRemoveRoom={handleRemoveRoom}
+              onBookNow={handleBookNow}
+            />
+          </div>
         </div>
       </div>
     );
@@ -464,6 +549,7 @@ export default function ImprovedHotelRoomsSection({
                 nights={getNumberOfNights()}
                 cancellationFee={cancellationFee}
                 checkIn={effectiveCheckIn}
+                totalSelectedRooms={getTotalRooms()}
               />
             ))}
           </div>

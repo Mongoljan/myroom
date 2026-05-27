@@ -71,10 +71,13 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
         // Set destination based on available URL parameters
         if (nameParam) {
           setDestination(nameParam);
+          hasLoadedFromUrl.current = true;
         } else if (locationParam) {
           setDestination(locationParam);
+          hasLoadedFromUrl.current = true;
         } else if (districtParam) {
           setDestination(districtParam);
+          hasLoadedFromUrl.current = true;
         } else if (provinceIdParam || soumIdParam || nameIdParam) {
           // For ID-based searches, fetch the actual location name
           try {
@@ -85,6 +88,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
               if (provinceSuggestion) {
                 setDestination(provinceSuggestion.name);
                 setSelectedLocationSuggestion(provinceSuggestion);
+                hasLoadedFromUrl.current = true;
               }
             } else if (soumIdParam) {
               const soumId = parseInt(soumIdParam);
@@ -93,6 +97,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
               if (soumSuggestion) {
                 setDestination(soumSuggestion.fullName);
                 setSelectedLocationSuggestion(soumSuggestion);
+                hasLoadedFromUrl.current = true;
               }
             }
             // For nameIdParam (property/hotel), we would need a different API
@@ -104,7 +109,6 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
       };
 
       loadLocationFromUrl();
-      hasLoadedFromUrl.current = true;
     }
   }, [urlSearchParams]);
 
