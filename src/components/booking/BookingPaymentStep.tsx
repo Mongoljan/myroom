@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Star, MapPin, Users, Copy, Check, QrCode, Clock } from 'lucide-react';
+import { Star, MapPin, Users, Copy, Check, Clock } from 'lucide-react';
 import InvoiceTypeDialog from './InvoiceTypeDialog';
 import InvoiceModal from './InvoiceModal';
 
@@ -41,7 +41,6 @@ interface BookingPaymentStepProps {
 
 type PaymentMethod = 'bankApp' | 'transfer' | 'wallet' | 'card';
 type TransferBank = 'tdb' | 'khan';
-type AppBank = 'tdb' | 'golomt' | 'khan' | 'mbank';
 
 const TRANSFER_BANKS: Record<TransferBank, { name: string; accountNumber: string; accountName: string }> = {
   tdb: {
@@ -55,13 +54,6 @@ const TRANSFER_BANKS: Record<TransferBank, { name: string; accountNumber: string
     accountName: 'Мая Хотелс ХХК',
   },
 };
-
-const APP_BANKS: Array<{ id: AppBank; label: string; color: string; short: string }> = [
-  { id: 'tdb', label: 'TDB', color: 'bg-blue-700', short: 'TDB' },
-  { id: 'golomt', label: 'Golomt Bank', color: 'bg-green-600', short: 'GB' },
-  { id: 'khan', label: 'Khan Bank', color: 'bg-orange-500', short: 'KB' },
-  { id: 'mbank', label: 'Mbank', color: 'bg-purple-600', short: 'MB' },
-];
 
 const PAYMENT_TABS: Array<{ id: PaymentMethod; label: string }> = [
   { id: 'bankApp', label: 'Банкны апп / QR' },
@@ -105,16 +97,50 @@ export default function BookingPaymentStep({
 }: BookingPaymentStepProps) {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('bankApp');
   const [transferBank, setTransferBank] = useState<TransferBank>('tdb');
-  const [appBank, setAppBank] = useState<AppBank>('tdb');
   const [timeLeft, setTimeLeft] = useState(INITIAL_SECONDS);
   const [timerExpired, setTimerExpired] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
 
+  // QPay state
+  const [invoiceId, setInvoiceId] = useState<string | null>(null);
+  const [qrImage, setQrImage] = useState<string | null>(null);
+  const [bankUrls, setBankUrls] = useState<Array<{ name: string; description: string; logo: string; link: string }>>([]);
+  const [qpayLoading, setQpayLoading] = useState(false);
+  const [qpayError, setQpayError] = useState<string | null>(null);
+
   // Invoice modal state
   const [invoiceTypeDialogOpen, setInvoiceTypeDialogOpen] = useState(false);
   const [invoiceType, setInvoiceType] = useState<'individual' | 'company' | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+
+  // Create QPay invoice on mount
+  useEffect(() => {
+    const createInvoice = async () => {
+      setQpayLoading(true);
+      setQpayError(null);
+      try {
+        const res = await fetch('https://dev.kacc.mn/api/qpay/invoice/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: totalPrice,
+            description: `Захиалга #${bookingCode} - ${hotelName}`,
+          }),
+        });
+        const data = await res.json();
+        setInvoiceId(data.id);
+        setQrImage(data.qr_image ?? null);
+        setBankUrls(data.urls ?? []);
+      } catch {
+        setQpayError('QPay нэхэмжлэл үүсгэхэд алдаа гарлаа');
+      } finally {
+        setQpayLoading(false);
+      }
+    };
+    createInvoice();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Countdown timer
   useEffect(() => {
@@ -140,11 +166,23 @@ export default function BookingPaymentStep({
   }, []);
 
   const handleCheckPayment = async () => {
+    if (!invoiceId) return;
     setCheckingPayment(true);
-    // Mock: simulate payment verification
-    await new Promise((resolve) => setTimeout(resolve, 1800));
-    setCheckingPayment(false);
-    onPaymentConfirmed();
+    try {
+      const res = await fetch('https://dev.kacc.mn/api/qpay/check/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoice_id: invoiceId }),
+      });
+      const data = await res.json();
+      if (data.is_paid) {
+        onPaymentConfirmed();
+      }
+    } catch {
+      // silently ignore
+    } finally {
+      setCheckingPayment(false);
+    }
   };
 
   const handleInvoiceTypeSelect = (type: 'individual' | 'company') => {
@@ -240,11 +278,11 @@ export default function BookingPaymentStep({
 
               {/* Tab content */}
               {paymentMethod === 'bankApp' && (
-                <BankAppContent
-                  appBank={appBank}
-                  onSelectBank={setAppBank}
-                  bookingCode={bookingCode}
-                  totalPrice={totalPrice}
+                <QPayContent
+                  qrImage={qrImage}
+                  bankUrls={bankUrls}
+                  loading={qpayLoading}
+                  error={qpayError}
                 />
               )}
 
@@ -487,49 +525,66 @@ export default function BookingPaymentStep({
 
 // ─── Sub-components ────────────────────────────────────────────────
 
-function BankAppContent({
-  appBank,
-  onSelectBank,
+function QPayContent({
+  qrImage,
+  bankUrls,
+  loading,
+  error,
 }: {
-  appBank: AppBank;
-  onSelectBank: (b: AppBank) => void;
-  bookingCode: string;
-  totalPrice: number;
+  qrImage: string | null;
+  bankUrls: Array<{ name: string; description: string; logo: string; link: string }>;
+  loading: boolean;
+  error: string | null;
 }) {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-40 text-sm text-gray-500">
+        QPay нэхэмжлэл үүсгэж байна...
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-40 text-sm text-red-500">{error}</div>
+    );
+  }
   return (
-    <div className="flex gap-4">
-      {/* Bank grid */}
-      <div className="flex-1 grid grid-cols-2 gap-2">
-        {APP_BANKS.map((bank) => (
-          <button
-            key={bank.id}
-            onClick={() => onSelectBank(bank.id)}
-            className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-all ${
-              appBank === bank.id
-                ? 'border-primary bg-primary/5'
-                : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-            }`}
-          >
-            <div
-              className={`w-8 h-8 rounded-md ${bank.color} flex items-center justify-center shrink-0`}
-            >
-              <span className="text-white text-xs font-bold">{bank.short}</span>
-            </div>
-            <span className="text-xs font-medium text-gray-800 dark:text-gray-200 text-left leading-tight">
-              {bank.label}
-            </span>
-          </button>
-        ))}
-      </div>
-
-      {/* QR code placeholder */}
-      <div className="shrink-0 flex flex-col items-center gap-2">
-        <div className="w-32 h-32 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex flex-col items-center justify-center gap-1">
-          <QrCode className="w-8 h-8 text-gray-400" />
-          <span className="text-xs text-gray-400">QR код</span>
+    <div>
+      {/* QR image — desktop/tablet only */}
+      {qrImage && (
+        <div className="hidden sm:flex flex-col items-center gap-2 mb-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`data:image/png;base64,${qrImage}`}
+            alt="QPay QR код"
+            className="w-48 h-48 rounded-lg border border-gray-200 dark:border-gray-600"
+          />
+          <span className="text-xs text-gray-500">QPay QR унших</span>
         </div>
-        <span className="text-xs text-gray-500">QR унших</span>
-      </div>
+      )}
+
+      {/* Bank app links — mobile only */}
+      {bankUrls.length > 0 && (
+        <div className="sm:hidden grid grid-cols-3 gap-2">
+          {bankUrls.map((url) => (
+            <a
+              key={url.name}
+              href={url.link}
+              className="flex flex-col items-center gap-1.5 p-2 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-primary transition-colors"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={url.logo}
+                alt={url.name}
+                className="w-10 h-10 rounded-lg object-contain"
+              />
+              <span className="text-[10px] text-center text-gray-700 dark:text-gray-300 leading-tight line-clamp-2">
+                {url.description}
+              </span>
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
