@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Star, MapPin, Users, Copy, Check, Clock } from 'lucide-react';
+import { Star, MapPin, Users, Copy, Check, Clock, QrCode } from 'lucide-react';
 import InvoiceTypeDialog from './InvoiceTypeDialog';
 import InvoiceModal from './InvoiceModal';
 
