@@ -29,7 +29,8 @@ export default function Footer() {
 
     // SDK init callback
     (window as Window & { fbAsyncInit?: () => void }).fbAsyncInit = function () {
-      (window as any).FB.init({ xfbml: true, version: 'v18.0' });
+      const win = window as unknown as { FB: { init: (opts: Record<string, unknown>) => void } };
+      win.FB.init({ xfbml: true, version: 'v18.0' });
     };
 
     // Load Facebook SDK
