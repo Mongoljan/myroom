@@ -174,13 +174,16 @@ function resolveEntry(name: string): BedEntry | null {
 export function BedTypeIcon({
   name,
   className = 'w-4 h-4',
+  forceCount,
 }: {
   name: string;
   className?: string;
+  /** Override count — pass 1 to always render a single icon */
+  forceCount?: number;
 }) {
   const entry = resolveEntry(name);
   const Icon = entry?.Icon ?? (BedSingle as IconComponent);
-  const count = entry?.count ?? 1;
+  const count = forceCount ?? (entry?.count ?? 1);
   const sizeScale = entry?.sizeScale ?? 0;
   const gap = entry?.gap ?? 'gap-0.5';
 
@@ -212,4 +215,10 @@ export function BedTypeIcon({
 export function getBedTypeInfo(name: string): BedTypeInfo {
   const entry = resolveEntry(name);
   return entry?.info ?? { descriptionMn: name, descriptionEn: name };
+}
+
+/** Returns the display count for a bed type (twin=2, triple=3, others=1) */
+export function getBedDisplayCount(name: string): number {
+  const entry = resolveEntry(name);
+  return entry?.count ?? 1;
 }

@@ -63,6 +63,13 @@ interface HotelCardProps {
   viewMode?: 'grid' | 'list';
 }
 
+function bedDisplayCount(name: string): number {
+  const l = name.toLowerCase();
+  if (l.includes('twin')) return 2;
+  if (l.includes('triple')) return 3;
+  return 1;
+}
+
 function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: HotelCardProps) {
   const { t } = useHydratedTranslation();
   const [showAllFacilities, setShowAllFacilities] = useState(false);
@@ -230,20 +237,19 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         {hotel.bed_types && hotel.bed_types.length > 0 && (
                           <>
                             <span className="text-gray-300 dark:text-gray-600">·</span>
-                            {hotel.bed_types.map(bt => (
-                              <BedTypeIcon key={bt.id} name={bt.name} className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-                            ))}
                           </>
                         )}
                       </div>
 
-                      {/* Row 2: Bed type names */}
+                      {/* Row 2: Bed type — name · icon · ×count */}
                       {hotel.bed_types && hotel.bed_types.length > 0 && (
-                        <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
+                        <div className="flex items-center gap-2 flex-wrap mb-1.5">
                           {hotel.bed_types.map((bt, i) => (
-                            <span key={bt.id} className="flex items-center gap-1.5 text-[13px] text-gray-500 dark:text-gray-400">
+                            <span key={bt.id} className="flex items-center gap-1 text-[13px] text-gray-500 dark:text-gray-400">
                               {bt.name}
-                              {i < hotel.bed_types!.length - 1 && <span className="text-gray-300 dark:text-gray-600">·</span>}
+                              <BedTypeIcon name={bt.name} className="w-4 h-4 text-gray-500 dark:text-gray-400" forceCount={1} />
+                              <span>×{bedDisplayCount(bt.name)}</span>
+                              {i < hotel.bed_types!.length - 1 && <span className="text-gray-300 dark:text-gray-600 ml-1">·</span>}
                             </span>
                           ))}
                         </div>
