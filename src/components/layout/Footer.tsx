@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, MapPin, Mail } from 'lucide-react';
@@ -8,20 +8,39 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 export default function Footer() {
   const { t } = useHydratedTranslation();
+  const chatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (document.getElementById('facebook-jssdk')) return;
+    // Set fb-customerchat attributes imperatively (not valid JSX/HTML props)
+    if (chatRef.current) {
+      chatRef.current.setAttribute('page_id', '61579682037246');
+      chatRef.current.setAttribute('attribution', 'setup_tool');
+    }
+    type FBWindow = Window & {
+      fbAsyncInit?: () => void;
+      FB?: { init: (opts: Record<string, unknown>) => void; XFBML: { parse: () => void } };
+    };
+    const win = window as FBWindow;
 
-    (window as Window & { fbAsyncInit?: () => void }).fbAsyncInit = function () {
-      const win = window as unknown as {
-        FB: {
-          init: (opts: Record<string, unknown>) => void;
-          XFBML: { parse: () => void };
-        };
-      };
+    const initFB = () => {
+      if (!win.FB) return;
       win.FB.init({ xfbml: true, version: 'v18.0' });
       win.FB.XFBML.parse();
     };
+
+    // SDK already cached — call directly
+    if (win.FB) {
+      initFB();
+      return;
+    }
+
+    // Already injected (StrictMode double-invoke)
+    if (document.getElementById('facebook-jssdk')) {
+      win.fbAsyncInit = initFB;
+      return;
+    }
+
+    win.fbAsyncInit = initFB;
 
     const script = document.createElement('script');
     script.id = 'facebook-jssdk';
@@ -35,11 +54,7 @@ export default function Footer() {
     <>
       {/* Facebook SDK anchors — must be in DOM before SDK initialises */}
       <div id="fb-root" />
-      <div
-        className="fb-customerchat"
-        data-page_id="61579682037246"
-        data-attribution="setup_tool"
-      />
+      <div className="fb-customerchat" ref={chatRef} />
 
       <footer className="bg-slate-900 text-white">
       {/* Main Footer Content */}

@@ -5,13 +5,12 @@ import { motion } from 'framer-motion';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 const partners = [
-  { name: "Partner 1", logo: "/img/clients/1.svg" },
-  { name: "Partner 2", logo: "/img/clients/2.svg" },
-  { name: "Partner 3", logo: "/img/clients/3.svg" },
-  { name: "Partner 4", logo: "/img/clients/4.svg" },
-  { name: "Partner 5", logo: "/img/clients/5.svg" },
-  { name: "Partner 6", logo: "/img/clients/6.svg" },
+  { name: "KACC", logo: "/images/kacc.png" },
+  { name: "MyHotels", logo: "/images/myhotels.jpg" },
 ];
+
+// Repeat enough times so the strip always fills the viewport
+const repeated = Array.from({ length: 8 }, () => partners).flat();
 
 export default function Partnerships() {
   const { t } = useHydratedTranslation();
@@ -35,9 +34,9 @@ export default function Partnerships() {
           {/* Moving Carousel with enhanced height */}
           <div className="relative overflow-hidden py-2">
             <div className="flex partnership-scroll whitespace-nowrap">
-              {/* First set of logos */}
-              {partners.map((partner, idx) => (
-                <div key={`first-${idx}`} className="flex-shrink-0 mx-6 flex items-center justify-center h-16 w-32 bg-gray-50/50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 hover:shadow-md transition-all duration-300">
+              {/* First set */}
+              {repeated.map((partner, idx) => (
+                <div key={`first-${idx}`} className="shrink-0 mx-6 flex items-center justify-center h-16 w-32 bg-gray-50/50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 hover:shadow-md transition-all duration-300">
                   <Image
                     src={partner.logo}
                     alt={partner.name}
@@ -48,9 +47,9 @@ export default function Partnerships() {
                   />
                 </div>
               ))}
-              {/* Second set for seamless loop */}
-              {partners.map((partner, idx) => (
-                <div key={`second-${idx}`} className="flex-shrink-0 mx-6 flex items-center justify-center h-16 w-32 bg-gray-50/50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 hover:shadow-md transition-all duration-300">
+              {/* Second set — identical, for seamless loop */}
+              {repeated.map((partner, idx) => (
+                <div key={`second-${idx}`} className="shrink-0 mx-6 flex items-center justify-center h-16 w-32 bg-gray-50/50 dark:bg-gray-700/50 rounded-xl border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 hover:shadow-md transition-all duration-300">
                   <Image
                     src={partner.logo}
                     alt={partner.name}
@@ -64,8 +63,8 @@ export default function Partnerships() {
             </div>
 
             {/* Enhanced gradient overlays */}
-            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-gray-50 dark:from-gray-900 via-gray-50/80 dark:via-gray-900/80 to-transparent pointer-events-none"></div>
-            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-50 dark:from-gray-900 via-gray-50/80 dark:via-gray-900/80 to-transparent pointer-events-none"></div>
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-linear-to-r from-gray-50 dark:from-gray-900 via-gray-50/80 dark:via-gray-900/80 to-transparent pointer-events-none"></div>
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-linear-to-l from-gray-50 dark:from-gray-900 via-gray-50/80 dark:via-gray-900/80 to-transparent pointer-events-none"></div>
           </div>
           
           {/* Trust badge */}
