@@ -2108,7 +2108,7 @@ const resources = {
           ratingHighToLow: "Үнэлгээ: өндөрөөс нам"
         },
         searchByName: "Нэрээр хайх",
-        searchByNamePlaceholder: "Зочид буудлын нэр оруулах",
+        searchByNamePlaceholder: "Буудлын нэрээр хайх",
         pagination: {
           resultsText: "{{start}}-{{end}} нийт {{total}} буудлын үр дүн",
           previous: "Өмнөх",

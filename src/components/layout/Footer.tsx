@@ -33,10 +33,10 @@ export default function Footer() {
       win.FB.init({ xfbml: true, version: 'v18.0' });
     };
 
-    // Load Facebook SDK
+    // Load Facebook SDK (standard endpoint — xfbml.customerchat.js was deprecated)
     const script = document.createElement('script');
     script.id = 'facebook-jssdk';
-    script.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
+    script.src = 'https://connect.facebook.net/en_US/sdk.js';
     script.async = true;
     script.defer = true;
     document.body.appendChild(script);
