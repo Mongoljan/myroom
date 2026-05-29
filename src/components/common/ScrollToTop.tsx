@@ -5,7 +5,7 @@ import { ChevronUp } from 'lucide-react';
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
-  const [bottomOffset, setBottomOffset] = useState(24); // 24px = bottom-6
+  const [bottomOffset, setBottomOffset] = useState(88); // above the Messenger button (24 bottom + 56 height + 8 gap)
 
   useEffect(() => {
     const update = () => {
@@ -19,7 +19,7 @@ export default function ScrollToTop() {
           // Footer is visible — push button up above it
           setBottomOffset(viewportHeight - footerTop + 16);
         } else {
-          setBottomOffset(24);
+          setBottomOffset(88);
         }
       }
     };

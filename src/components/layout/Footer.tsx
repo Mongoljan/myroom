@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, MapPin, Mail } from 'lucide-react';
@@ -8,53 +7,23 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 export default function Footer() {
   const { t } = useHydratedTranslation();
-  const chatRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Set fb-customerchat attributes imperatively (not valid JSX/HTML props)
-    if (chatRef.current) {
-      chatRef.current.setAttribute('page_id', '61579682037246');
-      chatRef.current.setAttribute('attribution', 'setup_tool');
-    }
-    type FBWindow = Window & {
-      fbAsyncInit?: () => void;
-      FB?: { init: (opts: Record<string, unknown>) => void; XFBML: { parse: () => void } };
-    };
-    const win = window as FBWindow;
-
-    const initFB = () => {
-      if (!win.FB) return;
-      win.FB.init({ xfbml: true, version: 'v18.0' });
-      win.FB.XFBML.parse();
-    };
-
-    // SDK already cached — call directly
-    if (win.FB) {
-      initFB();
-      return;
-    }
-
-    // Already injected (StrictMode double-invoke)
-    if (document.getElementById('facebook-jssdk')) {
-      win.fbAsyncInit = initFB;
-      return;
-    }
-
-    win.fbAsyncInit = initFB;
-
-    const script = document.createElement('script');
-    script.id = 'facebook-jssdk';
-    script.src = 'https://connect.facebook.net/en_US/sdk.js';
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-  }, []);
 
   return (
     <>
-      {/* Facebook SDK anchors — must be in DOM before SDK initialises */}
-      <div id="fb-root" />
-      <div className="fb-customerchat" ref={chatRef} />
+      {/* Floating Messenger button — m.me link (Chat Plugin deprecated May 2024) */}
+      <a
+        href="https://m.me/747057615158314"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat on Messenger"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform duration-200 hover:scale-110"
+        style={{ background: 'linear-gradient(135deg, #0084FF 0%, #A033FF 100%)' }}
+      >
+        {/* Messenger logo SVG */}
+        <svg viewBox="0 0 24 24" className="w-7 h-7 fill-white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.683V24l4.088-2.242c1.092.301 2.246.464 3.443.464 6.627 0 12-4.974 12-11.111S18.627 0 12 0zm1.191 14.963-3.055-3.26-5.963 3.26L10.732 8l3.131 3.259L19.752 8l-6.561 6.963z"/>
+        </svg>
+      </a>
 
       <footer className="bg-slate-900 text-white">
       {/* Main Footer Content */}
@@ -82,9 +51,9 @@ export default function Footer() {
                   <Phone className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                   75758595
                 </a>
-                <a href="mailto:info@cloudnine.mn" className="flex items-center gap-2 hover:text-white transition-colors">
+                <a href="mailto:contact@myroom.mn" className="flex items-center gap-2 hover:text-white transition-colors">
                   <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                  info@cloudnine.mn
+                  contact@myroom.mn
                 </a>
                 <div className="flex items-start gap-2">
                   <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
