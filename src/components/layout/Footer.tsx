@@ -10,30 +10,19 @@ export default function Footer() {
   const { t } = useHydratedTranslation();
 
   useEffect(() => {
-    // Avoid double-init (strict mode / HMR)
     if (document.getElementById('facebook-jssdk')) return;
 
-    // fb-root anchor required by the SDK
-    if (!document.getElementById('fb-root')) {
-      const fbRoot = document.createElement('div');
-      fbRoot.id = 'fb-root';
-      document.body.insertBefore(fbRoot, document.body.firstChild);
-    }
-
-    // Customer chat widget — attributes must be set via DOM to avoid TS errors
-    const chat = document.createElement('div');
-    chat.className = 'fb-customerchat';
-    chat.setAttribute('page_id', '61579682037246');
-    chat.setAttribute('attribution', 'setup_tool');
-    document.body.appendChild(chat);
-
-    // SDK init callback
     (window as Window & { fbAsyncInit?: () => void }).fbAsyncInit = function () {
-      const win = window as unknown as { FB: { init: (opts: Record<string, unknown>) => void } };
+      const win = window as unknown as {
+        FB: {
+          init: (opts: Record<string, unknown>) => void;
+          XFBML: { parse: () => void };
+        };
+      };
       win.FB.init({ xfbml: true, version: 'v18.0' });
+      win.FB.XFBML.parse();
     };
 
-    // Load Facebook SDK (standard endpoint — xfbml.customerchat.js was deprecated)
     const script = document.createElement('script');
     script.id = 'facebook-jssdk';
     script.src = 'https://connect.facebook.net/en_US/sdk.js';
@@ -43,7 +32,16 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer className="bg-slate-900 text-white">
+    <>
+      {/* Facebook SDK anchors — must be in DOM before SDK initialises */}
+      <div id="fb-root" />
+      <div
+        className="fb-customerchat"
+        data-page_id="61579682037246"
+        data-attribution="setup_tool"
+      />
+
+      <footer className="bg-slate-900 text-white">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
@@ -202,6 +200,7 @@ export default function Footer() {
         </div>
       </div>
     </footer>
+    </>
   );
 }
 
