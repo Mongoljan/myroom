@@ -39,7 +39,6 @@ export default function Footer() {
     script.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
     script.async = true;
     script.defer = true;
-    script.crossOrigin = 'anonymous';
     document.body.appendChild(script);
   }, []);
 
