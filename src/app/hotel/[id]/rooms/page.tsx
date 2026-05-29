@@ -88,7 +88,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
                 href={`/booking/manage?code=${bookingResult.booking_code}&pin=${bookingResult.pin_code}`}
                 className="flex-1 bg-slate-900 text-white py-3 px-4 rounded-xl font-medium hover:bg-slate-800 transition-colors"
               >
-                {t('booking.manageBooking', 'Захиалга удирдах')}
+                {t('booking.manageBooking', 'Захиалга шалгах')}
               </Link>
               <button
                 onClick={onClose}

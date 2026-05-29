@@ -486,17 +486,6 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             {priceInfo && (
               <div className="flex flex-col items-end gap-0.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{t('hotelDetails.startingPrice', 'Эхлэх үнэ')}:</span>
-                  {priceInfo.discount && priceInfo.original && (
-                    <>
-                      <span className="text-sm text-gray-500 dark:text-gray-400 line-through">
-                        ₮{priceInfo.original.toLocaleString()}
-                      </span>
-                      <span className="px-1.5 py-0.5 bg-red-500 text-white text-sm font-semibold rounded">
-                        -{priceInfo.discount}%
-                      </span>
-                    </>
-                  )}
                   <span className="text-h3 font-bold text-slate-900 dark:text-white">
                     ₮{priceInfo.current.toLocaleString()}
                   </span>
@@ -525,88 +514,63 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
       <div className="flex flex-col lg:flex-row gap-4 items-start">
         {/* Left column: Images + About + Highlights */}
         <div className="flex-1 min-w-0 space-y-4">
-          <div className="flex gap-1 h-56 sm:h-72 lg:h-96">
-            {/* Main Large Image - Left side */}
-            <div className="w-full lg:w-[55%] relative">
-              <div className="relative bg-gray-100 dark:bg-gray-700 overflow-hidden rounded-l-xl h-full">
-                <button
-                  type="button"
-                  className="relative w-full h-full"
-                  onClick={() => openGalleryAt(currentImageIndex)}
-                >
-                  <SafeImage
-                    src={allImages[currentImageIndex]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url) || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop&auto=format'}
-                    alt={hotelName || 'Hotel'}
-                    fill
-                    className="object-cover"
-                  />
-                </button>
+          <div className="grid grid-cols-[2fr_1fr_1fr] grid-rows-2 gap-1 h-56 sm:h-72 lg:h-96 rounded-xl overflow-hidden">
+            {/* Main Large Image — spans both rows */}
+            <div
+              className="row-span-2 relative bg-gray-100 dark:bg-gray-700 cursor-pointer group overflow-hidden"
+              onClick={() => openGalleryAt(0)}
+            >
+              <SafeImage
+                src={allImages[0]?.url || (typeof hotel.images.cover === 'string' ? hotel.images.cover : hotel.images.cover?.url) || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=600&fit=crop&auto=format'}
+                alt={hotelName || 'Hotel'}
+                fill
+                className="object-cover transition-transform group-hover:scale-105"
+              />
+            </div>
 
-                {allImages.length > 1 && (
-                  <>
-                    {/* <button
-                      onClick={prevImage}
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-lg transition-all"
-                      aria-label="Previous image"
-                    >
-                      <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-                    </button>
-                    <button
-                      onClick={nextImage}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-lg transition-all"
-                      aria-label="Next image"
-                    >
-                      <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-                    </button> */}
-                  </>
+            {/* 4 smaller images — 2 columns × 2 rows */}
+            {allImages.filter(img => img.url).slice(1, 5).map((image, index) => (
+              <div
+                key={index}
+                className={`relative bg-gray-100 dark:bg-gray-700 cursor-pointer group overflow-hidden ${
+                  index === 1 ? 'rounded-tr-xl' :
+                  index === 3 ? 'rounded-br-xl' : ''
+                }`}
+                onClick={() => openGalleryAt(index + 1)}
+              >
+                <SafeImage
+                  src={image.url}
+                  alt={`${hotelName || 'Hotel'} - ${index + 2}`}
+                  fill
+                  className="object-cover transition-transform group-hover:scale-105"
+                />
+                {/* Show "see all photos" overlay on the last thumbnail */}
+                {index === 3 && allImages.filter(img => img.url).length > 5 && (
+                  <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1.5 hover:bg-black/70 transition-colors">
+                    <Camera className="w-6 h-6 text-white/90" />
+                    <span className="text-white font-semibold text-base leading-tight">
+                      {t('hotelDetails.seeAllPhotos', 'Бүх зураг харах')}
+                    </span>
+                    <span className="text-white/80 text-sm">
+                      {allImages.filter(img => img.url).length} {t('hotelDetails.photos', 'зураг')}
+                    </span>
+                  </div>
                 )}
               </div>
-            </div>
+            ))}
 
-            {/* Right side images - 2x2 Grid — hidden on mobile */}
-            <div className="hidden lg:grid w-[45%] grid-cols-2 grid-rows-2 gap-1">
-              {allImages.filter(img => img.url).slice(1, 5).map((image, index) => (
+            {/* Fill empty slots if fewer than 5 images */}
+            {allImages.filter(img => img.url).length < 5 &&
+              [...Array(Math.max(0, 5 - allImages.filter(img => img.url).length))].map((_, index) => (
                 <div
-                  key={index}
-                  className={`relative cursor-pointer bg-gray-100 dark:bg-gray-700 overflow-hidden group ${
-                    index === 1 ? 'rounded-tr-xl' : 
-                    index === 3 ? 'rounded-br-xl' : ''
+                  key={`empty-${index}`}
+                  className={`relative bg-gray-100 dark:bg-gray-700 ${
+                    (allImages.filter(img => img.url).length + index) === 2 ? 'rounded-tr-xl' :
+                    (allImages.filter(img => img.url).length + index) === 4 ? 'rounded-br-xl' : ''
                   }`}
-                  onClick={() => openGalleryAt(index + 1)}
-                >
-                  <SafeImage
-                    src={image.url}
-                    alt={`${hotelName || 'Hotel'} - ${index + 2}`}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                  />
-                  {/* Show +X photos overlay on last image if more images available */}
-                  {index === 3 && allImages.filter(img => img.url).length > 5 && (
-                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:bg-black/70 transition-colors">
-                      <Camera className="w-6 h-6 text-white/90" />
-                      <span className="text-white font-semibold text-base leading-tight">
-                        {t('hotelDetails.seeAllPhotos', 'Бүх зураг харах')}
-                      </span>
-                      <span className="text-white/80 text-sm">
-                        {allImages.filter(img => img.url).length} {t('hotelDetails.photos', 'зураг')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-              {/* Fill empty slots if less than 4 side images */}
-              {allImages.filter(img => img.url).length < 5 && 
-                [...Array(Math.max(0, 4 - (allImages.filter(img => img.url).length - 1)))].map((_, index) => (
-                  <div 
-                    key={`empty-${index}`} 
-                    className={`relative bg-gray-100 dark:bg-gray-700 ${
-                      (allImages.filter(img => img.url).length - 1 + index) === 1 ? 'rounded-tr-xl' : 
-                      (allImages.filter(img => img.url).length - 1 + index) === 3 ? 'rounded-br-xl' : ''
-                    }`}
-                  />
-                ))
-              }
-            </div>
+                />
+              ))
+            }
           </div>
 
           {/* Thumbnail Row */}

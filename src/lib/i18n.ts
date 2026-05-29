@@ -1497,7 +1497,7 @@ const resources = {
           description: "Зочид буудлын захиалгаа баталгаажуулаарай."
         },
         manageBooking: {
-          title: "Захиалга удирдах | MyRoom",
+          title: "Захиалга шалгах | MyRoom",
           description: "Таны зочид буудлын захиалгын мэдээллийг харах, удирдах."
         },
         login: {
@@ -1695,7 +1695,7 @@ const resources = {
         logout: "Гарах",
         becomeExpert: "Мэргэжилтэн болох",
         signInRegister: "Нэвтрэх / Бүртгүүлэх",
-        manageBooking: "Захиалга удирдах",
+        manageBooking: "Захиалга шалгах",
         signIn: "Нэвтрэх",
         signUp: "Бүртгүүлэх",
         pages: "Хуудас",
@@ -1896,7 +1896,7 @@ const resources = {
         shortcutsToTasks: "Нийтлэг үүрэгт товчлол",
         newSearch: "Шинэ хайлт",
         findNextDestination: "Дараагийн очих газраа олоорой",
-        manageBookings: "Захиалга удирдах",
+        manageBookings: "Захиалга шалгах",
         viewModify: "Захиалга харах & өөрчлөх",
         savedHotels: "Хадгалсан зочид буудлууд",
         favoriteProperties: "Таны дуртай зочид буудлууд",
@@ -1964,7 +1964,7 @@ const resources = {
         bookNow: "Одоо захиалах",
         selectRoom: "Өрөө сонгох",
         viewDetails: "Дэлгэрэнгүй",
-        freeCancellationUntil: "{{date}}-нээс өмнө цуцлах боломжтой. (Цуцлалтын хураамжгүй)",
+        freeCancellationUntil: "{{date}}-нээс өмнө цуцлах боломжтой.",
         onlyRoomsLeft: "Сүүлийн {{count}} өрөө үлдлээ.",
         amenities: "Тохижилт",
         reviews: "Сэтгэгдэл",
@@ -2513,7 +2513,7 @@ const resources = {
         pinCode: "PIN код",
         keepCodesInfo: "Эдгээр кодуудыг хадгалж байгаарай. Захиалгаа шалгах, өөрчлөх, эсвэл цуцлахдаа ашиглана.",
         goHome: "Нүүр хуудас руу буцах",
-        manageBooking: "Захиалга удирдах",
+        manageBooking: "Захиалга шалгах",
         confirmCTA: "Захиалга баталгаажуулах",
         bookingInProgress: "Захиалж байна...",
         detailsTitle: "Захиалгын дэлгэрэнгүй",

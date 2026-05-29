@@ -644,7 +644,7 @@ function BookingContent() {
 
               {/* Manage booking card */}
               <div className="bg-card border border-border rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Захиалга удирдах</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">Захиалга шалгах</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {managementActions.map((a) => {
                     const Icon = a.icon;
@@ -1754,7 +1754,7 @@ function BookingContent() {
               </li>
             </ul>
             <p>
-              Цуцлах хүсэлтийг &ldquo;Захиалга удирдах&rdquo; хэсгээр эсвэл info@myroom.mn
+              Цуцлах хүсэлтийг &ldquo;Захиалга шалгах&rdquo; хэсгээр эсвэл info@myroom.mn
               и-мэйл хаягт бичгээр илгээнэ үү. Буцаан олголт нь гүйцэтгэх банкны ажлын
               цагаас хамааран 3–7 ажлын өдөр шаардагдаж болно.
             </p>

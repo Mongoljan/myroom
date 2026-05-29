@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Bed, Calendar } from 'lucide-react';
 import { hotelRoomsService, EnrichedHotelRoom } from '@/services/hotelRoomsApi';
@@ -64,6 +64,9 @@ export default function ImprovedHotelRoomsSection({
       ?.map(p => p.child_policy?.max_child_age)
       .find((age): age is number => age != null)
   );
+
+  // Ref for anchoring the date picker modal to the date section container
+  const dateContainerRef = useRef<HTMLDivElement>(null);
 
   // State
   const [rooms, setRooms] = useState<EnrichedHotelRoom[]>([]);
@@ -386,7 +389,7 @@ export default function ImprovedHotelRoomsSection({
         {/* Room Search Bar — always visible even when no rooms */}
         <div className="mb-6 bg-white dark:bg-gray-800 border border-primary rounded-xl shadow-sm overflow-hidden">
           <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
-            <div className="lg:flex-1 p-2.5">
+            <div ref={dateContainerRef} className="lg:flex-1 p-2.5">
               <div className="flex items-center">
                 <Calendar className="w-4.5 h-4.5 text-gray-700 dark:text-gray-300 mr-2.5 shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -403,6 +406,7 @@ export default function ImprovedHotelRoomsSection({
                       setBookingItems([]);
                     }}
                     minimal={true}
+                    anchorRef={dateContainerRef}
                   />
                 </div>
               </div>
@@ -475,7 +479,7 @@ export default function ImprovedHotelRoomsSection({
       <div className="mb-6 bg-white dark:bg-gray-800 border border-primary rounded-xl shadow-sm overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
           {/* Date Range — flex-1 for equal half */}
-          <div className="lg:flex-1 p-2.5">
+          <div ref={dateContainerRef} className="lg:flex-1 p-2.5">
             <div className="flex items-center">
               <Calendar className="w-4.5 h-4.5 text-gray-700 dark:text-gray-300 mr-2.5 shrink-0" />
               <div className="flex-1 min-w-0">
@@ -492,6 +496,7 @@ export default function ImprovedHotelRoomsSection({
                     setBookingItems([]);
                   }}
                   minimal={true}
+                  anchorRef={dateContainerRef}
                 />
               </div>
             </div>

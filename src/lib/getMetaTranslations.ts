@@ -68,7 +68,7 @@ const metaTranslations = {
       description: "Зочид буудлын захиалгаа баталгаажуулаарай."
     },
     manageBooking: {
-      title: "Захиалга удирдах | MyRoom",
+      title: "Захиалга шалгах | MyRoom",
       description: "Таны зочид буудлын захиалгын мэдээллийг харах, удирдах."
     },
     login: {

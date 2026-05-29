@@ -423,9 +423,6 @@ export default function TripComStyleRoomCard({
                         isMultiRoom ? (
                           <span className="flex flex-col leading-tight">
                             <span>Цуцлах боломжтой</span>
-                            {multiRoomPct !== null && multiRoomPct > 0 && (
-                              <span className="text-xs text-gray-500 dark:text-gray-400">{multiRoomPct}% цуцлалтын хураамж</span>
-                            )}
                             {multiRoomPct === 0 && (
                               <span className="text-xs text-gray-500 dark:text-gray-400">Үнэгүй цуцлах боломжтой</span>
                             )}

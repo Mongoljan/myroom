@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, ChevronDown, Minus, Plus } from 'lucide-react';
+import { User, ChevronDown, Minus, Plus } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 
@@ -48,22 +48,32 @@ export default function CustomGuestSelector({
   // Debounce timer ref - reduced delay for better UX
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Simplified position calculation with performance optimization
+  // Position calculation: prefer below the button, flip above when it won't fit, then clamp to viewport
   const calculatePosition = useCallback(() => {
     if (!buttonRef.current) return;
-    
+
     const rect = buttonRef.current.getBoundingClientRect();
     const modalWidth = 320;
+    const modalHeightEstimate = 300; // generous upper-bound so clamping is conservative
     const padding = 16;
-    
-    let top = rect.bottom + 8;
+
     const left = Math.max(padding, Math.min(rect.left, window.innerWidth - modalWidth - padding));
-    
-    // Simple bottom check without complex height calculations
-    if (top > window.innerHeight * 0.7) {
-      top = rect.top - 280; // Fixed height estimate instead of dynamic calculation
+
+    const spaceBelow = window.innerHeight - rect.bottom - padding;
+    const spaceAbove = rect.top - padding;
+
+    let top: number;
+    if (spaceBelow >= modalHeightEstimate || spaceBelow >= spaceAbove) {
+      // Enough room below, or more room below than above → open downward
+      top = rect.bottom + 8;
+    } else {
+      // More room above → open upward
+      top = rect.top - modalHeightEstimate - 8;
     }
-    
+
+    // Always clamp to stay fully within the viewport
+    top = Math.max(padding, Math.min(top, window.innerHeight - modalHeightEstimate - padding));
+
     setModalPosition({ top, left });
   }, []);
 
@@ -187,7 +197,7 @@ export default function CustomGuestSelector({
         className={`w-full flex items-center justify-between ${compact ? 'p-1.5' : 'p-5'} transition-colors group hover:bg-gray-50 dark:hover:bg-gray-700`}
       >
         <div className="flex items-center gap-4">
-          <Users className={`${compact ? 'w-4 h-4' : 'w-6 h-6'} text-slate-900`} />
+          <User className={`${compact ? 'w-4 h-4' : 'w-6 h-6'} text-slate-900`} />
           <div className="text-left">
             <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
               {t('search.guest', 'Зочин')}

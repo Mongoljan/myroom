@@ -37,7 +37,7 @@ export default function LocationInput({
             value={destination}
             onChange={(e) => onLocationChange(e.target.value)}
             onFocus={onLocationFocus}
-            placeholder={t('search.destinationPlaceholder', 'Хот, дүүрэг оруулна уу')}
+            placeholder={t('search.destinationPlaceholder', 'Буудлын нэрээр хайх')}
             className={`w-full ${compact ? 'text-sm' : 'text-base font-medium'} text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 border-none outline-none bg-transparent`}
           />
         </div>

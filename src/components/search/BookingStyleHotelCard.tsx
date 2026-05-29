@@ -1,9 +1,8 @@
 'use client';
 
-import { Star, MapPin, User, X, CalendarX } from 'lucide-react';
+import { Star, MapPin, User, Baby, X, CalendarX, Wifi, Wind, Tv, UtensilsCrossed, Cigarette, CigaretteOff, Bath, Scissors, Fan, Bug } from 'lucide-react';
 import { BedTypeIcon } from '@/utils/bedTypeIcons';
-import { FaChild } from 'react-icons/fa';
-import { SearchHotelResult } from '@/types/api';
+import { SearchHotelResult, RoomFacilityItem, HotelFacility } from '@/types/api';
 import { SEARCH_DESIGN_SYSTEM } from '@/styles/search-design-system';
 import { memo, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -11,6 +10,52 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import GoogleMapModal from '@/components/common/GoogleMapModal';
 import HotelImageGallery from './HotelImageGallery';
 import { getFacilityName, getFacilityKey } from '@/utils/facilities';
+
+// Same priority list used by TripComStyleRoomCard — first matching ones are shown
+const PRIORITY_ROOM_FACILITIES: Array<{
+  facilityId?: number;
+  bathroomId?: number;
+  key: string;
+  labelMn: string;
+  icon: React.ReactNode;
+}> = [
+  { facilityId: 48, key: 'wifi',        labelMn: 'Үнэгүй Wi-Fi',         icon: <Wifi className="w-3 h-3" /> },
+  { facilityId: 1,  key: 'ac',          labelMn: 'Агааржуулагч',          icon: <Wind className="w-3 h-3" /> },
+  { facilityId: 4,  key: 'tv',          labelMn: 'Хавтгай дэлгэцтэй TV', icon: <Tv className="w-3 h-3" /> },
+  { facilityId: 49, key: 'kitchen',     labelMn: 'Гал тогооны хэсэг',    icon: <UtensilsCrossed className="w-3 h-3" /> },
+  { facilityId: 16, key: 'non_smoking', labelMn: 'Тамхи татдаггүй',      icon: <CigaretteOff className="w-3 h-3 text-green-500" /> },
+  { facilityId: 13, key: 'smoking',     labelMn: 'Тамхилах өрөө',        icon: <Cigarette className="w-3 h-3 text-orange-400" /> },
+  { key: 'bathroom',                    labelMn: 'Угаалгын өрөө',         icon: <Bath className="w-3 h-3" /> },
+  { bathroomId: 4,  key: 'hairdryer',   labelMn: 'Үсний сэнс',            icon: <Scissors className="w-3 h-3" /> },
+  { facilityId: 35, key: 'fan',         labelMn: 'Сэнс',                  icon: <Fan className="w-3 h-3" /> },
+  { facilityId: 40, key: 'mosquito',    labelMn: 'Шумуулны тор',          icon: <Bug className="w-3 h-3" /> },
+];
+
+function getPriorityRoomFacilities(
+  roomFacilities: RoomFacilityItem[],
+  bathroomItems: RoomFacilityItem[],
+  hasBathroom: boolean,
+  limit = 4
+) {
+  const facilityIds = new Set(roomFacilities.map((f) => f.id));
+  const bathroomIds = new Set(bathroomItems.map((b) => b.id));
+  const result: Array<{ key: string; labelMn: string; icon: React.ReactNode }> = [];
+
+  for (const entry of PRIORITY_ROOM_FACILITIES) {
+    if (result.length >= limit) break;
+    if (entry.facilityId !== undefined && facilityIds.has(entry.facilityId)) { result.push(entry); continue; }
+    if (entry.bathroomId !== undefined && bathroomIds.has(entry.bathroomId)) { result.push(entry); continue; }
+    if (entry.key === 'bathroom' && hasBathroom) { result.push(entry); }
+  }
+  return result;
+}
+
+// Fallback: hotel-level general_facilities sorted by is_highlight
+function getSortedHotelFacilities(facilities: HotelFacility[], limit = 4): HotelFacility[] {
+  const highlighted = facilities.filter(f => typeof f === 'object' && f !== null && (f as { is_highlight?: boolean }).is_highlight);
+  const rest = facilities.filter(f => !(typeof f === 'object' && f !== null && (f as { is_highlight?: boolean }).is_highlight));
+  return [...highlighted, ...rest].slice(0, limit);
+}
 
 interface HotelCardProps {
   hotel: SearchHotelResult;
@@ -110,13 +155,6 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                 viewMode="list"
                 className="w-full h-full"
               />
-
-              {/* Discount Badge - Top Left (Trip.com Style) */}
-              {pricingInfo.hasDiscount && (
-                <div className="absolute top-2.5 left-2.5 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                  {Math.round(pricingInfo.discountPercent)}% off
-                </div>
-              )}
             </div>
 
             {/* Hotel Details - Compact */}
@@ -185,7 +223,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         )}
                         {(hotel.cheapest_room.capacity_per_room_children || 0) > 0 && (
                           <span className="flex items-center gap-0.5 text-[14px] font-medium text-gray-700 dark:text-gray-300">
-                            <FaChild className="w-3.5 h-3.5" />
+                            <Baby className="w-3.5 h-3.5" />
                             <span>×{hotel.cheapest_room.capacity_per_room_children}</span>
                           </span>
                         )}
@@ -223,36 +261,75 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         </p>
                       )}
 
-                      {/* Facility Tags */}
-                      <div className="flex flex-wrap gap-1 mt-1.5">
-                        {hotel.general_facilities.slice(0, 4).map((facility, index) => {
-                          const name = getFacilityName(facility);
-                          const isBreakfast = /цай|breakfast/i.test(name);
+                      {/* Facility Tags — prioritised room features when available, fallback to hotel-level */}
+                      {(() => {
+                        const room = hotel.cheapest_room;
+                        const priorityFacilities = room
+                          ? getPriorityRoomFacilities(
+                              room.room_facilities ?? [],
+                              room.bathroom_items ?? [],
+                              (room.bathroom_items?.length ?? 0) > 0,
+                            )
+                          : [];
+
+                        if (priorityFacilities.length > 0) {
+                          const remaining = (room?.room_facilities?.length ?? 0) + (room?.bathroom_items?.length ?? 0);
+                          const shownCount = priorityFacilities.length;
+                          const extraCount = Math.max(0, remaining - shownCount);
                           return (
-                            <span
-                              key={getFacilityKey(facility, index)}
-                              className={`inline-flex items-center text-[13px] rounded px-2 py-0.5 border ${
-                                isBreakfast
-                                  ? 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
-                                  : 'text-gray-600 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
-                              }`}
-                            >
-                              {name}
-                            </span>
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              {priorityFacilities.map((f) => (
+                                <span
+                                  key={f.key}
+                                  className="inline-flex items-center gap-1 text-[13px] rounded px-2 py-0.5 border text-gray-600 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                                >
+                                  {f.icon}
+                                  {f.labelMn}
+                                </span>
+                              ))}
+                              {extraCount > 0 && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setShowAllFacilities(true); }}
+                                  className="inline-flex items-center text-xs text-primary bg-slate-50 dark:bg-gray-700 hover:bg-slate-100 dark:hover:bg-gray-600 hover:underline rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 transition-all shrink-0"
+                                >
+                                  +{extraCount}
+                                </button>
+                              )}
+                            </div>
                           );
-                        })}
-                        {hotel.general_facilities.length > 4 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setShowAllFacilities(true);
-                            }}
-                            className="inline-flex items-center text-xs text-primary bg-slate-50 dark:bg-gray-700 hover:bg-slate-100 dark:hover:bg-gray-600 hover:underline rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 transition-all shrink-0"
-                          >
-                            +{hotel.general_facilities.length - 4}
-                          </button>
-                        )}
-                      </div>
+                        }
+
+                        // Fallback: hotel-level facilities sorted by is_highlight
+                        const fallbackFacilities = getSortedHotelFacilities(hotel.general_facilities);
+                        return (
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {fallbackFacilities.map((facility, index) => {
+                              const name = getFacilityName(facility);
+                              const isBreakfast = /цай|breakfast/i.test(name);
+                              return (
+                                <span
+                                  key={getFacilityKey(facility, index)}
+                                  className={`inline-flex items-center text-[13px] rounded px-2 py-0.5 border ${
+                                    isBreakfast
+                                      ? 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
+                                      : 'text-gray-600 dark:text-gray-300 bg-gray-200 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                                  }`}
+                                >
+                                  {name}
+                                </span>
+                              );
+                            })}
+                            {hotel.general_facilities.length > 4 && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setShowAllFacilities(true); }}
+                                className="inline-flex items-center text-xs text-primary bg-slate-50 dark:bg-gray-700 hover:bg-slate-100 dark:hover:bg-gray-600 hover:underline rounded px-2 py-0.5 border border-gray-200 dark:border-gray-600 transition-all shrink-0"
+                              >
+                                +{hotel.general_facilities.length - 4}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       {/* Facilities Modal */}
                       {showAllFacilities && typeof window !== 'undefined' && createPortal(
@@ -414,13 +491,6 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
             viewMode="grid"
             className="w-full h-full"
           />
-          
-          {/* Discount Badge - Top Left (Trip.com Style) */}
-          {pricingInfo.hasDiscount && (
-            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-              {Math.round(pricingInfo.discountPercent)}% off
-            </div>
-          )}
         </div>
 
         {/* Hotel Info - Compact */}

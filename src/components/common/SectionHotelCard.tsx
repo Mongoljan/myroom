@@ -144,21 +144,28 @@ export default function SectionHotelCard({
             {/* Зочдын үнэлгээ */}
             <div className="flex items-center gap-1">
               <span className="bg-primary text-white text-xs font-bold px-1.5 py-0.5 rounded leading-none">
-                {rating.toFixed(1)}
+                {(rating ?? 0).toFixed(1)}
               </span>
               <span className={`${text.caption} text-gray-500 dark:text-gray-400 leading-none`}>
                 {ratingLabel?.replace(/\d+\s*stars?/i, '').trim() || t('hotel.rating', 'Үнэлгээ')}
               </span>
             </div>
             {/* Эхлэх үнэ */}
-            {price > 0 && (
-              <div className="text-right">
-                <div className={`${text.caption} text-gray-400 dark:text-gray-500 leading-none mb-0.5`}>{t('hotelDetails.startingPrice', 'Эхлэх үнэ')}</div>
-                <div className={`${text.bodySm} font-bold text-gray-900 dark:text-white leading-none`}>
-                  ₮{formatPrice(price)}
-                </div>
-              </div>
-            )}
+                   <div className="text-right">
+                 <div className={`${text.caption} text-gray-400 dark:text-gray-500 leading-none mb-0.5`}>{t('hotelDetails.startingPrice', 'Эхлэх үнэ')}</div>
+                        <div className={`${text.bodySm} font-bold text-gray-900 dark:text-white leading-none`}>
+            {price > 0 ? (
+       
+           
+         
+            <div>      ₮{formatPrice(price)}
+            </div>
+           
+        
+            )   : ( <div className="h-5">  </div> )}
+            
+            </div>
+                  </div>
           </div>
 
         </div>
