@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { useWishlist, useCustomerSettings, useAuthenticatedUser } from '@/hooks/useCustomer';
 import { Currency, Language } from '@/types/customer';
+import { formatHotelLocation } from '@/utils/formatHotelLocation';
 
 export default function CustomerAPIDemo() {
   const { token, isAuthenticated } = useAuthenticatedUser();
@@ -106,7 +107,7 @@ export default function CustomerAPIDemo() {
                     <div>
                       <h5 className="font-medium">{item.hotel.PropertyName}</h5>
                       <p className="text-sm text-gray-600">
-                        {item.hotel.location ? `${item.hotel.location.province_city || ''}, ${item.hotel.location.soum || ''}`.replace(/, ?$/, '') : 'Location not available'}
+                        {item.hotel.location ? formatHotelLocation(item.hotel.location) || 'Location not available' : 'Location not available'}
                       </p>
                     </div>
                     <button

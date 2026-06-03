@@ -10,6 +10,7 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import GoogleMapModal from '@/components/common/GoogleMapModal';
 import HotelImageGallery from './HotelImageGallery';
 import { getFacilityName, getFacilityKey } from '@/utils/facilities';
+import { formatHotelLocation, formatHotelLocationParts } from '@/utils/formatHotelLocation';
 
 // Same priority list used by TripComStyleRoomCard — first matching ones are shown
 const PRIORITY_ROOM_FACILITIES: Array<{
@@ -184,9 +185,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                   <div className="flex items-center gap-1 text-[14px] text-gray-600 dark:text-gray-400 mb-1">
                     <MapPin className="w-3 h-3 shrink-0" />
                     <span className="truncate">
-                      {[hotel.location.province_city, hotel.location.soum, hotel.location.district]
-                        .filter(Boolean)
-                        .join(', ')}
+                      {formatHotelLocation(hotel.location)}
                     </span>
                       {hotel.google_map && (
                     <button
@@ -466,9 +465,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
           onClose={() => setShowMapModal(false)}
           googleMapUrl={hotel.google_map}
           hotelName={hotel.property_name}
-          hotelAddress={[hotel.location.province_city, hotel.location.soum, hotel.location.district]
-            .filter(Boolean)
-            .join(', ')}
+          hotelAddress={formatHotelLocationParts(hotel.location).join(', ')}
         />
       </>
     );
@@ -514,9 +511,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
           <div className="flex items-center text-[14px] text-gray-600 dark:text-gray-400 mb-1.5">
             <MapPin className="w-3 h-3 mr-1" />
             <span className="text-[14px] line-clamp-1">
-              {[hotel.location.province_city, hotel.location.soum, hotel.location.district]
-                .filter(Boolean)
-                .join(', ')}
+              {formatHotelLocation(hotel.location)}
             </span>
           </div>
 
@@ -600,9 +595,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
         onClose={() => setShowMapModal(false)}
         googleMapUrl={hotel.google_map}
         hotelName={hotel.property_name}
-        hotelAddress={[hotel.location.province_city, hotel.location.soum, hotel.location.district]
-          .filter(Boolean)
-          .join(', ')}
+        hotelAddress={formatHotelLocation(hotel.location)}
       />
     </>
   );

@@ -17,6 +17,7 @@ import GoogleMapModal, { NearbyPlace } from '@/components/common/GoogleMapModal'
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { ConfirmAddress, Facility, SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, PropertyImage } from '@/types/api';
+import { formatDistrictLabel } from '@/utils/formatHotelLocation';
 import { Train, Plane, Landmark, Utensils as RestaurantIcon, ShoppingBag, Building2 } from 'lucide-react';
 import WishlistHeart from '@/components/wishlist/WishlistHeart';
 import { useAuthenticatedUser } from '@/hooks/useCustomer';
@@ -454,7 +455,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             <div className="flex items-center gap-1">
                <MapPin className="w-4 h-4" />
               <span className="text-gray-700 dark:text-gray-300 text-sm">
-            Монгол, {hotel.location.province_city} {provinceLabel}{hotel.location.soum && `, ${hotel.location.soum} ${soumLabel}`}
+            Монгол, {hotel.location.province_city} {provinceLabel}{hotel.location.soum && `, ${hotel.location.soum} ${soumLabel}`}{hotel.location.district && `, ${formatDistrictLabel(hotel.location.province_city, hotel.location.district)}`}
                 
               </span>
               {hotel.google_map && (
@@ -572,28 +573,6 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
               ))
             }
           </div>
-
-          {/* Thumbnail Row */}
-          {allImages.filter(img => img.url).length > 5 && (
-            <div className="flex gap-1 mt-1">
-              {allImages.filter(img => img.url).slice(0, 7).map((image, index) => (
-                <div
-                  key={index}
-                  className={`relative h-12 flex-1 cursor-pointer bg-gray-100 dark:bg-gray-700 overflow-hidden rounded-md group ${currentImageIndex === index ? 'ring-2 ring-blue-600' : ''}`}
-                  onClick={() => openGalleryAt(index)}
-                >
-                  <SafeImage
-                    src={image.url}
-                    alt={`${hotelName || 'Hotel'} - ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-
-
           {/* About + Highlights — single combined card */}
           {(additionalInfo?.About || (() => {
             const allFacs = [

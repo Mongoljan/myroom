@@ -7,6 +7,11 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { CustomerService } from '@/services/customerApi';
 import { ApiService } from '@/services/api';
 import { CustomerBooking } from '@/types/customer';
+import {
+  buildBookingPaymentUrl,
+  canResumePaymentForBooking,
+  getActivePaymentSession,
+} from '@/utils/pendingPaymentSession';
 
 type StatusFilter = 'all' | 'pending' | 'confirmed' | 'canceled' | 'finished';
 
@@ -121,6 +126,19 @@ export default function BookingsPage() {
   const formatDate = (d: string) => d?.replace(/-/g, '/') ?? '';
   const formatPrice = (p: number) => p.toLocaleString('mn-MN') + ' ₮';
 
+  const getDetailsHref = (booking: CustomerBooking) => {
+    const hotelId = hotelMeta[booking.hotel_name]?.id ?? booking.hotel;
+    if (booking.status === 'pending' && canResumePaymentForBooking(booking.booking_code)) {
+      const session = getActivePaymentSession();
+      if (session) return buildBookingPaymentUrl(session.context);
+    }
+    return `/hotel/${hotelId}`;
+  };
+
+  const handleTabChange = (value: StatusFilter) => {
+    setActiveTab(value);
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="px-6 pt-6 pb-0">
@@ -131,7 +149,7 @@ export default function BookingsPage() {
           {TABS.map((tab) => (
             <button
               key={tab.value}
-              onClick={() => setActiveTab(tab.value)}
+              onClick={() => handleTabChange(tab.value)}
               className={`px-4 py-2 text-sm rounded-full whitespace-nowrap transition font-medium ${
                 activeTab === tab.value
                   ? 'bg-gray-800 text-white'
@@ -213,7 +231,7 @@ export default function BookingsPage() {
 
                 <div className="flex gap-2 flex-wrap justify-end">
                   <Link
-                    href={`/hotel/${hotelMeta[booking.hotel_name]?.id ?? booking.hotel}`}
+                    href={getDetailsHref(booking)}
                     className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >
                     {t('profileBookings.details')}

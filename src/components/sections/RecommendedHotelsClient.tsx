@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { formatHotelLocation } from '@/utils/formatHotelLocation';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
@@ -33,8 +34,7 @@ function getHotelImage(hotel: SearchHotelResult): string {
 }
 
 function getLocation(hotel: SearchHotelResult): string {
-  const loc = hotel.location;
-  return loc?.province_city || loc?.soum || loc?.district || '';
+  return formatHotelLocation(hotel.location) || '';
 }
 
 function getPrice(hotel: SearchHotelResult): number {

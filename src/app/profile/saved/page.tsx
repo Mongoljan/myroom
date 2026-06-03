@@ -7,6 +7,7 @@ import { useWishlist } from '@/hooks/useCustomer';
 import { useAuth } from '@/contexts/AuthContext';
 import { WishlistItem } from '@/types/customer';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { formatHotelLocation } from '@/utils/formatHotelLocation';
 
 export default function SavedPage() {
   const { t } = useHydratedTranslation();
@@ -142,7 +143,7 @@ export default function SavedPage() {
                   <Link href={`/hotel/${h.id}`} className="flex flex-col flex-1 p-4 gap-1">
                     <h3 className="font-bold text-sm text-gray-900 dark:text-white leading-snug line-clamp-1">{h.PropertyName}</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                      {[h.location?.province_city, h.location?.soum].filter(Boolean).join(', ')}
+                      {formatHotelLocation(h.location)}
                     </p>
 
                     {/* Stars + rating */}

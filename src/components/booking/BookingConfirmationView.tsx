@@ -12,6 +12,7 @@ import BookingConfirmationBookingCodes from '@/components/booking/BookingConfirm
 import BookingConfirmationManageActions from '@/components/booking/BookingConfirmationManageActions';
 import BookingConfirmationContactMap from '@/components/booking/BookingConfirmationContactMap';
 import type { BookingConfirmationViewProps } from '@/components/booking/bookingConfirmationTypes';
+import { formatHotelLocation } from '@/utils/formatHotelLocation';
 
 export default function BookingConfirmationView(props: BookingConfirmationViewProps) {
   const { t } = useHydratedTranslation();
@@ -58,11 +59,7 @@ export default function BookingConfirmationView(props: BookingConfirmationViewPr
   const hotelWebsite: string | undefined = hotelDetails?.website;
   const googleMapUrl: string | undefined = hotelDetails?.google_map;
 
-  const addressLine = hotelDetails?.location
-    ? [hotelDetails.location.province_city, hotelDetails.location.soum, hotelDetails.location.district]
-        .filter(Boolean)
-        .join(', ')
-    : '';
+  const addressLine = formatHotelLocation(hotelDetails?.location);
 
   const checkInTime = hotelPolicy ? hotelPolicy.check_in_from.substring(0, 5) : '14:00';
   const checkOutTime = hotelPolicy ? hotelPolicy.check_out_until.substring(0, 5) : '12:00';

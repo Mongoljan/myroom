@@ -5,6 +5,7 @@ import { Star, MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { HotelLocation, RatingStars } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { formatDistrictLabel } from '@/utils/formatHotelLocation';
 
 interface HotelInfoProps {
   name: string;
@@ -82,7 +83,9 @@ export default function HotelInfo({
             <div className="text-slate-500 dark:text-slate-400">{location.soum}</div>
           )}
           {location.district && (
-            <div className="text-slate-500 dark:text-slate-400">{location.district}</div>
+            <div className="text-slate-500 dark:text-slate-400">
+              {formatDistrictLabel(location.province_city, location.district)}
+            </div>
           )}
         </div>
       </div>

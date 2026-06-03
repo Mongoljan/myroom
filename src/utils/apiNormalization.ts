@@ -10,6 +10,8 @@
  * since it's the most consistent format.
  */
 
+import { formatHotelLocation, type HotelLocationInput } from './formatHotelLocation';
+
 export interface NormalizedHotel {
   id: number;
   PropertyName: string;
@@ -239,12 +241,7 @@ export function extractHotelLocation(hotelData: HotelLocationData): string {
       return hotelData.location;
     }
     if (typeof hotelData.location === 'object') {
-      const parts = [
-        hotelData.location.province_city,
-        hotelData.location.soum,
-        hotelData.location.district
-      ].filter(Boolean);
-      return parts.join(', ');
+      return formatHotelLocation(hotelData.location as HotelLocationInput) || 'Location not specified';
     }
   }
   return 'Location not specified';

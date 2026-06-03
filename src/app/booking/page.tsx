@@ -16,6 +16,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import BookingPaymentStep from '@/components/booking/BookingPaymentStep';
 import GuestCountInline from '@/components/common/GuestCountInline';
 import BackButton from '@/components/common/BackButton';
+import { formatHotelLocation } from '@/utils/formatHotelLocation';
+import {
+  saveBookingPaymentContext,
+  clearPaymentSession,
+  getBookingPaymentContext,
+} from '@/utils/pendingPaymentSession';
 
 function StepLabel({ labelKey }: { labelKey: string }) {
   const { t } = useHydratedTranslation();
@@ -42,6 +48,22 @@ interface BookingRoom {
   total_price: number;
   max_adults?: number;
   max_children?: number;
+}
+
+function parseHotelStarCount(ratingStars?: { value?: string } | null): number {
+  const match = ratingStars?.value?.match(/(\d+)/);
+  return match ? Math.min(5, Math.max(0, parseInt(match[1], 10))) : 0;
+}
+
+function getGuestRatingDisplay(ratingStars?: { value?: string; label?: string } | null): {
+  score: number;
+  label: string;
+} | null {
+  if (!ratingStars?.value || /star/i.test(ratingStars.value)) return null;
+  const score = parseFloat(ratingStars.value);
+  if (!Number.isFinite(score) || score <= 0 || score > 10) return null;
+  const label = ratingStars.label?.replace(/\d+\.?\d*\s*stars?/i, '').trim() || '';
+  return { score, label };
 }
 
 function BookingContent() {
@@ -136,6 +158,14 @@ function BookingContent() {
         const saved = sessionStorage.getItem('booking_result');
         if (saved) setBookingResult(JSON.parse(saved) as CreateBookingResponse);
       } catch { /* ignore */ }
+
+      const savedContext = getBookingPaymentContext();
+      if (savedContext) {
+        if (!customerName && savedContext.customerName) setCustomerName(savedContext.customerName);
+        if (!customerLastName && savedContext.customerLastName) setCustomerLastName(savedContext.customerLastName);
+        if (!customerPhone && savedContext.customerPhone) setCustomerPhone(savedContext.customerPhone);
+        if (!customerEmail && savedContext.customerEmail) setCustomerEmail(savedContext.customerEmail);
+      }
     }
     setHasMounted(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -363,8 +393,23 @@ function BookingContent() {
       const result = await BookingService.createBooking(bookingRequest);
       sessionStorage.setItem('booking_step', '3');
       sessionStorage.setItem('booking_result', JSON.stringify(result));
-      // Store QPay timer expiry so the countdown persists across refresh
-      sessionStorage.setItem('qpay_expiry', String(Date.now() + 10 * 60 * 1000));
+      saveBookingPaymentContext({
+        hotelId,
+        hotelName,
+        checkIn,
+        checkOut,
+        totalPrice,
+        nights,
+        adults: adultsCount,
+        children: childrenCount,
+        searchedRooms: searchedRoomsCount,
+        rooms,
+        customerName,
+        customerLastName,
+        customerPhone,
+        customerEmail,
+        bookingCode: result.booking_code,
+      });
       setBookingResult(result);
       setStep(3);
     } catch (error) {
@@ -473,19 +518,11 @@ function BookingContent() {
             orgName={orgName}
             orgRegister={orgRegister}
             onCancelBooking={() => {
-              sessionStorage.removeItem('booking_step');
-              sessionStorage.removeItem('booking_result');
-              sessionStorage.removeItem('qpay_expiry');
-              sessionStorage.removeItem('qpay_invoice_id');
-              sessionStorage.removeItem('qpay_qr');
+              clearPaymentSession();
               router.push(`/hotel/${hotelId}`);
             }}
             onPaymentConfirmed={() => {
-              sessionStorage.removeItem('booking_step');
-              sessionStorage.removeItem('booking_result');
-              sessionStorage.removeItem('qpay_expiry');
-              sessionStorage.removeItem('qpay_invoice_id');
-              sessionStorage.removeItem('qpay_qr');
+              clearPaymentSession();
               setPaymentConfirmed(true);
             }}
           />
@@ -507,8 +544,10 @@ function BookingContent() {
     }
   })();
 
-  const ratingValue: number | undefined = hotelDetails?.rating_stars?.value;
-  const ratingLabel: string | undefined = hotelDetails?.rating_stars?.label;
+  const displayHotelName = hotelDetails?.property_name || hotelName;
+  const locationText = formatHotelLocation(hotelDetails?.location);
+  const hotelStarCount = parseHotelStarCount(hotelDetails?.rating_stars);
+  const guestRating = getGuestRatingDisplay(hotelDetails?.rating_stars);
 
   const cf = hotelPolicy?.cancellation_fee;
   const cancelTimeShort = cf?.cancel_time?.substring(0, 5);
@@ -980,35 +1019,37 @@ function BookingContent() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={heroImage}
-                    alt={hotelName}
+                    alt={displayHotelName}
                     className="w-24 h-24 object-cover rounded-lg shrink-0"
                   />
                 ) : (
                   <div className="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-lg shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-0.5 mb-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2">
-                    {hotelName}
-                  </h4>
-                  {hotelDetails?.location && (
-                    <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <MapPin className="w-3 h-3" />
-                      <span className="truncate">
-                        {hotelDetails.location.district || hotelDetails.location.soum || hotelDetails.location.province_city}
-                      </span>
+                  {hotelStarCount > 0 && (
+                    <div className="flex items-center gap-0.5 mb-1">
+                      {[...Array(hotelStarCount)].map((_, i) => (
+                        <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      ))}
                     </div>
                   )}
-                  {ratingValue && (
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2">
+                    {displayHotelName}
+                  </h4>
+                  {locationText && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <MapPin className="w-3 h-3 shrink-0" />
+                      <span className="truncate">{locationText}</span>
+                    </div>
+                  )}
+                  {guestRating && (
                     <div className="inline-flex items-center gap-1.5 mt-1.5">
                       <span className="bg-primary text-white text-xs font-semibold px-1.5 py-0.5 rounded">
-                        {ratingValue}
+                        {guestRating.score.toFixed(1)}
                       </span>
-                      <span className="text-xs text-gray-700 dark:text-gray-300">{ratingLabel || ''}</span>
+                      {guestRating.label ? (
+                        <span className="text-xs text-gray-700 dark:text-gray-300">{guestRating.label}</span>
+                      ) : null}
                     </div>
                   )}
                 </div>
@@ -1041,8 +1082,8 @@ function BookingContent() {
               <div className="mb-4 text-sm text-gray-700 dark:text-gray-300">
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('bookingFlow.guestCapacity')}</div>
                 <GuestCountInline
-                  adults={rooms.reduce((s, r) => s + (r.max_adults ?? 1) * r.room_count, 0)}
-                  childCount={rooms.reduce((s, r) => s + (r.max_children ?? 0) * r.room_count, 0)}
+                  adults={adultsCount}
+                  childCount={childrenCount}
                 />
               </div>
 

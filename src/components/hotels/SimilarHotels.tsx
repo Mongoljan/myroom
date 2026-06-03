@@ -8,6 +8,7 @@ import SafeImage from '@/components/common/SafeImage';
 import { ApiService } from '@/services/api';
 import { SearchHotelResult, getRoomSellingPrice } from '@/types/api';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { formatHotelLocation } from '@/utils/formatHotelLocation';
 
 interface HotelWithPrices extends SearchHotelResult {
   priceOptions?: {
@@ -181,7 +182,7 @@ export default function SimilarHotels({ currentHotelId, checkIn, checkOut }: Sim
                   <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 text-sm">
                     <MapPin className="w-3 h-3" />
                     <span className="line-clamp-1">
-                      {hotel.location?.province_city}, {hotel.location?.soum}
+                      {formatHotelLocation(hotel.location)}
                     </span>
                   </div>
                 </div>

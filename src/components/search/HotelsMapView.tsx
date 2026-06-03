@@ -7,6 +7,7 @@ import { X, ChevronLeft, Star, MapPin, Heart } from 'lucide-react';
 import BackButton from '@/components/common/BackButton';
 import Image from 'next/image';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { formatHotelLocation } from '@/utils/formatHotelLocation';
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '';
 
@@ -157,7 +158,7 @@ function HotelSidebarCard({ hotel, isSelected, onClick, searchParams }: HotelSid
         <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs mt-1">
           <MapPin className="w-3 h-3 mr-0.5" />
           <span className="line-clamp-1">
-            {hotel.location.soum || hotel.location.district || hotel.location.province_city}
+            {formatHotelLocation(hotel.location) || hotel.location.province_city}
           </span>
         </div>
 
@@ -453,7 +454,7 @@ function HotelPreviewCard({ hotel, pricing, searchParams, onClose }: HotelPrevie
 
         <div className="flex items-center text-gray-500 dark:text-gray-400 text-xs mt-1">
           <MapPin className="w-3 h-3 mr-0.5" />
-          <span>{hotel.location.soum || hotel.location.district || hotel.location.province_city}</span>
+          <span>{formatHotelLocation(hotel.location) || hotel.location.province_city}</span>
         </div>
 
         <div className="flex items-center justify-between mt-2">

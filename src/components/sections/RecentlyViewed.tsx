@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, X, Star } from 'lucide-react';
+import { formatHotelLocation } from '@/utils/formatHotelLocation';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { SearchHotelResult, getRoomSellingPrice } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -58,9 +59,7 @@ export default function RecentlyViewed() {
         return {
           id: item.id,
           name: hotel.property_name,
-          location: hotel.location?.province_city && hotel.location?.soum
-            ? `${hotel.location.province_city}, ${hotel.location.soum}`
-            : hotel.location?.province_city || t('common.locationUnknown', 'Location unknown'),
+          location: formatHotelLocation(hotel.location) || t('common.locationUnknown', 'Location unknown'),
           // No guest review score in search API — star classification only
           rating: 0,
           price: hotel.cheapest_room ? getRoomSellingPrice(hotel.cheapest_room) : (hotel.min_estimated_total || 0),
