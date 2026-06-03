@@ -1037,9 +1037,9 @@ function BookingContent() {
                     {displayHotelName}
                   </h4>
                   {locationText && (
-                    <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      <MapPin className="w-3 h-3 shrink-0" />
-                      <span className="truncate">{locationText}</span>
+                    <div className="flex  gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <MapPin className="w-3 h-3 shrink-0 mt-0.5" />
+                      <span className="">{locationText}</span>
                     </div>
                   )}
                   {guestRating && (

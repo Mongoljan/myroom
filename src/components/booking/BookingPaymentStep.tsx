@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Star, MapPin, Copy, Check, Clock, QrCode } from 'lucide-react';
 import GuestCountInline from '@/components/common/GuestCountInline';
@@ -10,9 +10,9 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { formatHotelLocation } from '@/utils/formatHotelLocation';
 import {
   getQPayRemainingSeconds,
-  getStoredQPayInvoiceStatusDate,
-  loadStoredQPayInvoice,
+  restoreQPayInvoiceFromSession,
   saveQPayInvoiceSession,
+  syncTimerFromStoredInvoice,
 } from '@/utils/qpaySession';
 
 interface BookingRoom {
@@ -55,8 +55,6 @@ const TRANSFER_BANK_ACCOUNTS: Record<TransferBank, { accountNumber: string }> = 
   tdb: { accountNumber: '453215361' },
   khan: { accountNumber: 'MN 35000 400 5682083754' },
 };
-
-const INITIAL_SECONDS = 10 * 60; // 10 minutes
 
 function padTwo(n: number) {
   return String(n).padStart(2, '0');
@@ -132,14 +130,9 @@ export default function BookingPaymentStep({
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('bankApp');
   const [transferBank, setTransferBank] = useState<TransferBank>('tdb');
-  const [timeLeft, setTimeLeft] = useState(() => {
-    const remaining = getQPayRemainingSeconds(getStoredQPayInvoiceStatusDate());
-    return remaining > 0 ? remaining : INITIAL_SECONDS;
-  });
-  const [timerExpired, setTimerExpired] = useState(() => {
-    const statusDate = getStoredQPayInvoiceStatusDate();
-    return statusDate ? getQPayRemainingSeconds(statusDate) <= 0 : false;
-  });
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [timerExpired, setTimerExpired] = useState(false);
+  const invoiceInitRef = useRef(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [checkingPayment, setCheckingPayment] = useState(false);
   const [checkMessage, setCheckMessage] = useState<string | null>(null);
@@ -156,20 +149,27 @@ export default function BookingPaymentStep({
   const [invoiceType, setInvoiceType] = useState<'individual' | 'company' | null>(null);
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
 
-  // Create QPay invoice on mount (or restore same invoice + timer from sessionStorage)
+  // Restore existing QPay invoice — never create a duplicate while the 10-min window is active
   useEffect(() => {
-    const stored = loadStoredQPayInvoice();
-    if (stored) {
+    if (invoiceInitRef.current) return;
+    invoiceInitRef.current = true;
+
+    const applyStoredInvoice = () => {
+      const stored = restoreQPayInvoiceFromSession();
+      if (!stored) return false;
       setInvoiceId(stored.id);
       setQrImage(stored.qrImage);
       setBankUrls(stored.bankUrls ?? []);
-      const remaining = getQPayRemainingSeconds(stored.invoiceStatusDate);
-      setTimeLeft(remaining);
-      setTimerExpired(remaining <= 0);
-      return;
-    }
+      setTimeLeft(stored.remainingSeconds);
+      setTimerExpired(stored.remainingSeconds <= 0);
+      return true;
+    };
+
+    if (applyStoredInvoice()) return;
 
     const createInvoice = async () => {
+      if (applyStoredInvoice()) return;
+
       setQpayLoading(true);
       setQpayError(null);
       try {
@@ -182,13 +182,16 @@ export default function BookingPaymentStep({
           }),
         });
         const data = await res.json();
+
+        if (applyStoredInvoice()) return;
+
         const invoiceStatusDate = data.invoice_status_date || new Date().toISOString();
         saveQPayInvoiceSession({ ...data, invoice_status_date: invoiceStatusDate });
         setInvoiceId(data.id);
         setQrImage(data.qr_image ?? null);
         setBankUrls(data.urls ?? []);
         const remaining = getQPayRemainingSeconds(invoiceStatusDate);
-        setTimeLeft(remaining > 0 ? remaining : INITIAL_SECONDS);
+        setTimeLeft(remaining);
         setTimerExpired(remaining <= 0);
       } catch {
         setQpayError(t('payment.qpayError'));
@@ -200,14 +203,12 @@ export default function BookingPaymentStep({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Countdown timer — anchored to QPay invoice_status_date (UTC), not page load time
+  // Countdown — always derived from stored invoice_status_date + 10 min
   useEffect(() => {
     if (timerExpired) return;
 
     const tick = () => {
-      const statusDate = getStoredQPayInvoiceStatusDate();
-      if (!statusDate) return;
-      const remaining = getQPayRemainingSeconds(statusDate);
+      const remaining = syncTimerFromStoredInvoice();
       setTimeLeft(remaining);
       if (remaining <= 0) setTimerExpired(true);
     };
