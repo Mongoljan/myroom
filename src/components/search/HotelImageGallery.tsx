@@ -1,13 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
 import { HotelImages } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { WishlistHeartOverlay } from '@/components/wishlist/WishlistHeart';
-import { useAuthenticatedUser } from '@/hooks/useCustomer';
 
 interface HotelImageGalleryProps {
   images: HotelImages;
@@ -29,7 +28,7 @@ export default function HotelImageGallery({
   profileImageUrl,
 }: HotelImageGalleryProps) {
   const { t } = useHydratedTranslation();
-  const { isAuthenticated } = useAuthenticatedUser();
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   // Per-image error tracking — one broken URL won't kill the whole gallery
   const [errorSet, setErrorSet] = useState<Set<number>>(new Set());
@@ -87,46 +86,61 @@ export default function HotelImageGallery({
     setIsModalOpen(true);
   };
 
-  const nextImage = (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setCurrentImageIndex((prev) => (prev + 1) % validImages.length);
-  };
-
-  const prevImage = (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    setCurrentImageIndex((prev) =>
-      prev === 0 ? validImages.length - 1 : prev - 1
-    );
-  };
-
-
   const safeIndex = Math.min(currentImageIndex, Math.max(0, validImages.length - 1));
   const hasMultipleImages = validImages.length > 1;
   const hasImages = validImages.length > 0;
 
   // ── Shared sub-components ────────────────────────────────────────────────
 
-  const WishlistBtn = isAuthenticated && hotelId ? (
-    <WishlistHeartOverlay hotelId={hotelId} />
-  ) : null;
+  const WishlistBtn = hotelId ? <WishlistHeartOverlay hotelId={hotelId} /> : null;
 
-  const ViewPhotosBtn = (
-    <button
-      onClick={(e) => openModalAt(safeIndex, e)}
-      className="absolute bottom-2.5 right-2.5 z-10 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 text-slate-900 dark:text-white text-xs font-semibold px-2.5 py-1.5 rounded-full shadow-md flex items-center gap-1.5"
-    >
-      <span>{t('hotel.viewPhotos', 'Зургуудыг харах')}</span>
-      <span className="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-        {normalizedImages.length}
-      </span>
-    </button>
+  const syncIndexFromScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el || el.clientWidth === 0) return;
+    const idx = Math.round(el.scrollLeft / el.clientWidth);
+    setCurrentImageIndex(Math.min(Math.max(0, idx), validImages.length - 1));
+  }, [validImages.length]);
+
+  const scrollToIndex = useCallback((index: number) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ left: index * el.clientWidth, behavior: 'smooth' });
+    setCurrentImageIndex(index);
+  }, []);
+
+  const scrollBySlide = useCallback((direction: 1 | -1) => {
+    const el = scrollRef.current;
+    if (!el || validImages.length <= 1) return;
+    const next = Math.min(
+      validImages.length - 1,
+      Math.max(0, currentImageIndex + direction),
+    );
+    scrollToIndex(next);
+  }, [currentImageIndex, scrollToIndex, validImages.length]);
+
+  const handleGalleryWheel = useCallback(
+    (e: React.WheelEvent<HTMLDivElement>) => {
+      const el = scrollRef.current;
+      if (!el || validImages.length <= 1) return;
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        e.stopPropagation();
+        el.scrollLeft += e.deltaY;
+        syncIndexFromScroll();
+      }
+    },
+    [syncIndexFromScroll, validImages.length],
   );
+
+  const ViewPhotosBtn = hasImages && validImages.length > 1 ? (
+    <button
+      type="button"
+      onClick={(e) => openModalAt(safeIndex, e)}
+      className="absolute bottom-2.5 right-2.5 z-10 bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 text-slate-900 dark:text-white text-xs font-semibold px-2.5 py-1.5 rounded-full shadow-md"
+    >
+      {t('hotel.viewPhotos', 'Зургуудыг харах')}
+    </button>
+  ) : null;
 
   const Placeholder = (
     <div className="w-full h-full bg-linear-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800 flex items-center justify-center">
@@ -142,31 +156,16 @@ export default function HotelImageGallery({
   );
 
   // ════════════════════════════════════════════════════════════════════════
-  // LIST VIEW — carousel with max 5 images, dot indicators, hotel-page nav
-  // The parent (BookingStyleHotelCard) constrains the box size (w-60 h-[240px]),
-  // so we must NOT add our own height or aspectRatio here.
+  // LIST VIEW — horizontal scroll carousel, wheel + click
   // ════════════════════════════════════════════════════════════════════════
   if (viewMode === 'list') {
-    const displayImages = validImages.slice(0, 5);
-    const totalCount = normalizedImages.length;
-    const displaySafeIndex = Math.min(currentImageIndex, Math.max(0, displayImages.length - 1));
-    const hasMultipleDisplay = displayImages.length > 1;
-
-    const nextDisplay = (e?: React.MouseEvent) => {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      setCurrentImageIndex((prev) => (prev + 1) % displayImages.length);
-    };
-    const prevDisplay = (e?: React.MouseEvent) => {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      setCurrentImageIndex((prev) => prev === 0 ? displayImages.length - 1 : prev - 1);
-    };
-    const handleImageClick = (e: React.MouseEvent) => {
+    const handleImageClick = (index: number, e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
       if (hotelUrl) {
         window.open(hotelUrl, '_blank');
       } else {
-        openModalAt(displaySafeIndex);
+        openModalAt(index);
       }
     };
 
@@ -177,44 +176,57 @@ export default function HotelImageGallery({
           onClick={(e) => e.stopPropagation()}
         >
           {hasImages ? (
-            <button
-              className="absolute inset-0 w-full h-full block"
-              onClick={handleImageClick}
+            <div
+              ref={scrollRef}
+              className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              onScroll={syncIndexFromScroll}
+              onWheel={handleGalleryWheel}
             >
-              <Image
-                src={displayImages[displaySafeIndex]?.url ?? ''}
-                alt={displayImages[displaySafeIndex]?.description || hotelName}
-                fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                sizes="260px"
-                unoptimized
-                onError={() => markError(displaySafeIndex)}
-              />
-            </button>
-          ) : Placeholder}
+              {validImages.map((img, i) => (
+                <button
+                  key={img.url + i}
+                  type="button"
+                  className="relative shrink-0 w-full h-full snap-center block"
+                  onClick={(e) => handleImageClick(i, e)}
+                >
+                  <Image
+                    src={img.url}
+                    alt={img.description || hotelName}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="260px"
+                    unoptimized
+                    onError={() => {
+                      const origIdx = normalizedImages.findIndex((n) => n.url === img.url);
+                      if (origIdx >= 0) markError(origIdx);
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          ) : (
+            Placeholder
+          )}
 
           {hasImages && (
             <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent" />
           )}
 
-          {/* Total count badge — top right, only if more than 5 images */}
-          {totalCount > 5 && (
-            <div className="absolute top-2.5 right-2.5 z-10 bg-black/60 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-              +{totalCount - 5}
-            </div>
-          )}
-
           {WishlistBtn}
 
-          {/* Dot indicators — replace "view photos" button */}
-          {hasMultipleDisplay && (
+          {hasMultipleImages && (
             <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 pointer-events-auto">
-              {displayImages.map((_, i) => (
+              {validImages.map((_, i) => (
                 <button
                   key={i}
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); setCurrentImageIndex(i); }}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    scrollToIndex(i);
+                  }}
                   className={`rounded-full transition-all duration-200 ${
-                    i === displaySafeIndex
+                    i === safeIndex
                       ? 'w-3.5 h-1.5 bg-white shadow-sm'
                       : 'w-1.5 h-1.5 bg-white/60 hover:bg-white/85'
                   }`}
@@ -224,17 +236,26 @@ export default function HotelImageGallery({
             </div>
           )}
 
-          {/* Prev / Next — reveal on hover */}
-          {hasMultipleDisplay && (
+          {hasMultipleImages && (
             <div className="absolute inset-0 flex items-center justify-between px-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
               <button
-                onClick={prevDisplay}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  scrollBySlide(-1);
+                }}
                 className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-md transition-colors pointer-events-auto"
               >
                 <ChevronLeft className="w-4 h-4 text-slate-700 dark:text-slate-300" />
               </button>
               <button
-                onClick={nextDisplay}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  scrollBySlide(1);
+                }}
                 className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-md transition-colors pointer-events-auto"
               >
                 <ChevronRight className="w-4 h-4 text-slate-700 dark:text-slate-300" />
@@ -255,9 +276,22 @@ export default function HotelImageGallery({
   }
 
   // ════════════════════════════════════════════════════════════════════════
-  // GRID VIEW — 2×2 thumbnail grid when ≥4 images, else single image
+  // GRID VIEW — same scroll carousel as list
   // ════════════════════════════════════════════════════════════════════════
-  const showGrid = validImages.length >= 4;
+  const handleGridImageClick = (index: number, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (hotelUrl) {
+      window.open(hotelUrl, '_blank');
+    } else {
+      openModalAt(index);
+    }
+  };
+
+  const markImageError = (img: { url: string }) => {
+    const origIdx = normalizedImages.findIndex((n) => n.url === img.url);
+    if (origIdx >= 0) markError(origIdx);
+  };
 
   return (
     <>
@@ -265,41 +299,34 @@ export default function HotelImageGallery({
         className={`relative w-full h-full overflow-hidden bg-slate-100 dark:bg-slate-800 group ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {!hasImages ? Placeholder : showGrid ? (
-          <div className="grid grid-cols-2 grid-rows-2 gap-0.5 w-full h-full">
-            {validImages.slice(0, 4).map((img, i) => (
+        {hasImages ? (
+          <div
+            ref={scrollRef}
+            className="absolute inset-0 flex overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            onScroll={syncIndexFromScroll}
+            onWheel={handleGalleryWheel}
+          >
+            {validImages.map((img, i) => (
               <button
                 key={img.url + i}
-                className="relative w-full h-full overflow-hidden"
-                onClick={(e) => openModalAt(i, e)}
+                type="button"
+                className="relative shrink-0 w-full h-full snap-center block"
+                onClick={(e) => handleGridImageClick(i, e)}
               >
                 <Image
                   src={img.url}
                   alt={img.description || hotelName}
                   fill
-                  sizes="140px"
-                  className="object-cover hover:scale-105 transition-transform duration-300"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 300px"
                   unoptimized
-                  onError={() => markError(i)}
+                  onError={() => markImageError(img)}
                 />
               </button>
             ))}
           </div>
         ) : (
-          <button
-            className="relative w-full h-full block"
-            onClick={(e) => openModalAt(safeIndex, e)}
-          >
-            <Image
-              src={validImages[safeIndex].url}
-              alt={validImages[safeIndex].description || hotelName}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, 300px"
-              unoptimized
-              onError={() => markError(safeIndex)}
-            />
-          </button>
+          Placeholder
         )}
 
         {hasImages && (
@@ -307,19 +334,50 @@ export default function HotelImageGallery({
         )}
 
         {WishlistBtn}
-        {hasImages && ViewPhotosBtn}
+        {ViewPhotosBtn}
 
-        {/* Prev/Next only relevant for single carousel in grid mode */}
-        {!showGrid && hasMultipleImages && (
+        {hasMultipleImages && (
+          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1 pointer-events-auto">
+            {validImages.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  scrollToIndex(i);
+                }}
+                className={`rounded-full transition-all duration-200 ${
+                  i === safeIndex
+                    ? 'w-3.5 h-1.5 bg-white shadow-sm'
+                    : 'w-1.5 h-1.5 bg-white/60 hover:bg-white/85'
+                }`}
+                aria-label={`Зураг ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
+
+        {hasMultipleImages && (
           <div className="absolute inset-0 flex items-center justify-between px-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
             <button
-              onClick={prevImage}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                scrollBySlide(-1);
+              }}
               className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-md transition-colors pointer-events-auto"
             >
               <ChevronLeft className="w-4 h-4 text-slate-700 dark:text-slate-300" />
             </button>
             <button
-              onClick={nextImage}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                scrollBySlide(1);
+              }}
               className="bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800 rounded-full p-1.5 shadow-md transition-colors pointer-events-auto"
             >
               <ChevronRight className="w-4 h-4 text-slate-700 dark:text-slate-300" />

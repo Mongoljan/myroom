@@ -65,14 +65,14 @@ export default function LoginPage() {
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-8 flex flex-col gap-6">
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-h1 font-bold text-gray-900 dark:text-white">Нэвтрэх</h1>
+            <h1 className="text-h1 font-bold text-gray-900 dark:text-white">{t('AuthLogin.title')}</h1>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {/* Email / Phone */}
             <div>
               <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">
-                И-мэйл хаяг / Утасны дугаар <span className="text-red-500">*</span>
+                {t('AuthLogin.emailOrPhone')} <span className="text-red-500">*</span>
               </label>
               <input
                 id="email"
@@ -83,14 +83,14 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
-                placeholder="И-мэйл хаяг эсвэл гар утасны дугаар"
+                placeholder={t('AuthLogin.emailOrPhonePlaceholder')}
                 disabled={isLoading}
               />
             </div>
 
             {/* Password */}
             <div>
-              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг</label>
+              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">{t('AuthLogin.passwordLabel')}</label>
               <div className="relative">
                 <input
                   id="password"
@@ -101,7 +101,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
-                  placeholder="Нууц үгээ оруулна уу"
+                  placeholder={t('AuthLogin.passwordPlaceholder')}
                   disabled={isLoading}
                 />
                 <button
@@ -118,7 +118,7 @@ export default function LoginPage() {
             {/* Forgot password */}
             <div className="flex justify-end -mt-1">
               <Link href="/login/forgot" className="text-caption text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                Нууц үг мартсан?
+                {t('AuthLogin.forgotPassword')}
               </Link>
             </div>
 
@@ -129,20 +129,20 @@ export default function LoginPage() {
                 disabled={isLoading}
                 className="w-full h-10 bg-primary hover:bg-primary-600 text-white font-medium rounded-lg text-body-md transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Нэвтэрч байна...' : 'Нэвтрэх'}
+                {isLoading ? t('AuthLogin.signingIn') : t('AuthLogin.signInButton')}
               </button>
               <Link
                 href="/signup"
                 className="flex items-center justify-center w-full h-10 border border-primary-600 dark:border-primary-500 rounded-lg text-body-md font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/30 transition"
               >
-                Бүртгүүлэх
+                {t('AuthLogin.register')}
               </Link>
             </div>
 
             {/* Эсвэл */}
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
-              <span className="text-caption text-gray-400 dark:text-gray-500">Эсвэл</span>
+              <span className="text-caption text-gray-400 dark:text-gray-500">{t('AuthLogin.orContinueWith')}</span>
               <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
             </div>
 
@@ -173,23 +173,23 @@ export default function LoginPage() {
 
             {/* Disclaimer */}
             <p className="text-caption text-gray-500 dark:text-gray-400 text-justify leading-relaxed">
-              Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын{' '}
+              {t('AuthLogin.termsPrefix')}{' '}
               <button
                 type="button"
                 onClick={() => setPolicyModal({ open: true, type: 'terms' })}
                 className="text-primary-600 dark:text-primary-400 hover:underline"
               >
-                Үйлчилгээний нөхцөл
+                {t('AuthLogin.termsLink')}
               </button>{' '}
-              болон{' '}
+              {t('AuthLogin.and')}{' '}
               <button
                 type="button"
                 onClick={() => setPolicyModal({ open: true, type: 'privacy' })}
                 className="text-primary-600 dark:text-primary-400 hover:underline"
               >
-                Нууцлалын бодлого
+                {t('AuthLogin.privacyLink')}
               </button>
-              -ыг хүлээн зөвшөөрсөнд тооцно.
+              .
             </p>
 
             {/* Policy modal — read-only for login page */}

@@ -255,11 +255,6 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         </div>
                       )}
 
-                      {/* Cancellation Policy */}
-                      <p className="text-[13px] text-green-600 dark:text-green-500 mb-1">
-                        {t('hotel.freeCancellationUntil', { date: '10/31' }, '10/31-нээс өмнө цуцлах боломжтой.')}
-                      </p>
-
                       {/* Availability Warning — from search API rooms_possible */}
                       {hotel.rooms_possible > 0 && hotel.rooms_possible <= 5 && (
                         <p className="text-[13px] font-medium text-red-500 dark:text-red-400">
@@ -494,6 +489,8 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
           <HotelImageGallery
             images={hotel.images}
             hotelName={hotel.property_name}
+            hotelId={hotel.hotel_id}
+            hotelUrl={buildHotelUrl()}
             viewMode="grid"
             className="w-full h-full"
           />

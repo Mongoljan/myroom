@@ -7,8 +7,10 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/components/common/ToastContainer';
 import PolicyModal from '@/components/common/PolicyModal';
 import Link from 'next/link';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 export default function SignupPage() {
+  const { t } = useHydratedTranslation();
   const { register } = useAuth();
   const router = useRouter();
   const { addToast } = useToast();
@@ -32,11 +34,11 @@ export default function SignupPage() {
     setErrors({});
 
     if (password !== confirmPassword) {
-      setErrors({ confirm_password: 'Нууц үг таарахгүй байна' });
+      setErrors({ confirm_password: t('AuthSignup.passwordMismatch') });
       return;
     }
     if (!termsAgreed) {
-      addToast({ type: 'error', title: 'Үйлчилгээний нөхцөлийг зөвшөөрнө үү' });
+      addToast({ type: 'error', title: t('AuthSignup.termsRequired') });
       return;
     }
 
@@ -64,10 +66,10 @@ export default function SignupPage() {
               if (Array.isArray(messages) && messages.length > 0) {
                 let errorMessage = messages[0];
                 if (errorMessage.includes('with this email already exists')) {
-                  errorMessage = 'Энэ и-мэйл хаяг бүртгэлтэй байна';
+                  errorMessage = t('backendErrors.emailExists');
                   addToast({ type: 'error', title: errorMessage });
                 } else if (errorMessage.includes('with this phone already exists')) {
-                  errorMessage = 'Энэ утасны дугаар бүртгэлтэй байна';
+                  errorMessage = t('backendErrors.phoneExists');
                   addToast({ type: 'error', title: errorMessage });
                 }
                 fieldErrors[key] = errorMessage;
@@ -80,7 +82,7 @@ export default function SignupPage() {
           setErrors({ general: err.message });
         }
       } else {
-        setErrors({ general: 'Бүртгэл амжилтгүй боллоо' });
+        setErrors({ general: t('AuthSignup.registrationFailed') });
       }
     } finally {
       setIsLoading(false);
@@ -93,14 +95,14 @@ export default function SignupPage() {
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md p-8 flex flex-col gap-6">
           {/* Title */}
           <div className="text-center">
-            <h1 className="text-h1 font-bold text-gray-900 dark:text-white">Бүртгүүлэх</h1>
+            <h1 className="text-h1 font-bold text-gray-900 dark:text-white">{t('AuthSignup.signUpButton')}</h1>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             {/* Email / Phone */}
             <div>
               <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">
-                И-мэйл хаяг / Утасны дугаар <span className="text-red-500">*</span>
+                {t('AuthSignup.identifierLabel')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -108,7 +110,7 @@ export default function SignupPage() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
-                placeholder="И-мэйл хаяг эсвэл гар утасны дугаар"
+                placeholder={t('AuthSignup.identifierPlaceholder')}
                 disabled={isLoading}
               />
               {errors.email && <p className="mt-1 text-caption text-red-500">{errors.email}</p>}
@@ -117,7 +119,7 @@ export default function SignupPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг</label>
+              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">{t('AuthSignup.passwordLabel')}</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
@@ -125,7 +127,7 @@ export default function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
-                  placeholder="Нууц үгээ оруулна уу"
+                  placeholder={t('AuthSignup.passwordEnterPlaceholder')}
                   disabled={isLoading}
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" tabIndex={-1}>
@@ -136,7 +138,7 @@ export default function SignupPage() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">Нууц үг давтах</label>
+              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">{t('AuthSignup.confirmPasswordLabel')}</label>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
@@ -144,7 +146,7 @@ export default function SignupPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
-                  placeholder="Нууц үгээ давтан оруулна уу"
+                  placeholder={t('AuthSignup.confirmPasswordEnterPlaceholder')}
                   disabled={isLoading}
                 />
                 <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" tabIndex={-1}>
@@ -159,13 +161,13 @@ export default function SignupPage() {
                 <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasMinLength ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
                   {hasMinLength && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
                 </div>
-                <span className="text-caption text-gray-500 dark:text-gray-400">8 болон түүнээс дээш тэмдэгт байх</span>
+                <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordMinCharsRule')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasComplexity ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
                   {hasComplexity && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
                 </div>
-                <span className="text-caption text-gray-500 dark:text-gray-400">Үсэг, тоо, тэмдэгт орсон байх</span>
+                <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordComplexityRule')}</span>
               </div>
               {confirmPassword.length > 0 && (
                 <div className="flex items-center gap-2">
@@ -176,7 +178,7 @@ export default function SignupPage() {
                     }
                   </div>
                   <span className={`text-caption ${passwordsMatch ? 'text-gray-500 dark:text-gray-400' : 'text-red-500'}`}>
-                    {passwordsMatch ? 'Нууц үг таарч байна' : 'Нууц үг таарахгүй байна'}
+                    {passwordsMatch ? t('AuthSignup.passwordMatchOk') : t('AuthSignup.passwordMismatch')}
                   </span>
                 </div>
               )}
@@ -192,23 +194,23 @@ export default function SignupPage() {
                 className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-primary-600"
               />
               <label htmlFor="terms" className="text-caption text-gray-500 dark:text-gray-400 leading-relaxed text-justify">
-                Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын{' '}
+                {t('AuthSignup.termsAgreementPrefix')}{' '}
                 <button
                   type="button"
                   onClick={() => setPolicyModal({ open: true, type: 'terms' })}
                   className="text-primary-600 dark:text-primary-400 hover:underline"
                 >
-                  Үйлчилгээний нөхцөл
+                  {t('AuthSignup.termsLink')}
                 </button>{' '}
-                болон{' '}
+                {t('AuthSignup.and')}{' '}
                 <button
                   type="button"
                   onClick={() => setPolicyModal({ open: true, type: 'privacy' })}
                   className="text-primary-600 dark:text-primary-400 hover:underline"
                 >
-                  Нууцлалын бодлого
+                  {t('AuthSignup.privacyLink')}
                 </button>
-                -ыг хүлээн зөвшөөрсөнд тооцно.
+                {t('AuthSignup.termsAgreementSuffix')}
               </label>
             </div>
 
@@ -228,13 +230,13 @@ export default function SignupPage() {
                 disabled={isLoading || !termsAgreed}
                 className="w-full h-10 bg-primary hover:bg-primary-600 text-white rounded-lg text-body-md font-medium transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? 'Бүртгэж байна...' : 'Бүртгүүлэх'}
+                {isLoading ? t('AuthSignup.creatingAccount') : t('AuthSignup.signUpButton')}
               </button>
               <Link
                 href="/login"
                 className="flex items-center justify-center w-full h-10 border border-primary-600 dark:border-primary-500 rounded-lg text-body-md font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/30 transition"
               >
-                Нэвтрэх
+                {t('AuthSignup.signIn')}
               </Link>
             </div>
 

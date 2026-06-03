@@ -5,12 +5,14 @@ import { CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import BackButton from '@/components/common/BackButton';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 type Step = 'view' | 'enter_phone' | 'verify_otp' | 'verified';
 
 const OTP_EXPIRY = 5 * 60; // 5 minutes in seconds
 
 export default function PhonePage() {
+  const { t } = useHydratedTranslation();
   const { user } = useAuth();
 
   const [step, setStep] = useState<Step>('view');
@@ -49,7 +51,7 @@ export default function PhonePage() {
   const handleSendOtp = async () => {
     const cleaned = phone.replace(/\D/g, '');
     if (cleaned.length < 8) {
-      setError('Утасны дугаар буруу байна.');
+      setError(t('profilePhone.invalidNumber'));
       return;
     }
     setError('');
@@ -59,7 +61,7 @@ export default function PhonePage() {
       startCountdown(res.expires_in_seconds ?? OTP_EXPIRY);
       setStep('verify_otp');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Алдаа гарлаа.');
+      setError(err instanceof Error ? err.message : t('profilePhone.error'));
     } finally {
       setIsSending(false);
     }
@@ -90,7 +92,7 @@ export default function PhonePage() {
       await CustomerService.verifyOTP({ phone: phone.replace(/\D/g, ''), otp_code: code });
       setStep('verified');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'OTP буруу байна.');
+      setError(err instanceof Error ? err.message : t('profilePhone.invalidOtp'));
     } finally {
       setIsVerifying(false);
     }
@@ -106,7 +108,7 @@ export default function PhonePage() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
       <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
-        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white">Утасны дугаар</h1>
+        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white">{t('profilePhone.title')}</h1>
       </div>
 
       {error && (
@@ -118,7 +120,7 @@ export default function PhonePage() {
       {/* ── View: current verified phone ── */}
       {step === 'view' && user.phone && (
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Таны утасны дугаар баталгаажсан байна.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('profilePhone.verified')}</p>
           <div className="flex items-center gap-3">
             <div className="relative max-w-xs w-full">
               <input
@@ -136,7 +138,7 @@ export default function PhonePage() {
               onClick={() => { setStep('enter_phone'); setPhone(''); setError(''); }}
               className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
             >
-              Дугаар солих
+              {t('profilePhone.changePhone')}
             </button>
           </div>
         </div>
@@ -145,7 +147,7 @@ export default function PhonePage() {
       {/* ── View: no phone yet ── */}
       {step === 'view' && !user.phone && (
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Та солих утасны дугаараа оруулна уу.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('profilePhone.enterNewPhone')}</p>
           <div className="flex items-center gap-3 max-w-md">
             <input
               type="tel"
@@ -159,7 +161,7 @@ export default function PhonePage() {
               disabled={isSending}
               className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 whitespace-nowrap"
             >
-              {isSending ? 'Илгээж байна...' : 'Баталгаажуулах код авах'}
+              {isSending ? t('profilePhone.sending') : t('profilePhone.getCode')}
             </button>
           </div>
         </div>
@@ -168,7 +170,7 @@ export default function PhonePage() {
       {/* ── Enter new phone ── */}
       {step === 'enter_phone' && (
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Та солих утасны дугаараа оруулна уу.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('profilePhone.enterNewPhone')}</p>
           <div className="flex items-center gap-3 max-w-md">
             <input
               type="tel"
@@ -182,7 +184,7 @@ export default function PhonePage() {
               disabled={isSending}
               className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 whitespace-nowrap"
             >
-              {isSending ? 'Илгээж байна...' : 'Баталгаажуулах код авах'}
+              {isSending ? t('profilePhone.sending') : t('profilePhone.getCode')}
             </button>
           </div>
           <BackButton onClick={() => setStep('view')} className="mt-3" />
@@ -193,7 +195,7 @@ export default function PhonePage() {
       {step === 'verify_otp' && (
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            Таны дугаар луу илгээсэн кодыг оруулж, баталгаажуулна уу.
+            {t('profilePhone.otpHint')}
           </p>
           <form onSubmit={handleVerify}>
             <div className="flex items-center gap-3 flex-wrap">
@@ -227,7 +229,7 @@ export default function PhonePage() {
                 disabled={isVerifying || otpDigits.join('').length < 4}
                 className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
               >
-                {isVerifying ? 'Шалгаж байна...' : 'Баталгаажуулах'}
+                {isVerifying ? t('profilePhone.verifying') : t('profilePhone.verify')}
               </button>
             </div>
 
@@ -248,7 +250,7 @@ export default function PhonePage() {
                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
               >
-                Дахин илгээх
+                {t('profilePhone.resend')}
               </button>
             </div>
           </form>
@@ -258,7 +260,7 @@ export default function PhonePage() {
       {/* ── Verified ── */}
       {step === 'verified' && (
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Таны утасны дугаар баталгаажсан байна.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('profilePhone.verified')}</p>
           <div className="flex items-center gap-3">
             <div className="relative max-w-xs w-full">
               <input
@@ -276,7 +278,7 @@ export default function PhonePage() {
               onClick={() => { setStep('enter_phone'); setPhone(''); setOtpDigits(['', '', '', '']); setError(''); }}
               className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
             >
-              Дугаар солих
+              {t('profilePhone.changePhone')}
             </button>
           </div>
         </div>

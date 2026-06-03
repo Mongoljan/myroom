@@ -2,6 +2,7 @@
 
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Building2, User } from 'lucide-react';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface InvoiceTypeDialogProps {
   open: boolean;
@@ -10,12 +11,14 @@ interface InvoiceTypeDialogProps {
 }
 
 export default function InvoiceTypeDialog({ open, onClose, onSelect }: InvoiceTypeDialogProps) {
+  const { t } = useHydratedTranslation();
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="w-[90vw] max-w-sm p-0 overflow-hidden">
         <div className="p-6">
           <DialogTitle className="text-base font-semibold text-gray-900 dark:text-white text-center mb-6">
-            Нэхэмжлэлийг хэн дээр гаргах вэ?
+            {t('bookingExtra.invoiceTypeTitle')}
           </DialogTitle>
 
           <div className="grid grid-cols-2 gap-3">
@@ -26,7 +29,7 @@ export default function InvoiceTypeDialog({ open, onClose, onSelect }: InvoiceTy
               <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
                 <User className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Хувь хүн</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingExtra.invoiceIndividual')}</span>
             </button>
 
             <button
@@ -36,7 +39,7 @@ export default function InvoiceTypeDialog({ open, onClose, onSelect }: InvoiceTy
               <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/50 transition-colors">
                 <Building2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">Байгууллага</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingExtra.invoiceCompany')}</span>
             </button>
           </div>
 
@@ -44,7 +47,7 @@ export default function InvoiceTypeDialog({ open, onClose, onSelect }: InvoiceTy
             onClick={onClose}
             className="mt-4 w-full text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 py-2 transition-colors"
           >
-            Цуцлах
+            {t('common.cancel')}
           </button>
         </div>
       </DialogContent>

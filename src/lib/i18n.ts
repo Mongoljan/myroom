@@ -148,7 +148,14 @@ const resources = {
         invalidDates: "Check-out date must be after check-in date",
         hotelsWorldwide: "Hotels Worldwide",
         happyCustomers: "Happy Customers",
-        customerSupport: "Customer Support"
+        customerSupport: "Customer Support",
+        flipPhrases: [
+          "Book your room easily",
+          "Instant confirmation",
+          "Transparent pricing",
+          "Across Mongolia",
+          "One place to book"
+        ]
       },
       footer: {
         allInOneApp: "Your all-in-one travel app",
@@ -236,7 +243,16 @@ const resources = {
         signUp: "Create one",
         loginFailed: "Login failed",
         phoneNumber: "Phone Number",
-        orContinueWith: "Or continue with"
+        orContinueWith: "Or continue with",
+        title: "Sign In",
+        emailOrPhone: "Email / Phone Number",
+        emailOrPhonePlaceholder: "Email or phone number",
+        signingIn: "Signing in...",
+        register: "Sign Up",
+        termsPrefix: "By signing in, you agree to our",
+        termsLink: "Terms of Service",
+        and: "and",
+        privacyLink: "Privacy Policy"
       },
       AuthSignup: {
         createAccount: "Create Account",
@@ -269,7 +285,20 @@ const resources = {
         passwordLowercase: "Password must contain at least one lowercase letter",
         passwordUppercase: "Password must contain at least one uppercase letter",
         passwordNumber: "Password must contain at least one number",
-        confirmPasswordRequired: "Please confirm your password"
+        confirmPasswordRequired: "Please confirm your password",
+        identifierLabel: "Email address / Phone number",
+        identifierPlaceholder: "Email address or mobile phone number",
+        passwordEnterPlaceholder: "Enter your password",
+        confirmPasswordEnterPlaceholder: "Re-enter your password",
+        passwordMinCharsRule: "At least 8 characters",
+        passwordComplexityRule: "Must include letters, numbers, and symbols",
+        passwordMatchOk: "Passwords match",
+        termsRequired: "Please accept the Terms of Service",
+        termsAgreementPrefix: "By creating an account on our platform, you agree to our",
+        termsAgreementSuffix: ".",
+        termsLink: "Terms of Service",
+        and: "and",
+        privacyLink: "Privacy Policy"
       },
       AuthOTP: {
         phoneLogin: "Sign in with Phone",
@@ -290,7 +319,8 @@ const resources = {
         verify: "Verify",
         back: "Back",
         otpSendError: "Failed to send OTP",
-        otpVerifyError: "Failed to verify OTP"
+        otpVerifyError: "Failed to verify OTP",
+        devOtpAlert: "OTP code (development only): {{code}}"
       },
       Profile: {
         passwordMismatch: "Passwords do not match",
@@ -354,12 +384,58 @@ const resources = {
       },
       settings: {
         title: "Settings",
-        languageCurrency: "Language / Currency",
+        description: "Manage your account preferences and settings",
+        languageCurrency: "Language & Currency",
         language: "Language",
+        languageDescription: "Choose your preferred display language",
         currency: "Currency",
+        currencyDescription: "Choose your preferred currency for prices",
         theme: "Appearance",
         darkMode: "Dark Mode",
-        darkModeDesc: "A more comfortable dark theme for your eyes"
+        darkModeDesc: "A more comfortable dark theme for your eyes",
+        emailNotifications: "Email Notifications",
+        bookingConfirmationEmails: "Booking Confirmation Emails",
+        bookingConfirmationEmailsDesc: "Receive email confirmations for your bookings",
+        marketingEmails: "Marketing Emails",
+        marketingEmailsDesc: "Receive promotional offers and updates",
+        pushNotifications: "Push Notifications",
+        notifications: "Notifications",
+        notificationsDesc: "Enable push notifications for important updates",
+        saved: "Saved!",
+        saving: "Saving...",
+        saveChanges: "Save Changes",
+        accountManagement: "Account Management",
+        deleteAccount: "Delete Account",
+        confirmDelete: "Are you absolutely sure? Type your password to confirm:",
+        passwordPlaceholder: "Enter your password",
+        deleting: "Deleting...",
+        deleteAccountConfirm: "Delete My Account",
+        saveFailed: "Failed to save settings",
+        deleteFailed: "Failed to delete account",
+        languages: {
+          mn: "Mongolian",
+          en: "English",
+          zh: "Chinese"
+        },
+        currencies: {
+          MNT: "Mongolian Tugrik",
+          USD: "US Dollar",
+          EUR: "Euro",
+          CNY: "Chinese Yuan"
+        }
+      },
+      profileNav: {
+        yourProfile: "Your Profile",
+        email: "Email",
+        phone: "Phone Number",
+        changePassword: "Change Password",
+        bookingHistory: "Booking History",
+        saved: "Saved",
+        promoCode: "Promo Code",
+        reviews: "Reviews",
+        settings: "Settings",
+        bookHotel: "Book a Hotel",
+        personalInfo: "Personal Information"
       },
       ProfileEmail: {
         title: "Email Address",
@@ -626,6 +702,21 @@ const resources = {
         clearAll: "Clear all",
         discountedPrice: "Discounted price",
         simpleSearch: "Simple search",
+        chipGroupCount: "{{groupLabel}} · {{count}}",
+        applyFiltersWithCount: "Apply ({{count}} hotels)",
+        filtersShort: "Filter",
+        starCount: "{{count}} stars",
+        chipGroups: {
+          propertyType: "Property type",
+          starRating: "Star rating",
+          roomFeatures: "Main services",
+          generalServices: "Services",
+          outdoorAreas: "Outdoor facilities",
+          accessibility: "Accessibility",
+          bedType: "Bed type",
+          district: "District",
+          landmark: "Location"
+        },
         filtersSection: {
           title: "Filters",
           usedByYou: "Last used filters",
@@ -659,6 +750,7 @@ const resources = {
         year: "Year"
       },
       home: {
+        popularDestinationsTitle: "Popular destinations",
         popularDestinationsSubtitle: "Explore cities travelers love"
       },
       destinations: {
@@ -734,6 +826,83 @@ const resources = {
           autoFilled: "Booking information auto-filled from your recent booking"
         }
       },
+      bookingFlow: {
+        stepRoom: "Select\nroom",
+        stepGuest: "Guest\ndetails",
+        stepPayment: "Confirm\npayment",
+        guestInfoTitle: "Guest information",
+        placeholderLastName: "Your last name",
+        placeholderFirstName: "Your first name",
+        placeholderEmail: "Email address",
+        placeholderPhone: "Phone number",
+        ebarimtTitle: "E-Barimt",
+        ebarimtAlt: "E-Barimt",
+        ebarimtIndividual: "Individual",
+        ebarimtOrganization: "Organization",
+        ebarimtTaxpayer: "Taxpayer",
+        ebarimtSearch: "Search",
+        ebarimtOrgRegister: "Organization registration number",
+        ebarimtOrgName: "Organization name",
+        ebarimtTaxPrefix1: "A",
+        ebarimtTaxPrefix2: "A",
+        ebarimtTaxNumber: "Registration number",
+        ebarimtTaxName: "Taxpayer name",
+        ebarimtNotFound: "Registration not found",
+        ebarimtConnectionError: "Connection error",
+        cancelPolicyAccept: "I accept the cancellation policy.",
+        cancelPolicyIntro: "If you cancel, refunds follow the policy below. Some bookings may be non-refundable.",
+        cancelFeeTitle: "Cancellation fee:",
+        cancelNotAllowed: "Non-refundable",
+        cancelFree: "Free",
+        noRoomPolicyInfo: "No room policy information",
+        cancelPerHotelNote: "*Fees may vary by property policy.",
+        cancelAllowed: "Cancellable",
+        bookingSummary: "Booking summary",
+        selectedRooms: "Your selected rooms:",
+        roomCount: "{{count}} room(s)",
+        promoPlaceholder: "Enter promo code",
+        promoInvalid: "This promo code is not valid.",
+        acceptTerms: "Accept terms of service",
+        confirmBooking: "Confirm booking",
+        bookingInProgress: "Processing...",
+        mismatchTitle: "Your booking details",
+        mismatchSearch: "Your search",
+        mismatchSelected: "Selected rooms",
+        mismatchCapacity: "Room capacity",
+        mismatchGuests: "{{rooms}} room(s), {{adults}} adult(s){{children}}",
+        mismatchChildrenSuffix: ", {{count}} child(ren)",
+        mismatchWarning: "Your search does not match the selected rooms. Go back and review your room or guest count.",
+        mismatchBack: "Back to room selection",
+        multiRoomTitle: "Cancellation policy for 2+ rooms",
+        multiRoomAllExpired: "Non-refundable — all deadlines have passed.",
+        multiRoomNote: "*Fees may vary by property policy.",
+        tosTitle: "Terms of service",
+        tosScrollHint: "Scroll down to read all terms.",
+        tosScrolledOk: "✓ You have read the terms",
+        tosScrollContinue: "Scroll down to continue...",
+        cancel: "Cancel",
+        continue: "Continue",
+        tosAccept: "I agree",
+        checkInTime: "Check-in",
+        checkOutTime: "Check-out",
+        nights: "{{count}} night(s)",
+        totalDue: "Total due",
+        guestCapacity: "Guest capacity",
+        weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        ebarimtTaxpayerPerson: "Registered taxpayer",
+        registerNumberLabel: "Registration number",
+        orgNameLabel: "Organization name",
+        searching: "Searching...",
+        basePrice: "Base price",
+        vatIncluded: "*VAT included",
+        applyPromo: "Apply",
+        beforeDeadline: "Before {{deadline}}:",
+        afterDeadline: "After {{deadline}}:",
+        mismatchGuestMismatchTitle: "Guest count mismatch",
+        mismatchUnderstand: "Got it, continue",
+        back: "Back",
+        multiRoomBeforeCancel: "If cancelled before {{date}}:"
+      },
       filters: {
         priceRange: "Price Range",
         starRating: "Star Rating",
@@ -774,17 +943,13 @@ const resources = {
         }
       },
       faq: {
-        title: "FAQ",
+        title: "Frequently asked questions",
         subtitle: "Frequently Asked Questions",
+        showMore: "Show more",
+        showLess: "Show less",
+        noAnswer: "An answer for this question is not available yet.",
         q1: {
           q: "Can I book a room without creating an account?",
-            recentSearches: "Сүүлийн хайлтууд",
-            popularLocations: "Алдартай байршлууд",
-            searchResults: "Хайлтын үр дүн",
-            noResults: "Хайлтын үр дүн олдсонгүй",
-            selectLocation: "Очих газраа сонгоно уу",
-            property: "Зочид буудал",
-            hotelsCount: "{{count}} буудал",
           a: "Yes. You can select and book a room directly without creating an account, but please ensure your information is accurate. We are not responsible for incorrect details provided during booking."
         },
         q2: {
@@ -866,14 +1031,15 @@ const resources = {
         subtitle: "Trusted by leading companies worldwide"
       },
       features: {
+        title: "Why MyRoom?",
         whyChooseUs: "Why Choose Us?",
         whyChooseUsDesc: "Discover what makes us different",
-        instantConfirmation: "Instant Confirmation",
-        instantConfirmationDesc: "Get immediate booking confirmation for all your reservations.",
-        fastService: "Fast Service",
-        fastServiceDesc: "Experience quick and reliable service with our dedicated team.",
-        wideSelection: "Wide Selection",
-        wideSelectionDesc: "Choose from thousands of hotels across multiple destinations."
+        wideSelection: "Easy search",
+        wideSelectionDesc: "Find the room you need across Mongolia in just a few seconds.",
+        instantConfirmation: "Instant confirmation",
+        instantConfirmationDesc: "Your booking is confirmed as soon as payment is complete — no double-booking risk.",
+        fastService: "Transparent pricing",
+        fastServiceDesc: "Partner rates with no hidden booking fees on the price you see.",
       },
       errors: {
         general: "Something went wrong",
@@ -1088,7 +1254,17 @@ const resources = {
         room: "room",
         rooms: "rooms",
         bookRoom: "Book Room",
-        duration: "Duration"
+        duration: "Duration",
+        manageBookingTitle: "Manage booking",
+        changeDate: "Change dates",
+        changeRoom: "Change room",
+        addRoom: "Add room",
+        cancelBookingAction: "Cancel booking",
+        contactHotelTitle: "Contact the hotel",
+        hotelLocationMap: "Hotel location",
+        invoiceTypeTitle: "Who should the invoice be issued to?",
+        invoiceIndividual: "Individual",
+        invoiceCompany: "Organization"
       },
       terms: {
         title: "Terms of Service",
@@ -1468,6 +1644,139 @@ const resources = {
           }
         ]
       },
+      payment: {
+        timerExpired: "Booking time has expired. Please create a new booking.",
+        timerWarning: "Please confirm your booking before time runs out.",
+        cancelBooking: "Cancel booking",
+        downloadInvoice: "Download invoice",
+        selectMethod: "Please select a payment method.",
+        methods: {
+          bankApp: "Bank app / QR",
+          transfer: "Bank transfer",
+          wallet: "E-wallet",
+          card: "Pay by card"
+        },
+        checking: "Checking...",
+        checkPayment: "Check payment",
+        notPaid: "Payment has not been received yet.",
+        checkError: "Could not verify payment. Please try again.",
+        qpayError: "Failed to create QPay invoice.",
+        noteTitle: "Note",
+        noteTransferRef: "Please enter the correct transaction reference when transferring.",
+        noteTransferAmount: "If the amount is incorrect or the reference does not match, your booking may not be confirmed.",
+        bookingSummary: "Booking summary",
+        checkInTime: "Check-in",
+        checkOutTime: "Check-out",
+        nights: "{{count}} night(s)",
+        selectedRooms: "Your selected rooms:",
+        basePrice: "Base price",
+        totalDue: "Total due",
+        guestInfo: "Guest information",
+        comingSoon: "Coming soon",
+        copy: "Copy",
+        copied: "Copied",
+        accountNumber: "Account number",
+        accountName: "Account name",
+        bank: "Bank",
+        transactionRef: "Transaction reference",
+        weekdays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        banks: {
+          tdb: "Trade and Development Bank",
+          khan: "Khan Bank"
+        },
+        accountHolder: "Maya Hotels LLC",
+        coupon: "Coupon",
+        guestFullName: "Full name:",
+        guestPhone: "Phone:",
+        guestEmail: "Email:",
+        roomCount: "{{count}} room(s)",
+        guestCapacity: "Guest capacity:",
+        qpayCreating: "Creating QPay invoice...",
+        qpayScan: "Scan QPay QR",
+        receivingAccount: "Receiving account",
+        recipientName: "Recipient name",
+        transferAmount: "Transfer amount",
+        qrCode: "QR code",
+        scanQrShort: "Scan QR",
+        comingSoonDesc: "This payment option will be available soon. Please use bank transfer or bank app for now.",
+        bookingDescription: "Booking #{{code}} - {{hotel}}"
+      },
+      profileBookings: {
+        title: "Booking History",
+        error: "An error occurred.",
+        empty: "No bookings found.",
+        bookingNumber: "Booking number:",
+        date: "Date:",
+        nights: "{{count}} night(s)",
+        details: "Details",
+        leaveReview: "Leave a review",
+        cancel: "Cancel",
+        cancelTitle: "Cancel booking",
+        pinCode: "PIN code",
+        cancelBtn: "Cancel",
+        cancelling: "Cancelling...",
+        filters: {
+          all: "All",
+          pending: "Pending payment",
+          confirmed: "Confirmed",
+          completed: "Completed",
+          cancelled: "Cancelled"
+        },
+        cancelPinHint: "Enter your PIN to cancel booking {{code}}."
+      },
+      profilePhone: {
+        title: "Phone Number",
+        invalidNumber: "Invalid phone number.",
+        error: "An error occurred.",
+        invalidOtp: "Invalid OTP code.",
+        verified: "Your phone number is verified.",
+        changePhone: "Change phone number",
+        enterNewPhone: "Enter the new phone number you want to use.",
+        sending: "Sending...",
+        getCode: "Get verification code",
+        otpHint: "Enter the code sent to your number.",
+        verifying: "Verifying...",
+        verify: "Verify",
+        resend: "Resend"
+      },
+      profileSaved: {
+        title: "Saved",
+        all: "All ({{count}})",
+        empty: "No saved hotels yet",
+        searchHotels: "Search hotels",
+        remove: "Remove from saved",
+        reviews: "{{count}} reviews",
+        pricePerNight: "Price per night (VAT included)"
+      },
+      profilePromo: {
+        title: "Promo Code",
+        error: "An error occurred.",
+        added: "\"{{code}}\" promo code added.",
+        placeholder: "Enter promo code",
+        adding: "Adding...",
+        add: "Add",
+        tabs: {
+          active: "Active",
+          used: "Used",
+          inactive: "Inactive"
+        },
+        emptyActive: "No active promo codes",
+        emptyUsed: "No used promo codes",
+        emptyInactive: "No inactive promo codes",
+        table: {
+          discount: "Discount",
+          validPeriod: "Valid period",
+          status: "Status",
+          code: "Code",
+          promoCode: "Promo code",
+          discountPercent: "Discount %",
+          discountAmount: "Discount % / amount",
+          availableCount: "Available uses",
+          usedCount: "Times used",
+          usedDate: "Date used"
+        },
+        expired: "— (expired)"
+      },
       backendErrors: {
         emailExists: "User with this email already exists",
         phoneExists: "User with this phone already exists"
@@ -1621,7 +1930,14 @@ const resources = {
         invalidDates: "Гарах өдөр орох өдрөөс хойш байх ёстой",
         hotelsWorldwide: "Дэлхийн зочид буудлууд",
         happyCustomers: "Баяртай хэрэглэгчид",
-        customerSupport: "24/7 тусламж үйлчилгээ"
+        customerSupport: "24/7 тусламж үйлчилгээ",
+        flipPhrases: [
+          "Өрөөгөө хялбар захиал",
+          "Шууд баталгаажилт",
+          "Ил тод үнэ",
+          "Монгол даяар",
+          "Нэг дор захиалга"
+        ]
       },
       footer: {
         allInOneApp: "Таны бүх зорчлогын програм",
@@ -1727,11 +2043,20 @@ const resources = {
         rememberMe: "Сануулах",
         forgotPassword: "Нууц үгээ мартсан уу?",
         signInButton: "Нэвтрэх",
-        noAccount: "",
         signUp: "Шинэ бүртгэл үүсгэх",
         loginFailed: "Нэвтрэхэд алдаа гарлаа",
         phoneNumber: "Утасны дугаар",
-        orContinueWith: "Эсвэл үргэлжлүүлэх"
+        orContinueWith: "Эсвэл",
+        title: "Нэвтрэх",
+        emailOrPhone: "И-мэйл хаяг / Утасны дугаар",
+        emailOrPhonePlaceholder: "И-мэйл эсвэл утасны дугаар",
+        signingIn: "Нэвтэрч байна...",
+        register: "Бүртгүүлэх",
+        termsPrefix: "Нэвтрэхдээ та манай",
+        termsLink: "Үйлчилгээний нөхцөл",
+        and: "болон",
+        privacyLink: "Нууцлалын бодлого",
+        noAccount: "Бүртгэлгүй юу?"
       },
       AuthSignup: {
         createAccount: "Шинэ бүртгэл үүсгэх",
@@ -1764,7 +2089,20 @@ const resources = {
         passwordLowercase: "Нууц үг дор хаяж нэг жижиг үсэг агуулсан байх ёстой",
         passwordUppercase: "Нууц үг дор хаяж нэг том үсэг агуулсан байх ёстой",
         passwordNumber: "Нууц үг дор хаяж нэг тоо агуулсан байх ёстой",
-        confirmPasswordRequired: "Нууц үгээ баталгаажуулна уу"
+        confirmPasswordRequired: "Нууц үгээ баталгаажуулна уу",
+        identifierLabel: "И-мэйл хаяг / Утасны дугаар",
+        identifierPlaceholder: "И-мэйл хаяг эсвэл гар утасны дугаар",
+        passwordEnterPlaceholder: "Нууц үгээ оруулна уу",
+        confirmPasswordEnterPlaceholder: "Нууц үгээ давтан оруулна уу",
+        passwordMinCharsRule: "8 болон түүнээс дээш тэмдэгт байх",
+        passwordComplexityRule: "Үсэг, тоо, тэмдэгт орсон байх",
+        passwordMatchOk: "Нууц үг таарч байна",
+        termsRequired: "Үйлчилгээний нөхцөлийг зөвшөөрнө үү",
+        termsAgreementPrefix: "Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын",
+        termsAgreementSuffix: "-ыг хүлээн зөвшөөрсөнд тооцно.",
+        termsLink: "Үйлчилгээний нөхцөл",
+        and: "болон",
+        privacyLink: "Нууцлалын бодлого"
       },
       AuthOTP: {
         phoneLogin: "Утсаар нэвтрэх",
@@ -1785,7 +2123,8 @@ const resources = {
         verify: "Баталгаажуулах",
         back: "Буцах",
         otpSendError: "OTP илгээхэд алдаа гарлаа",
-        otpVerifyError: "OTP баталгаажуулахад алдаа гарлаа"
+        otpVerifyError: "OTP баталгаажуулахад алдаа гарлаа",
+        devOtpAlert: "OTP код (зөвхөн хөгжүүлэлтэд): {{code}}"
       },
       Profile: {
         passwordMismatch: "Нууц үг таарахгүй байна",
@@ -1849,12 +2188,58 @@ const resources = {
       },
       settings: {
         title: "Тохиргоо",
-        languageCurrency: "Хэл / Валют",
+        description: "Дансны тохиргоо болон сонголтоо удирдах",
+        languageCurrency: "Хэл ба валют",
         language: "Хэл",
+        languageDescription: "Харагдах хэлээ сонгоно уу",
         currency: "Валют",
+        currencyDescription: "Үнийг харуулах валютаа сонгоно уу",
         theme: "Харагдах байдал",
         darkMode: "Харанхуй горим",
-        darkModeDesc: "Нүдэнд илүү тав тухтай харанхуй загвар"
+        darkModeDesc: "Нүдэнд илүү тав тухтай харанхуй загвар",
+        emailNotifications: "Имэйл мэдэгдэл",
+        bookingConfirmationEmails: "Захиалга баталгаажсан имэйл",
+        bookingConfirmationEmailsDesc: "Захиалгын баталгаажуулалтыг имэйлээр хүлээн авах",
+        marketingEmails: "Сурталчилгааны имэйл",
+        marketingEmailsDesc: "Урамшуулал болон шинэ мэдээллийг хүлээн авах",
+        pushNotifications: "Push мэдэгдэл",
+        notifications: "Мэдэгдэл",
+        notificationsDesc: "Чухал мэдээллийн push мэдэгдлийг идэвхжүүлэх",
+        saved: "Хадгалагдлаа!",
+        saving: "Хадгалж байна...",
+        saveChanges: "Өөрчлөлт хадгалах",
+        accountManagement: "Аккаунт тохиргоо",
+        deleteAccount: "Хэрэглэгчийн аккаунт устгах",
+        confirmDelete: "Та итгэлтэй байна уу? Баталгаажуулахын тулд нууц үгээ оруулна уу:",
+        passwordPlaceholder: "Нууц үгээ оруулна уу",
+        deleting: "Устгаж байна...",
+        deleteAccountConfirm: "Аккаунтаа устгах",
+        saveFailed: "Тохиргоо хадгалахад алдаа гарлаа",
+        deleteFailed: "Аккаунт устгахад алдаа гарлаа",
+        languages: {
+          mn: "Монгол",
+          en: "English",
+          zh: "中文"
+        },
+        currencies: {
+          MNT: "Монгол төгрөг",
+          USD: "Америк доллар",
+          EUR: "Евро",
+          CNY: "Хятад юань"
+        }
+      },
+      profileNav: {
+        yourProfile: "Таны профайл",
+        email: "Цахим шуудан",
+        phone: "Утасны дугаар",
+        changePassword: "Нууц үг солих",
+        bookingHistory: "Захиалгын түүх",
+        saved: "Хадгалсан",
+        promoCode: "Промо код",
+        reviews: "Сэтгэгдлүүд",
+        settings: "Тохиргоо",
+        bookHotel: "Буудал захиалах",
+        personalInfo: "Хувийн мэдээлэл"
       },
       ProfileEmail: {
         title: "Цахим шуудан",
@@ -2121,6 +2506,21 @@ const resources = {
         clearAll: "Бүгдийг арилгах",
         discountedPrice: "Хямдралтай үнэ",
         simpleSearch: "Энгийн хайлт",
+        chipGroupCount: "{{groupLabel}} · {{count}}",
+        applyFiltersWithCount: "Хэрэглэх ({{count}} буудал)",
+        filtersShort: "Шүүлт",
+        starCount: "{{count}} од",
+        chipGroups: {
+          propertyType: "Буудлын төрөл",
+          starRating: "Одны үнэлгээ",
+          roomFeatures: "Үндсэн үйлчилгээ",
+          generalServices: "Үйлчилгээ",
+          outdoorAreas: "Гадна байгууламж",
+          accessibility: "Хүртээмж",
+          bedType: "Орны төрөл",
+          district: "Дүүрэг",
+          landmark: "Байршил"
+        },
         filtersSection: {
           title: "Шүүлтүүр",
           usedByYou: "Сүүлд хайсан шүүлтүүр",
@@ -2226,6 +2626,83 @@ const resources = {
           autoFilled: "Захиалгын мэдээлэл автоматаар бөглөгдлөө"
         }
       },
+      bookingFlow: {
+        stepRoom: "Өрөө\nсонгох",
+        stepGuest: "Хувийн\nмэдээлэл",
+        stepPayment: "Төлбөр\nбаталгаажуулах",
+        guestInfoTitle: "Захиалагчийн мэдээлэл",
+        placeholderLastName: "Таны овог",
+        placeholderFirstName: "Таны нэр",
+        placeholderEmail: "И-мэйл хаяг",
+        placeholderPhone: "Утасны дугаар",
+        ebarimtTitle: "И-Баримт",
+        ebarimtAlt: "И-Баримт",
+        ebarimtIndividual: "Хувь хүн",
+        ebarimtOrganization: "Албан байгууллага",
+        ebarimtTaxpayer: "Татвар төлөгч",
+        ebarimtSearch: "Хайх",
+        ebarimtOrgRegister: "Байгууллагын регистрийн дугаар",
+        ebarimtOrgName: "Байгууллагын нэр",
+        ebarimtTaxPrefix1: "Э",
+        ebarimtTaxPrefix2: "Н",
+        ebarimtTaxNumber: "Регистрийн дугаар",
+        ebarimtTaxName: "Татвар төлөгчийн нэр",
+        ebarimtNotFound: "Бүртгэл олдсонгүй",
+        ebarimtConnectionError: "Холболтын алдаа гарлаа",
+        cancelPolicyAccept: "Би захиалга цуцлах нөхцлийг хүлээн зөвшөөрч байна.",
+        cancelPolicyIntro: "Захиалга цуцлах тохиолдолд дараах нөхцлийн дагуу үйлчилгээний хураамжийг суутган буцаан олголт хийгдэх эсвэл цуцлах боломжгүй болохыг анхаарна уу.",
+        cancelFeeTitle: "Цуцлалтын хураамж:",
+        cancelNotAllowed: "Цуцлах боломжгүй",
+        cancelFree: "Үнэгүй",
+        noRoomPolicyInfo: "Өрөөний мэдээлэл алга",
+        cancelPerHotelNote: "*Тухайн буудлын дотоод бодлогоос хамааран буудал бүрийн цуцлалтын хураамж харилцан адилгүй өөр байна.",
+        cancelAllowed: "Цуцлах боломжтой",
+        bookingSummary: "Захиалгын мэдээлэл",
+        selectedRooms: "Таны сонгосон өрөө:",
+        roomCount: "{{count}} өрөө",
+        promoPlaceholder: "Промо кодоо оруулна уу.",
+        promoInvalid: "Энэ промо код хүчингүй байна.",
+        acceptTerms: "Үйлчилгээний нөхцөл зөвшөөрөх",
+        confirmBooking: "Захиалга баталгаажуулах",
+        bookingInProgress: "Уншиж байна...",
+        mismatchTitle: "Таны захиалгын мэдээлэл",
+        mismatchSearch: "Таны хайлт",
+        mismatchSelected: "Сонгосон өрөө",
+        mismatchCapacity: "Сонгосон өрөөний багтаамж",
+        mismatchGuests: "{{rooms}} өрөө, {{adults}} том хүн{{children}}",
+        mismatchChildrenSuffix: ", {{count}} хүүхэд",
+        mismatchWarning: "Таны хайлтын мэдээлэл сонгосон өрөөтэй таарахгүй байна. Өрөө сонгох хуудас руу буцаж өрөө эсвэл зочдын тоогоо дахин шалгана уу.",
+        mismatchBack: "Өрөө сонгох хуудас руу буцах",
+        multiRoomTitle: "2+ өрөөний цуцлалтын нөхцөл",
+        multiRoomAllExpired: "Цуцлах боломжгүй — бүх хугацаа өнгөрсөн байна.",
+        multiRoomNote: "*Тухайн буудлын бодлогоос хамааран цуцлалтын хураамж өөр байж болно.",
+        tosTitle: "Үйлчилгээний нөхцөл",
+        tosScrollHint: "Доош гүйлгэж бүх нөхцөлтэй танилцана уу.",
+        tosScrolledOk: "✓ Та нөхцөлтэй танилцлаа",
+        tosScrollContinue: "Үргэлжлүүлэхийн тулд доош гүйлгэнэ үү...",
+        cancel: "Цуцлах",
+        continue: "Үргэлжлүүлэх",
+        tosAccept: "Зөвшөөрөх",
+        checkInTime: "Орох цаг",
+        checkOutTime: "Гарах цаг",
+        nights: "{{count}} шөнө",
+        totalDue: "Нийт төлөх дүн",
+        guestCapacity: "Орох боломжтой хүний тоо",
+        weekdays: ["Ня", "Да", "Мя", "Лха", "Пү", "Ба", "Бя"],
+        ebarimtTaxpayerPerson: "Татвар төлөгч иргэн",
+        registerNumberLabel: "Регистрийн дугаар",
+        orgNameLabel: "Байгууллагын нэр",
+        searching: "Хайж байна...",
+        basePrice: "Үндсэн үнэ",
+        vatIncluded: "*НӨАТ багтсан үнэ",
+        applyPromo: "Ашиглах",
+        beforeDeadline: "Өмнөх өдрийн {{deadline}}-ээс өмнө:",
+        afterDeadline: "Өмнөх өдрийн {{deadline}}-ээс хойш:",
+        mismatchGuestMismatchTitle: "Зочдын тоо таарахгүй байна",
+        mismatchUnderstand: "Ойлголоо, үргэлжлүүлэх",
+        back: "Буцах",
+        multiRoomBeforeCancel: "{{date}}-с өмнө цуцалбал:"
+      },
       filters: {
         priceRange: "Үнийн хязгаар",
         starRating: "Одны үнэлгээ",
@@ -2268,13 +2745,16 @@ const resources = {
       faq: {
         title: "Түгээмэл асуултууд",
         subtitle: "Түгээмэл асуугддаг асуултууд",
+        showMore: "Дэлгэрэнгүй харах",
+        showLess: "Хураангуйлах",
+        noAnswer: "Энэ асуултын хариу одоогоор бэлэн байхгүй байна.",
         q1: { 
           q: "Бүртгэл үүсгэхгүйгээр шууд өрөө захиалах боломжтой юу?", 
           a: "Тийм. Та өөрийн хүссэн өрөөгөө шууд сонгож захиалгаа баталгаажуулахад хангалттай. Харин таны мэдээлэл буруу, зөрсөн нөхцөлд бид хариуцлага хүлээхгүй тул та өөрийн мэдээллээ үнэн зөв бөглөж, захиалгаа хийгээрэй." 
         },
         q2: { 
           q: "Танай платформоор зарж буй өрөөний үнэ дээр ямар нэг нэмэлт төлбөр нэмэгддэг үү?", 
-          a: "Үгүй. Бид харилцагч газруудтайгаа түншлэлийн хүрээнд зөвхөн хэрэглэгчддээ зориулсан хамгийн бодит бөгөөд хямд үнийг санал болгодог." 
+          a: "Үгүй. Түнш буудлын ил тод үнийг харуулна — захиалгын нууц нэмэлт шимтгэл нэмэгддэггүй." 
         },
         q3: { 
           q: "Захиалга хэрхэн баталгаажих вэ?", 
@@ -2353,14 +2833,15 @@ const resources = {
         subtitle: "Дэлхийн тэргүүлэгч компаниудын итгэлийг хүлээн авсан"
       },
       features: {
-        whyChooseUs: "Яагаад биднийг сонгох хэрэгтэй вэ?",
-        whyChooseUsDesc: "Биднийг онцгой болгодог зүйлсийг олж мэдээрэй",
-        instantConfirmation: "Шууд баталгаажилт",
-        instantConfirmationDesc: "Захиалга давхцах эрсдэлгүй, 100% найдвартай.",
-        fastService: "Захиалга бүр хөнгөлөлттэй",
-        fastServiceDesc: "Нэмэлт шимтгэлгүй, хамгийн хямд үнэ.",
+        title: "Яагаад MyRoom вэ?",
+        whyChooseUs: "Яагаад MyRoom вэ?",
+        whyChooseUsDesc: "Монгол даяар зочид буудал захиалах итгэмжлэх платформ",
         wideSelection: "Хялбар хайлт",
-        wideSelectionDesc: "Хайж буй өрөөгөө олоход хэдхэн секунд хангалттай."
+        wideSelectionDesc: "Монгол даяарх олон зочид буудлаас хэдхэн секундэд тохирох өрөөгөө олоорой.",
+        instantConfirmation: "Шууд баталгаажилт",
+        instantConfirmationDesc: "Төлбөр төлсний дараа захиалга шууд баталгаажна — давхар захиалгын эрсдэлгүй.",
+        fastService: "Ил тод үнэ",
+        fastServiceDesc: "Түнш буудлын үнэ, нууц нэмэлт шимтгэлгүй — харагдаж буй үнээрээ захиална."
       },
       errors: {
         general: "Алдаа гарлаа",
@@ -2575,7 +3056,17 @@ const resources = {
         room: "өрөө",
         rooms: "өрөөнүүд",
         bookRoom: "Өрөө захиалах",
-        duration: "Хугацаа"
+        duration: "Хугацаа",
+        manageBookingTitle: "Захиалга удирдах",
+        changeDate: "Өдөр өөрчлөх",
+        changeRoom: "Өрөө солих",
+        addRoom: "Өрөө нэмэх",
+        cancelBookingAction: "Захиалга цуцлах",
+        contactHotelTitle: "Буудалтай холбогдох",
+        hotelLocationMap: "Буудлын байршил",
+        invoiceTypeTitle: "Нэхэмжлэлийг хэн дээр гаргах вэ?",
+        invoiceIndividual: "Хувь хүн",
+        invoiceCompany: "Байгууллага"
       },
       terms:{
         
@@ -2956,9 +3447,363 @@ const resources = {
           }
         ]
       },
+      payment: {
+        timerExpired: "Захиалгын хугацаа дууссан. Шинэ захиалга хийнэ үү.",
+        timerWarning: "Та цаг дуусахаас өмнө захиалгаа баталгаажуулна уу.",
+        cancelBooking: "Захиалга цуцлах",
+        downloadInvoice: "Нэхэмжлэл татах",
+        selectMethod: "Төлбөрийн төрлөө сонгоно уу.",
+        methods: {
+          bankApp: "Банкны апп / QR",
+          transfer: "Дансаар шилжүүлэх",
+          wallet: "Цахим хэтэвчээр",
+          card: "Картаар төлөх"
+        },
+        checking: "Шалгаж байна...",
+        checkPayment: "Төлбөр шалгах",
+        notPaid: "Төлбөр төлөгдөөгүй байна.",
+        checkError: "Шалгахад алдаа гарлаа. Дахин оролдоно уу.",
+        qpayError: "QPay нэхэмжлэл үүсгэхэд алдаа гарлаа",
+        noteTitle: "Санамж",
+        noteTransferRef: "Та төлбөр шилжүүлэхдээ гүйлгээний утгыг үнэн зөв бичиж шилжүүлнэ үү.",
+        noteTransferAmount: "Төлбөрийг дутуу шилжүүлсэн эсвэл гүйлгээний утга зөрсөн тохиолдолд захиалга баталгаажихгүй анхаарна уу.",
+        bookingSummary: "Захиалгын мэдээлэл",
+        checkInTime: "Орох цаг",
+        checkOutTime: "Гарах цаг",
+        nights: "{{count}} шөнө",
+        selectedRooms: "Таны сонгосон өрөө:",
+        basePrice: "Үндсэн үнэ",
+        totalDue: "Нийт төлөх дүн",
+        guestInfo: "Зочны мэдээлэл",
+        comingSoon: "Тун удахгүй",
+        copy: "Хуулах",
+        copied: "Хуулсан",
+        accountNumber: "Дансны дугаар",
+        accountName: "Дансны нэр",
+        bank: "Банк",
+        transactionRef: "Гүйлгээний утга",
+        weekdays: ["Ня", "Да", "Мя", "Лха", "Пү", "Ба", "Бя"],
+        banks: {
+          tdb: "Худалдаа хөгжлийн банк",
+          khan: "ХААН БАНК"
+        },
+        accountHolder: "Мая Хотелс ХХК",
+        coupon: "Купон",
+        guestFullName: "Овог нэр:",
+        guestPhone: "Холбогдох утас:",
+        guestEmail: "И-мэйл хаяг:",
+        roomCount: "{{count}} өрөө",
+        guestCapacity: "Орох боломжтой хүний тоо:",
+        qpayCreating: "QPay нэхэмжлэл үүсгэж байна...",
+        qpayScan: "QPay QR унших",
+        receivingAccount: "Хүлээн авах данс",
+        recipientName: "Хүлээн авагчийн нэр",
+        transferAmount: "Шилжүүлэх дүн",
+        qrCode: "QR код",
+        scanQrShort: "QR унших",
+        comingSoonDesc: "Энэ төлбөрийн сонголт удахгүй нэмэгдэнэ. Дансаар шилжүүлэх эсвэл банкны аппыг ашиглана уу.",
+        bookingDescription: "Захиалга #{{code}} - {{hotel}}"
+      },
+      profileBookings: {
+        title: "Захиалгын түүх",
+        error: "Алдаа гарлаа.",
+        empty: "Захиалга олдсонгүй.",
+        bookingNumber: "Захиалгын дугаар:",
+        date: "Огноо:",
+        nights: "{{count}} шөнө",
+        details: "Дэлгэрэнгүй",
+        leaveReview: "Үнэлгээ өгөх",
+        cancel: "Цуцлах",
+        cancelTitle: "Захиалга цуцлах",
+        pinCode: "PIN код",
+        cancelBtn: "Болих",
+        cancelling: "Цуцалж байна...",
+        filters: {
+          all: "Бүгд",
+          pending: "Төлбөр хүлээгдэж буй",
+          confirmed: "Баталгаажсан",
+          completed: "Биелсэн",
+          cancelled: "Цуцлагдсан"
+        },
+        cancelPinHint: "Захиалга {{code}}-г цуцлахын тулд pin кодоо оруулна уу."
+      },
+      profilePhone: {
+        title: "Утасны дугаар",
+        invalidNumber: "Утасны дугаар буруу байна.",
+        error: "Алдаа гарлаа.",
+        invalidOtp: "OTP буруу байна.",
+        verified: "Таны утасны дугаар баталгаажсан байна.",
+        changePhone: "Дугаар солих",
+        enterNewPhone: "Та солих утасны дугаараа оруулна уу.",
+        sending: "Илгээж байна...",
+        getCode: "Баталгаажуулах код авах",
+        otpHint: "Таны дугаар луу илгээсэн кодыг оруулж баталгаажуулна уу.",
+        verifying: "Шалгаж байна...",
+        verify: "Баталгаажуулах",
+        resend: "Дахин илгээх"
+      },
+      profileSaved: {
+        title: "Хадгалсан",
+        all: "Бүгд ({{count}})",
+        empty: "Хадгалсан буудал байхгүй байна",
+        searchHotels: "Буудал хайх",
+        remove: "Хадгалсанаас хасах",
+        reviews: "{{count}} сэтгэгдэл",
+        pricePerNight: "1 шөнийн үнэ (НӨАТ багтсан)"
+      },
+      profilePromo: {
+        title: "Промо код",
+        error: "Алдаа гарлаа.",
+        added: "\"{{code}}\" промо код нэмэгдлээ.",
+        placeholder: "Промо код оруулах",
+        adding: "Нэмж байна...",
+        add: "Нэмэх",
+        tabs: {
+          active: "Идэвхтэй",
+          used: "Ашигласан",
+          inactive: "Идэвхгүй"
+        },
+        emptyActive: "Идэвхтэй промо код байхгүй",
+        emptyUsed: "Ашигласан промо код байхгүй",
+        emptyInactive: "Идэвхгүй промо код байхгүй",
+        table: {
+          discount: "Хөнгөлтийн хувь",
+          validPeriod: "Хүчинтэй хугацаа",
+          status: "Төлөв",
+          code: "Код",
+          promoCode: "Промо код",
+          discountPercent: "Хөнгөлтийн хувь",
+          discountAmount: "Хөнгөлтийн хувь / дүн",
+          availableCount: "Ашиглах боломжтой тоо",
+          usedCount: "Ашигласан тоо",
+          usedDate: "Ашигласан огноо"
+        },
+        expired: "— (дууссан)"
+      },
       backendErrors: {
-        emailExists: "Энэ имэйл хаягтай хэрэглэгч өмнө нь бүртгүүлсэн байна",
-        phoneExists: "Энэ утасны дугаартай хэрэглэгч өмнө нь бүртгүүлсэн байна"
+        emailExists: "Энэ и-мэйл хаяг бүртгэлтэй байна",
+        phoneExists: "Энэ утасны дугаар бүртгэлтэй байна"
+      }
+    }
+  },
+  zh: {
+    translation: {
+      common: {
+        loading: "加载中...",
+        error: "错误",
+        cancel: "取消",
+        confirm: "确认",
+        save: "保存",
+        back: "返回",
+        close: "关闭"
+      },
+      hero: {
+        flipPhrases: [
+          "轻松预订客房",
+          "即时确认",
+          "价格透明",
+          "覆盖蒙古全国",
+          "一站式预订"
+        ]
+      },
+      features: {
+        title: "为什么选择 MyRoom？",
+        wideSelection: "轻松搜索",
+        wideSelectionDesc: "几秒钟内找到蒙古各地的合适客房。",
+        instantConfirmation: "即时确认",
+        instantConfirmationDesc: "付款完成后立即确认预订，避免重复预订。",
+        fastService: "价格透明",
+        fastServiceDesc: "合作伙伴价格，无隐藏预订费用。"
+      },
+      home: {
+        popularDestinationsTitle: "热门目的地",
+        popularDestinationsSubtitle: "探索旅客喜爱的城市"
+      },
+      partnerships: {
+        title: "合作伙伴"
+      },
+      faq: {
+        title: "常见问题",
+        showMore: "查看更多",
+        showLess: "收起",
+        noAnswer: "此问题暂无答案。"
+      },
+      hotel: {
+        recentlyViewed: "最近浏览",
+        recommended: "推荐酒店",
+        recommendedFilters: {
+          popular: "热门",
+          discounted: "优惠",
+          highlyRated: "高评分",
+          cheapest: "最低价",
+          newlyAdded: "新上线"
+        }
+      },
+      settings: {
+        title: "设置",
+        description: "管理您的账户偏好和设置",
+        languageCurrency: "语言与货币",
+        language: "语言",
+        languageDescription: "选择您偏好的显示语言",
+        currency: "货币",
+        currencyDescription: "选择价格显示货币",
+        emailNotifications: "邮件通知",
+        bookingConfirmationEmails: "预订确认邮件",
+        bookingConfirmationEmailsDesc: "接收预订确认邮件",
+        marketingEmails: "营销邮件",
+        marketingEmailsDesc: "接收促销优惠和更新",
+        saved: "已保存！",
+        saving: "保存中...",
+        saveChanges: "保存更改",
+        accountManagement: "账户管理",
+        deleteAccount: "删除账户",
+        confirmDelete: "您确定吗？请输入密码确认：",
+        passwordPlaceholder: "请输入密码",
+        deleting: "删除中...",
+        deleteAccountConfirm: "删除我的账户",
+        languages: { mn: "蒙古语", en: "英语", zh: "中文" },
+        currencies: { MNT: "蒙古图格里克", USD: "美元", EUR: "欧元", CNY: "人民币" }
+      },
+      profileNav: {
+        yourProfile: "您的资料",
+        email: "电子邮箱",
+        phone: "电话号码",
+        changePassword: "修改密码",
+        bookingHistory: "预订记录",
+        saved: "收藏",
+        promoCode: "优惠码",
+        reviews: "评价",
+        settings: "设置",
+        bookHotel: "预订酒店",
+        personalInfo: "个人信息"
+      },
+      payment: {
+        timerExpired: "预订时间已过期，请重新预订。",
+        timerWarning: "请在倒计时结束前确认您的预订。",
+        cancelBooking: "取消预订",
+        downloadInvoice: "下载发票",
+        selectMethod: "请选择支付方式。",
+        methods: {
+          bankApp: "银行应用 / 二维码",
+          transfer: "银行转账",
+          wallet: "电子钱包",
+          card: "银行卡支付"
+        },
+        checking: "正在查询...",
+        checkPayment: "查询付款",
+        notPaid: "尚未收到付款。",
+        checkError: "无法验证付款，请重试。",
+        qpayError: "创建 QPay 账单失败。",
+        noteTitle: "提示",
+        noteTransferRef: "转账时请填写正确的交易备注。",
+        noteTransferAmount: "金额不足或备注不符可能导致预订无法确认。",
+        bookingSummary: "预订信息",
+        checkInTime: "入住",
+        checkOutTime: "退房",
+        nights: "{{count}} 晚",
+        selectedRooms: "您选择的房间：",
+        basePrice: "基础价格",
+        totalDue: "应付总额",
+        guestInfo: "客人信息",
+        comingSoon: "即将推出",
+        copy: "复制",
+        copied: "已复制",
+        accountNumber: "账号",
+        accountName: "账户名称",
+        bank: "银行",
+        transactionRef: "交易备注",
+        weekdays: ["日", "一", "二", "三", "四", "五", "六"],
+        banks: { tdb: "蒙古贸易发展银行", khan: "蒙古 Khan 银行" },
+        accountHolder: "Maya Hotels LLC"
+      },
+      profileBookings: {
+        title: "预订记录",
+        error: "发生错误。",
+        empty: "未找到预订。",
+        bookingNumber: "预订号：",
+        date: "日期：",
+        nights: "{{count}} 晚",
+        details: "详情",
+        leaveReview: "撰写评价",
+        cancel: "取消",
+        cancelTitle: "取消预订",
+        pinCode: "PIN 码",
+        cancelBtn: "取消",
+        cancelling: "正在取消...",
+        filters: {
+          all: "全部",
+          pending: "待付款",
+          confirmed: "已确认",
+          completed: "已完成",
+          cancelled: "已取消"
+        }
+      },
+      profilePhone: {
+        title: "电话号码",
+        invalidNumber: "电话号码无效。",
+        error: "发生错误。",
+        invalidOtp: "验证码无效。",
+        verified: "您的电话号码已验证。",
+        changePhone: "更换号码",
+        enterNewPhone: "请输入要更换的新电话号码。",
+        sending: "发送中...",
+        getCode: "获取验证码",
+        otpHint: "请输入发送到您手机的验证码。",
+        verifying: "验证中...",
+        verify: "验证",
+        resend: "重新发送"
+      },
+      profileSaved: {
+        title: "收藏",
+        all: "全部 ({{count}})",
+        empty: "暂无收藏酒店",
+        searchHotels: "搜索酒店",
+        remove: "取消收藏",
+        reviews: "{{count}} 条评价",
+        pricePerNight: "每晚价格（含增值税）"
+      },
+      profilePromo: {
+        title: "优惠码",
+        error: "发生错误。",
+        added: "已添加优惠码「{{code}}」。",
+        placeholder: "输入优惠码",
+        adding: "添加中...",
+        add: "添加",
+        tabs: { active: "有效", used: "已使用", inactive: "无效" },
+        emptyActive: "暂无有效优惠码",
+        emptyUsed: "暂无已使用优惠码",
+        emptyInactive: "暂无无效优惠码",
+        table: {
+          discount: "折扣",
+          validPeriod: "有效期",
+          status: "状态",
+          code: "代码"
+        },
+        expired: "—（已过期）"
+      },
+      AuthLogin: {
+        signIn: "登录您的账户",
+        emailLabel: "电子邮箱 / 电话号码",
+        emailPlaceholder: "邮箱或手机号",
+        passwordLabel: "密码",
+        passwordPlaceholder: "请输入密码",
+        forgotPassword: "忘记密码？",
+        signInButton: "登录",
+        signUp: "注册",
+        loginFailed: "登录失败",
+        orContinueWith: "或"
+      },
+      AuthSignup: {
+        createAccount: "创建账户",
+        passwordMismatch: "两次密码不一致",
+        signUpButton: "注册",
+        signIn: "登录"
+      },
+      navigation: {
+        login: "登录",
+        register: "注册",
+        night: "晚",
+        nights: "晚"
       }
     }
   }
@@ -2969,7 +3814,12 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'mn',
+    supportedLngs: ['mn', 'en', 'zh', 'ru'],
+    fallbackLng: {
+      zh: ['en', 'mn'],
+      ru: ['en', 'mn'],
+      default: ['mn'],
+    },
     lng: 'mn',
     debug: false,
     

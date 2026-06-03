@@ -7,11 +7,12 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { cn } from '@/lib/utils';
 
 /** Base text color — matches booking form back button */
-export const BACK_BUTTON_TEXT_CLASS = 'shrink-0 text-gray-600 dark:text-gray-300';
+export const BACK_BUTTON_TEXT_CLASS =
+  'shrink-0 text-gray-600 dark:text-gray-300 border-none text-primary-600 text-sm font-bold';
 
 /** Positioning beside the booking stepper */
 export const BACK_BUTTON_STEPPER_ANCHOR_CLASS =
-  'absolute right-full top-4 -translate-y-1/2 mr-2 z-10';
+  'absolute right-full top-4 -translate-y-1/2 z-10 mr-6';
 
 export interface BackButtonProps {
   onClick?: () => void;
@@ -31,7 +32,7 @@ export default function BackButton({
   href,
   label,
   labelKey = 'common.back',
-  labelFallback = 'Буцах',
+  labelFallback,
   className,
   stepperAnchor = false,
   disabled,
@@ -49,23 +50,25 @@ export default function BackButton({
     }
   };
 
-  const text = label ?? t(labelKey, labelFallback);
+  const text = label ?? (labelFallback !== undefined ? t(labelKey, labelFallback) : t(labelKey));
 
   return (
     <Button
       variant="ghost"
-      size="sm"
+      size="md"
       type="button"
       onClick={handleClick}
       disabled={disabled}
       className={cn(
         BACK_BUTTON_TEXT_CLASS,
         stepperAnchor && BACK_BUTTON_STEPPER_ANCHOR_CLASS,
-        className,
+        className, 
       )}
     >
-      <ArrowLeft className="w-4 h-4" />
-      {text}
+      <span className="inline-flex items-center gap-2 leading-none">
+        <ArrowLeft className="w-4 h-4 shrink-0" aria-hidden />
+        <span className="whitespace-nowrap">{text}</span>
+      </span>
     </Button>
   );
 }

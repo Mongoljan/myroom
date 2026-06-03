@@ -27,7 +27,7 @@ export default function Partnerships() {
             className="text-center mb-6"
           >
             <h2 className="text-xl md:text-2xl flex justify-start font-bold text-gray-900 dark:text-white">
-              {t('partnerships.title', 'Хамтрагч байгууллагууд')}
+              {t('partnerships.title')}
             </h2>
           </motion.div>
 

@@ -4,18 +4,34 @@ import { useState, useEffect, useRef } from 'react';
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Clock, Calendar, Check, Star, MapPin, ChevronDown, Users, Printer, Download, Phone, Mail, Globe, Pencil, RefreshCw, Plus, X } from 'lucide-react';
+import { ArrowLeft, Clock, Check, Star, MapPin } from 'lucide-react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/Button';
 import { BookingService } from '@/services/bookingApi';
 import { ApiService } from '@/services/api';
 import { CreateBookingRequest, CreateBookingResponse, PropertyPolicy, CheckBookingResponse } from '@/types/api';
-import { getFacilityName } from '@/utils/facilities';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import BookingConfirmationView from '@/components/booking/BookingConfirmationView';
 import { useAuth } from '@/contexts/AuthContext';
 import BookingPaymentStep from '@/components/booking/BookingPaymentStep';
 import GuestCountInline from '@/components/common/GuestCountInline';
 import BackButton from '@/components/common/BackButton';
+
+function StepLabel({ labelKey }: { labelKey: string }) {
+  const { t } = useHydratedTranslation();
+  const parts = t(labelKey).split('\n');
+  return (
+    <>
+      {parts[0]}
+      {parts[1] ? (
+        <>
+          <br />
+          {parts[1]}
+        </>
+      ) : null}
+    </>
+  );
+}
 
 interface BookingRoom {
   room_category_id: number;
@@ -29,7 +45,7 @@ interface BookingRoom {
 }
 
 function BookingContent() {
-  const { t } = useHydratedTranslation();
+  const { t, tAny } = useHydratedTranslation();
   const { user, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -280,7 +296,7 @@ function BookingContent() {
       setPromoMessage(null);
       return;
     }
-    setPromoMessage('Энэ промо код хүчингүй байна.');
+    setPromoMessage(t('bookingFlow.promoInvalid'));
   };
 
   const lookupEbarimt = async (regno: string): Promise<string | null> => {
@@ -292,10 +308,10 @@ function BookingContent() {
       if (data.found && data.name) {
         return data.name as string;
       }
-      setEbarimtError('Бүртгэл олдсонгүй');
+      setEbarimtError(t('bookingFlow.ebarimtNotFound'));
       return null;
     } catch {
-      setEbarimtError('Холболтын алдаа гарлаа');
+      setEbarimtError(t('bookingFlow.ebarimtConnectionError'));
       return null;
     } finally {
       setEbarimtLoading(false);
@@ -386,482 +402,29 @@ function BookingContent() {
   }
 
   if (paymentConfirmed && bookingResult) {
-    const handlePrint = () => window.print();
-    const handleDownloadPDF = () => window.print();
-
-    const formatDateDisplay = (d: string) => {
-      if (!d) return '';
-      const date = new Date(d + 'T12:00:00');
-      const wk = ['Ня', 'Да', 'Мя', 'Лха', 'Пү', 'Ба', 'Бя'][date.getDay()];
-      const ymd = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
-      return `${ymd}, ${wk}`;
-    };
-    const checkInTime = hotelPolicy ? hotelPolicy.check_in_from.substring(0, 5) : '14:00';
-    const checkOutTime = hotelPolicy ? hotelPolicy.check_out_until.substring(0, 5) : '12:00';
-
-    const apiBooking = checkedBooking?.bookings?.[0];
-    const displayTotal = checkedBooking?.total_sum ?? totalPrice;
-    const displayNights = bookingResult.nights ?? nights;
-    const displayCustomerName = apiBooking?.customer_name || [customerLastName, customerName].filter(Boolean).join(' ').trim();
-    const displayCustomerPhone = apiBooking?.customer_phone || customerPhone;
-    const displayCustomerEmail = apiBooking?.customer_email || customerEmail;
-    const displayCheckIn = apiBooking?.check_in || checkIn;
-    const displayCheckOut = apiBooking?.check_out || checkOut;
-    const bookingCreatedAt = apiBooking?.created_at
-      ? new Date(apiBooking.created_at)
-      : new Date();
-
-    const totalGuestAdults = adultsCount;
-    const totalGuestChildren = childrenCount;
-
-    const displayHotelName = hotelDetails?.property_name || hotelName;
-
-    const hotelPhone: string | undefined = hotelDetails?.contact_phone || hotelDetails?.phone;
-    const hotelEmail: string | undefined = hotelDetails?.contact_email || hotelDetails?.email || hotelDetails?.mail;
-    const hotelWebsite: string | undefined = hotelDetails?.website;
-    const googleMapUrl: string | undefined = hotelDetails?.google_map;
-
-    const addressLine = hotelDetails?.location
-      ? [hotelDetails.location.province_city, hotelDetails.location.soum, hotelDetails.location.district].filter(Boolean).join(', ')
-      : '';
-
-    const cfConfirm = hotelPolicy?.cancellation_fee;
-    const cancelTimeShortConfirm = cfConfirm?.cancel_time?.substring(0, 5);
-    const cutoffDateConfirm = (daysBefore: number): string => {
-      if (!displayCheckIn) return `${daysBefore} хоногийн өмнө`;
-      const d = new Date(displayCheckIn + 'T12:00:00');
-      d.setDate(d.getDate() - daysBefore);
-      return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
-    };
-    const cancelTiers: { label: string; days: number; pct: number | null }[] = cfConfirm ? [
-      { label: `${cutoffDateConfirm(5)}-ээс өмнө`, days: 5, pct: cfConfirm.multi_5days_before_percentage ? parseFloat(cfConfirm.multi_5days_before_percentage) : null },
-      { label: `${cutoffDateConfirm(3)}-ээс өмнө`, days: 3, pct: cfConfirm.multi_3days_before_percentage ? parseFloat(cfConfirm.multi_3days_before_percentage) : null },
-      { label: `${cutoffDateConfirm(1)}-ээс хойш`, days: 1, pct: cfConfirm.multi_1day_before_percentage ? parseFloat(cfConfirm.multi_1day_before_percentage) : null },
-    ].filter((tier) => tier.pct !== null) : [];
-
-    const totalRoomsBooked = rooms.reduce((sum, r) => sum + r.room_count, 0) || bookingResult.total_rooms;
-
-    const facilityLines = [
-      ...(hotelDetails?.general_facilities ?? []),
-      ...(hotelDetails?.additional_facilities ?? []),
-    ]
-      .map((f) => getFacilityName(f, 'mn'))
-      .filter(Boolean);
-
-    const parkingPolicy = hotelPolicy?.parking_policy;
-    if (parkingPolicy?.outdoor_parking === 'free') facilityLines.push('Үнэгүй гадна зогсоол');
-    else if (parkingPolicy?.indoor_parking === 'free') facilityLines.push('Үнэгүй дотор зогсоол');
-
-    const managementActions = [
-      { icon: Calendar, label: 'Өдөр өөрчлөх', action: 'change-date', primary: true },
-      { icon: RefreshCw, label: 'Өрөө солих', action: 'change-room', primary: false },
-      { icon: Plus, label: 'Өрөө нэмэх', action: 'add-room', primary: false },
-      { icon: X, label: 'Захиалга цуцлах', action: 'cancel', danger: true, primary: false },
-    ];
-
-    const tableHeadClass = 'bg-gray-700 text-white';
-
     return (
-      <div className="min-h-screen bg-[#eef0f3] dark:bg-gray-900 py-8 print:bg-white print:py-0">
-        <div className="max-w-7xl mx-auto px-4 print:px-0 print:max-w-full">
-          {/* Top action row */}
-          <div className="mb-4 flex justify-between items-center print:hidden">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-                <Check className="w-3 h-3 text-white" strokeWidth={3} />
-              </div>
-              <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                {t('bookingExtra.confirmationTitle', 'Таны захиалга амжилттай баталгаажлаа. Баярлалаа.')}
-              </p>
-            </div>
-            <div className="flex items-center gap-1">
-              <Button variant="ghost" size="sm" onClick={handleDownloadPDF} className="text-gray-700">
-                <Download className="w-4 h-4" />
-                {t('bookingExtra.downloadPDF', 'Татах')}
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handlePrint} className="text-gray-700">
-                <Printer className="w-4 h-4" />
-                {t('bookingExtra.print', 'Хэвлэх')}
-              </Button>
-            </div>
-          </div>
-
-          {/* Single frame: voucher + sidebar */}
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden print:border-0 print:shadow-none">
-            <div className="grid grid-cols-1 lg:grid-cols-3 print:block">
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="lg:col-span-2 p-6 sm:p-8 print:p-0"
-              id="booking-confirmation"
-            >
-              <h2 className="text-base font-semibold text-center mb-6 text-foreground tracking-tight">
-                {t('bookingExtra.bookingConfirmation', 'Захиалгын хуудас')}
-              </h2>
-
-              {/* Hotel header */}
-              <div className="flex items-start justify-between gap-6 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                <div className="min-w-0">
-                  <a href={`/hotel/${hotelId}`} className="text-primary hover:underline text-sm font-semibold block mb-2">
-                    {displayHotelName}
-                  </a>
-                  <div className="space-y-1 text-sm text-muted-foreground">
-                    {hotelPhone && (
-                      <div className="flex items-center gap-1.5">
-                        <Phone className="w-3.5 h-3.5 shrink-0" />
-                        <span>{hotelPhone}</span>
-                      </div>
-                    )}
-                    {addressLine && (
-                      <div className="flex items-start gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                        <span>{addressLine}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="text-right shrink-0 text-sm">
-                  <div className="font-semibold text-foreground">MyRoom.mn</div>
-                  {hotelEmail && (
-                    <div className="flex items-center justify-end gap-1.5 text-muted-foreground mt-1">
-                      <Mail className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate max-w-[180px]">{hotelEmail}</span>
-                    </div>
-                  )}
-                  {hotelWebsite && (
-                    <div className="flex items-center justify-end gap-1.5 text-muted-foreground mt-1">
-                      <Globe className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate max-w-[180px]">{hotelWebsite}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Booking details */}
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-foreground mb-3">
-                  {t('bookingExtra.bookingDetailsSection', 'Захиалгын дэлгэрэнгүй')}
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex">
-                    <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.checkInLabel', 'Орох өдөр')}</span>
-                    <span className="text-foreground">{formatDateDisplay(displayCheckIn)}, {checkInTime} цагаас</span>
-                  </div>
-                  <div className="flex">
-                    <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.checkOutLabel', 'Гарах өдөр')}</span>
-                    <span className="text-foreground">{formatDateDisplay(displayCheckOut)}, {checkOutTime} цагаас</span>
-                  </div>
-                  {displayNights > 0 && (
-                    <div className="flex">
-                      <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.nightsLabel', 'Хоног')}</span>
-                      <span className="text-foreground">{displayNights}</span>
-                    </div>
-                  )}
-                  <div className="flex items-start">
-                    <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.enteringGuests', 'Орох хүний тоо')}</span>
-                    <GuestCountInline
-                      adults={totalGuestAdults}
-                      childCount={totalGuestChildren}
-                      className="text-foreground"
-                    />
-                  </div>
-                  {(displayCustomerName || displayCustomerPhone || displayCustomerEmail) && (
-                    <div className="flex">
-                      <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.guestName', 'Захиалагч')}</span>
-                      <span className="text-foreground">
-                        {displayCustomerName}
-                        {displayCustomerPhone ? ` / ${displayCustomerPhone}` : ''}
-                        {displayCustomerEmail ? `, ${displayCustomerEmail}` : ''}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex">
-                    <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.bookingDateLabel', 'Захиалсан огноо')}</span>
-                    <span className="text-foreground">
-                      {bookingCreatedAt.toLocaleDateString('en-CA').replace(/-/g, '.')}{' '}
-                      {bookingCreatedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Rooms table */}
-              <div className="mb-6">
-                <table className="w-full text-sm border-collapse">
-                  <thead>
-                    <tr className={tableHeadClass}>
-                      <th className="text-left font-semibold px-3 py-2.5">{t('bookingExtra.roomTypeCol', 'Өрөө')}</th>
-                      <th className="text-left font-semibold px-3 py-2.5">{t('bookingExtra.extraDescCol', 'Нэмэлт тайлбар')}</th>
-                      <th className="text-right font-semibold px-3 py-2.5">{t('bookingExtra.priceCol', '1 өдрийн үнэ')}</th>
-                      <th className="text-center font-semibold px-3 py-2.5">{t('bookingExtra.quantityCol', 'Тоо ш')}</th>
-                      <th className="text-right font-semibold px-3 py-2.5">{t('bookingExtra.totalCol', 'Үнэ')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rooms.map((room, index) => (
-                      <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
-                        <td className="px-3 py-2.5 text-foreground">{room.room_name}</td>
-                        <td className="px-3 py-2.5 text-muted-foreground">—</td>
-                        <td className="px-3 py-2.5 text-right text-foreground">{room.price_per_night.toLocaleString()} ₮</td>
-                        <td className="px-3 py-2.5 text-center text-foreground">{room.room_count}</td>
-                        <td className="px-3 py-2.5 text-right font-semibold text-foreground">{room.total_price.toLocaleString()} ₮</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr className="bg-gray-100 dark:bg-gray-700/50 text-foreground border-t border-gray-200 dark:border-gray-600">
-                      <td colSpan={4} className="px-3 py-3 font-semibold">{t('bookingExtra.totalPaidAmount', 'Нийт төлөх дүн')}</td>
-                      <td className="px-3 py-3 text-right font-bold">{displayTotal.toLocaleString()} ₮</td>
-                    </tr>
-                  </tfoot>
-                </table>
-                <p className="text-xs text-muted-foreground mt-1.5 text-right">*{t('bookingExtra.taxNote', 'НӨАТ багтсан үнэ')}</p>
-              </div>
-
-              {/* Additional info — API facilities only */}
-              {facilityLines.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-foreground mb-2">
-                  {t('bookingExtra.additionalInfo', 'Нэмэлт мэдээлэл')}
-                </h3>
-                <div className="text-sm text-muted-foreground space-y-0.5">
-                  {facilityLines.map((line, i) => (
-                    <p key={i}>{line}</p>
-                  ))}
-                </div>
-              </div>
-              )}
-
-              {/* Cancellation policy — from hotel policy API */}
-              {cfConfirm && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-foreground mb-2">
-                  {t('bookingExtra.cancellationPolicy', 'Цуцлах нөхцөл')}
-                </h3>
-                <p className="text-sm text-muted-foreground mb-3">
-                  1 өрөө тутамд цуцлалтаас авах хураамж:
-                </p>
-                {totalRoomsBooked <= 1 ? (
-                  (() => {
-                    let deadlineLabel = cancelTimeShortConfirm ?? '11:00';
-                    if (displayCheckIn) {
-                      const deadline = new Date(displayCheckIn + 'T00:00:00');
-                      deadline.setDate(deadline.getDate() - 1);
-                      if (cfConfirm.cancel_time) {
-                        const [h, m] = cfConfirm.cancel_time.split(':').map(Number);
-                        deadline.setHours(h, m, 0, 0);
-                        deadlineLabel = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-                      } else {
-                        deadline.setHours(11, 0, 0, 0);
-                      }
-                    }
-                    return (
-                      <table className="w-full text-sm border-collapse">
-                        <thead>
-                          <tr className={tableHeadClass}>
-                            <th className="text-left font-semibold px-2 py-2"></th>
-                            <th className="text-right font-semibold px-2 py-2">
-                              Өмнөх өдрийн {deadlineLabel}-ээс өмнө
-                            </th>
-                            <th className="text-right font-semibold px-2 py-2">
-                              Өмнөх өдрийн {deadlineLabel}-ээс хойш
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {rooms.map((room, i) => {
-                            const feeBase = room.price_per_night * room.room_count;
-                            const beforePct = parseFloat(cfConfirm.single_before_time_percentage);
-                            const afterPct = parseFloat(cfConfirm.single_after_time_percentage);
-                            const beforeFee = Math.round((feeBase * beforePct) / 100);
-                            const afterFee = Math.round((feeBase * afterPct) / 100);
-                            const afterDisplay =
-                              afterPct >= 100 ? 'Цуцлах боломжгүй'
-                              : afterPct === 0 ? 'Үнэгүй'
-                              : `${afterFee.toLocaleString()} ₮`;
-                            return (
-                              <tr key={i} className="border-b border-gray-200 dark:border-gray-700">
-                                <td className="px-2 py-2 text-foreground">{room.room_name}{room.room_count > 1 ? ` (×${room.room_count})` : ''}</td>
-                                <td className="px-2 py-2 text-right text-foreground">
-                                  {beforePct === 0 ? 'Үнэгүй' : `${beforeFee.toLocaleString()} ₮`}
-                                </td>
-                                <td className={`px-2 py-2 text-right ${afterPct >= 100 ? 'text-red-600' : ''}`}>
-                                  {afterDisplay}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    );
-                  })()
-                ) : cancelTiers.length > 0 ? (
-                  <table className="w-full text-sm border-collapse">
-                    <thead>
-                      <tr className={tableHeadClass}>
-                        <th className="text-left font-semibold px-2 py-2"></th>
-                        {cancelTiers.map((tier) => (
-                          <th key={tier.days} className="text-right font-semibold px-2 py-2">{tier.label}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rooms.map((room, i) => (
-                        <tr key={i} className="border-b border-gray-200 dark:border-gray-700">
-                          <td className="px-2 py-2 text-foreground">{room.room_name}{room.room_count > 1 ? ` (×${room.room_count})` : ''}</td>
-                          {cancelTiers.map((tier) => {
-                            const fee = Math.round((room.total_price * (tier.pct ?? 0)) / 100);
-                            return (
-                              <td key={tier.days} className="px-2 py-2 text-right text-foreground">
-                                {tier.pct! >= 100 ? <span className="text-red-600">Цуцлах боломжгүй</span>
-                                  : tier.pct === 0 ? 'Үнэгүй'
-                                  : `${fee.toLocaleString()} ₮`}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">
-                    {t('bookingExtra.noPolicyInfo', 'Цуцлалтын нөхцөлийн талаар зочид буудалтай холбогдоно уу.')}
-                  </p>
-                )}
-              </div>
-              )}
-
-              {/* Reminders */}
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold text-foreground mb-2">Санамж</h3>
-                <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-5">
-                  <li>Захиалга баталгаажсан тохиолдолд, MyRoom-ийн Үйлчилгээний нөхцөл, Нууцлалын бодлого болон Захиалга цуцлах нөхцлийг танилцаж, бүрэн зөвшөөрсөн гэж үзнэ.</li>
-                  <li>Захиалгад өдөр болон цагийн хойрвүй өчил бол захиалгыг цуцлахаас сэргийлэх буудалтайгаа холбоо барих хүсэлтэй мэдэгдэхийг зөвлөнө.</li>
-                </ul>
-              </div>
-
-              <p className="text-center text-sm text-muted-foreground">
-                Бидний сонгон үйлчлүүлж байгаад танд баярлалаа.
-              </p>
-            </motion.div>
-
-            {/* RIGHT — sidebar inside same frame */}
-            <motion.aside
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-              className="lg:col-span-1 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-4 sm:p-5 space-y-3 print:hidden"
-            >
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-2">
-                <div className="text-sm">
-                  <span className="text-muted-foreground block mb-0.5">Захиалгын дугаар</span>
-                  <span className="font-mono font-semibold text-foreground text-base">{bookingResult.booking_code}</span>
-                </div>
-                <div className="text-sm">
-                  <span className="text-muted-foreground block mb-0.5">PIN код</span>
-                  <span className="font-mono font-semibold text-foreground text-base">{bookingResult.pin_code}</span>
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Захиалга удирдах</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {managementActions.map((a) => {
-                    const Icon = a.icon;
-                    return (
-                      <Button
-                        key={a.action}
-                        variant={a.primary ? 'primary' : 'ghost'}
-                        size="sm"
-                        className={`w-full flex items-center justify-start gap-1.5 !rounded-lg !shadow-none ${
-                          a.danger
-                            ? '!text-red-600 hover:!text-red-700 !border-red-200'
-                            : a.primary
-                              ? ''
-                              : '!bg-white dark:!bg-gray-800 !border-gray-200 dark:!border-gray-600'
-                        }`}
-                        onClick={() => router.push(`/booking/manage?code=${bookingResult.booking_code}&pin=${bookingResult.pin_code}&action=${a.action}`)}
-                      >
-                        <Icon className="w-3.5 h-3.5 shrink-0" />
-                        <span className="truncate text-left">{a.label}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {(addressLine || hotelPhone || hotelEmail) && (
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Буудалтай холбогдох</h3>
-                <div className="space-y-2 text-sm">
-                  {addressLine && (
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
-                      <span className="text-muted-foreground">{addressLine}</span>
-                    </div>
-                  )}
-                  {hotelPhone && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                      <a href={`tel:${hotelPhone}`} className="text-foreground hover:underline">{hotelPhone}</a>
-                    </div>
-                  )}
-                  {hotelEmail && hotelEmail !== hotelPhone && (
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                      <a href={`mailto:${hotelEmail}`} className="text-foreground hover:underline truncate">{hotelEmail}</a>
-                    </div>
-                  )}
-                </div>
-              </div>
-              )}
-
-              {googleMapUrl && (() => {
-                const coordMatch = googleMapUrl.match(/q=([-\d.]+),([-\d.]+)/);
-                const embedSrc = coordMatch
-                  ? `https://maps.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}&output=embed&zoom=15`
-                  : null;
-                return embedSrc ? (
-                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                    <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-200 dark:border-gray-700">
-                      <h3 className="text-sm font-semibold text-foreground">Газрын зураг дээр харах</h3>
-                      <a
-                        href={googleMapUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-primary hover:underline flex items-center gap-1"
-                      >
-                        <MapPin className="w-3 h-3" />
-                        Google Maps
-                      </a>
-                    </div>
-                    <iframe
-                      src={embedSrc}
-                      className="w-full h-40 border-0"
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="Буудлын байршил"
-                    />
-                  </div>
-                ) : null;
-              })()}
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push('/')}
-                className="!justify-start text-muted-foreground hover:text-foreground !px-0"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                {t('bookingExtra.goHome', 'Нүүр хуудас руу буцах')}
-              </Button>
-            </motion.aside>
-            </div>
-          </div>
-        </div>
-      </div>
+      <BookingConfirmationView
+        bookingResult={bookingResult}
+        checkedBooking={checkedBooking}
+        rooms={rooms}
+        hotelId={hotelId}
+        hotelName={hotelName}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        nights={nights}
+        totalPrice={totalPrice}
+        adultsCount={adultsCount}
+        childrenCount={childrenCount}
+        customerName={customerName}
+        customerLastName={customerLastName}
+        customerPhone={customerPhone}
+        customerEmail={customerEmail}
+        hotelDetails={hotelDetails}
+        hotelPolicy={hotelPolicy}
+      />
     );
   }
+
 
   // ─── Step 3: Payment ───────────────────────────────────────────
   if (step === 3 && bookingResult) {
@@ -874,21 +437,21 @@ function BookingContent() {
               <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
                 <Check className="w-4 h-4" />
               </div>
-              <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight">Өрөө<br/>сонгох</span>
+              <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepRoom" /></span>
             </div>
             <div className="flex-1 h-px bg-primary mt-4" />
             <div className="flex flex-col items-center">
               <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
                 <Check className="w-4 h-4" />
               </div>
-              <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight">Хувийн<br/>мэдээлэл</span>
+              <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepGuest" /></span>
             </div>
             <div className="flex-1 h-px bg-primary mt-4" />
             <div className="flex flex-col items-center">
               <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0 text-sm font-semibold">
                 3
               </div>
-              <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight">Төлбөр<br/>баталгаажуулах</span>
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepPayment" /></span>
             </div>
           </div>
 
@@ -961,7 +524,7 @@ function BookingContent() {
   const formatDateShort = (d: string) => {
     if (!d) return '';
     const date = new Date(d);
-    const wkMap = ['Ня', 'Да', 'Мя', 'Лха', 'Пү', 'Ба', 'Бя'];
+    const wkMap = tAny('bookingFlow.weekdays', { returnObjects: true }) as string[];
     return `${date.getFullYear()} -${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${wkMap[date.getDay()]}`;
   };
 
@@ -1002,21 +565,21 @@ function BookingContent() {
             <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
               <Check className="w-4 h-4" />
             </div>
-            <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight">Өрөө<br/>сонгох</span>
+            <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepRoom" /></span>
           </div>
           <div className="flex-1 h-px bg-primary mt-4" />
           <div className="flex flex-col items-center">
             <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0 text-sm font-semibold">
               2
             </div>
-            <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight">Хувийн<br/>мэдээлэл</span>
+            <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepGuest" /></span>
           </div>
           <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700 mt-4" />
           <div className="flex flex-col items-center">
             <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 flex items-center justify-center shrink-0 text-sm font-semibold">
               3
             </div>
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1.5 text-center leading-tight">Төлбөр<br/>баталгаажуулах</span>
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepPayment" /></span>
           </div>
           </div>
         </div>
@@ -1030,7 +593,7 @@ function BookingContent() {
               className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
             >
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-5">
-                Захиалагчийн мэдээлэл
+                {t('bookingFlow.guestInfoTitle')}
               </h2>
 
               {bookingError && (
@@ -1047,7 +610,7 @@ function BookingContent() {
                     onChange={(e) => setCustomerLastName(e.target.value)}
                     disabled={bookingInProgress}
                     className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
-                    placeholder="Таны овог"
+                    placeholder={t('bookingFlow.placeholderLastName')}
                   />
                   <div className="relative">
                     <input
@@ -1057,7 +620,7 @@ function BookingContent() {
                       required
                       disabled={bookingInProgress}
                       className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
-                      placeholder="Таны нэр"
+                      placeholder={t('bookingFlow.placeholderFirstName')}
                     />
                     <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                   </div>
@@ -1069,7 +632,7 @@ function BookingContent() {
                       required
                       disabled={bookingInProgress}
                       className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
-                      placeholder="И-мэйл хаяг"
+                      placeholder={t('bookingFlow.placeholderEmail')}
                     />
                     <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                   </div>
@@ -1081,7 +644,7 @@ function BookingContent() {
                       required
                       disabled={bookingInProgress}
                       className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
-                      placeholder="Утасны дугаар"
+                      placeholder={t('bookingFlow.placeholderPhone')}
                     />
                     <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                   </div>
@@ -1093,9 +656,9 @@ function BookingContent() {
                     <div className="flex items-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden shadow-sm">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src="/ebarimt-logo.png" alt="И-Баримт" className="w-9 h-9 object-contain" />
+                        <img src="/ebarimt-logo.png" alt={t('bookingFlow.ebarimtAlt')} className="w-9 h-9 object-contain" />
                       </div>
-                      <span className="text-sm font-semibold text-gray-900 dark:text-white">И-Баримт</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">{t('bookingFlow.ebarimtTitle')}</span>
                     </div>
                     {/* Toggle */}
                     <button
@@ -1144,7 +707,7 @@ function BookingContent() {
                           <span className="w-2 h-2 rounded-full bg-primary" />
                         )}
                       </span>
-                      <span className="text-sm text-gray-800">Хувь хүн</span>
+                      <span className="text-sm text-gray-800">{t('bookingFlow.ebarimtIndividual')}</span>
                     </label>
 
                     {/* Organization */}
@@ -1170,12 +733,12 @@ function BookingContent() {
                             <span className="w-2 h-2 rounded-full bg-primary" />
                           )}
                         </span>
-                        <span className="text-sm text-gray-800">Албан байгууллага</span>
+                        <span className="text-sm text-gray-800">{t('bookingFlow.ebarimtOrganization')}</span>
                       </label>
                       {ebarimtType === 'organization' && (
                         <div className="px-4 pb-4 space-y-3">
                           <div>
-                            <label className="block text-xs text-gray-600 mb-1">Регистрийн дугаар</label>
+                            <label className="block text-xs text-gray-600 mb-1">{t('bookingFlow.registerNumberLabel')}</label>
                             <div className="flex gap-2">
                               <input
                                 value={orgRegister}
@@ -1189,14 +752,14 @@ function BookingContent() {
                                 disabled={ebarimtLoading || !orgRegister.trim()}
                                 className="px-3 py-2 text-xs font-medium bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50 whitespace-nowrap"
                               >
-                                {ebarimtLoading ? '...' : 'Хайх'}
+                                {ebarimtLoading ? '...' : t('bookingFlow.ebarimtSearch')}
                               </button>
                             </div>
                             {ebarimtError && <p className="text-xs text-red-500 mt-1">{ebarimtError}</p>}
                           </div>
                           {orgName && (
                             <div>
-                              <label className="block text-xs text-gray-600 mb-1">Байгууллагын нэр</label>
+                              <label className="block text-xs text-gray-600 mb-1">{t('bookingFlow.orgNameLabel')}</label>
                               <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-md text-sm text-emerald-800">
                                 {orgName}
                               </div>
@@ -1229,25 +792,25 @@ function BookingContent() {
                             <span className="w-2 h-2 rounded-full bg-primary" />
                           )}
                         </span>
-                        <span className="text-sm text-gray-800">Татвар төлөгч иргэн</span>
+                        <span className="text-sm text-gray-800">{t('bookingFlow.ebarimtTaxpayerPerson')}</span>
                       </label>
                       {ebarimtType === 'taxpayer' && (
                         <div className="px-4 pb-4 space-y-3">
                           <div>
-                            <label className="block text-xs text-gray-600 mb-1">Регистрийн дугаар</label>
+                            <label className="block text-xs text-gray-600 mb-1">{t('bookingFlow.registerNumberLabel')}</label>
                             <div className="flex gap-2">
                               <input
                                 value={taxpayerRegisterPrefix1}
                                 onChange={(e) => setTaxpayerRegisterPrefix1(e.target.value.slice(0, 1).toUpperCase())}
                                 maxLength={1}
-                                placeholder="Э"
+                                placeholder={t('bookingFlow.ebarimtTaxPrefix1')}
                                 className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
                               />
                               <input
                                 value={taxpayerRegisterPrefix2}
                                 onChange={(e) => setTaxpayerRegisterPrefix2(e.target.value.slice(0, 1).toUpperCase())}
                                 maxLength={1}
-                                placeholder="Н"
+                                placeholder={t('bookingFlow.ebarimtTaxPrefix2')}
                                 className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
                               />
                               <input
@@ -1259,7 +822,7 @@ function BookingContent() {
                               />
                             </div>
                             {ebarimtLoading && (
-                              <p className="text-xs text-gray-500 mt-1">Хайж байна...</p>
+                              <p className="text-xs text-gray-500 mt-1">{t('bookingFlow.searching')}</p>
                             )}
                             {ebarimtError && (
                               <p className="text-xs text-red-500 mt-1">{ebarimtError}</p>
@@ -1293,17 +856,17 @@ function BookingContent() {
                   className="mt-1 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
                 />
                 <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Би захиалга цуцлах нөхцлийг хүлээн зөвшөөрч байна.
+                  {t('bookingFlow.cancelPolicyAccept')}
                 </span>
               </label>
 
               <p className="text-xs text-gray-600 dark:text-gray-400 ml-7 mb-4">
-                Захиалга цуцлах тохиолдолд дараах нөхцлийн дагуу үйлчилгээний хураамжийг суутган буцаан олголт хийгдэх эсвэл цуцлах боломжгүй болохыг анхаарна уу.
+                {t('bookingFlow.cancelPolicyIntro')}
               </p>
 
               <div className="ml-7">
                 <div className="text-xs font-semibold text-gray-900 dark:text-white mb-2">
-                  Цуцлалтын хураамж:
+                  {t('bookingFlow.cancelFeeTitle')}
                 </div>
                 <div className="overflow-x-auto">
                   {(() => {
@@ -1328,7 +891,7 @@ function BookingContent() {
                       }
 
                       if (windowClosed) return (
-                        <p className="text-sm text-red-500 dark:text-red-400 font-medium py-1">Цуцлах боломжгүй</p>
+                        <p className="text-sm text-red-500 dark:text-red-400 font-medium py-1">{t('bookingFlow.cancelNotAllowed')}</p>
                       );
                       return (
                         <table className="w-full text-xs">
@@ -1352,8 +915,8 @@ function BookingContent() {
                               const afterFee  = afterPct  !== null ? Math.round((feeBase * afterPct)  / 100) : null;
                               const afterDisplay =
                                 afterPct === null  ? '—'
-                                : afterPct >= 100  ? 'Цуцлах боломжгүй'
-                                : afterPct === 0   ? 'Үнэгүй'
+                                : afterPct >= 100  ? t('bookingFlow.cancelNotAllowed')
+                                : afterPct === 0   ? t('bookingFlow.cancelFree')
                                 : `${afterFee!.toLocaleString()} ₮`;
                               return (
                                 <tr key={i} className="text-gray-800 dark:text-gray-200">
@@ -1367,7 +930,7 @@ function BookingContent() {
                                 </tr>
                               );
                             }) : (
-                              <tr><td colSpan={3} className="py-3 text-gray-500 text-center">Өрөөний мэдээлэл алга</td></tr>
+                              <tr><td colSpan={3} className="py-3 text-gray-500 text-center">{t('bookingFlow.noRoomPolicyInfo')}</td></tr>
                             )}
                           </tbody>
                         </table>
@@ -1388,12 +951,12 @@ function BookingContent() {
                       <p className="text-sm text-red-500 dark:text-red-400 font-medium py-1">Цуцлах боломжгүй</p>
                     );
                     return (
-                      <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium py-1">Цуцлах боломжтой</p>
+                      <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium py-1">{t('bookingFlow.cancelAllowed')}</p>
                     );
                   })()}
                 </div>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 italic">
-                  *Тухайн буудлын дотоод бодлогоос хамааран буудал бүрийн цуцлалтын хураамж харилцан адилгүй өөр байна.
+                  {t('bookingFlow.cancelPerHotelNote')}
                 </p>
               </div>
             </motion.div>
@@ -1408,7 +971,7 @@ function BookingContent() {
               className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 sticky top-6"
             >
               <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
-                Захиалгын мэдээлэл
+                {t('bookingFlow.bookingSummary')}
               </h3>
 
               {/* Hotel summary */}
@@ -1454,18 +1017,18 @@ function BookingContent() {
               <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Орох цаг</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{t('bookingFlow.checkInTime')}</div>
                     <div className="text-sm font-semibold text-gray-900 dark:text-white">
                       {formatDateShort(checkIn)}
                     </div>
                     <div className="text-xs text-gray-500 mt-0.5">{checkInTimeRange}</div>
                   </div>
                   <div className="flex flex-col items-center px-2 pt-2">
-                    <span className="text-xs text-gray-500">{nights} шөнө</span>
+                    <span className="text-xs text-gray-500">{t('bookingFlow.nights', { count: nights })}</span>
                     <div className="w-px h-6 bg-gray-300 mt-1" />
                   </div>
                   <div className="text-right">
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Гарах цаг</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">{t('bookingFlow.checkOutTime')}</div>
                     <div className="text-sm font-semibold text-gray-900 dark:text-white">
                       {formatDateShort(checkOut)}
                     </div>
@@ -1476,7 +1039,7 @@ function BookingContent() {
 
               {/* Room capacity */}
               <div className="mb-4 text-sm text-gray-700 dark:text-gray-300">
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Орох боломжтой хүний тоо:</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('bookingFlow.guestCapacity')}</div>
                 <GuestCountInline
                   adults={rooms.reduce((s, r) => s + (r.max_adults ?? 1) * r.room_count, 0)}
                   childCount={rooms.reduce((s, r) => s + (r.max_children ?? 0) * r.room_count, 0)}
@@ -1485,14 +1048,14 @@ function BookingContent() {
 
               {/* Selected rooms */}
               <div className="mb-4">
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">Таны сонгосон өрөө:</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('bookingFlow.selectedRooms')}</div>
                 {rooms.map((room, index) => (
                   <div key={index} className="flex justify-between items-center py-1">
                     <span className="text-sm font-semibold text-gray-900 dark:text-white truncate pr-2">
                       {room.room_name}
                     </span>
                     <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                      x{room.room_count} өрөө
+                      {t('bookingFlow.roomCount', { count: room.room_count })}
                     </span>
                   </div>
                 ))}
@@ -1500,7 +1063,7 @@ function BookingContent() {
 
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1.5 mb-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">Үндсэн үнэ</span>
+                  <span className="text-gray-600 dark:text-gray-400">{t('bookingFlow.basePrice')}</span>
                   <span className="text-gray-900 dark:text-white">{totalPrice.toLocaleString()} ₮</span>
                 </div>
               </div>
@@ -1512,7 +1075,7 @@ function BookingContent() {
                     type="text"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
-                    placeholder="Промо кодоо оруулна уу."
+                    placeholder={t('bookingFlow.promoPlaceholder')}
                     className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary"
                   />
                   <Button
@@ -1522,7 +1085,7 @@ function BookingContent() {
                     onClick={handleApplyPromo}
                     disabled={!promoCode.trim()}
                   >
-                    Ашиглах
+                    {t('bookingFlow.applyPromo')}
                   </Button>
                 </div>
                 {promoMessage && (
@@ -1534,13 +1097,13 @@ function BookingContent() {
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mb-4">
                 <div className="flex justify-between items-baseline">
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                    Нийт төлөх дүн
+                    {t('bookingFlow.totalDue')}
                   </span>
                   <span className="text-lg font-bold text-gray-900 dark:text-white">
                     {totalPrice.toLocaleString()}₮
                   </span>
                 </div>
-                <div className="text-xs text-gray-500 text-right mt-0.5">*НӨАТ багтсан үнэ</div>
+                <div className="text-xs text-gray-500 text-right mt-0.5">{t('bookingFlow.vatIncluded')}</div>
               </div>
 
               {/* Terms acceptance */}
@@ -1566,7 +1129,7 @@ function BookingContent() {
                   className="mt-0.5 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
                 />
                 <span className="text-xs text-gray-700 dark:text-gray-300">
-                  Үйлчилгээний нөхцөл зөвшөөрөх
+                  {t('bookingFlow.acceptTerms')}
                 </span>
               </label>
 
@@ -1582,7 +1145,7 @@ function BookingContent() {
                     {t('bookingExtra.bookingInProgress', 'Уншиж байна...')}
                   </span>
                 ) : (
-                  'Захиалга баталгаажуулах'
+                  t('bookingFlow.confirmBooking')
                 )}
               </Button>
             </motion.div>
@@ -1598,7 +1161,7 @@ function BookingContent() {
           onEscapeKeyDown={(e) => e.preventDefault()}
         >
           <DialogHeader>
-            <DialogTitle>Таны захиалгын мэдээлэл</DialogTitle>
+            <DialogTitle>{t('bookingFlow.mismatchTitle')}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -1625,7 +1188,7 @@ function BookingContent() {
 
             {/* Cancellation fee schedule */}
             <div>
-              <p className="text-base font-semibold mb-2">2+ өрөөний цуцлалтын нөхцөл</p>
+              <p className="text-base font-semibold mb-2">{t('bookingFlow.multiRoomTitle')}</p>
               <div className="rounded-lg border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 p-4 space-y-3">
                 {cf ? (() => {
                   const todayMidnight = new Date(); todayMidnight.setHours(0,0,0,0);
@@ -1642,7 +1205,7 @@ function BookingContent() {
                     return cutoff >= todayMidnight;
                   });
                   if (validTiers.length === 0) {
-                    return <p className="text-sm font-semibold text-destructive">Цуцлах боломжгүй — бүх хугацаа өнгөрсөн байна.</p>;
+                    return <p className="text-sm font-semibold text-destructive">{t('bookingFlow.multiRoomAllExpired')}</p>;
                   }
                   return validTiers.map(tier => {
                     const pct = parseFloat(tier.pct!);
@@ -1652,7 +1215,7 @@ function BookingContent() {
                       <div key={tier.days} className="flex justify-between text-sm">
                         <span className="text-muted-foreground">{multiCutoffDate(tier.days)}-с өмнө цуцалбал:</span>
                         <span className="font-semibold">
-                          {pct >= 100 ? 'Цуцлах боломжгүй' : pct === 0 ? 'Үнэгүй' : `${fee.toLocaleString()} ₮ (${pct}%)`}
+                          {pct >= 100 ? t('bookingFlow.cancelNotAllowed') : pct === 0 ? t('bookingFlow.cancelFree') : `${fee.toLocaleString()} ₮ (${pct}%)`}
                         </span>
                       </div>
                     );
@@ -1667,7 +1230,7 @@ function BookingContent() {
                 )}
               </div>
               <p className="text-sm text-muted-foreground italic mt-2">
-                *Тухайн буудлын бодлогоос хамааран цуцлалтын хураамж өөр байж болно.
+                {t('bookingFlow.multiRoomNote')}
               </p>
             </div>
           </div>
@@ -1682,7 +1245,7 @@ function BookingContent() {
                 router.push(backUrl);
               }}
             >
-              Буцах
+              {t('bookingFlow.back')}
             </Button>
             <Button
               size="sm"
@@ -1692,7 +1255,7 @@ function BookingContent() {
                 setCancellationAccepted(true);
               }}
             >
-              Ойлголоо, үргэлжлүүлэх
+              {t('bookingFlow.mismatchUnderstand')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1704,7 +1267,7 @@ function BookingContent() {
           <div className="p-6">
             <DialogHeader className="mb-4">
               <DialogTitle className="text-base font-semibold text-gray-900 dark:text-white">
-                Зочдын тоо таарахгүй байна
+                {t('bookingFlow.mismatchGuestMismatchTitle')}
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
@@ -1733,8 +1296,7 @@ function BookingContent() {
                 </div>
               </div>
               <p className="text-gray-600 dark:text-gray-400">
-                Таны хайлтын мэдээлэл сонгосон өрөөтэй таарахгүй байна.
-                Өрөө сонгох хуудас руу буцаж өрөө эсвэл зочдын тоогоо дахин шалгана уу.
+                {t('bookingFlow.mismatchWarning')}
               </p>
             </div>
             <div className="mt-5 flex gap-2">
@@ -1743,7 +1305,7 @@ function BookingContent() {
                 onClick={() => router.back()}
                 className="flex-1 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
-                Өрөө сонгох хуудас руу буцах
+                {t('bookingFlow.mismatchBack')}
               </button>
               <button
                 type="button"
@@ -1768,9 +1330,9 @@ function BookingContent() {
         <DialogContent className="w-[92vw] max-w-2xl p-0 overflow-hidden">
           <div className="flex flex-col" style={{ maxHeight: '85vh' }}>
           <DialogHeader className="px-6 pt-6 pb-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
-            <DialogTitle>Үйлчилгээний нөхцөл</DialogTitle>
+            <DialogTitle>{t('bookingFlow.tosTitle')}</DialogTitle>
             <p className="text-xs text-gray-500 mt-1">
-              Доош гүйлгэж бүх нөхцөлтэй танилцана уу.
+              {t('bookingFlow.tosScrollHint')}
             </p>
           </DialogHeader>
 
@@ -2004,8 +1566,8 @@ function BookingContent() {
           <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between gap-3 shrink-0">
             <p className={`text-xs ${tosScrolledToEnd ? 'text-emerald-600' : 'text-gray-500'}`}>
               {tosScrolledToEnd
-                ? '✓ Та нөхцөлтэй танилцлаа'
-                : 'Үргэлжлүүлэхийн тулд доош гүйлгэнэ үү...'}
+                ? t('bookingFlow.tosScrolledOk')
+                : t('bookingFlow.tosScrollContinue')}
             </p>
             <div className="flex gap-2">
               <button
@@ -2016,7 +1578,7 @@ function BookingContent() {
                 }}
                 className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
-                Цуцлах
+                {t('bookingFlow.cancel')}
               </button>
               <button
                 type="button"
@@ -2027,7 +1589,7 @@ function BookingContent() {
                 }}
                 className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/90 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
               >
-                Зөвшөөрөх
+                {t('bookingFlow.tosAccept')}
               </button>
             </div>
           </div>

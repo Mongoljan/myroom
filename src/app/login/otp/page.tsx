@@ -39,10 +39,10 @@ export default function OTPLoginPage() {
 
       // Show OTP in dev mode
       if (response.otp_code) {
-        alert(`OTP код (зөвхөн хөгжүүлэлтэд): ${response.otp_code}`);
+        alert(t('AuthOTP.devOtpAlert', { code: response.otp_code }));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'OTP илгээхэд алдаа гарлаа');
+      setError(err instanceof Error ? err.message : t('AuthOTP.otpSendError'));
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +58,7 @@ export default function OTPLoginPage() {
       CustomerService.saveToken(response.token);
       router.push('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'OTP баталгаажуулахад алдаа гарлаа');
+      setError(err instanceof Error ? err.message : t('AuthOTP.otpVerifyError'));
     } finally {
       setIsLoading(false);
     }
@@ -71,13 +71,13 @@ export default function OTPLoginPage() {
         <div>
           <h2 className="text-h1 font-bold text-gray-900 dark:text-white text-center mb-2">
             {step === 'phone'
-              ? t('AuthOTP.phoneLogin', 'Sign in with Phone')
-              : t('AuthOTP.verifyCode', 'Verify OTP Code')}
+              ? t('AuthOTP.phoneLogin')
+              : t('AuthOTP.verifyCode')}
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
             {step === 'phone'
-              ? t('AuthOTP.phoneSubtitle', 'We will send a verification code to your phone')
-              : t('AuthOTP.codeExpires', `Code expires in ${Math.floor(expiresIn / 60)} minutes`)}
+              ? t('AuthOTP.phoneSubtitle')
+              : t('AuthOTP.codeExpires', { minutes: Math.floor(expiresIn / 60) })}
           </p>
         </div>
 
@@ -95,7 +95,7 @@ export default function OTPLoginPage() {
               {/* Phone Number */}
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('AuthOTP.phoneLabel', 'Phone Number')} *
+                  {t('AuthOTP.phoneLabel')} *
                 </label>
                 <input
                   id="phone"
@@ -104,7 +104,7 @@ export default function OTPLoginPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400"
-                  placeholder={t('AuthOTP.phonePlaceholder', '99001122')}
+                  placeholder={t('AuthOTP.phonePlaceholder')}
                   disabled={isLoading}
                 />
               </div>
@@ -113,7 +113,7 @@ export default function OTPLoginPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('AuthOTP.firstNameLabel', 'First Name')}
+                    {t('AuthOTP.firstNameLabel')}
                   </label>
                   <input
                     id="firstName"
@@ -126,7 +126,7 @@ export default function OTPLoginPage() {
                 </div>
                 <div>
                   <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('AuthOTP.lastNameLabel', 'Last Name')}
+                    {t('AuthOTP.lastNameLabel')}
                   </label>
                   <input
                     id="lastName"
@@ -140,7 +140,7 @@ export default function OTPLoginPage() {
               </div>
 
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {t('AuthOTP.nameHint', 'Enter your name if you are a new user')}
+                {t('AuthOTP.nameHint')}
               </p>
 
               {/* Submit Button */}
@@ -149,13 +149,13 @@ export default function OTPLoginPage() {
                 disabled={isLoading}
                 className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg px-6 py-3 transition-all duration-200 shadow-lg shadow-slate-900/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? t('AuthOTP.sendingOTP', 'Sending OTP...') : t('AuthOTP.getCode', 'Get OTP Code')}
+                {isLoading ? t('AuthOTP.sendingOTP') : t('AuthOTP.getCode')}
               </button>
 
               {/* Back to Email Login */}
               <div className="text-center">
                 <Link href="/login" className="text-sm text-primary-600 hover:text-primary-700 font-medium">
-                  {t('AuthOTP.backToEmail', 'Sign in with Email')}
+                  {t('AuthOTP.backToEmail')}
                 </Link>
               </div>
             </form>
@@ -165,7 +165,7 @@ export default function OTPLoginPage() {
               {isNewCustomer && (
                 <div className="p-4 bg-primary-50 border border-primary-200 rounded-lg">
                   <p className="text-sm text-primary-700">
-                    {t('AuthOTP.newAccountCreated', 'A new account has been created with your phone number!')}
+                    {t('AuthOTP.newAccountCreated')}
                   </p>
                 </div>
               )}
@@ -173,7 +173,7 @@ export default function OTPLoginPage() {
               {/* OTP Input */}
               <div>
                 <label htmlFor="otpCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('AuthOTP.codeLabel', `OTP code sent to ${phone}`)}
+                  {t('AuthOTP.codeLabel', { phone })}
                 </label>
                 <input
                   id="otpCode"
@@ -194,7 +194,7 @@ export default function OTPLoginPage() {
                 disabled={isLoading || otpCode.length !== 6}
                 className="w-full bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg px-6 py-3 transition-all duration-200 shadow-lg shadow-slate-900/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? t('AuthOTP.verifying', 'Verifying...') : t('AuthOTP.verify', 'Verify')}
+                {isLoading ? t('AuthOTP.verifying') : t('AuthOTP.verify')}
               </button>
 
               <BackButton
@@ -204,7 +204,6 @@ export default function OTPLoginPage() {
                   setError('');
                 }}
                 labelKey="AuthOTP.back"
-                labelFallback="Back"
                 disabled={isLoading}
               />
             </form>

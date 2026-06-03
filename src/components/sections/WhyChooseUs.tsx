@@ -11,25 +11,19 @@ const features = [
   {
     Icon: MdAccessTimeFilled,
     titleKey: 'features.wideSelection',
-    titleFallback: 'Хялбар хайлт',
     descKey: 'features.wideSelectionDesc',
-    descFallback: 'Хайж буй өрөөгөө олоход хэдхэн секунд хангалттай.',
     delay: 0,
   },
   {
     Icon: RiShieldCheckFill,
     titleKey: 'features.instantConfirmation',
-    titleFallback: 'Шууд баталгаажилт',
     descKey: 'features.instantConfirmationDesc',
-    descFallback: 'Захиалга давхцах эрсдэлгүй, 100% найдвартай.',
     delay: 0.08,
   },
   {
     Icon: RiDiscountPercentFill,
     titleKey: 'features.fastService',
-    titleFallback: 'Захиалга бүр хөнгөлөлттэй',
     descKey: 'features.fastServiceDesc',
-    descFallback: 'Нэмэлт шимтгэлгүй, хамгийн хямд үнэ.',
     delay: 0.16,
   },
 ];
@@ -61,7 +55,7 @@ export default function WhyChooseUs() {
           className="mb-6"
         >
           <h2 className={`text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2`}>
-            {t('features.title', 'Яагаад бид гэж?')}
+            {t('features.title')}
           </h2>
         </motion.div>
 
@@ -104,10 +98,10 @@ export default function WhyChooseUs() {
               {/* Text — title + description stacked */}
               <div className="min-w-0">
                 <h3 className="text-lg font-black text-gray-900 dark:text-white leading-tight tracking-tight">
-                  {t(feature.titleKey, feature.titleFallback)}
+                  {t(feature.titleKey)}
                 </h3>
                 <p className={`${text.bodySm} text-gray-500 dark:text-gray-400 mt-1 leading-relaxed`}>
-                  {t(feature.descKey, feature.descFallback)}
+                  {t(feature.descKey)}
                 </p>
               </div>
             </motion.div>

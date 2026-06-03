@@ -91,7 +91,14 @@ interface SearchParams {
 
 export default function SearchResults() {
   const searchParams = useSearchParams();
-  const { t } = useHydratedTranslation();
+  const { t, i18n } = useHydratedTranslation();
+  const filterLocale = i18n.language?.startsWith('en') ? 'en' : 'mn';
+  const localizedFacilityName = (item: { name_en: string; name_mn: string }) =>
+    filterLocale === 'en' ? item.name_en : item.name_mn;
+  const chipGroupLabel = (groupKey: string, count: number, singleLabel?: string) =>
+    count > 1
+      ? t('search.chipGroupCount', { groupLabel: t(`search.chipGroups.${groupKey}`), count })
+      : (singleLabel ?? t(`search.chipGroups.${groupKey}`));
   const [hotels, setHotels] = useState<SearchHotelResult[]>([]);
   const [filteredHotels, setFilteredHotels] = useState<SearchHotelResult[]>([]);
   const [apiData, setApiData] = useState<CombinedApiData | null>(null);
@@ -733,21 +740,22 @@ export default function SearchResults() {
                 if (ptIds.length > 0) {
                   const sub: SubItem[] = ptIds.flatMap(id => {
                     const pt = apiData?.property_types?.find(p => p.id === id);
-                    return pt ? [{ label: pt.name_mn, onRemove: () => handleFilterChange({ ...filters, propertyTypes: filters.propertyTypes.filter(i => i !== id) }) }] : [];
+                    return pt ? [{ label: localizedFacilityName(pt), onRemove: () => handleFilterChange({ ...filters, propertyTypes: filters.propertyTypes.filter(i => i !== id) }) }] : [];
                   });
-                  groups.push({ label: ptIds.length > 1 ? `Буудлын төрөл · ${ptIds.length}` : (sub[0]?.label ?? 'Буудлын төрөл'), items: sub, onClearAll: () => handleFilterChange({ ...filters, propertyTypes: [] }) });
+                  groups.push({ label: chipGroupLabel('propertyType', ptIds.length, sub[0]?.label), items: sub, onClearAll: () => handleFilterChange({ ...filters, propertyTypes: [] }) });
                 }
 
                 // Star rating
                 const stars = filters.starRating || [];
                 if (stars.length > 0) {
                   const sub: SubItem[] = stars.map(s => ({ label: `${s} ★`, onRemove: () => handleFilterChange({ ...filters, starRating: filters.starRating.filter(r => r !== s) }) }));
-                  groups.push({ label: stars.length > 1 ? `Одны үнэлгээ · ${stars.length}` : sub[0].label, items: sub, onClearAll: () => handleFilterChange({ ...filters, starRating: [] }) });
+                  groups.push({ label: chipGroupLabel('starRating', stars.length, sub[0].label), items: sub, onClearAll: () => handleFilterChange({ ...filters, starRating: [] }) });
                 }
 
                 // Discounted (single, no dropdown)
                 if (filters.discounted) {
-                  groups.push({ label: 'Хямдралтай', items: [{ label: 'Хямдралтай', onRemove: () => handleFilterChange({ ...filters, discounted: false }) }], onClearAll: () => handleFilterChange({ ...filters, discounted: false }) });
+                  const discountedLabel = t('search.filtersSection.discounted');
+                  groups.push({ label: discountedLabel, items: [{ label: discountedLabel, onRemove: () => handleFilterChange({ ...filters, discounted: false }) }], onClearAll: () => handleFilterChange({ ...filters, discounted: false }) });
                 }
 
                 // Price range (single)
@@ -761,9 +769,9 @@ export default function SearchResults() {
                 if (rfIds.length > 0) {
                   const sub: SubItem[] = rfIds.flatMap(id => {
                     const f = apiData?.facilities?.find(fac => fac.id === id);
-                    return f ? [{ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, roomFeatures: filters.roomFeatures.filter(i => i !== id) }) }] : [];
+                    return f ? [{ label: localizedFacilityName(f), onRemove: () => handleFilterChange({ ...filters, roomFeatures: filters.roomFeatures.filter(i => i !== id) }) }] : [];
                   });
-                  groups.push({ label: rfIds.length > 1 ? `Үндсэн үйлчилгээ · ${rfIds.length}` : (sub[0]?.label ?? 'Үндсэн үйлчилгээ'), items: sub, onClearAll: () => handleFilterChange({ ...filters, roomFeatures: [] }) });
+                  groups.push({ label: chipGroupLabel('roomFeatures', rfIds.length, sub[0]?.label), items: sub, onClearAll: () => handleFilterChange({ ...filters, roomFeatures: [] }) });
                 }
 
                 // General services
@@ -771,9 +779,9 @@ export default function SearchResults() {
                 if (gsIds.length > 0) {
                   const sub: SubItem[] = gsIds.flatMap(id => {
                     const f = apiData?.additionalFacilities?.find(fac => fac.id === id);
-                    return f ? [{ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, generalServices: filters.generalServices.filter(i => i !== id) }) }] : [];
+                    return f ? [{ label: localizedFacilityName(f), onRemove: () => handleFilterChange({ ...filters, generalServices: filters.generalServices.filter(i => i !== id) }) }] : [];
                   });
-                  groups.push({ label: gsIds.length > 1 ? `Үйлчилгээ · ${gsIds.length}` : (sub[0]?.label ?? 'Үйлчилгээ'), items: sub, onClearAll: () => handleFilterChange({ ...filters, generalServices: [] }) });
+                  groups.push({ label: chipGroupLabel('generalServices', gsIds.length, sub[0]?.label), items: sub, onClearAll: () => handleFilterChange({ ...filters, generalServices: [] }) });
                 }
 
                 // Outdoor areas
@@ -781,9 +789,9 @@ export default function SearchResults() {
                 if (oaIds.length > 0) {
                   const sub: SubItem[] = oaIds.flatMap(id => {
                     const f = apiData?.activities?.find(fac => fac.id === id);
-                    return f ? [{ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, outdoorAreas: filters.outdoorAreas.filter(i => i !== id) }) }] : [];
+                    return f ? [{ label: localizedFacilityName(f), onRemove: () => handleFilterChange({ ...filters, outdoorAreas: filters.outdoorAreas.filter(i => i !== id) }) }] : [];
                   });
-                  groups.push({ label: oaIds.length > 1 ? `Гадна байгууламж · ${oaIds.length}` : (sub[0]?.label ?? 'Гадна байгууламж'), items: sub, onClearAll: () => handleFilterChange({ ...filters, outdoorAreas: [] }) });
+                  groups.push({ label: chipGroupLabel('outdoorAreas', oaIds.length, sub[0]?.label), items: sub, onClearAll: () => handleFilterChange({ ...filters, outdoorAreas: [] }) });
                 }
 
                 // Accessibility
@@ -791,9 +799,9 @@ export default function SearchResults() {
                 if (acIds.length > 0) {
                   const sub: SubItem[] = acIds.flatMap(id => {
                     const f = apiData?.accessibility_features?.find(fac => fac.id === id);
-                    return f ? [{ label: f.name_mn, onRemove: () => handleFilterChange({ ...filters, accessibilityFeatures: filters.accessibilityFeatures.filter(i => i !== id) }) }] : [];
+                    return f ? [{ label: localizedFacilityName(f), onRemove: () => handleFilterChange({ ...filters, accessibilityFeatures: filters.accessibilityFeatures.filter(i => i !== id) }) }] : [];
                   });
-                  groups.push({ label: acIds.length > 1 ? `Хүртээмж · ${acIds.length}` : (sub[0]?.label ?? 'Хүртээмж'), items: sub, onClearAll: () => handleFilterChange({ ...filters, accessibilityFeatures: [] }) });
+                  groups.push({ label: chipGroupLabel('accessibility', acIds.length, sub[0]?.label), items: sub, onClearAll: () => handleFilterChange({ ...filters, accessibilityFeatures: [] }) });
                 }
 
                 // Bed types
@@ -803,14 +811,14 @@ export default function SearchResults() {
                     const bt = facets.narrowedApiData.bed_types?.find(b => b.id === id);
                     return bt ? [{ label: bt.name, onRemove: () => handleFilterChange({ ...filters, bedTypes: (filters.bedTypes || []).filter(i => i !== id) }) }] : [];
                   });
-                  groups.push({ label: btIds.length > 1 ? `Орны төрөл · ${btIds.length}` : (sub[0]?.label ?? 'Орны төрөл'), items: sub, onClearAll: () => handleFilterChange({ ...filters, bedTypes: [] }) });
+                  groups.push({ label: chipGroupLabel('bedType', btIds.length, sub[0]?.label), items: sub, onClearAll: () => handleFilterChange({ ...filters, bedTypes: [] }) });
                 }
 
                 // Neighbourhood
                 const nbNames = filters.neighbourhood || [];
                 if (nbNames.length > 0) {
                   const sub: SubItem[] = nbNames.map(name => ({ label: name, onRemove: () => handleFilterChange({ ...filters, neighbourhood: (filters.neighbourhood || []).filter(n => n !== name) }) }));
-                  groups.push({ label: nbNames.length > 1 ? `Дүүрэг · ${nbNames.length}` : sub[0].label, items: sub, onClearAll: () => handleFilterChange({ ...filters, neighbourhood: [] }) });
+                  groups.push({ label: chipGroupLabel('district', nbNames.length, sub[0].label), items: sub, onClearAll: () => handleFilterChange({ ...filters, neighbourhood: [] }) });
                 }
 
                 // Landmarks
@@ -820,7 +828,7 @@ export default function SearchResults() {
                     const lm = UB_LANDMARKS.find(l => l.id === lmId);
                     return lm ? [{ label: lm.name_mn, onRemove: () => handleFilterChange({ ...filters, landmark: (filters.landmark || []).filter(l => l !== lmId) }) }] : [];
                   });
-                  groups.push({ label: lmIds.length > 1 ? `Байршил · ${lmIds.length}` : (sub[0]?.label ?? 'Байршил'), items: sub, onClearAll: () => handleFilterChange({ ...filters, landmark: [] }) });
+                  groups.push({ label: chipGroupLabel('landmark', lmIds.length, sub[0]?.label), items: sub, onClearAll: () => handleFilterChange({ ...filters, landmark: [] }) });
                 }
 
                 // GroupChip: a chip that opens a popover listing sub-items
@@ -871,7 +879,7 @@ export default function SearchResults() {
                                 onClick={() => { group.onClearAll(); setOpen(false); }}
                                 className="text-xs text-red-500 hover:text-red-700 font-medium"
                               >
-                                Бүгдийг арилгах
+                                {t('search.filtersSection.clearAll')}
                               </button>
                             </div>
                           </div>
@@ -889,7 +897,7 @@ export default function SearchResults() {
                       className="lg:hidden shrink-0 inline-flex items-center gap-1.5 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       <SlidersHorizontal className="w-3.5 h-3.5" />
-                      Шүүлт
+                      {t('search.filtersShort')}
                     </button>
                     {/* Sort dropdown as first chip-like control */}
                     <div className="relative shrink-0 inline-flex items-center border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-800 overflow-hidden">
@@ -898,11 +906,11 @@ export default function SearchResults() {
                         onChange={(e) => handleSort(e.target.value)}
                         className="appearance-none pl-3 pr-7 py-1 bg-transparent text-sm font-medium text-gray-700 dark:text-gray-200 focus:outline-none cursor-pointer"
                       >
-                        <option value="default">{t('search.sortOptions.default', 'Санал болгох')}</option>
-                        <option value="price_low">{t('search.sortOptions.priceLowToHigh', 'Үнэ: багаас их')}</option>
-                        <option value="price_high">{t('search.sortOptions.priceHighToLow', 'Үнэ: ихээс бага')}</option>
-                        <option value="rating">{t('search.sortOptions.ratingHighToLow', 'Үнэлгээ: ихээс бага')}</option>
-                        <option value="recommended">{t('search.sortOptions.recommended', 'Санал болгох')}</option>
+                        <option value="default">{t('search.sortOptions.default')}</option>
+                        <option value="price_low">{t('search.sortOptions.priceLowToHigh')}</option>
+                        <option value="price_high">{t('search.sortOptions.priceHighToLow')}</option>
+                        <option value="rating">{t('search.sortOptions.ratingHighToLow')}</option>
+                        <option value="recommended">{t('search.sortOptions.recommended')}</option>
                       </select>
                       <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
                         <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -921,7 +929,7 @@ export default function SearchResults() {
                         onClick={clearAllFilters}
                         className="text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 underline shrink-0"
                       >
-                        {t('search.filtersSection.clearAll', 'Бүгдийг арилгах')}
+                        {t('search.filtersSection.clearAll')}
                       </button>
                     )}
                   </div>
@@ -1000,7 +1008,7 @@ export default function SearchResults() {
         <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-white dark:bg-gray-900">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Шүүлт</h2>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">{t('search.filtersShort')}</h2>
             <button
               onClick={() => setShowMobileFilters(false)}
               className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -1030,7 +1038,7 @@ export default function SearchResults() {
               onClick={() => setShowMobileFilters(false)}
               className="w-full py-2.5 bg-primary text-white font-semibold rounded-lg text-sm hover:bg-primary/90 transition-colors"
             >
-              Хэрэглэх ({filteredHotels.length} буудал)
+              {t('search.applyFiltersWithCount', { count: filteredHotels.length })}
             </button>
           </div>
         </div>

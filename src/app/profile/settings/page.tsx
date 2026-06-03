@@ -2,55 +2,50 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useRouter } from 'next/navigation';
 import { CustomerService } from '@/services/customerApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useCustomerSettings } from '@/hooks/useCustomer';
-import { Moon, Sun, Save, RefreshCw, CheckCircle } from 'lucide-react';
+import { Save, RefreshCw, CheckCircle } from 'lucide-react';
 import { CustomerSettingsUpdateRequest, Currency, Language } from '@/types/customer';
 
-const LANGUAGES: { value: Language; label: string }[] = [
-  { value: 'mn', label: 'Mongolia' },
-  { value: 'en', label: 'English' },
-  { value: 'zh', label: '中文' },
-];
-
-const CURRENCIES: { value: Currency; label: string; symbol: string }[] = [
-  { value: 'MNT', label: 'Mongolian Tugrik', symbol: '₮' },
-  { value: 'USD', label: 'US Dollar', symbol: '$' },
-  { value: 'EUR', label: 'Euro', symbol: '€' },
-  { value: 'CNY', label: 'Chinese Yuan', symbol: '¥' },
-];
+const LANGUAGE_CODES: Language[] = ['mn', 'en', 'zh'];
+const CURRENCY_CODES: Currency[] = ['MNT', 'USD', 'EUR', 'CNY'];
+const CURRENCY_SYMBOLS: Record<Currency, string> = {
+  MNT: '₮',
+  USD: '$',
+  EUR: '€',
+  CNY: '¥',
+};
 
 export default function SettingsPage() {
   const { token, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
-  const { t } = useHydratedTranslation();
+  const { t, i18n } = useHydratedTranslation();
   const router = useRouter();
 
-  // Settings state from hook
   const { settings, loading, updateSettings: updateSettingsHook } = useCustomerSettings(token || undefined);
 
-  // Local state for editing
   const [localSettings, setLocalSettings] = useState(settings);
   const [hasChanges, setHasChanges] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [saveError, setSaveError] = useState<string>('');
 
-  // Delete account
   const [deleteStep, setDeleteStep] = useState<'idle' | 'confirm' | 'done'>('idle');
   const [deletePassword, setDeletePassword] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
 
-  // Update local settings when hook settings change
   useEffect(() => {
     setLocalSettings(settings);
   }, [settings]);
 
-  // Check for changes
+  useEffect(() => {
+    if (settings.language && i18n.language !== settings.language) {
+      i18n.changeLanguage(settings.language);
+    }
+  }, [settings.language, i18n]);
+
   useEffect(() => {
     const hasChanged = 
       localSettings.currency !== settings.currency ||
@@ -64,6 +59,9 @@ export default function SettingsPage() {
 
   const handleSettingChange = (key: keyof CustomerSettingsUpdateRequest, value: string | boolean) => {
     setLocalSettings(prev => ({ ...prev, [key]: value }));
+    if (key === 'language' && typeof value === 'string') {
+      i18n.changeLanguage(value);
+    }
     setSaveSuccess(false);
     setSaveError('');
   };
@@ -91,7 +89,7 @@ export default function SettingsPage() {
         setSaveError(result.message);
       }
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Failed to save settings');
+      setSaveError(err instanceof Error ? err.message : t('settings.saveFailed', 'Failed to save settings'));
     } finally {
       setSaving(false);
     }
@@ -106,7 +104,7 @@ export default function SettingsPage() {
       await logout();
       router.push('/');
     } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : 'Failed to delete account');
+      setDeleteError(err instanceof Error ? err.message : t('settings.deleteFailed', 'Failed to delete account'));
     } finally {
       setIsDeleting(false);
     }
@@ -128,20 +126,19 @@ export default function SettingsPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-h2 font-semibold text-gray-900 dark:text-gray-100">
-              {t('settings.title', 'Settings')}
+              {t('settings.title')}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {t('settings.description', 'Manage your account preferences and settings')}
+              {t('settings.description')}
             </p>
           </div>
           
-          {/* Save Button */}
           {hasChanges && (
             <div className="flex items-center gap-3">
               {saveSuccess && (
                 <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm">{t('settings.saved', 'Saved!')}</span>
+                  <span className="text-sm">{t('settings.saved')}</span>
                 </div>
               )}
               <button
@@ -152,12 +149,12 @@ export default function SettingsPage() {
                 {saving ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    {t('settings.saving', 'Saving...')}
+                    {t('settings.saving')}
                   </>
                 ) : (
                   <>
                     <Save className="w-4 h-4" />
-                    {t('settings.saveChanges', 'Save Changes')}
+                    {t('settings.saveChanges')}
                   </>
                 )}
               </button>
@@ -165,27 +162,23 @@ export default function SettingsPage() {
           )}
         </div>
         
-        {/* Save Error */}
         {saveError && (
-          <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
-            <p className="text-sm text-red-600 dark:text-red-400">{saveError}</p>
-          </div>
+          <p className="text-sm text-red-600 dark:text-red-400 mt-2">{saveError}</p>
         )}
       </div>
 
-      {/* Language / Currency */}
       <div className="px-6 py-5">
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-          {t('settings.languageCurrency', 'Language & Currency')}
+          {t('settings.languageCurrency')}
         </h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {t('settings.currency', 'Currency')}
+                {t('settings.currency')}
               </label>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                {t('settings.currencyDescription', 'Choose your preferred currency for prices')}
+                {t('settings.currencyDescription')}
               </p>
             </div>
             <div className="relative">
@@ -194,9 +187,9 @@ export default function SettingsPage() {
                 onChange={(e) => handleSettingChange('currency', e.target.value as Currency)}
                 className="text-sm text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-10 appearance-none bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none transition min-w-[140px]"
               >
-                {CURRENCIES.map((currency) => (
-                  <option key={currency.value} value={currency.value}>
-                    {currency.symbol} {currency.value} - {currency.label}
+                {CURRENCY_CODES.map((currency) => (
+                  <option key={currency} value={currency}>
+                    {CURRENCY_SYMBOLS[currency]} {currency} - {t(`settings.currencies.${currency}`)}
                   </option>
                 ))}
               </select>
@@ -207,10 +200,10 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {t('settings.language', 'Language')}
+                {t('settings.language')}
               </label>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                {t('settings.languageDescription', 'Choose your preferred language')}
+                {t('settings.languageDescription')}
               </p>
             </div>
             <div className="relative">
@@ -219,9 +212,9 @@ export default function SettingsPage() {
                 onChange={(e) => handleSettingChange('language', e.target.value as Language)}
                 className="text-sm text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-10 appearance-none bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none transition min-w-[120px]"
               >
-                {LANGUAGES.map((lang) => (
-                  <option key={lang.value} value={lang.value}>
-                    {lang.label}
+                {LANGUAGE_CODES.map((lang) => (
+                  <option key={lang} value={lang}>
+                    {t(`settings.languages.${lang}`)}
                   </option>
                 ))}
               </select>
@@ -231,47 +224,18 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Theme */}
       <div className="px-6 py-5">
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-          {t('settings.theme', 'Appearance')}
-        </h2>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-              {t('settings.darkMode', 'Dark Mode')}
-            </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-              {t('settings.darkModeDesc', 'Switch between light and dark themes')}
-            </p>
-          </div>
-          <button
-            onClick={toggleTheme}
-            className="p-3 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200 border border-gray-300 dark:border-gray-600"
-            aria-label={t('common.toggleTheme', 'Toggle theme')}
-          >
-            {theme === 'light' ? (
-              <Moon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-            ) : (
-              <Sun className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Email Notifications */}
-      <div className="px-6 py-5">
-        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-          {t('settings.emailNotifications', 'Email Notifications')}
+          {t('settings.emailNotifications')}
         </h2>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                {t('settings.bookingConfirmationEmails', 'Booking Confirmation Emails')}
+                {t('settings.bookingConfirmationEmails')}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                {t('settings.bookingConfirmationEmailsDesc', 'Receive email confirmations for your bookings')}
+                {t('settings.bookingConfirmationEmailsDesc')}
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -288,10 +252,10 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                {t('settings.marketingEmails', 'Marketing Emails')}
+                {t('settings.marketingEmails')}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                {t('settings.marketingEmailsDesc', 'Receive promotional offers and updates')}
+                {t('settings.marketingEmailsDesc')}
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -307,52 +271,18 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Push Notifications */}
       <div className="px-6 py-5">
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-          {t('settings.pushNotifications', 'Push Notifications')}
+          {t('settings.accountManagement')}
         </h2>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-              {t('settings.notifications', 'Notifications')}
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              {t('settings.notificationsDesc', 'Enable push notifications for important updates')}
-            </p>
-          </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              checked={localSettings.notification_enabled}
-              onChange={(e) => handleSettingChange('notification_enabled', e.target.checked)}
-              className="sr-only peer"
-            />
-            <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-          </label>
-        </div>
-      </div>
 
-      {/* Account Management */}
-      <div className="px-6 py-5">
-        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-          {t('settings.accountManagement', 'Account Management')}
-        </h2>
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-red-800 dark:text-red-300 mb-2">
-            {t('settings.dangerZone', 'Danger Zone')}
-          </h3>
-          
           {deleteStep === 'idle' && (
             <div className="space-y-3">
-              <p className="text-sm text-red-600 dark:text-red-400">
-                {t('settings.deleteAccountWarning', 'Once you delete your account, there is no going back. Please be certain.')}
-              </p>
               <button
                 onClick={() => setDeleteStep('confirm')}
                 className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
               >
-                {t('settings.deleteAccount', 'Delete Account')}
+                {t('settings.deleteAccount')}
               </button>
             </div>
           )}
@@ -361,13 +291,13 @@ export default function SettingsPage() {
             <div className="space-y-4">
               <div>
                 <p className="text-sm text-red-600 dark:text-red-400 mb-2">
-                  {t('settings.confirmDelete', 'Are you absolutely sure? Type your password to confirm:')}
+                  {t('settings.confirmDelete')}
                 </p>
                 <input
                   type="password"
                   value={deletePassword}
                   onChange={(e) => setDeletePassword(e.target.value)}
-                  placeholder={t('settings.passwordPlaceholder', 'Enter your password')}
+                  placeholder={t('settings.passwordPlaceholder')}
                   className="w-full px-3 py-2 border border-red-300 dark:border-red-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none dark:bg-gray-700 dark:text-gray-200"
                 />
               </div>
@@ -385,7 +315,7 @@ export default function SettingsPage() {
                   }}
                   className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  {t('common.cancel', 'Cancel')}
+                  {t('common.cancel')}
                 </button>
                 <button
                   onClick={handleDelete}
@@ -395,16 +325,16 @@ export default function SettingsPage() {
                   {isDeleting ? (
                     <>
                       <RefreshCw className="w-4 h-4 animate-spin" />
-                      {t('settings.deleting', 'Deleting...')}
+                      {t('settings.deleting')}
                     </>
                   ) : (
-                    t('settings.deleteAccountConfirm', 'Delete My Account')
+                    t('settings.deleteAccountConfirm')
                   )}
                 </button>
               </div>
             </div>
           )}
-        </div>
+     
       </div>
     </div>
   );

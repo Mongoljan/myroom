@@ -78,7 +78,7 @@ export default function FaqSection() {
           viewport={{ once: true }}
         >
           <h2 className="text-xl flex justify-start md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            {t('faq.title', 'Frequently Asked Questions')}
+            {t('faq.title')}
           </h2>
         </motion.div>
 
@@ -167,7 +167,7 @@ export default function FaqSection() {
                               animate={{ opacity: 1 }}
                               transition={{ duration: 0.3, delay: 0.2 }}
                             >
-                              {faq.a || 'Энэ асуултын хариу одоогоор бэлэн байхгүй байна.'}
+                              {faq.a || t('faq.noAnswer')}
                             </motion.p>
                           </motion.div>
                         </motion.div>
@@ -262,7 +262,7 @@ export default function FaqSection() {
                               animate={{ opacity: 1 }}
                               transition={{ duration: 0.3, delay: 0.2 }}
                             >
-                              {faq.a || 'Энэ асуултын хариу одоогоор бэлэн байхгүй байна.'}
+                              {faq.a || t('faq.noAnswer')}
                             </motion.p>
                           </motion.div>
                         </motion.div>
@@ -289,11 +289,7 @@ export default function FaqSection() {
                 whileHover={{ y: -1, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {showAll ? (
-                  t('faq.showLess', 'Хураангуйлах')
-                ) : (
-                  t('faq.showMore', 'Дэлгэрэнгүй харах')
-                )}
+                {showAll ? t('faq.showLess') : t('faq.showMore')}
               </motion.button>
             </motion.div>
           )}

@@ -1,21 +1,14 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { CustomerService } from '@/services/customerApi';
 import { ApiService } from '@/services/api';
 import { CustomerBooking } from '@/types/customer';
 
 type StatusFilter = 'all' | 'pending' | 'confirmed' | 'canceled' | 'finished';
-
-const TABS: { label: string; value: StatusFilter }[] = [
-  { label: 'Бүгд', value: 'all' },
-  { label: 'Төлбөр хүлээгдэж буй', value: 'pending' },
-  { label: 'Баталгаажсан', value: 'confirmed' },
-  { label: 'Биелсэн', value: 'finished' },
-  { label: 'Цуцлагдсан', value: 'canceled' },
-];
 
 const STATUS_STYLES: Record<string, string> = {
   pending: 'text-blue-600',
@@ -24,15 +17,24 @@ const STATUS_STYLES: Record<string, string> = {
   canceled: 'text-red-500',
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Төлбөр хүлээгдэж буй',
-  confirmed: 'Баталгаажсан',
-  finished: 'Биелсэн',
-  canceled: 'Цуцлагдсан',
-};
-
 export default function BookingsPage() {
+  const { t } = useHydratedTranslation();
   const { token } = useAuth();
+
+  const TABS: { label: string; value: StatusFilter }[] = useMemo(() => [
+    { label: t('profileBookings.filters.all'), value: 'all' },
+    { label: t('profileBookings.filters.pending'), value: 'pending' },
+    { label: t('profileBookings.filters.confirmed'), value: 'confirmed' },
+    { label: t('profileBookings.filters.completed'), value: 'finished' },
+    { label: t('profileBookings.filters.cancelled'), value: 'canceled' },
+  ], [t]);
+
+  const STATUS_LABELS: Record<string, string> = useMemo(() => ({
+    pending: t('profileBookings.filters.pending'),
+    confirmed: t('profileBookings.filters.confirmed'),
+    finished: t('profileBookings.filters.completed'),
+    canceled: t('profileBookings.filters.cancelled'),
+  }), [t]);
 
   const [activeTab, setActiveTab] = useState<StatusFilter>('all');
   const [bookings, setBookings] = useState<CustomerBooking[]>([]);
@@ -89,7 +91,7 @@ export default function BookingsPage() {
       );
       setHotelMeta(Object.fromEntries(metaEntries.filter(Boolean) as [string, { imageUrl: string; id: number }][]));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Алдаа гарлаа.');
+      setError(err instanceof Error ? err.message : t('profileBookings.error'));
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +124,7 @@ export default function BookingsPage() {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="px-6 pt-6 pb-0">
-        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white mb-5">Захиалгын түүх</h1>
+        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white mb-5">{t('profileBookings.title')}</h1>
 
         {/* Status tabs */}
         <div className="flex gap-1 overflow-x-auto">
@@ -155,7 +157,7 @@ export default function BookingsPage() {
 
         {!isLoading && !error && bookings.length === 0 && (
           <div className="py-12 text-center text-sm text-gray-400">
-            Захиалга олдсонгүй.
+            {t('profileBookings.empty')}
           </div>
         )}
 
@@ -169,8 +171,8 @@ export default function BookingsPage() {
             {/* Booking card header */}
             <div className="flex items-center justify-between px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-                <span>Захиалгын дугаар: <span className="text-gray-800 dark:text-gray-200 font-medium">{booking.booking_code}</span></span>
-                <span>Огноо: {formatDate(booking.created_at?.slice(0, 10))}</span>
+                <span>{t('profileBookings.bookingNumber')} <span className="text-gray-800 dark:text-gray-200 font-medium">{booking.booking_code}</span></span>
+                <span>{t('profileBookings.date')} {formatDate(booking.created_at?.slice(0, 10))}</span>
               </div>
               <span className={`text-sm font-medium ${STATUS_STYLES[booking.status] ?? 'text-gray-500 dark:text-gray-400'}`}>
                 {STATUS_LABELS[booking.status] ?? booking.status_label}
@@ -206,7 +208,7 @@ export default function BookingsPage() {
               <div className="flex flex-col items-end gap-3 shrink-0">
                 <div className="text-right">
                   <div className="text-base font-bold text-gray-900 dark:text-white">{formatPrice(booking.total_price)}</div>
-                  {nights > 0 && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{nights} шөнө</p>}
+                  {nights > 0 && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{t('profileBookings.nights', { count: nights })}</p>}
                 </div>
 
                 <div className="flex gap-2 flex-wrap justify-end">
@@ -214,14 +216,14 @@ export default function BookingsPage() {
                     href={`/hotel/${hotelMeta[booking.hotel_name]?.id ?? booking.hotel}`}
                     className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >
-                    Дэлгэрэнгүй
+                    {t('profileBookings.details')}
                   </Link>
                   {booking.status === 'finished' && !booking.has_review && (
                     <Link
                       href="/profile/reviews"
                       className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs transition"
                     >
-                      Үнэлгээ өгөх
+                      {t('profileBookings.leaveReview')}
                     </Link>
                   )}
                   {(booking.status === 'pending' || booking.status === 'confirmed') && (
@@ -229,7 +231,7 @@ export default function BookingsPage() {
                       onClick={() => setCancelTarget(booking)}
                       className="px-3 py-1.5 border border-red-300 dark:border-red-700 rounded-lg text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
                     >
-                      Цуцлах
+                      {t('profileBookings.cancel')}
                     </button>
                   )}
                 </div>
@@ -244,9 +246,9 @@ export default function BookingsPage() {
       {cancelTarget && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-sm">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-2">Захиалга цуцлах</h2>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-2">{t('profileBookings.cancelTitle')}</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              Захиалга <strong>{cancelTarget.booking_code}</strong>-г цуцлахын тулд pin кодоо оруулна уу.
+              {t('profileBookings.cancelPinHint', { code: cancelTarget.booking_code })}
             </p>
             {cancelError && (
               <p className="text-sm text-red-500 mb-3">{cancelError}</p>
@@ -255,7 +257,7 @@ export default function BookingsPage() {
               type="text"
               value={pinCode}
               onChange={(e) => setPinCode(e.target.value)}
-              placeholder="PIN код"
+              placeholder={t('profileBookings.pinCode')}
               maxLength={4}
               className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none transition mb-4 tracking-widest text-center"
             />
@@ -264,14 +266,14 @@ export default function BookingsPage() {
                 onClick={() => setCancelTarget(null)}
                 className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
-                Болих
+                {t('profileBookings.cancelBtn')}
               </button>
               <button
                 onClick={handleCancel}
                 disabled={isCanceling || pinCode.length < 4}
                 className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition disabled:opacity-50"
               >
-                {isCanceling ? 'Цуцалж байна...' : 'Цуцлах'}
+                {isCanceling ? t('profileBookings.cancelling') : t('profileBookings.cancel')}
               </button>
             </div>
           </div>

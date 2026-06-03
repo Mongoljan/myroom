@@ -6,8 +6,10 @@ import { Heart, Star, RefreshCw } from 'lucide-react';
 import { useWishlist } from '@/hooks/useCustomer';
 import { useAuth } from '@/contexts/AuthContext';
 import { WishlistItem } from '@/types/customer';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 export default function SavedPage() {
+  const { t } = useHydratedTranslation();
   const { token } = useAuth();
   const { wishlist, loading, refresh, removeHotel } = useWishlist(token || undefined);
   const [removingIds, setRemovingIds] = useState<Set<number>>(new Set());
@@ -52,7 +54,7 @@ export default function SavedPage() {
       {/* Header */}
       <div className="px-6 pt-6 pb-0">
         <div className="flex items-center justify-between mb-5">
-          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">Хадгалсан</h1>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-white">{t('profileSaved.title')}</h1>
           <button onClick={refresh} className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
             <RefreshCw className="w-4 h-4" />
           </button>
@@ -96,9 +98,9 @@ export default function SavedPage() {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-4">
             <Heart className="w-14 h-14 text-gray-200 dark:text-gray-600" />
-            <p className="text-gray-400 dark:text-gray-500 text-sm">Хадгалсан буудал байхгүй байна</p>
+            <p className="text-gray-400 dark:text-gray-500 text-sm">{t('profileSaved.empty')}</p>
             <Link href="/search" className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
-              Буудал хайх
+              {t('profileSaved.searchHotels')}
             </Link>
           </div>
         ) : (
@@ -128,7 +130,7 @@ export default function SavedPage() {
                       onClick={() => handleRemove(h.id)}
                       disabled={isRemoving}
                       className="absolute top-2.5 right-2.5 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur-sm shadow hover:bg-white transition disabled:opacity-60"
-                      aria-label="Хадгалсанаас хасах"
+                      aria-label={t('profileSaved.remove')}
                     >
                       {isRemoving
                         ? <RefreshCw className="w-4 h-4 text-gray-400 animate-spin" />

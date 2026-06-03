@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Star, MapPin, Users, Copy, Check, Clock, QrCode } from 'lucide-react';
+import { Star, MapPin, Copy, Check, Clock, QrCode } from 'lucide-react';
+import GuestCountInline from '@/components/common/GuestCountInline';
 import InvoiceTypeDialog from './InvoiceTypeDialog';
 import InvoiceModal from './InvoiceModal';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface BookingRoom {
   room_category_id: number;
@@ -42,25 +44,10 @@ interface BookingPaymentStepProps {
 type PaymentMethod = 'bankApp' | 'transfer' | 'wallet' | 'card';
 type TransferBank = 'tdb' | 'khan';
 
-const TRANSFER_BANKS: Record<TransferBank, { name: string; accountNumber: string; accountName: string }> = {
-  tdb: {
-    name: 'Худалдаа хөгжлийн банк',
-    accountNumber: '453215361',
-    accountName: 'Мая Хотелс ХХК',
-  },
-  khan: {
-    name: 'ХААН БАНК',
-    accountNumber: 'MN 35000 400 5682083754',
-    accountName: 'Мая Хотелс ХХК',
-  },
+const TRANSFER_BANK_ACCOUNTS: Record<TransferBank, { accountNumber: string }> = {
+  tdb: { accountNumber: '453215361' },
+  khan: { accountNumber: 'MN 35000 400 5682083754' },
 };
-
-const PAYMENT_TABS: Array<{ id: PaymentMethod; label: string }> = [
-  { id: 'bankApp', label: 'Банкны апп / QR' },
-  { id: 'transfer', label: 'Дансаар шилжүүлэх' },
-  { id: 'wallet', label: 'Цахим хэтэвчээр' },
-  { id: 'card', label: 'Картаар төлөх' },
-];
 
 const INITIAL_SECONDS = 10 * 60; // 10 minutes
 
@@ -68,11 +55,30 @@ function padTwo(n: number) {
   return String(n).padStart(2, '0');
 }
 
-function formatDateShort(d: string) {
-  if (!d) return '';
-  const date = new Date(d);
-  const wkMap = ['Ня', 'Да', 'Мя', 'Лха', 'Пү', 'Ба', 'Бя'];
-  return `${date.getFullYear()} -${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${wkMap[date.getDay()]}`;
+function parseHotelStarCount(ratingStars?: { value?: string } | null): number {
+  const match = ratingStars?.value?.match(/(\d+)/);
+  return match ? Math.min(5, Math.max(0, parseInt(match[1], 10))) : 0;
+}
+
+function formatHotelLocation(location?: {
+  province_city?: string | null;
+  soum?: string | null;
+  district?: string | null;
+} | null): string {
+  if (!location) return '';
+  return [location.province_city, location.soum, location.district].filter(Boolean).join(', ');
+}
+
+/** Guest review score (e.g. 4.8). Star classification ("2 stars") is not a guest score. */
+function getGuestRatingDisplay(ratingStars?: { value?: string; label?: string } | null): {
+  score: number;
+  label: string;
+} | null {
+  if (!ratingStars?.value || /star/i.test(ratingStars.value)) return null;
+  const score = parseFloat(ratingStars.value);
+  if (!Number.isFinite(score) || score <= 0 || score > 10) return null;
+  const label = ratingStars.label?.replace(/\d+\.?\d*\s*stars?/i, '').trim() || '';
+  return { score, label };
 }
 
 export default function BookingPaymentStep({
@@ -95,6 +101,37 @@ export default function BookingPaymentStep({
   onCancelBooking,
   onPaymentConfirmed,
 }: BookingPaymentStepProps) {
+  const { t, tAny } = useHydratedTranslation();
+
+  const PAYMENT_TABS: Array<{ id: PaymentMethod; label: string }> = useMemo(() => [
+    { id: 'bankApp', label: t('payment.methods.bankApp') },
+    { id: 'transfer', label: t('payment.methods.transfer') },
+    { id: 'wallet', label: t('payment.methods.wallet') },
+    { id: 'card', label: t('payment.methods.card') },
+  ], [t]);
+
+  const weekdays = tAny('payment.weekdays', { returnObjects: true }) as string[];
+
+  const formatDateShort = useCallback((d: string) => {
+    if (!d) return '';
+    const date = new Date(d);
+    const wk = Array.isArray(weekdays) ? weekdays[date.getDay()] : '';
+    return `${date.getFullYear()} -${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${wk}`;
+  }, [weekdays]);
+
+  const transferBanks = useMemo(() => ({
+    tdb: {
+      name: t('payment.banks.tdb'),
+      accountNumber: TRANSFER_BANK_ACCOUNTS.tdb.accountNumber,
+      accountName: t('payment.accountHolder'),
+    },
+    khan: {
+      name: t('payment.banks.khan'),
+      accountNumber: TRANSFER_BANK_ACCOUNTS.khan.accountNumber,
+      accountName: t('payment.accountHolder'),
+    },
+  }), [t]);
+
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('bankApp');
   const [transferBank, setTransferBank] = useState<TransferBank>('tdb');
   const [timeLeft, setTimeLeft] = useState(() => {
@@ -143,7 +180,7 @@ export default function BookingPaymentStep({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             amount: Math.max(1, Math.round(totalPrice)),
-            description: `Захиалга #${bookingCode} - ${hotelName}`,
+            description: t('payment.bookingDescription', { code: bookingCode, hotel: hotelName }),
           }),
         });
         const data = await res.json();
@@ -154,7 +191,7 @@ export default function BookingPaymentStep({
         setQrImage(data.qr_image ?? null);
         setBankUrls(data.urls ?? []);
       } catch {
-        setQpayError('QPay нэхэмжлэл үүсгэхэд алдаа гарлаа');
+        setQpayError(t('payment.qpayError'));
       } finally {
         setQpayLoading(false);
       }
@@ -200,10 +237,10 @@ export default function BookingPaymentStep({
       if (data.is_paid) {
         onPaymentConfirmed();
       } else {
-        setCheckMessage('Төлбөр төлөгдөөгүй байна.');
+        setCheckMessage(t('payment.notPaid'));
       }
     } catch {
-      setCheckMessage('Шалгахад алдаа гарлаа. Дахин оролдоно уу.');
+      setCheckMessage(t('payment.checkError'));
     } finally {
       setCheckingPayment(false);
     }
@@ -229,10 +266,12 @@ export default function BookingPaymentStep({
     }
   })();
 
-  const ratingValue: number | undefined = hotelDetails?.rating_stars?.value;
-  const ratingLabel: string | undefined = hotelDetails?.rating_stars?.label;
+  const displayHotelName = hotelDetails?.property_name || hotelName;
+  const locationText = formatHotelLocation(hotelDetails?.location);
+  const hotelStarCount = parseHotelStarCount(hotelDetails?.rating_stars);
+  const guestRating = getGuestRatingDisplay(hotelDetails?.rating_stars);
 
-  const selectedTransferInfo = TRANSFER_BANKS[transferBank];
+  const selectedTransferInfo = transferBanks[transferBank];
 
   return (
     <>
@@ -256,8 +295,8 @@ export default function BookingPaymentStep({
               <div className="h-5 w-px bg-white/40" />
               <p className="text-sm font-medium">
                 {timerExpired
-                  ? 'Захиалгын хугацаа дууссан. Шинэ захиалга хийнэ үү.'
-                  : 'Та цаг дуусахаас өмнө захиалгаа баталгаажуулна уу.'}
+                  ? t('payment.timerExpired')
+                  : t('payment.timerWarning')}
               </p>
             </div>
 
@@ -265,22 +304,23 @@ export default function BookingPaymentStep({
               {/* Action row */}
               <div className="flex items-center justify-between mb-5">
                 <button
+                  type="button"
                   onClick={onCancelBooking}
-                  className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="text-sm sm:text-base  text-gray-400 hover:text-primary/80 transition-colors border-slate-150 border px-4 py-2 rounded-md"
                 >
-                  Захиалга цуцлах
+                  {t('payment.cancelBooking')}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setInvoiceTypeDialogOpen(true)}
-                  className="text-sm text-primary hover:text-primary/80 font-medium underline-offset-2 hover:underline transition-colors"
+                  className="text-sm sm:text-base font-semibold text-primary hover:text-primary/80 transition-colors underline"
                 >
-                  Нэхэмжлэл татах
+                  {t('payment.downloadInvoice')}
                 </button>
               </div>
 
-              {/* Payment method label */}
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                Төлбөрийн төрлөо сонгоно уу.
+                {t('payment.selectMethod')}
               </p>
 
               {/* Tabs */}
@@ -328,20 +368,21 @@ export default function BookingPaymentStep({
 
               {/* Check payment button */}
               {!timerExpired && (
-                <div className="mt-6 flex flex-col items-center gap-2">
+                <div className="mt-6 flex flex-col items-center gap-2 ">
                   <button
+                    type="button"
                     onClick={handleCheckPayment}
                     disabled={checkingPayment}
-                    className="px-8 py-2.5 text-sm text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors"
+                    className="text-sm sm:text-base font-semibold text-primary hover:text-primary/80 disabled:opacity-50 transition-colors border-slate-150 border px-6 py-2 rounded-md "
                   >
                     {checkingPayment ? (
                       <span className="flex items-center gap-2">
                         <Clock className="w-4 h-4 animate-spin" />
-                        Шалгаж байна...
+                        {t('payment.checking')} ...
                       </span>
                     ) : (
-                      'Төлбөр шалгах ...'
-                    )}
+                      t('payment.checkPayment')
+                    )} ...
                   </button>
                   {checkMessage && (
                     <p className="text-sm text-red-500 dark:text-red-400">{checkMessage}</p>
@@ -352,16 +393,15 @@ export default function BookingPaymentStep({
               {/* Notes */}
               {(paymentMethod === 'transfer' || paymentMethod === 'bankApp') && (
                 <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-700">
-                  <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Санамж</p>
+                  <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">{t('payment.noteTitle')}</p>
                   <ul className="space-y-1">
                     <li className="text-xs text-gray-500 dark:text-gray-400 flex gap-1.5">
                       <span className="shrink-0">•</span>
-                      Та төлбөр шилжүүлэхдээ гүйлгээний утгыг үнэн зөв бичиж шилжүүлнэ үү.
+                      {t('payment.noteTransferRef')}
                     </li>
                     <li className="text-xs text-gray-500 dark:text-gray-400 flex gap-1.5">
                       <span className="shrink-0">•</span>
-                      Төлбөрийг дутуу шилжүүлсэн эсвэл гүйлгээний утга зөрсөн тохиолдолд
-                      захиалга баталгаажихгүй анхаарна уу.
+                      {t('payment.noteTransferAmount')}
                     </li>
                   </ul>
                 </div>
@@ -379,7 +419,7 @@ export default function BookingPaymentStep({
             className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 sticky top-6"
           >
             <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
-              Захиалгын мэдээлэл
+              {t('payment.bookingSummary')}
             </h3>
 
             {/* Hotel summary */}
@@ -388,37 +428,37 @@ export default function BookingPaymentStep({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={heroImage}
-                  alt={hotelName}
+                  alt={displayHotelName}
                   className="w-20 h-20 object-cover rounded-lg shrink-0"
                 />
               ) : (
                 <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg shrink-0" />
               )}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-0.5 mb-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                  ))}
-                </div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2">
-                  {hotelName}
-                </h4>
-                {hotelDetails?.location && (
-                  <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    <MapPin className="w-3 h-3" />
-                    <span className="truncate">
-                      {hotelDetails.location.district ||
-                        hotelDetails.location.soum ||
-                        hotelDetails.location.province_city}
-                    </span>
+                {hotelStarCount > 0 && (
+                  <div className="flex items-center gap-0.5 mb-1">
+                    {[...Array(hotelStarCount)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    ))}
                   </div>
                 )}
-                {ratingValue && (
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2">
+                  {displayHotelName}
+                </h4>
+                {locationText && (
+                  <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    <MapPin className="w-3 h-3 shrink-0" />
+                    <span className="truncate">{locationText}</span>
+                  </div>
+                )}
+                {guestRating && (
                   <div className="inline-flex items-center gap-1.5 mt-1.5">
                     <span className="bg-primary text-white text-xs font-semibold px-1.5 py-0.5 rounded">
-                      {ratingValue}
+                      {guestRating.score.toFixed(1)}
                     </span>
-                    <span className="text-xs text-gray-700 dark:text-gray-300">{ratingLabel || ''}</span>
+                    {guestRating.label ? (
+                      <span className="text-xs text-gray-700 dark:text-gray-300">{guestRating.label}</span>
+                    ) : null}
                   </div>
                 )}
               </div>
@@ -428,17 +468,17 @@ export default function BookingPaymentStep({
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Орох цаг</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{t('payment.checkInTime')}</div>
                   <div className="text-sm font-semibold text-gray-900 dark:text-white">
                     {formatDateShort(checkIn)}
                   </div>
                 </div>
                 <div className="flex flex-col items-center px-2 pt-1">
-                  <span className="text-xs text-gray-500">{nights} шөнө</span>
+                  <span className="text-xs text-gray-500">{t('payment.nights', { count: nights })}</span>
                   <div className="w-px h-5 bg-gray-300 mt-1" />
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Гарах цаг</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{t('payment.checkOutTime')}</div>
                   <div className="text-sm font-semibold text-gray-900 dark:text-white">
                     {formatDateShort(checkOut)}
                   </div>
@@ -446,38 +486,39 @@ export default function BookingPaymentStep({
               </div>
             </div>
 
-            {/* Guest count */}
-            <div className="flex items-center gap-2 mb-4 text-sm text-gray-700 dark:text-gray-300">
-              <Users className="w-4 h-4 text-gray-400 shrink-0" />
-              <span>
-                {adultsCount} том хүн
-                {Number(childrenCount) > 0 ? `, ${childrenCount} хүүхэд` : ''}
-              </span>
-            </div>
-
             {/* Rooms */}
-            <div className="mb-4">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">Таны сонгосон өрөө:</div>
+            <div className="mb-3">
+              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('payment.selectedRooms')}</div>
               {rooms.map((room, i) => (
                 <div key={i} className="flex justify-between items-center py-1">
                   <span className="text-sm font-semibold text-gray-900 dark:text-white truncate pr-2">
                     {room.room_name}
                   </span>
                   <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                    x{room.room_count} өрөө
+                    {t('payment.roomCount', { count: room.room_count })}
                   </span>
                 </div>
               ))}
             </div>
 
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs text-gray-500 dark:text-gray-400">{t('payment.guestCapacity')}</span>
+              <GuestCountInline
+                adults={adultsCount}
+                childCount={Number(childrenCount) || 0}
+                className="text-sm text-gray-700 dark:text-gray-300"
+                iconClassName="w-4 h-4 text-gray-500 dark:text-gray-400"
+              />
+            </div>
+
             {/* Pricing */}
             <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1.5 mb-4">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Үндсэн үнэ</span>
+                <span className="text-gray-600 dark:text-gray-400">{t('payment.basePrice')}</span>
                 <span className="text-gray-900 dark:text-white">{totalPrice.toLocaleString()} ₮</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Купон</span>
+                <span className="text-gray-600 dark:text-gray-400">{t('payment.coupon')}</span>
                 <span className="text-gray-900 dark:text-white">0 ₮</span>
               </div>
             </div>
@@ -485,7 +526,7 @@ export default function BookingPaymentStep({
             <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mb-4">
               <div className="flex justify-between items-baseline">
                 <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Нийт төлөх дүн
+                  {t('payment.totalDue')}
                 </span>
                 <span className="text-lg font-bold text-gray-900 dark:text-white">
                   {totalPrice.toLocaleString()}₮
@@ -496,21 +537,21 @@ export default function BookingPaymentStep({
             {/* Customer info */}
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
               <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Захиалагчийн мэдээлэл
+                {t('payment.guestInfo')}
               </p>
               <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                 <div className="flex gap-1">
-                  <span className="w-24 shrink-0">Овог нэр:</span>
+                  <span className="w-24 shrink-0">{t('payment.guestFullName')}</span>
                   <span className="text-gray-900 dark:text-white font-medium">
                     {[customerLastName, customerName].filter(Boolean).join(' ') || '—'}
                   </span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="w-24 shrink-0">Холбогдох утас:</span>
+                  <span className="w-24 shrink-0">{t('payment.guestPhone')}</span>
                   <span className="text-gray-900 dark:text-white font-medium">{customerPhone || '—'}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="w-24 shrink-0">И-мэйл хаяг:</span>
+                  <span className="w-24 shrink-0">{t('payment.guestEmail')}</span>
                   <span className="text-gray-900 dark:text-white font-medium break-all">
                     {customerEmail || '—'}
                   </span>
@@ -563,10 +604,11 @@ function QPayContent({
   loading: boolean;
   error: string | null;
 }) {
+  const { t } = useHydratedTranslation();
   if (loading) {
     return (
       <div className="flex items-center justify-center h-40 text-sm text-gray-500">
-        QPay нэхэмжлэл үүсгэж байна...
+        {t('payment.qpayCreating')}
       </div>
     );
   }
@@ -586,7 +628,7 @@ function QPayContent({
             alt="QPay QR код"
             className="w-48 h-48 rounded-lg border border-gray-200 dark:border-gray-600"
           />
-          <span className="text-xs text-gray-500">QPay QR унших</span>
+          <span className="text-xs text-gray-500">{t('payment.qpayScan')}</span>
         </div>
       )}
 
@@ -633,12 +675,12 @@ function TransferContent({
   copiedField: string | null;
   onCopy: (text: string, field: string) => void;
 }) {
+  const { t } = useHydratedTranslation();
   return (
     <div>
-      {/* Bank selector */}
       <div className="flex gap-2 mb-5">
         {(['tdb', 'khan'] as TransferBank[]).map((key) => {
-          const bank = TRANSFER_BANKS[key];
+          const bankName = t(`payment.banks.${key}`);
           const isActive = transferBank === key;
           return (
             <button
@@ -661,7 +703,7 @@ function TransferContent({
                 </span>
               </div>
               <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
-                {bank.name}
+                {bankName}
               </span>
             </button>
           );
@@ -673,32 +715,36 @@ function TransferContent({
         {/* Details */}
         <div className="flex-1 space-y-3">
           <CopyField
-            label="Хүлээн авах данс"
+            label={t('payment.receivingAccount')}
             value={bankInfo.accountNumber}
             field="account"
             copiedField={copiedField}
             onCopy={onCopy}
+            copyTitle={t('payment.copy')}
           />
           <CopyField
-            label="Хүлээн авагчийн нэр"
+            label={t('payment.recipientName')}
             value={bankInfo.accountName}
             field="holder"
             copiedField={copiedField}
             onCopy={onCopy}
+            copyTitle={t('payment.copy')}
           />
           <CopyField
-            label="Шилжүүлэх дүн"
+            label={t('payment.transferAmount')}
             value={`${totalPrice.toLocaleString()} ₮`}
             field="amount"
             copiedField={copiedField}
             onCopy={onCopy}
+            copyTitle={t('payment.copy')}
           />
           <CopyField
-            label="Гүйлгээний утга"
+            label={t('payment.transactionRef')}
             value={bookingCode}
             field="ref"
             copiedField={copiedField}
             onCopy={onCopy}
+            copyTitle={t('payment.copy')}
           />
         </div>
 
@@ -706,9 +752,9 @@ function TransferContent({
         <div className="shrink-0 flex flex-col items-center gap-2 pt-1">
           <div className="w-32 h-32 bg-gray-100 dark:bg-gray-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex flex-col items-center justify-center gap-1">
             <QrCode className="w-8 h-8 text-gray-400" />
-            <span className="text-xs text-gray-400">QR код</span>
+            <span className="text-xs text-gray-400">{t('payment.qrCode')}</span>
           </div>
-          <span className="text-xs text-gray-500">QR унших</span>
+          <span className="text-xs text-gray-500">{t('payment.scanQrShort')}</span>
         </div>
       </div>
     </div>
@@ -721,12 +767,14 @@ function CopyField({
   field,
   copiedField,
   onCopy,
+  copyTitle,
 }: {
   label: string;
   value: string;
   field: string;
   copiedField: string | null;
   onCopy: (text: string, field: string) => void;
+  copyTitle: string;
 }) {
   const copied = copiedField === field;
   return (
@@ -737,7 +785,7 @@ function CopyField({
         <button
           onClick={() => onCopy(value, field)}
           className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-          title="Хуулах"
+          title={copyTitle}
         >
           {copied ? (
             <Check className="w-4 h-4 text-green-500" />
@@ -751,15 +799,15 @@ function CopyField({
 }
 
 function ComingSoonContent() {
+  const { t } = useHydratedTranslation();
   return (
     <div className="flex flex-col items-center justify-center py-12 gap-3">
       <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
         <Clock className="w-7 h-7 text-gray-400" />
       </div>
-      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Тун удахгүй</p>
+      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('payment.comingSoon')}</p>
       <p className="text-xs text-gray-400 text-center max-w-xs">
-        Энэ төлбөрийн сонголт удахгүй нэмэгдэнэ. Дансаар шилжүүлэх эсвэл банкны аппыг
-        ашиглана уу.
+        {t('payment.comingSoonDesc')}
       </p>
     </div>
   );

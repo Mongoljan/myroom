@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import { Coupon } from '@/types/customer';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 type PromoTab = 'active' | 'used' | 'inactive';
 
 export default function PromoPage() {
+  const { t } = useHydratedTranslation();
   const { token } = useAuth();
 
   const [activeTab, setActiveTab] = useState<PromoTab>('active');
@@ -19,13 +21,19 @@ export default function PromoPage() {
   const [addSuccess, setAddSuccess] = useState('');
   const [isAdding, setIsAdding] = useState(false);
 
+  const TABS: { label: string; value: PromoTab }[] = [
+    { label: t('profilePromo.tabs.active'), value: 'active' },
+    { label: t('profilePromo.tabs.used'), value: 'used' },
+    { label: t('profilePromo.tabs.inactive'), value: 'inactive' },
+  ];
+
   useEffect(() => {
     if (!token) return;
     setIsLoading(true);
     setError('');
     CustomerService.getCoupons(token)
       .then((res) => setCoupons(res.coupons))
-      .catch((err) => setError(err instanceof Error ? err.message : 'Алдаа гарлаа.'))
+      .catch((err) => setError(err instanceof Error ? err.message : t('profilePromo.error')))
       .finally(() => setIsLoading(false));
   }, [token]);
 
@@ -37,7 +45,7 @@ export default function PromoPage() {
     setIsAdding(true);
     // API doesn't have a "add coupon" endpoint — show feedback only
     await new Promise((r) => setTimeout(r, 600));
-    setAddSuccess(`"${codeInput.trim()}" промо код нэмэгдлээ.`);
+    setAddSuccess(t('profilePromo.added', { code: codeInput.trim() }));
     setCodeInput('');
     setIsAdding(false);
   };
@@ -46,16 +54,10 @@ export default function PromoPage() {
   const activeCoupons = coupons.filter((c) => c.is_active);
   const inactiveCoupons = coupons.filter((c) => !c.is_active);
 
-  const TABS: { label: string; value: PromoTab }[] = [
-    { label: 'Идэвхтэй', value: 'active' },
-    { label: 'Ашигласан', value: 'used' },
-    { label: 'Идэвхгүй', value: 'inactive' },
-  ];
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="px-6 pt-6 pb-0">
-        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white mb-5">Промо код</h1>
+        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white mb-5">{t('profilePromo.title')}</h1>
 
         {/* Add promo input */}
         <form onSubmit={handleAdd} className="flex gap-2 mb-5 max-w-lg">
@@ -63,7 +65,7 @@ export default function PromoPage() {
             type="text"
             value={codeInput}
             onChange={(e) => setCodeInput(e.target.value)}
-            placeholder="Промо код оруулах"
+            placeholder={t('profilePromo.placeholder')}
             className="flex-1 px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
           />
           <button
@@ -71,7 +73,7 @@ export default function PromoPage() {
             disabled={isAdding || !codeInput.trim()}
             className="px-5 py-2.5 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
           >
-            {isAdding ? 'Нэмж байна...' : 'Нэмэх'}
+            {isAdding ? t('profilePromo.adding') : t('profilePromo.add')}
           </button>
         </form>
 
@@ -110,17 +112,17 @@ export default function PromoPage() {
         {/* Active coupons */}
         {!isLoading && activeTab === 'active' && (
           activeCoupons.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-10">Идэвхтэй промо код байхгүй байна.</p>
+            <p className="text-sm text-gray-400 text-center py-10">{t('profilePromo.emptyActive')}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-gray-700">
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Промо код</th>
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Хөнгөлтийн хувь</th>
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Хүчинтэй хугацаа</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашиглах боломжтой тоо</th>
-                    <th className="text-right py-3 font-medium text-gray-500 dark:text-gray-400">Ашигласан тоо</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.promoCode')}</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.discountPercent')}</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.validPeriod')}</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.availableCount')}</th>
+                    <th className="text-right py-3 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.usedCount')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -143,22 +145,22 @@ export default function PromoPage() {
         {!isLoading && activeTab === 'used' && (
           <div className="overflow-x-auto">
             {coupons.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-10">Ашигласан промо код байхгүй.</p>
+              <p className="text-sm text-gray-400 text-center py-10">{t('profilePromo.emptyUsed')}</p>
             ) : (
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-gray-700">
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Промо код</th>
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Хөнгөлтийн хувь / дүн</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашиглах боломжтой тоо</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашигласан тоо</th>
-                    <th className="text-right py-3 font-medium text-gray-500 dark:text-gray-400">Ашигласан огноо</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.promoCode')}</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.discountAmount')}</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.availableCount')}</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.usedCount')}</th>
+                    <th className="text-right py-3 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.usedDate')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-gray-400 text-sm">
-                      Ашигласан промо код байхгүй.
+                      {t('profilePromo.emptyUsed')}
                     </td>
                   </tr>
                 </tbody>
@@ -170,17 +172,17 @@ export default function PromoPage() {
         {/* Inactive coupons */}
         {!isLoading && activeTab === 'inactive' && (
           inactiveCoupons.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-10">Идэвхгүй промо код байхгүй байна.</p>
+            <p className="text-sm text-gray-400 text-center py-10">{t('profilePromo.emptyInactive')}</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-gray-100 dark:border-gray-700">
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Промо код</th>
-                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Хөнгөлтийн хувь / дүн</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашиглах боломжтой тоо</th>
-                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">Ашигласан тоо</th>
-                    <th className="text-right py-3 font-medium text-gray-500 dark:text-gray-400">Хүчинтэй хугацаа</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.promoCode')}</th>
+                    <th className="text-left py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.discountAmount')}</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.availableCount')}</th>
+                    <th className="text-right py-3 pr-4 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.usedCount')}</th>
+                    <th className="text-right py-3 font-medium text-gray-500 dark:text-gray-400">{t('profilePromo.table.validPeriod')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -190,7 +192,7 @@ export default function PromoPage() {
                       <td className="py-3 pr-4 text-gray-600 dark:text-gray-400">-{c.discount_percentage}%</td>
                       <td className="py-3 pr-4 text-right text-gray-600 dark:text-gray-400">1</td>
                       <td className="py-3 pr-4 text-right text-gray-600 dark:text-gray-400">0</td>
-                      <td className="py-3 text-right text-gray-500 dark:text-gray-400 text-xs">— (дууссан)</td>
+                      <td className="py-3 text-right text-gray-500 dark:text-gray-400 text-xs">{t('profilePromo.expired')}</td>
                     </tr>
                   ))}
                 </tbody>

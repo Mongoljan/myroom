@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { CanvasRevealEffect } from '@/components/ui/canvas-reveal-effect';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useMotionValue, useMotionTemplate } from 'framer-motion';
@@ -15,7 +15,13 @@ import { TYPOGRAPHY } from '@/styles/containers';
 import { FlipWords } from '@/components/ui/flip-words';
 
 export default function ModernHero() {
-  const { t } = useHydratedTranslation();
+  const { t, tAny, i18n } = useHydratedTranslation();
+
+  const flipPhrases = useMemo(() => {
+    const phrases = tAny<string[]>('hero.flipPhrases', { returnObjects: true });
+    if (Array.isArray(phrases) && phrases.length > 0) return phrases;
+    return ['Trusted hotel booking'];
+  }, [tAny, i18n.language]);
   const { recentSearches, saveSearch } = useRecentSearches();
 
   // Helper functions for default dates
@@ -298,11 +304,10 @@ export default function ModernHero() {
               className={`${TYPOGRAPHY.hero.title} text-white mb-10 leading-tight font-(family-name:--font-lobster)`}
             >
               <FlipWords
-                words={["Тав тух", "Хямд", "Найдвартай", "Тохилог", "Шилдэг"]}
+                words={flipPhrases}
                 duration={2500}
                 className="text-white font-(family-name:--font-lobster) [text-shadow:0_0_11px_rgba(255,255,255,0.3),0_0_28px_rgba(255,255,255,0.3),0_0_55px_rgba(255,255,255,0.12)]"
               />
-              таны сонголт
             </motion.h1>
           </motion.div>
 

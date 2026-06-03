@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { SearchHotelResult } from '@/types/api';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -137,6 +138,11 @@ export function useSearchFilters({
   priceBounds,
   hotels = [],
 }: UseSearchFiltersOptions) {
+  const { t, i18n } = useHydratedTranslation();
+  const locale = i18n.language?.startsWith('en') ? 'en' : 'mn';
+  const facilityName = (item: { name_en: string; name_mn: string }) =>
+    locale === 'en' ? item.name_en : item.name_mn;
+
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [recentFilters, setRecentFilters] = useState<RecentFilter[]>([]);
   const [recentIndividualFilters, setRecentIndividualFilters] = useState<RecentIndividualFilter[]>([]);
@@ -163,7 +169,10 @@ export function useSearchFilters({
 
     if (filterState.propertyTypes.length > 0) {
       const names = filterState.propertyTypes
-        .map(id => apiData?.property_types.find(t => t.id === id)?.name_mn || '')
+        .map(id => {
+          const pt = apiData?.property_types.find(p => p.id === id);
+          return pt ? facilityName(pt) : '';
+        })
         .filter(Boolean);
       if (names.length) parts.push(names.join(', '));
     }
@@ -173,11 +182,13 @@ export function useSearchFilters({
       parts.push(`₮${fmt(filterState.priceRange[0])}-${fmt(filterState.priceRange[1])}`);
     }
 
-    if (filterState.starRating.length > 0) parts.push(`${filterState.starRating.join(',')} од`);
-    if (filterState.discounted) parts.push('Хямдралтай');
+    if (filterState.starRating.length > 0) {
+      parts.push(`${filterState.starRating.join(',')}★`);
+    }
+    if (filterState.discounted) parts.push(t('search.filtersSection.discounted'));
 
-    return parts.length > 0 ? parts.slice(0, 3).join(' • ') : 'Энгийн хайлт';
-  }, [apiData]);
+    return parts.length > 0 ? parts.slice(0, 3).join(' • ') : t('search.simpleSearch');
+  }, [apiData, t, locale]);
 
   const loadRecentFilters = useCallback(() => {
     try {
@@ -281,28 +292,28 @@ export function useSearchFilters({
         (updated.starRating || []).filter(s => !(prev.starRating || []).includes(s))
           .forEach(s => track(`starRating_${s}`, 'starRating', s, `${s}★`));
         (updated.propertyTypes || []).filter(id => !(prev.propertyTypes || []).includes(id))
-          .forEach(id => { const pt = apiData?.property_types.find(p => p.id === id); if (pt) track(`propertyType_${id}`, 'propertyTypes', id, pt.name_mn); });
+          .forEach(id => { const pt = apiData?.property_types.find(p => p.id === id); if (pt) track(`propertyType_${id}`, 'propertyTypes', id, facilityName(pt)); });
         if (updated.discounted && !prev.discounted)
-          track('discounted', 'discounted', true, 'Хямдралтай');
+          track('discounted', 'discounted', true, t('search.filtersSection.discounted'));
         (updated.roomFeatures || []).filter(id => !(prev.roomFeatures || []).includes(id))
-          .forEach(id => { const f = apiData?.facilities?.find(x => x.id === id); if (f) track(`roomFeature_${id}`, 'roomFeatures', id, f.name_mn); });
+          .forEach(id => { const f = apiData?.facilities?.find(x => x.id === id); if (f) track(`roomFeature_${id}`, 'roomFeatures', id, facilityName(f)); });
         (updated.generalServices || []).filter(id => !(prev.generalServices || []).includes(id))
-          .forEach(id => { const f = apiData?.additionalFacilities?.find(x => x.id === id); if (f) track(`genService_${id}`, 'generalServices', id, f.name_mn); });
+          .forEach(id => { const f = apiData?.additionalFacilities?.find(x => x.id === id); if (f) track(`genService_${id}`, 'generalServices', id, facilityName(f)); });
         (updated.outdoorAreas || []).filter(id => !(prev.outdoorAreas || []).includes(id))
-          .forEach(id => { const f = apiData?.activities?.find(x => x.id === id); if (f) track(`outdoor_${id}`, 'outdoorAreas', id, f.name_mn); });
+          .forEach(id => { const f = apiData?.activities?.find(x => x.id === id); if (f) track(`outdoor_${id}`, 'outdoorAreas', id, facilityName(f)); });
         (updated.neighbourhood || []).filter(n => !(prev.neighbourhood || []).includes(n))
           .forEach(n => track(`neighbourhood_${n}`, 'neighbourhood', n, n));
         (updated.landmark || []).filter(l => !(prev.landmark || []).includes(l))
           .forEach(l => { const lm = UB_LANDMARKS.find(x => x.id === l); if (lm) track(`landmark_${l}`, 'landmark', l, lm.name_mn); });
         (updated.roomFacilities || []).filter(id => !(prev.roomFacilities || []).includes(id))
-          .forEach(id => { const f = apiData?.roomFacilities?.find(x => x.id === id); if (f) track(`roomFac_${id}`, 'roomFacilities', id, f.name_mn); });
+          .forEach(id => { const f = apiData?.roomFacilities?.find(x => x.id === id); if (f) track(`roomFac_${id}`, 'roomFacilities', id, facilityName(f)); });
         (updated.bedTypes || []).filter(id => !(prev.bedTypes || []).includes(id))
           .forEach(id => { const bt = apiData?.bed_types?.find(x => x.id === id); if (bt) track(`bedType_${id}`, 'bedTypes', id, bt.name); });
         (updated.accessibilityFeatures || []).filter(id => !(prev.accessibilityFeatures || []).includes(id))
-          .forEach(id => { const f = apiData?.accessibility_features?.find(x => x.id === id); if (f) track(`access_${id}`, 'accessibilityFeatures', id, f.name_mn); });
+          .forEach(id => { const f = apiData?.accessibility_features?.find(x => x.id === id); if (f) track(`access_${id}`, 'accessibilityFeatures', id, facilityName(f)); });
       }
     } catch { /* ignore */ }
-  }, [saveToRecentFilters, saveIndividualFilter, apiData]);
+  }, [saveToRecentFilters, saveIndividualFilter, apiData, t, locale]);
 
   const handleClearAllFilters = useCallback(() => {
     setFilters(DEFAULT_FILTERS);

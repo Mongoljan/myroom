@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import {
   User,
   CalendarDays,
@@ -15,25 +16,26 @@ import {
   Hotel,
 } from 'lucide-react';
 
-const personalInfoLinks = [
-  { href: '/profile', label: 'Таны профайл' },
-  { href: '/profile/email', label: 'Цахим шуудан' },
-  { href: '/profile/phone', label: 'Утасны дугаар' },
-  { href: '/profile/password', label: 'Нууц үг солих' },
-];
-
-const mainNavLinks = [
-  { href: '/profile/bookings', label: 'Захиалгын түүх', icon: CalendarDays },
-  { href: '/profile/saved', label: 'Хадгалсан', icon: Heart },
-  { href: '/profile/promo', label: 'Промо код', icon: Tag },
-  { href: '/profile/reviews', label: 'Сэтгэгдлүүд', icon: MessageSquare },
-  { href: '/profile/settings', label: 'Тохиргоо', icon: Settings },
-];
-
 export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { t } = useHydratedTranslation();
   const router = useRouter();
   const pathname = usePathname();
+
+  const personalInfoLinks = [
+    { href: '/profile', labelKey: 'profileNav.yourProfile' },
+    { href: '/profile/email', labelKey: 'profileNav.email' },
+    { href: '/profile/phone', labelKey: 'profileNav.phone' },
+    { href: '/profile/password', labelKey: 'profileNav.changePassword' },
+  ];
+
+  const mainNavLinks = [
+    { href: '/profile/bookings', labelKey: 'profileNav.bookingHistory', icon: CalendarDays },
+    { href: '/profile/saved', labelKey: 'profileNav.saved', icon: Heart },
+    { href: '/profile/promo', labelKey: 'profileNav.promoCode', icon: Tag },
+    { href: '/profile/reviews', labelKey: 'profileNav.reviews', icon: MessageSquare },
+    { href: '/profile/settings', labelKey: 'profileNav.settings', icon: Settings },
+  ];
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -51,30 +53,24 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
 
   if (!isAuthenticated || !user) return null;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const isPersonalInfoActive = personalInfoLinks.some((l) => l.href === pathname);
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex gap-8 items-start">
-          {/* ─── Sidebar ─── */}
           <aside className="w-60 shrink-0">
-            {/* Quick Action - Book Hotel */}
             <Link
               href="/"
               className="flex items-center justify-center gap-2 w-full mb-4 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
             >
               <Hotel size={18} />
-              <span>Буудал захиалах</span>
+              <span>{t('profileNav.bookHotel')}</span>
             </Link>
 
-            {/* Personal info accordion */}
             <div className="mb-1">
               <div className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-default select-none">
                 <div className="flex items-center gap-2.5 text-gray-700 dark:text-gray-300 font-medium text-sm">
                   <User size={16} />
-                  <span>Хувийн мэдээлэл</span>
+                  <span>{t('profileNav.personalInfo')}</span>
                 </div>
                 <ChevronDown size={15} className="text-gray-400" />
               </div>
@@ -89,15 +85,14 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                         : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                     }`}
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 ))}
               </div>
             </div>
 
-            {/* Main nav links */}
             <div className="flex flex-col gap-0.5 mt-2">
-              {mainNavLinks.map(({ href, label, icon: Icon }) => (
+              {mainNavLinks.map(({ href, labelKey, icon: Icon }) => (
                 <Link
                   key={href}
                   href={href}
@@ -108,13 +103,12 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
                   }`}
                 >
                   <Icon size={16} />
-                  <span>{label}</span>
+                  <span>{t(labelKey)}</span>
                 </Link>
               ))}
             </div>
           </aside>
 
-          {/* ─── Main content ─── */}
           <main className="flex-1 min-w-0">{children}</main>
         </div>
       </div>
