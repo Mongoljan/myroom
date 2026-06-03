@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Manrope, Lobster } from "next/font/google";
+import Script from "next/script";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { ToastProvider } from "@/components/common/ToastContainer";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -101,6 +102,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');var s=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';var r=t||s;document.documentElement.classList.remove('light','dark');document.documentElement.classList.add(r);}catch(e){}})();`,
           }}
+        />
+        <Script
+          id="tawk-to"
+          src="https://embed.tawk.to/68915c52a4fc79192a7ba7d0/1j1rt18nu"
+          strategy="beforeInteractive"
         />
       </head>
       <body

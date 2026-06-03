@@ -10,21 +10,6 @@ export default function Footer() {
 
   return (
     <>
-      {/* Floating Messenger button — m.me link (Chat Plugin deprecated May 2024) */}
-      <a
-        href="https://m.me/747057615158314"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Chat on Messenger"
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform duration-200 hover:scale-110"
-        style={{ background: 'linear-gradient(135deg, #0084FF 0%, #A033FF 100%)' }}
-      >
-        {/* Messenger logo SVG */}
-        <svg viewBox="0 0 24 24" className="w-7 h-7 fill-white" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 0C5.373 0 0 4.974 0 11.111c0 3.498 1.744 6.614 4.469 8.683V24l4.088-2.242c1.092.301 2.246.464 3.443.464 6.627 0 12-4.974 12-11.111S18.627 0 12 0zm1.191 14.963-3.055-3.26-5.963 3.26L10.732 8l3.131 3.259L19.752 8l-6.561 6.963z"/>
-        </svg>
-      </a>
-
       <footer className="bg-slate-900 text-white">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

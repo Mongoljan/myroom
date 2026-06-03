@@ -12,8 +12,6 @@ import {
   BookOpen,
   Sparkles,
   ChevronDown,
-  Plus,
-  Minus,
   Phone,
   MessageCircle,
   PlayCircle,
@@ -132,9 +130,7 @@ export default function HelpPageContent() {
             <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
               Тусламж
             </h1>
-            <p className="text-sm md:text-base text-primary-100">
-              Танд бид өөр юугаар туслах вэ?
-            </p>
+           
           </motion.div>
         </div>
       </section>
@@ -153,14 +149,12 @@ export default function HelpPageContent() {
             <h2 className="text-h2  flex justify-start font-semibold text-gray-900 dark:text-white mb-1">
               Түгээмэл асуултууд
             </h2>
-            <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>
-              Захиалгын процесстой холбоотой түгээмэл асуудаг асуултууд
-            </p>
+           
           </motion.div>
 
-          {/* Category Tabs - Clean pill style */}
-          <div className="mb-6">
-            <div className="flex flex-wrap gap-2 justify-center">
+          {/* Category Tabs - horizontal scroll, single row */}
+          <div className="mb-6 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-nowrap gap-2 overflow-x-auto no-scrollbar pb-1">
               {helpFaqData.map((category, index) => {
                 const Icon = iconMap[category.icon];
                 const isActive = activeCategory === category.id;
@@ -178,7 +172,7 @@ export default function HelpPageContent() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className={`
-                      px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                      flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap
                       ${isActive
                         ? 'bg-slate-900 text-white shadow-md'
                         : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
@@ -218,47 +212,35 @@ export default function HelpPageContent() {
                   >
                     <motion.div
                       className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
-                      whileHover={{ y: -2 }}
+                      whileHover={{
+                        y: -2,
+                        boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
+                      }}
+                      layout
                     >
-                      <button
+                      <motion.button
                         onClick={() => toggleFaq(index)}
-                        className="w-full text-left p-4 focus:outline-none focus:ring-1 focus:ring-slate-500"
+                        className={`w-full text-left p-4 focus:outline-none ${isOpen ? 'bg-gray-50 dark:bg-gray-700/50' : ''}`}
+                        transition={{ duration: 0.2 }}
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center flex-1 min-w-0">
-                            <motion.div
-                              className="flex-shrink-0 w-7 h-7 bg-slate-900 text-white rounded-lg flex items-center justify-center mr-3"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                            >
-                              <motion.div
-                                animate={{ rotate: isOpen ? 45 : 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                {isOpen ? (
-                                  <Minus className="w-3 h-3" />
-                                ) : (
-                                  <Plus className="w-3 h-3" />
-                                )}
-                              </motion.div>
-                            </motion.div>
-
-                            <h3 className={`${TYPOGRAPHY.card.subtitle} text-gray-900 dark:text-white pr-3`}>
+                            <h3 className={`${TYPOGRAPHY.card.subtitle} font-bold text-gray-900 dark:text-white pr-3`}>
                               {faq.question}
                             </h3>
                           </div>
 
                           <motion.div
                             animate={{ rotate: isOpen ? 180 : 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="flex-shrink-0 text-gray-400"
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                           >
                             <ChevronDown className="w-4 h-4" />
                           </motion.div>
                         </div>
-                      </button>
+                      </motion.button>
 
-                      <AnimatePresence>
+                      <AnimatePresence initial={false}>
                         {isOpen && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
@@ -266,7 +248,7 @@ export default function HelpPageContent() {
                               height: "auto",
                               opacity: 1,
                               transition: {
-                                height: { duration: 0.3 },
+                                height: { duration: 0.3, ease: "easeInOut" },
                                 opacity: { duration: 0.2, delay: 0.1 }
                               }
                             }}
@@ -274,19 +256,28 @@ export default function HelpPageContent() {
                               height: 0,
                               opacity: 0,
                               transition: {
-                                height: { duration: 0.3 },
+                                height: { duration: 0.3, ease: "easeInOut" },
                                 opacity: { duration: 0.1 }
                               }
                             }}
                             className="overflow-hidden"
                           >
-                            <div className="px-4 pb-4 bg-white dark:bg-gray-800">
-                              <div className="pl-10 border-l border-gray-200 dark:border-gray-700">
-                                <p className={`${TYPOGRAPHY.body.standard} text-gray-600 dark:text-gray-400`}>
-                                  {faq.answer}
-                                </p>
-                              </div>
-                            </div>
+                            <motion.div
+                              className="px-4 pb-4 bg-white dark:bg-gray-800"
+                              initial={{ y: -10, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              exit={{ y: -10, opacity: 0 }}
+                              transition={{ duration: 0.2, delay: 0.1 }}
+                            >
+                              <motion.p
+                                className={`${TYPOGRAPHY.body.standard} font-normal text-gray-600 dark:text-gray-400`}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.3, delay: 0.2 }}
+                              >
+                                {faq.answer}
+                              </motion.p>
+                            </motion.div>
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -307,7 +298,7 @@ export default function HelpPageContent() {
             transition={{ duration: 0.5 }}
             className="text-center mb-6"
           >
-            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1">
+            <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1 text-left">
               Видео заавар
             </h2>
             <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>
@@ -345,6 +336,9 @@ export default function HelpPageContent() {
 
         {/* Contact Section */}
         <section id="contact">
+        <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1 text-left">
+                Холбоо барих
+              </h2>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -353,20 +347,20 @@ export default function HelpPageContent() {
             className="relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-xl border border-gray-200/50 dark:border-gray-700/50 p-6 hover:shadow-lg hover:shadow-gray-200/50 transition-all duration-300"
           >
             {/* Subtle gradient background */}
+           
             <div className="absolute inset-0 bg-gradient-to-br from-slate-500/5 via-teal-500/5 to-slate-500/5 -z-10" />
-
+          
             <div className="text-center mb-6">
-              <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-1">
-                Холбоо барих
-              </h2>
-              <p className={`${TYPOGRAPHY.body.small} text-gray-600 dark:text-gray-400`}>
-                Утсаар холбогдох бол <span className="font-semibold text-gray-900 dark:text-white">99972626</span>
-              </p>
+        
+            
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
-              {/* Chat Button */}
-              <motion.button
+            <div className="grid sm:grid-cols-2 gap-3">
+              {/* Chat Button - Facebook */}
+              <motion.a
+                href="https://www.facebook.com/profile.php?id=61579682037246"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="flex items-center justify-center gap-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:border-gray-300 rounded-lg px-4 py-3 transition-all group"
@@ -375,17 +369,17 @@ export default function HelpPageContent() {
                 <span className="font-medium text-gray-900 dark:text-white">
                   Чат эхлүүлэх
                 </span>
-              </motion.button>
+              </motion.a>
 
               {/* Phone Button */}
               <motion.a
-                href="tel:99972626"
+                href="tel:90234234"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg px-4 py-3 transition-colors font-medium"
               >
                 <Phone className="w-5 h-5" />
-                <span>99972626</span>
+                <span>90234234</span>
               </motion.a>
             </div>
 

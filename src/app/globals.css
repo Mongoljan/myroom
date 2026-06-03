@@ -404,6 +404,15 @@
   background: #9ca3af;
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Print styles for booking confirmation */
 @media print {
   @page {
