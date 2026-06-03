@@ -470,7 +470,7 @@ function BookingContent() {
               <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
                 <Check className="w-3 h-3 text-white" strokeWidth={3} />
               </div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">
                 {t('bookingExtra.confirmationTitle', 'Таны захиалга амжилттай баталгаажлаа. Баярлалаа.')}
               </p>
             </div>
