@@ -4,7 +4,7 @@ import { User, Baby } from 'lucide-react';
 
 interface GuestCountInlineProps {
   adults: number;
-  children?: number;
+  childCount?: number;
   className?: string;
   iconClassName?: string;
   showLabels?: boolean;
@@ -12,7 +12,7 @@ interface GuestCountInlineProps {
 
 export default function GuestCountInline({
   adults,
-  children = 0,
+  childCount = 0,
   className = '',
   iconClassName = 'w-3.5 h-3.5',
   showLabels = true,
@@ -29,12 +29,12 @@ export default function GuestCountInline({
           </span>
         </span>
       )}
-      {children > 0 && (
+      {childCount > 0 && (
         <span className="inline-flex items-center gap-0.5">
           <Baby className={iconClassName} />
           x
           <span>
-            {children}
+            {childCount}
             {/* {showLabels ? ' хүүхэд' : ''} */}
           </span>
         </span>

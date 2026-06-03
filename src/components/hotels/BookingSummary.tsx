@@ -138,7 +138,7 @@ export default function BookingSummary({
               <span className="font-bold">Нийт хүний тоо:</span>
               <GuestCountInline
                 adults={totalAdultCapacity}
-                children={totalChildCapacity}
+                childCount={totalChildCapacity}
                 className="font-bold text-sm"
               />
             </div>

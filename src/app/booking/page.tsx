@@ -561,7 +561,7 @@ function BookingContent() {
                     <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.enteringGuests', 'Орох хүний тоо')}</span>
                     <GuestCountInline
                       adults={totalGuestAdults}
-                      children={totalGuestChildren}
+                      childCount={totalGuestChildren}
                       className="text-foreground"
                     />
                   </div>
@@ -1479,7 +1479,7 @@ function BookingContent() {
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Орох боломжтой хүний тоо:</div>
                 <GuestCountInline
                   adults={rooms.reduce((s, r) => s + (r.max_adults ?? 1) * r.room_count, 0)}
-                  children={rooms.reduce((s, r) => s + (r.max_children ?? 0) * r.room_count, 0)}
+                  childCount={rooms.reduce((s, r) => s + (r.max_children ?? 0) * r.room_count, 0)}
                 />
               </div>
 
