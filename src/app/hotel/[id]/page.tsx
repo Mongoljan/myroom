@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import HotelPageContent from '@/components/hotels/HotelPageContent';
+import { HotelPageSkeleton } from '@/components/skeletons';
 import { ApiService } from '@/services/api';
 import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, PropertyImage, CancellationFee, PropertyPolicy } from '@/types/api';
 
@@ -52,36 +53,6 @@ async function getHotelById(id: string, checkIn?: string, checkOut?: string): Pr
   } catch (error) {
     return null;
   }
-}
-
-// Loading skeleton for hotel page
-function HotelPageSkeleton() {
-  return (
-    <div className="pt-20 pb-12">
-      <div className="container mx-auto px-4">
-        {/* Image gallery skeleton */}
-        <div className="grid grid-cols-4 gap-2 mb-6">
-          <div className="col-span-2 row-span-2 h-[400px] bg-gray-200 rounded-l-xl animate-pulse" />
-          <div className="h-[196px] bg-gray-200 animate-pulse" />
-          <div className="h-[196px] bg-gray-200 rounded-tr-xl animate-pulse" />
-          <div className="h-[196px] bg-gray-200 animate-pulse" />
-          <div className="h-[196px] bg-gray-200 rounded-br-xl animate-pulse" />
-        </div>
-        
-        {/* Content skeleton */}
-        <div className="grid grid-cols-3 gap-8">
-          <div className="col-span-2 space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-2/3 animate-pulse" />
-            <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse" />
-            <div className="h-32 bg-gray-200 rounded animate-pulse" />
-          </div>
-          <div className="space-y-4">
-            <div className="h-48 bg-gray-200 rounded-xl animate-pulse" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 }
 
 export default async function HotelPage({ params, searchParams }: { 

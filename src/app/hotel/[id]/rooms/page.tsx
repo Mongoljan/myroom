@@ -11,6 +11,7 @@ import { ApiService } from '@/services/api';
 import RoomCard from '@/components/rooms/RoomCard';
 import Header1 from '@/components/header/Header1';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { HotelRoomsPageSkeleton } from '@/components/skeletons';
 
 interface BookingModalProps {
   room: Room | null;
@@ -275,23 +276,7 @@ function HotelRoomsContent() {
     });
 
   if (loading) {
-    return (
-      <>
-        <Header1 />
-        <div className="pt-24 pb-8">
-          <div className="container mx-auto px-6">
-            <div className="animate-pulse space-y-6">
-              <div className="h-8 bg-gray-200 rounded w-64"></div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-gray-200 rounded-2xl h-96"></div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    );
+    return <HotelRoomsPageSkeleton />;
   }
 
   return (

@@ -9,6 +9,7 @@ import { SearchHotelResult, getRoomSellingPrice } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import SafeImage from '@/components/common/SafeImage';
 import Link from 'next/link';
+import { RecentlyViewedCardSkeleton } from '@/components/skeletons';
 
 interface RecentHotel {
   id: string;
@@ -103,14 +104,7 @@ export default function RecentlyViewed() {
         {isLoading ? (
           <div className="flex gap-3 overflow-x-auto pb-2">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="flex-shrink-0 w-[300px] h-[110px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl animate-pulse flex overflow-hidden">
-                <div className="w-[110px] bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
-                <div className="flex-1 p-3 space-y-2">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5" />
-                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
-                </div>
-              </div>
+              <RecentlyViewedCardSkeleton key={i} />
             ))}
           </div>
         ) : (

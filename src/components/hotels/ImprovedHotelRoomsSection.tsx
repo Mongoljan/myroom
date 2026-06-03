@@ -12,6 +12,7 @@ import BookingSummary from './BookingSummary';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import DateRangePicker from '@/components/common/DateRangePicker';
 import CustomGuestSelector from '@/components/search/CustomGuestSelector';
+import { HotelRoomsSectionSkeleton } from '@/components/skeletons';
 
 interface ImprovedHotelRoomsSectionProps {
   hotelId: number;
@@ -348,25 +349,7 @@ export default function ImprovedHotelRoomsSection({
   };
 
   if (loading) {
-    return (
-      <div className="py-8">
-        <div className="grid grid-cols-1 gap-6">
-          {[...Array(3)].map((_, index) => (
-              <div key={index} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
-              <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-1/3 mb-4"></div>
-              <div className="flex gap-4">
-                <div className="w-48 h-32 bg-gray-300 dark:bg-gray-600 rounded"></div>
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
-                  <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-2/3"></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <HotelRoomsSectionSkeleton />;
   }
 
   // Filter available rooms with pricing.

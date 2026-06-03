@@ -118,12 +118,12 @@ export default function Footer() {
               {([
                 { src: '/images/image.png',    alt: 'QPay',       size: 'w-11 h-11', scale: 'scale-125' },
                 { src: '/images/golomt.webp',  alt: 'Golomt Bank',size: 'w-11 h-11', scale: 'scale-100' },
-                { src: '/images/khanbank.png', alt: 'Khan Bank',  size: 'w-11 h-11', scale: 'scale-175' },
-                { src: '/images/TDB.png',      alt: 'TDB',        size: 'w-11 h-11', scale: 'scale-90' },
-                { src: '/images/Logo.png',     alt: 'SocialPay',  size: 'w-11 h-11', scale: 'scale-80' },
+                { src: '/images/khanbank.png', alt: 'Khan Bank',  size: 'w-11 h-11', scale: 'scale-75' },
+                { src: '/images/TDB.png',      alt: 'TDB',        size: 'w-11 h-11', scale: 'scale-' },
+                { src: '/images/Logo.png',     alt: 'Capitron Bank',  size: 'w-11 h-11', scale: 'scale-75' },
               ] as const).map(({ src, alt, size, scale }) => (
                 <div key={alt} className={`${size} rounded-lg bg-white flex items-center justify-center overflow-hidden p-0.5 group cursor-pointer`}>
-                  <Image src={src} alt={alt} width={48} height={48} className={`object-contain w-full h-full transition-transform duration-200 ${scale} group-hover:scale-110`} />
+                  <Image src={src} alt={alt} width={48} height={48} className={`object-contain w-full h-full transition-transform duration-200 ${scale} group-hover:${scale}+20`} />
                 </div>
               ))}
             </div>

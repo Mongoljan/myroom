@@ -16,40 +16,39 @@ interface Section {
   clauses?: Clause[];
 }
 
-// Skeleton component for the sidebar navigation
+const pulseBar = (className: string) =>
+  `bg-gray-200 dark:bg-gray-700 rounded animate-pulse ${className}`;
+
 const SidebarSkeleton = () => (
-  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
-    <div className="h-6 bg-gray-200 rounded mb-4 w-3/4 animate-pulse"></div>
+  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
+    <div className={pulseBar('h-6 mb-4 w-3/4')} />
     <nav className="space-y-2">
       {[...Array(8)].map((_, i) => (
-        <div key={i} className="flex items-center justify-between">
-          <div className="h-4 bg-gray-200 rounded w-full animate-pulse"></div>
-        </div>
+        <div key={i} className={pulseBar('h-4 w-full')} />
       ))}
     </nav>
   </div>
 );
 
-// Skeleton component for the main content
 const ContentSkeleton = () => (
-  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 lg:p-8">
+  <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 lg:p-8">
     {[...Array(5)].map((_, sectionIndex) => (
       <section key={sectionIndex} className="mb-12 last:mb-0">
-        <div className="h-8 bg-gray-200 rounded mb-4 w-3/4 animate-pulse"></div>
-        <div className="mb-6">
-          <div className="h-4 bg-gray-200 rounded mb-2 animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded mb-2 w-5/6 animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded w-4/6 animate-pulse"></div>
+        <div className={pulseBar('h-8 mb-4 w-3/4')} />
+        <div className="mb-6 space-y-2">
+          <div className={pulseBar('h-4 w-full')} />
+          <div className={pulseBar('h-4 w-5/6')} />
+          <div className={pulseBar('h-4 w-4/6')} />
         </div>
         {[...Array(3)].map((_, clauseIndex) => (
           <div key={clauseIndex} className="mb-4 last:mb-0">
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border-l-4 border-gray-200 dark:border-gray-700">
-              <div className="flex">
-                <div className="h-4 bg-gray-200 rounded w-8 mr-2 animate-pulse"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded mb-2 animate-pulse"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2 w-5/6 animate-pulse"></div>
-                  <div className="h-4 bg-gray-200 rounded w-4/6 animate-pulse"></div>
+            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border-l-4 border-gray-200 dark:border-gray-700">
+              <div className="flex gap-2">
+                <div className={pulseBar('h-4 w-8 shrink-0')} />
+                <div className="flex-1 space-y-2">
+                  <div className={pulseBar('h-4 w-full')} />
+                  <div className={pulseBar('h-4 w-5/6')} />
+                  <div className={pulseBar('h-4 w-4/6')} />
                 </div>
               </div>
             </div>
@@ -60,14 +59,13 @@ const ContentSkeleton = () => (
   </div>
 );
 
-// Header skeleton
 const HeaderSkeleton = () => (
-  <header className="bg-white dark:bg-gray-900 py-8">
+  <header className="bg-white dark:bg-gray-900 py-8 border-b border-gray-100 dark:border-gray-800">
     <div className="container mx-auto px-4 flex items-center justify-between">
       <div className="flex-1" aria-hidden="true" />
-      <div className="h-8 bg-gray-200 rounded w-64 mx-auto animate-pulse"></div>
+      <div className={pulseBar('h-8 w-64 mx-auto')} />
       <div className="flex-1 flex justify-end">
-        <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+        <div className={pulseBar('h-4 w-24')} />
       </div>
     </div>
   </header>

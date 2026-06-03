@@ -8,6 +8,7 @@ import SafeImage from '@/components/common/SafeImage';
 import { ApiService } from '@/services/api';
 import { SearchHotelResult, getRoomSellingPrice } from '@/types/api';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { HotelCarouselCardSkeleton } from '@/components/skeletons';
 import { formatHotelLocation } from '@/utils/formatHotelLocation';
 
 interface HotelWithPrices extends SearchHotelResult {
@@ -129,14 +130,7 @@ export default function SimilarHotels({ currentHotelId, checkIn, checkOut }: Sim
         <h2 className="text-h2 font-semibold text-gray-900 dark:text-white">{t('similarHotels.title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, index) => (
-            <div key={index} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse">
-              <div className="h-32 bg-gray-300 dark:bg-gray-600"></div>
-              <div className="p-3 space-y-2">
-                <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-1/2"></div>
-                <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-1/3"></div>
-              </div>
-            </div>
+            <HotelCarouselCardSkeleton key={index} className="w-full" />
           ))}
         </div>
       </div>

@@ -11,6 +11,11 @@ import PopularDestinations from "@/components/sections/PopularDestinations";
 import FaqSection from "@/components/sections/FaqSection";
 import Partnerships from "@/components/sections/Partnerships";
 import ModernHero from "@/components/hero/ModernHero";
+import {
+  RecentlyViewedSectionSkeleton,
+  RecommendedHotelsSectionSkeleton,
+  PopularDestinationsSkeleton,
+} from "@/components/skeletons";
 
 export const metadata: Metadata = {
   title: "MyRoom - Зочид буудал захиалгын платформ",
@@ -20,43 +25,6 @@ export const metadata: Metadata = {
     description: "Дэлхийн өнцөг булан бүрээс зочид буудал олж, шууд захиалга хийгээрэй.",
   },
 };
-
-// Loading skeletons for dynamic sections
-function HotelsSkeleton() {
-  return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-4 animate-pulse" />
-        <div className="flex gap-4 overflow-hidden">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="w-[280px] flex-shrink-0 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-              <div className="h-[180px] bg-gray-200 dark:bg-gray-700 animate-pulse" />
-              <div className="p-4 space-y-2">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse" />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function DestinationsSkeleton() {
-  return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-4 animate-pulse" />
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="aspect-[4/5] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function Home() {
   return (
@@ -68,15 +36,15 @@ export default function Home() {
       <WhyChooseUs />
       
       {/* Dynamic content - streamed at request time */}
-      <Suspense fallback={<HotelsSkeleton />}>
+      <Suspense fallback={<RecentlyViewedSectionSkeleton />}>
         <RecentlyViewed />
       </Suspense>
       
-      <Suspense fallback={<HotelsSkeleton />}>
+      <Suspense fallback={<RecommendedHotelsSectionSkeleton />}>
         <RecommendedHotels />
       </Suspense>
       
-      <Suspense fallback={<DestinationsSkeleton />}>
+      <Suspense fallback={<PopularDestinationsSkeleton />}>
         <PopularDestinations />
       </Suspense>
       

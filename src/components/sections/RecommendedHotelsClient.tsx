@@ -7,6 +7,7 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
 import { SearchHotelResult, getRoomSellingPrice } from '@/types/api';
+import { HotelCarouselCardSkeleton } from '@/components/skeletons';
 
 type TabKey = 'popular' | 'discount' | 'top_rated' | 'cheapest' | 'new';
 
@@ -163,20 +164,7 @@ export default function RecommendedHotelsClient({ initialHotels }: Props) {
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {[...Array(8)].map((_, index) => (
-              <div
-                key={`skeleton-${index}`}
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden animate-pulse w-70 shrink-0"
-              >
-                <div className="h-45 bg-gray-200 dark:bg-gray-700" />
-                <div className="p-3 space-y-2">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5" />
-                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                  <div className="flex justify-between items-center pt-1">
-                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-16" />
-                    <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-24" />
-                  </div>
-                </div>
-              </div>
+              <HotelCarouselCardSkeleton key={`skeleton-${index}`} />
             ))}
           </div>
         ) : hotels.length > 0 ? (

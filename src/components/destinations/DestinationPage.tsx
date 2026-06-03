@@ -9,6 +9,7 @@ import { ApiService } from '@/services/api';
 import { SearchHotelResult, getRoomSellingPrice } from '@/types/api';
 import SectionHotelCard from '@/components/common/SectionHotelCard';
 import { text } from '@/styles/design-system';
+import { DestinationHotelsGridSkeleton } from '@/components/skeletons';
 
 interface DestinationPageProps {
   destination: string;
@@ -308,17 +309,7 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
 
               {/* Results */}
               {isLoading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {[...Array(6)].map((_, i) => (
-                    <div key={i} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 animate-pulse">
-                      <div className="h-48 bg-gray-200 rounded-t-xl" />
-                      <div className="p-4 space-y-3">
-                        <div className="h-4 bg-gray-200 rounded w-3/4" />
-                        <div className="h-3 bg-gray-200 rounded w-1/2" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <DestinationHotelsGridSkeleton />
               ) : filteredHotels.length > 0 ? (
                 <motion.div
                   initial={{ opacity: 0 }}
