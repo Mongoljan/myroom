@@ -3,6 +3,7 @@
 import { X, Plus, Minus } from 'lucide-react';
 import { BookingItem } from './RoomCard';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import GuestCountInline from '@/components/common/GuestCountInline';
 
 interface BookingSummaryProps {
   items: BookingItem[];
@@ -133,9 +134,13 @@ export default function BookingSummary({
 
           {/* Selected rooms capacity */}
           {items.length > 0 && (
-            <div className="mt-2 mb-2 space-y-0.5">
-              <div className="flex justify-between items-center text-sm"><span className="font-bold">Том хүн:</span><span className="font-bold">{totalAdultCapacity} хүн</span></div>
-              {totalChildCapacity > 0 && <div className="flex justify-between items-center text-sm"><span className="font-bold">Хүүхэд:</span><span className="font-bold">{totalChildCapacity} хүн</span></div>}
+            <div className="flex justify-between items-center text-sm mt-2 mb-2">
+              <span className="font-bold">Нийт хүний тоо:</span>
+              <GuestCountInline
+                adults={totalAdultCapacity}
+                children={totalChildCapacity}
+                className="font-bold text-sm"
+              />
             </div>
           )}
         </div>

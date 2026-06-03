@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useToast } from '@/components/common/ToastContainer';
+import BackButton from '@/components/common/BackButton';
 
 type Step = 'view' | 'enter_email' | 'verify_otp' | 'done';
 
@@ -158,16 +159,16 @@ export default function EmailPage() {
               {isSending ? t('ProfileEmail.sending', 'Илгээж байна...') : t('ProfileEmail.sendCode', 'Код илгээх')}
             </button>
           </div>
-          <button
+          <BackButton
             onClick={() => {
               setStep('view');
               setNewEmail('');
               setError('');
             }}
-            className="mt-3 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
-          >
-            {t('ProfileEmail.back', 'Буцах')}
-          </button>
+            labelKey="ProfileEmail.back"
+            labelFallback="Буцах"
+            className="mt-3"
+          />
         </div>
       )}
 
@@ -194,12 +195,12 @@ export default function EmailPage() {
               {isVerifying ? t('ProfileEmail.verifying', 'Шалгаж байна...') : t('ProfileEmail.verifyButton', 'Баталгаажуулах')}
             </button>
           </form>
-          <button
+          <BackButton
             onClick={() => setStep('view')}
-            className="mt-3 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
-          >
-            {t('ProfileEmail.back', 'Буцах')}
-          </button>
+            labelKey="ProfileEmail.back"
+            labelFallback="Буцах"
+            className="mt-3"
+          />
         </div>
       )}
     </div>

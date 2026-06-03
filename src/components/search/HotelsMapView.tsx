@@ -4,6 +4,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { GoogleMap, useJsApiLoader, OverlayView } from '@react-google-maps/api';
 import { SearchHotelResult } from '@/types/api';
 import { X, ChevronLeft, Star, MapPin, Heart } from 'lucide-react';
+import BackButton from '@/components/common/BackButton';
 import Image from 'next/image';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
@@ -265,9 +266,7 @@ export default function HotelsMapView({ hotels, onClose, searchParams }: HotelsM
       <div className="fixed inset-0 z-40 bg-white dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 font-semibold mb-2">Google Maps ачаалахад алдаа гарлаа</p>
-          <button onClick={onClose} className="text-primary hover:underline">
-            Буцах
-          </button>
+          <BackButton onClick={onClose} />
         </div>
       </div>
     );

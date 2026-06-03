@@ -194,7 +194,7 @@ function BookingStyleHotelCard({ hotel, searchParams, viewMode = 'list' }: Hotel
                         e.stopPropagation();
                         setShowMapModal(true);
                       }}
-                      className="text-[14px] text-primary hover:underline whitespace-nowrap"
+                      className="text-[14px] text-primary underline whitespace-nowrap hover:text-primary/80"
                     >
                       {t('hotel.viewOnMap', 'Газрын зураг дээр харах')}
                     </button>

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useMotionValue, useMotionTemplate, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import BackButton from '@/components/common/BackButton';
 
 import EnhancedHotelDetail from '@/components/hotels/EnhancedHotelDetail';
 import HotelAmenities from '@/components/hotels/HotelAmenities';
@@ -127,13 +127,10 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
       {/* Hero section with ID for sticky nav detection */}
       <div id="hotel-hero" className="bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-5">
-          <button
+          <BackButton
             onClick={() => router.push('/search')}
-            className="flex items-center gap-1.5 text-sm font-bold text-primary dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4 text-primary font-bold" />
-            Буцах
-          </button>
+            className="mb-4"
+          />
           <div id="overview">
             <EnhancedHotelDetail
               hotel={hotel}

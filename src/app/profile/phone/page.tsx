@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
+import BackButton from '@/components/common/BackButton';
 
 type Step = 'view' | 'enter_phone' | 'verify_otp' | 'verified';
 
@@ -184,12 +185,7 @@ export default function PhonePage() {
               {isSending ? 'Илгээж байна...' : 'Баталгаажуулах код авах'}
             </button>
           </div>
-          <button
-            onClick={() => setStep('view')}
-            className="mt-3 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
-          >
-            Буцах
-          </button>
+          <BackButton onClick={() => setStep('view')} className="mt-3" />
         </div>
       )}
 

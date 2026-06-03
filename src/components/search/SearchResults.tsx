@@ -571,7 +571,7 @@ export default function SearchResults() {
         <SearchHeader />
         <div className="flex-1 min-h-0 overflow-hidden">
           <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col">
-            <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 overflow-hidden">
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 flex-1 min-h-0 overflow-hidden">
 
               {/* Sidebar skeleton */}
               <div className="hidden lg:flex lg:flex-col lg:w-80 shrink-0 min-h-0">
@@ -668,10 +668,10 @@ export default function SearchResults() {
       {/* Main Results Container — fills remaining height */}
       <div className="flex-1 min-h-0 overflow-hidden">
         <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col">
-          <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0 overflow-hidden">
+          <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 flex-1 min-h-0 overflow-hidden">
             {/* Sidebar - Desktop only, independently scrollable */}
             <div className="hidden lg:flex lg:flex-col lg:w-80 shrink-0 min-h-0 overflow-hidden">
-              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar space-y-3 pr-1">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar space-y-3 pr-3">
                 {/* Inline map preview above filters */}
                 {filteredHotels.length > 0 && (
                   <HotelsMapPreview
@@ -696,7 +696,7 @@ export default function SearchResults() {
               </div>
             </div>
             {/* Main Content — sticky header + independently scrollable cards */}
-            <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
+            <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden lg:pl-1">
               {/* Pinned header row: count, map link, sort, name search */}
               <div className="shrink-0">
                 <SearchResultsHeader
@@ -930,7 +930,7 @@ export default function SearchResults() {
               </div>
 
               {/* Scrollable hotel cards area */}
-              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pr-4">
               {/* Results Layout */}
               {filteredHotels.length > 0 ? (
                 <>

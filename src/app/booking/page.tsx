@@ -9,10 +9,13 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Button } from '@/components/ui/Button';
 import { BookingService } from '@/services/bookingApi';
 import { ApiService } from '@/services/api';
-import { CreateBookingRequest, CreateBookingResponse, PropertyPolicy } from '@/types/api';
+import { CreateBookingRequest, CreateBookingResponse, PropertyPolicy, CheckBookingResponse } from '@/types/api';
+import { getFacilityName } from '@/utils/facilities';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { useAuth } from '@/contexts/AuthContext';
 import BookingPaymentStep from '@/components/booking/BookingPaymentStep';
+import GuestCountInline from '@/components/common/GuestCountInline';
+import BackButton from '@/components/common/BackButton';
 
 interface BookingRoom {
   room_category_id: number;
@@ -107,6 +110,7 @@ function BookingContent() {
   const [bookingInProgress, setBookingInProgress] = useState(false);
   const [bookingResult, setBookingResult] = useState<CreateBookingResponse | null>(null);
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const [checkedBooking, setCheckedBooking] = useState<CheckBookingResponse | null>(null);
 
   // Restore step + bookingResult from sessionStorage after mount (avoids hydration mismatch)
   useEffect(() => {
@@ -178,6 +182,22 @@ function BookingContent() {
 
     fetchHotelData();
   }, [hotelId]);
+
+  // Load full booking from API after payment (dates, totals, customer from server)
+  useEffect(() => {
+    if (!paymentConfirmed || !bookingResult) return;
+    let cancelled = false;
+    BookingService.checkBooking(bookingResult.booking_code, bookingResult.pin_code)
+      .then((data) => {
+        if (!cancelled) setCheckedBooking(data);
+      })
+      .catch(() => {
+        if (!cancelled) setCheckedBooking(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [paymentConfirmed, bookingResult?.booking_code, bookingResult?.pin_code]);
 
   // Auto-fill guest info when user is logged in
   useEffect(() => {
@@ -369,21 +389,35 @@ function BookingContent() {
     const handlePrint = () => window.print();
     const handleDownloadPDF = () => window.print();
 
-    const formatDateLong = (d: string) => {
+    const formatDateDisplay = (d: string) => {
       if (!d) return '';
-      const date = new Date(d);
+      const date = new Date(d + 'T12:00:00');
       const wk = ['Ня', 'Да', 'Мя', 'Лха', 'Пү', 'Ба', 'Бя'][date.getDay()];
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${wk}`;
+      const ymd = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+      return `${ymd}, ${wk}`;
     };
     const checkInTime = hotelPolicy ? hotelPolicy.check_in_from.substring(0, 5) : '14:00';
     const checkOutTime = hotelPolicy ? hotelPolicy.check_out_until.substring(0, 5) : '12:00';
 
+    const apiBooking = checkedBooking?.bookings?.[0];
+    const displayTotal = checkedBooking?.total_sum ?? totalPrice;
+    const displayNights = bookingResult.nights ?? nights;
+    const displayCustomerName = apiBooking?.customer_name || [customerLastName, customerName].filter(Boolean).join(' ').trim();
+    const displayCustomerPhone = apiBooking?.customer_phone || customerPhone;
+    const displayCustomerEmail = apiBooking?.customer_email || customerEmail;
+    const displayCheckIn = apiBooking?.check_in || checkIn;
+    const displayCheckOut = apiBooking?.check_out || checkOut;
+    const bookingCreatedAt = apiBooking?.created_at
+      ? new Date(apiBooking.created_at)
+      : new Date();
+
     const totalGuestAdults = adultsCount;
     const totalGuestChildren = childrenCount;
 
-    // Hotel contact fields (graceful fallback — backend may not return these)
+    const displayHotelName = hotelDetails?.property_name || hotelName;
+
     const hotelPhone: string | undefined = hotelDetails?.contact_phone || hotelDetails?.phone;
-    const hotelEmail: string | undefined = hotelDetails?.contact_email || hotelDetails?.email;
+    const hotelEmail: string | undefined = hotelDetails?.contact_email || hotelDetails?.email || hotelDetails?.mail;
     const hotelWebsite: string | undefined = hotelDetails?.website;
     const googleMapUrl: string | undefined = hotelDetails?.google_map;
 
@@ -391,32 +425,47 @@ function BookingContent() {
       ? [hotelDetails.location.province_city, hotelDetails.location.soum, hotelDetails.location.district].filter(Boolean).join(', ')
       : '';
 
-    // Cancellation tiers — inline since `cf` / `multiCutoffDate` are declared later in component
-    const cfLocal = hotelPolicy?.cancellation_fee;
-    const cutoffDate = (daysBefore: number): string => {
-      if (!checkIn) return `${daysBefore} хоногийн өмнө`;
-      const d = new Date(checkIn);
+    const cfConfirm = hotelPolicy?.cancellation_fee;
+    const cancelTimeShortConfirm = cfConfirm?.cancel_time?.substring(0, 5);
+    const cutoffDateConfirm = (daysBefore: number): string => {
+      if (!displayCheckIn) return `${daysBefore} хоногийн өмнө`;
+      const d = new Date(displayCheckIn + 'T12:00:00');
       d.setDate(d.getDate() - daysBefore);
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
     };
-    const cancelTiers: { label: string; days: number; pct: number | null }[] = cfLocal ? [
-      { label: `${cutoffDate(5)}-ээс өмнө`, days: 5, pct: cfLocal.multi_5days_before_percentage ? parseFloat(cfLocal.multi_5days_before_percentage) : null },
-      { label: `${cutoffDate(3)}-ээс өмнө`, days: 3, pct: cfLocal.multi_3days_before_percentage ? parseFloat(cfLocal.multi_3days_before_percentage) : null },
-      { label: `${cutoffDate(1)}-ээс хойш`, days: 1, pct: cfLocal.multi_1day_before_percentage ? parseFloat(cfLocal.multi_1day_before_percentage) : null },
-    ].filter(t => t.pct !== null) : [];
+    const cancelTiers: { label: string; days: number; pct: number | null }[] = cfConfirm ? [
+      { label: `${cutoffDateConfirm(5)}-ээс өмнө`, days: 5, pct: cfConfirm.multi_5days_before_percentage ? parseFloat(cfConfirm.multi_5days_before_percentage) : null },
+      { label: `${cutoffDateConfirm(3)}-ээс өмнө`, days: 3, pct: cfConfirm.multi_3days_before_percentage ? parseFloat(cfConfirm.multi_3days_before_percentage) : null },
+      { label: `${cutoffDateConfirm(1)}-ээс хойш`, days: 1, pct: cfConfirm.multi_1day_before_percentage ? parseFloat(cfConfirm.multi_1day_before_percentage) : null },
+    ].filter((tier) => tier.pct !== null) : [];
+
+    const totalRoomsBooked = rooms.reduce((sum, r) => sum + r.room_count, 0) || bookingResult.total_rooms;
+
+    const facilityLines = [
+      ...(hotelDetails?.general_facilities ?? []),
+      ...(hotelDetails?.additional_facilities ?? []),
+    ]
+      .map((f) => getFacilityName(f, 'mn'))
+      .filter(Boolean);
+
+    const parkingPolicy = hotelPolicy?.parking_policy;
+    if (parkingPolicy?.outdoor_parking === 'free') facilityLines.push('Үнэгүй гадна зогсоол');
+    else if (parkingPolicy?.indoor_parking === 'free') facilityLines.push('Үнэгүй дотор зогсоол');
 
     const managementActions = [
-      { icon: Calendar, label: 'Өдөр өөрчлөх', action: 'change-date' },
-      { icon: RefreshCw, label: 'Өрөө солих', action: 'change-room' },
-      { icon: Plus, label: 'Өрөө нэмэх', action: 'add-room' },
-      { icon: X, label: 'Захиалга цуцлах', action: 'cancel', danger: true },
+      { icon: Calendar, label: 'Өдөр өөрчлөх', action: 'change-date', primary: true },
+      { icon: RefreshCw, label: 'Өрөө солих', action: 'change-room', primary: false },
+      { icon: Plus, label: 'Өрөө нэмэх', action: 'add-room', primary: false },
+      { icon: X, label: 'Захиалга цуцлах', action: 'cancel', danger: true, primary: false },
     ];
 
+    const tableHeadClass = 'bg-gray-700 text-white';
+
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 print:bg-white print:py-0">
+      <div className="min-h-screen bg-[#eef0f3] dark:bg-gray-900 py-8 print:bg-white print:py-0">
         <div className="max-w-7xl mx-auto px-4 print:px-0 print:max-w-full">
           {/* Top action row */}
-          <div className="mb-5 flex justify-between items-center print:hidden">
+          <div className="mb-4 flex justify-between items-center print:hidden">
             <div className="flex items-center gap-2">
               <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
                 <Check className="w-3 h-3 text-white" strokeWidth={3} />
@@ -426,63 +475,66 @@ function BookingContent() {
               </p>
             </div>
             <div className="flex items-center gap-1">
-              <Button variant="ghost" size="sm" onClick={handleDownloadPDF}>
+              <Button variant="ghost" size="sm" onClick={handleDownloadPDF} className="text-gray-700">
                 <Download className="w-4 h-4" />
                 {t('bookingExtra.downloadPDF', 'Татах')}
               </Button>
-              <Button variant="ghost" size="sm" onClick={handlePrint}>
+              <Button variant="ghost" size="sm" onClick={handlePrint} className="text-gray-700">
                 <Printer className="w-4 h-4" />
                 {t('bookingExtra.print', 'Хэвлэх')}
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 print:block">
-            {/* LEFT — booking voucher (the printable document) */}
+          {/* Single frame: voucher + sidebar */}
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden print:border-0 print:shadow-none">
+            <div className="grid grid-cols-1 lg:grid-cols-3 print:block">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="lg:col-span-2  bg-white border border-border rounded-lg p-8 print:border-0 print:p-0"
+              className="lg:col-span-2 p-6 sm:p-8 print:p-0"
               id="booking-confirmation"
             >
-              <h2 className="text-base font-semibold text-center mb-5 text-foreground">
+              <h2 className="text-base font-semibold text-center mb-6 text-foreground tracking-tight">
                 {t('bookingExtra.bookingConfirmation', 'Захиалгын хуудас')}
               </h2>
 
-              {/* Hotel header line */}
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <a href={`/hotel/${hotelId}`} className="text-blue-600 hover:underline text-sm font-semibold">
-                  {hotelName}
-                </a>
-                <span className="text-xs text-muted-foreground">MyRoom.mn</span>
-              </div>
-
-              {/* Hotel contact grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 text-sm text-muted-foreground mb-6">
-                {addressLine && (
-                  <div className="flex items-start gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                    <span>Хаяг: {addressLine}</span>
+              {/* Hotel header */}
+              <div className="flex items-start justify-between gap-6 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="min-w-0">
+                  <a href={`/hotel/${hotelId}`} className="text-primary hover:underline text-sm font-semibold block mb-2">
+                    {displayHotelName}
+                  </a>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    {hotelPhone && (
+                      <div className="flex items-center gap-1.5">
+                        <Phone className="w-3.5 h-3.5 shrink-0" />
+                        <span>{hotelPhone}</span>
+                      </div>
+                    )}
+                    {addressLine && (
+                      <div className="flex items-start gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                        <span>{addressLine}</span>
+                      </div>
+                    )}
                   </div>
-                )}
-                {hotelPhone && (
-                  <div className="flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 shrink-0" />
-                    <span>{hotelPhone}</span>
-                  </div>
-                )}
-                {hotelEmail && (
-                  <div className="flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5 shrink-0" />
-                    <span>{hotelEmail}</span>
-                  </div>
-                )}
-                {hotelWebsite && (
-                  <div className="flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5 shrink-0" />
-                    <span>{hotelWebsite}</span>
-                  </div>
-                )}
+                </div>
+                <div className="text-right shrink-0 text-sm">
+                  <div className="font-semibold text-foreground">MyRoom.mn</div>
+                  {hotelEmail && (
+                    <div className="flex items-center justify-end gap-1.5 text-muted-foreground mt-1">
+                      <Mail className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate max-w-[180px]">{hotelEmail}</span>
+                    </div>
+                  )}
+                  {hotelWebsite && (
+                    <div className="flex items-center justify-end gap-1.5 text-muted-foreground mt-1">
+                      <Globe className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate max-w-[180px]">{hotelWebsite}</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Booking details */}
@@ -493,30 +545,41 @@ function BookingContent() {
                 <div className="space-y-2 text-sm">
                   <div className="flex">
                     <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.checkInLabel', 'Орох өдөр')}</span>
-                    <span className="text-foreground">{formatDateLong(checkIn)}, {checkInTime} цагаас</span>
+                    <span className="text-foreground">{formatDateDisplay(displayCheckIn)}, {checkInTime} цагаас</span>
                   </div>
                   <div className="flex">
                     <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.checkOutLabel', 'Гарах өдөр')}</span>
-                    <span className="text-foreground">{formatDateLong(checkOut)}, {checkOutTime} цагаас</span>
+                    <span className="text-foreground">{formatDateDisplay(displayCheckOut)}, {checkOutTime} цагаас</span>
                   </div>
-                  <div className="flex">
-                    <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.guests', 'Зочид')}</span>
-                    <span className="text-foreground">
-                      {totalGuestAdults} том хүн{totalGuestChildren > 0 ? `, ${totalGuestChildren} хүүхэд` : ''}
-                    </span>
+                  {displayNights > 0 && (
+                    <div className="flex">
+                      <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.nightsLabel', 'Хоног')}</span>
+                      <span className="text-foreground">{displayNights}</span>
+                    </div>
+                  )}
+                  <div className="flex items-start">
+                    <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.enteringGuests', 'Орох хүний тоо')}</span>
+                    <GuestCountInline
+                      adults={totalGuestAdults}
+                      children={totalGuestChildren}
+                      className="text-foreground"
+                    />
                   </div>
-                  <div className="flex">
-                    <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.guestName', 'Захиалагч')}</span>
-                    <span className="text-foreground">
-                      {[customerLastName, customerName].filter(Boolean).join(' ')}
-                      {customerPhone ? ` / ${customerPhone}` : ''}
-                      {customerEmail ? `, ${customerEmail}` : ''}
-                    </span>
-                  </div>
+                  {(displayCustomerName || displayCustomerPhone || displayCustomerEmail) && (
+                    <div className="flex">
+                      <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.guestName', 'Захиалагч')}</span>
+                      <span className="text-foreground">
+                        {displayCustomerName}
+                        {displayCustomerPhone ? ` / ${displayCustomerPhone}` : ''}
+                        {displayCustomerEmail ? `, ${displayCustomerEmail}` : ''}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex">
                     <span className="text-muted-foreground w-36 shrink-0">{t('bookingExtra.bookingDateLabel', 'Захиалсан огноо')}</span>
                     <span className="text-foreground">
-                      {new Date().toLocaleDateString('en-CA')} {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
+                      {bookingCreatedAt.toLocaleDateString('en-CA').replace(/-/g, '.')}{' '}
+                      {bookingCreatedAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                 </div>
@@ -526,17 +589,17 @@ function BookingContent() {
               <div className="mb-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-muted/60 text-foreground">
+                    <tr className={tableHeadClass}>
                       <th className="text-left font-semibold px-3 py-2.5">{t('bookingExtra.roomTypeCol', 'Өрөө')}</th>
-                      <th className="text-left font-semibold px-3 py-2.5">Нэмэлт тайлбар</th>
-                      <th className="text-right font-semibold px-3 py-2.5">{t('bookingExtra.priceCol', '1 өрөөний үнэ')}</th>
+                      <th className="text-left font-semibold px-3 py-2.5">{t('bookingExtra.extraDescCol', 'Нэмэлт тайлбар')}</th>
+                      <th className="text-right font-semibold px-3 py-2.5">{t('bookingExtra.priceCol', '1 өдрийн үнэ')}</th>
                       <th className="text-center font-semibold px-3 py-2.5">{t('bookingExtra.quantityCol', 'Тоо ш')}</th>
                       <th className="text-right font-semibold px-3 py-2.5">{t('bookingExtra.totalCol', 'Үнэ')}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {rooms.map((room, index) => (
-                      <tr key={index} className="border-b border-border/50">
+                      <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
                         <td className="px-3 py-2.5 text-foreground">{room.room_name}</td>
                         <td className="px-3 py-2.5 text-muted-foreground">—</td>
                         <td className="px-3 py-2.5 text-right text-foreground">{room.price_per_night.toLocaleString()} ₮</td>
@@ -546,27 +609,31 @@ function BookingContent() {
                     ))}
                   </tbody>
                   <tfoot>
-                    <tr className="bg-foreground text-background">
-                      <td colSpan={4} className="px-3 py-3 font-semibold">{t('bookingExtra.totalAmount', 'Нийт төлсөн дүн')}</td>
-                      <td className="px-3 py-3 text-right font-bold">{totalPrice.toLocaleString()} ₮</td>
+                    <tr className="bg-gray-100 dark:bg-gray-700/50 text-foreground border-t border-gray-200 dark:border-gray-600">
+                      <td colSpan={4} className="px-3 py-3 font-semibold">{t('bookingExtra.totalPaidAmount', 'Нийт төлөх дүн')}</td>
+                      <td className="px-3 py-3 text-right font-bold">{displayTotal.toLocaleString()} ₮</td>
                     </tr>
                   </tfoot>
                 </table>
                 <p className="text-xs text-muted-foreground mt-1.5 text-right">*{t('bookingExtra.taxNote', 'НӨАТ багтсан үнэ')}</p>
               </div>
 
-              {/* Additional info */}
+              {/* Additional info — API facilities only */}
+              {facilityLines.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-foreground mb-2">
                   {t('bookingExtra.additionalInfo', 'Нэмэлт мэдээлэл')}
                 </h3>
                 <div className="text-sm text-muted-foreground space-y-0.5">
-                  <p>Үнэгүй зогсоол</p>
-                  <p>Free WiFi</p>
+                  {facilityLines.map((line, i) => (
+                    <p key={i}>{line}</p>
+                  ))}
                 </div>
               </div>
+              )}
 
-              {/* Cancellation policy */}
+              {/* Cancellation policy — from hotel policy API */}
+              {cfConfirm && (
               <div className="mb-6">
                 <h3 className="text-sm font-semibold text-foreground mb-2">
                   {t('bookingExtra.cancellationPolicy', 'Цуцлах нөхцөл')}
@@ -574,25 +641,79 @@ function BookingContent() {
                 <p className="text-sm text-muted-foreground mb-3">
                   1 өрөө тутамд цуцлалтаас авах хураамж:
                 </p>
-                {cancelTiers.length > 0 ? (
+                {totalRoomsBooked <= 1 ? (
+                  (() => {
+                    let deadlineLabel = cancelTimeShortConfirm ?? '11:00';
+                    if (displayCheckIn) {
+                      const deadline = new Date(displayCheckIn + 'T00:00:00');
+                      deadline.setDate(deadline.getDate() - 1);
+                      if (cfConfirm.cancel_time) {
+                        const [h, m] = cfConfirm.cancel_time.split(':').map(Number);
+                        deadline.setHours(h, m, 0, 0);
+                        deadlineLabel = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                      } else {
+                        deadline.setHours(11, 0, 0, 0);
+                      }
+                    }
+                    return (
+                      <table className="w-full text-sm border-collapse">
+                        <thead>
+                          <tr className={tableHeadClass}>
+                            <th className="text-left font-semibold px-2 py-2"></th>
+                            <th className="text-right font-semibold px-2 py-2">
+                              Өмнөх өдрийн {deadlineLabel}-ээс өмнө
+                            </th>
+                            <th className="text-right font-semibold px-2 py-2">
+                              Өмнөх өдрийн {deadlineLabel}-ээс хойш
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rooms.map((room, i) => {
+                            const feeBase = room.price_per_night * room.room_count;
+                            const beforePct = parseFloat(cfConfirm.single_before_time_percentage);
+                            const afterPct = parseFloat(cfConfirm.single_after_time_percentage);
+                            const beforeFee = Math.round((feeBase * beforePct) / 100);
+                            const afterFee = Math.round((feeBase * afterPct) / 100);
+                            const afterDisplay =
+                              afterPct >= 100 ? 'Цуцлах боломжгүй'
+                              : afterPct === 0 ? 'Үнэгүй'
+                              : `${afterFee.toLocaleString()} ₮`;
+                            return (
+                              <tr key={i} className="border-b border-gray-200 dark:border-gray-700">
+                                <td className="px-2 py-2 text-foreground">{room.room_name}{room.room_count > 1 ? ` (×${room.room_count})` : ''}</td>
+                                <td className="px-2 py-2 text-right text-foreground">
+                                  {beforePct === 0 ? 'Үнэгүй' : `${beforeFee.toLocaleString()} ₮`}
+                                </td>
+                                <td className={`px-2 py-2 text-right ${afterPct >= 100 ? 'text-red-600' : ''}`}>
+                                  {afterDisplay}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    );
+                  })()
+                ) : cancelTiers.length > 0 ? (
                   <table className="w-full text-sm border-collapse">
                     <thead>
-                      <tr className="text-muted-foreground border-b border-border">
-                        <th className="text-left font-normal px-2 py-2"></th>
-                        {cancelTiers.map(t => (
-                          <th key={t.days} className="text-right font-normal px-2 py-2">{t.label}</th>
+                      <tr className={tableHeadClass}>
+                        <th className="text-left font-semibold px-2 py-2"></th>
+                        {cancelTiers.map((tier) => (
+                          <th key={tier.days} className="text-right font-semibold px-2 py-2">{tier.label}</th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {rooms.map((room, i) => (
-                        <tr key={i} className="border-b border-border/50">
+                        <tr key={i} className="border-b border-gray-200 dark:border-gray-700">
                           <td className="px-2 py-2 text-foreground">{room.room_name}{room.room_count > 1 ? ` (×${room.room_count})` : ''}</td>
-                          {cancelTiers.map(tier => {
+                          {cancelTiers.map((tier) => {
                             const fee = Math.round((room.total_price * (tier.pct ?? 0)) / 100);
                             return (
                               <td key={tier.days} className="px-2 py-2 text-right text-foreground">
-                                {tier.pct! >= 100 ? <span className="text-muted-foreground">Цуцлах боломжгүй</span>
+                                {tier.pct! >= 100 ? <span className="text-red-600">Цуцлах боломжгүй</span>
                                   : tier.pct === 0 ? 'Үнэгүй'
                                   : `${fee.toLocaleString()} ₮`}
                               </td>
@@ -608,6 +729,7 @@ function BookingContent() {
                   </p>
                 )}
               </div>
+              )}
 
               {/* Reminders */}
               <div className="mb-6">
@@ -623,49 +745,53 @@ function BookingContent() {
               </p>
             </motion.div>
 
-            {/* RIGHT — sidebar with management cards */}
+            {/* RIGHT — sidebar inside same frame */}
             <motion.aside
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 }}
-              className="space-y-4 print:hidden"
+              className="lg:col-span-1 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-900/40 p-4 sm:p-5 space-y-3 print:hidden"
             >
-              {/* Booking codes card */}
-              <div className="bg-card border border-border rounded-lg p-4 space-y-1.5">
-                <div className="flex items-baseline gap-2 text-sm">
-                  <span className="text-muted-foreground">Захиалгын дугаар:</span>
-                  <span className="font-mono font-semibold text-foreground">{bookingResult.booking_code}</span>
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-2">
+                <div className="text-sm">
+                  <span className="text-muted-foreground block mb-0.5">Захиалгын дугаар</span>
+                  <span className="font-mono font-semibold text-foreground text-base">{bookingResult.booking_code}</span>
                 </div>
-                <div className="flex items-baseline gap-2 text-sm">
-                  <span className="text-muted-foreground">PIN код:</span>
-                  <span className="font-mono font-semibold text-foreground">{bookingResult.pin_code}</span>
+                <div className="text-sm">
+                  <span className="text-muted-foreground block mb-0.5">PIN код</span>
+                  <span className="font-mono font-semibold text-foreground text-base">{bookingResult.pin_code}</span>
                 </div>
               </div>
 
-              {/* Manage booking card */}
-              <div className="bg-card border border-border rounded-lg p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-3">Захиалга шалгах</h3>
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <h3 className="text-sm font-semibold text-foreground mb-3">Захиалга удирдах</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {managementActions.map((a) => {
                     const Icon = a.icon;
                     return (
                       <Button
                         key={a.action}
-                        variant={a.danger ? 'outline' : 'outline'}
+                        variant={a.primary ? 'primary' : 'ghost'}
                         size="sm"
-                        className={`justify-start ${a.danger ? 'text-destructive hover:text-destructive border-destructive/30' : ''}`}
+                        className={`w-full flex items-center justify-start gap-1.5 !rounded-lg !shadow-none ${
+                          a.danger
+                            ? '!text-red-600 hover:!text-red-700 !border-red-200'
+                            : a.primary
+                              ? ''
+                              : '!bg-white dark:!bg-gray-800 !border-gray-200 dark:!border-gray-600'
+                        }`}
                         onClick={() => router.push(`/booking/manage?code=${bookingResult.booking_code}&pin=${bookingResult.pin_code}&action=${a.action}`)}
                       >
-                        <Icon className="w-3.5 h-3.5" />
-                        <span className="truncate">{a.label}</span>
+                        <Icon className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate text-left">{a.label}</span>
                       </Button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Hotel contact card — always shown, shows address + phone/email if available */}
-              <div className="bg-card border border-border rounded-lg p-4">
+              {(addressLine || hotelPhone || hotelEmail) && (
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                 <h3 className="text-sm font-semibold text-foreground mb-3">Буудалтай холбогдох</h3>
                 <div className="space-y-2 text-sm">
                   {addressLine && (
@@ -680,28 +806,25 @@ function BookingContent() {
                       <a href={`tel:${hotelPhone}`} className="text-foreground hover:underline">{hotelPhone}</a>
                     </div>
                   )}
-                  {hotelEmail && (
+                  {hotelEmail && hotelEmail !== hotelPhone && (
                     <div className="flex items-center gap-2">
                       <Mail className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                       <a href={`mailto:${hotelEmail}`} className="text-foreground hover:underline truncate">{hotelEmail}</a>
                     </div>
                   )}
-                  {!hotelPhone && !hotelEmail && (
-                    <p className="text-muted-foreground text-xs italic">Холбоо барих дугаарыг буудлаас лавлана уу.</p>
-                  )}
                 </div>
               </div>
+              )}
 
-              {/* Google Map embed */}
               {googleMapUrl && (() => {
                 const coordMatch = googleMapUrl.match(/q=([-\d.]+),([-\d.]+)/);
                 const embedSrc = coordMatch
                   ? `https://maps.google.com/maps?q=${coordMatch[1]},${coordMatch[2]}&output=embed&zoom=15`
                   : null;
                 return embedSrc ? (
-                  <div className="bg-card border border-border rounded-lg overflow-hidden">
-                    <div className="flex items-center justify-between px-3 py-2.5 border-b border-border">
-                      <h3 className="text-sm font-semibold text-foreground">Газрын зураг</h3>
+                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                    <div className="flex items-center justify-between px-3 py-2.5 border-b border-gray-200 dark:border-gray-700">
+                      <h3 className="text-sm font-semibold text-foreground">Газрын зураг дээр харах</h3>
                       <a
                         href={googleMapUrl}
                         target="_blank"
@@ -714,7 +837,7 @@ function BookingContent() {
                     </div>
                     <iframe
                       src={embedSrc}
-                      className="w-full h-44 border-0"
+                      className="w-full h-40 border-0"
                       loading="lazy"
                       referrerPolicy="no-referrer-when-downgrade"
                       title="Буудлын байршил"
@@ -723,19 +846,17 @@ function BookingContent() {
                 ) : null;
               })()}
 
-              {/* Back to home — compact, not full-width */}
-              <div className="flex justify-start">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => router.push('/')}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  {t('bookingExtra.goHome', 'Нүүр хуудас руу буцах')}
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push('/')}
+                className="!justify-start text-muted-foreground hover:text-foreground !px-0"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {t('bookingExtra.goHome', 'Нүүр хуудас руу буцах')}
+              </Button>
             </motion.aside>
+            </div>
           </div>
         </div>
       </div>
@@ -870,9 +991,13 @@ function BookingContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    
+      
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Stepper — Step 2 active */}
-        <div className="mb-8 flex items-start w-full">
+        <div className="relative mb-8">
+          <BackButton onClick={() => router.back()} stepperAnchor />
+          {/* Stepper — Step 2 active */}
+          <div className="flex items-start w-full">
           <div className="flex flex-col items-center">
             <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
               <Check className="w-4 h-4" />
@@ -893,17 +1018,8 @@ function BookingContent() {
             </div>
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1.5 text-center leading-tight">Төлбөр<br/>баталгаажуулах</span>
           </div>
+          </div>
         </div>
-
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => router.back()}
-          className="mb-4 -ml-2 text-gray-600 dark:text-gray-300"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {t('common.back', 'Буцах')}
-        </Button>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Form Column */}
@@ -1358,10 +1474,13 @@ function BookingContent() {
                 </div>
               </div>
 
-              {/* Guest count — info only */}
-              <div className="flex items-center gap-2 mb-4 text-sm text-gray-700 dark:text-gray-300">
-                <Users className="w-4 h-4 text-gray-400 shrink-0" />
-                <span>{adultsCount} том хүн{Number(childrenCount) > 0 ? `, ${childrenCount} хүүхэд` : ''}</span>
+              {/* Room capacity */}
+              <div className="mb-4 text-sm text-gray-700 dark:text-gray-300">
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Орох боломжтой хүний тоо:</div>
+                <GuestCountInline
+                  adults={rooms.reduce((s, r) => s + (r.max_adults ?? 1) * r.room_count, 0)}
+                  children={rooms.reduce((s, r) => s + (r.max_children ?? 0) * r.room_count, 0)}
+                />
               </div>
 
               {/* Selected rooms */}

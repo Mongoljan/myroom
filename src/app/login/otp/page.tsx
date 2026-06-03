@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { CustomerService } from '@/services/customerApi';
+import BackButton from '@/components/common/BackButton';
 
 export default function OTPLoginPage() {
   const { t } = useHydratedTranslation();
@@ -196,19 +197,16 @@ export default function OTPLoginPage() {
                 {isLoading ? t('AuthOTP.verifying', 'Verifying...') : t('AuthOTP.verify', 'Verify')}
               </button>
 
-              {/* Back Button */}
-              <button
-                type="button"
+              <BackButton
                 onClick={() => {
                   setStep('phone');
                   setOtpCode('');
                   setError('');
                 }}
+                labelKey="AuthOTP.back"
+                labelFallback="Back"
                 disabled={isLoading}
-                className="w-full text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white font-medium"
-              >
-                {t('AuthOTP.back', 'Back')}
-              </button>
+              />
             </form>
           )}
         </div>

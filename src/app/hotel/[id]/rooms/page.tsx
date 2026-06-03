@@ -3,7 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Users, Filter, SortAsc } from 'lucide-react';
+import { Calendar, Users, Filter, SortAsc } from 'lucide-react';
+import BackButton from '@/components/common/BackButton';
 import Link from 'next/link';
 import { Room } from '@/types/api';
 import { ApiService } from '@/services/api';
@@ -300,13 +301,12 @@ function HotelRoomsContent() {
         <div className="container mx-auto px-6">
           {/* Header */}
           <div className="mb-8">
-            <Link
+            <BackButton
               href={`/hotel/${hotelId}`}
-              className="inline-flex items-center gap-2 text-slate-900 hover:text-slate-800 mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {t('hotelRooms.backToHotel', 'Буцах')}
-            </Link>
+              labelKey="hotelRooms.backToHotel"
+              labelFallback="Буцах"
+              className="mb-4"
+            />
             
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div>
