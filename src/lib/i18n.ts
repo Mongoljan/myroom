@@ -252,7 +252,8 @@ const resources = {
         termsPrefix: "By signing in, you agree to our",
         termsLink: "Terms of Service",
         and: "and",
-        privacyLink: "Privacy Policy"
+        privacyLink: "Privacy Policy",
+        termsSuffix: "."
       },
       AuthSignup: {
         createAccount: "Create Account",
@@ -2053,10 +2054,11 @@ const resources = {
         emailOrPhonePlaceholder: "И-мэйл эсвэл утасны дугаар",
         signingIn: "Нэвтэрч байна...",
         register: "Бүртгүүлэх",
-        termsPrefix: "Нэвтрэхдээ та манай",
+        termsPrefix: "Та манай платформ дээр бүртгэлээ үүсгэсэн тохиолдолд таныг манай платформын",
         termsLink: "Үйлчилгээний нөхцөл",
         and: "болон",
         privacyLink: "Нууцлалын бодлого",
+        termsSuffix: "-ыг хүлээн зөвшөөрсөнд тооцно.",
         noAccount: "Бүртгэлгүй юу?"
       },
       AuthSignup: {

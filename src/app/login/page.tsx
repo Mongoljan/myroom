@@ -188,8 +188,7 @@ export default function LoginPage() {
                 className="text-primary-600 dark:text-primary-400 hover:underline"
               >
                 {t('AuthLogin.privacyLink')}
-              </button>
-              .
+              </button>{t('AuthLogin.termsSuffix', '.')}
             </p>
 
             {/* Policy modal — read-only for login page */}

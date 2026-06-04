@@ -29,16 +29,7 @@ export default function AuthHeader() {
             <span className={`${TYPOGRAPHY.heading.h2} dark:text-white`}>MyRoom</span>
           </Link>
 
-          {/* Right controls */}
-          <div className="flex items-center gap-3">
-            {/* Hotel login link */}
-            <Link
-              href="/hotel/login"
-              className={`hidden sm:inline-flex items-center px-4 h-10 bg-primary hover:bg-primary-600 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
-            >
-              {t('navigation.hotelLogin', 'Буудлаар нэвтрэх')}
-            </Link>
-
+        <div className="flex items-center gap-2 sm:gap-3">
             {/* Theme toggle */}
             <button
               onClick={toggleTheme}
@@ -53,10 +44,21 @@ export default function AuthHeader() {
                 <Sun className="w-5 h-5 text-yellow-500" />
               )}
             </button>
-
             {/* Language switcher */}
-            <LanguageSwitcher />
-          </div>
+          <LanguageSwitcher />
+
+          {/* Right controls */}
+          <div className="flex items-center gap-3">
+            {/* Hotel login link */}
+            <Link
+              href="/hotel/login"
+              className={`hidden sm:inline-flex items-center px-4 h-10 bg-primary hover:bg-primary-600 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
+            >
+              {t('navigation.hotelLogin', 'Буудлаар нэвтрэх')}
+            </Link>
+
+              </div>
+            </div>
         </div>
       </div>
     </header>

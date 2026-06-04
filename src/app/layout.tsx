@@ -103,11 +103,6 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('theme');var s=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';var r=t||s;document.documentElement.classList.remove('light','dark');document.documentElement.classList.add(r);}catch(e){}})();`,
           }}
         />
-        <Script
-          id="tawk-to"
-          src="https://embed.tawk.to/68915c52a4fc79192a7ba7d0/1j1rt18nu"
-          strategy="beforeInteractive"
-        />
       </head>
       <body
         className={`${manrope.variable} ${lobster.variable} font-(family-name:--font-manrope) antialiased  dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
@@ -127,6 +122,11 @@ export default function RootLayout({
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
+        <Script
+          id="tawk-to"
+          src="https://embed.tawk.to/68915c52a4fc79192a7ba7d0/1j1rt18nu"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
