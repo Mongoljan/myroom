@@ -48,7 +48,6 @@ export default function AuthHeader() {
                 <Sun className="w-5 h-5 text-yellow-500" />
               )}
             </button>
-
             {/* Language switcher */}
             <LanguageSwitcher />
             <Link
