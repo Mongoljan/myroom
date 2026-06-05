@@ -99,14 +99,10 @@ export default function RootLayout({
       <head>
         {/* Inline script runs before React hydrates to avoid flash of wrong theme */}
         <script
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('theme');var s=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';var r=t||s;document.documentElement.classList.remove('light','dark');document.documentElement.classList.add(r);}catch(e){}})();`,
           }}
-        />
-        <Script
-          id="tawk-to"
-          src="https://embed.tawk.to/68915c52a4fc79192a7ba7d0/1j1rt18nu"
-          strategy="beforeInteractive"
         />
       </head>
       <body
@@ -127,6 +123,11 @@ export default function RootLayout({
             </ToastProvider>
           </AuthProvider>
         </ThemeProvider>
+        <Script
+          id="tawk-to"
+          src="https://embed.tawk.to/68915c52a4fc79192a7ba7d0/1j1rt18nu"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

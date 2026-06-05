@@ -56,6 +56,7 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
           room_category_id: room.room_category,
           room_type_id: room.room_type,
           room_count: roomCount,
+          include_breakfast: false,
         }]
       });
       

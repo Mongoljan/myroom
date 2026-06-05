@@ -28,6 +28,7 @@ interface BookingRoom {
 
 interface BookingPaymentStepProps {
   bookingCode: string;
+  pinCode: string;
   totalPrice: number;
   rooms: BookingRoom[];
   checkIn: string;
@@ -79,6 +80,7 @@ function getGuestRatingDisplay(ratingStars?: { value?: string; label?: string } 
 
 export default function BookingPaymentStep({
   bookingCode,
+  pinCode,
   totalPrice,
   rooms,
   checkIn,
@@ -155,7 +157,7 @@ export default function BookingPaymentStep({
     invoiceInitRef.current = true;
 
     const applyStoredInvoice = () => {
-      const stored = restoreQPayInvoiceFromSession();
+      const stored = restoreQPayInvoiceFromSession(bookingCode);
       if (!stored) return false;
       setInvoiceId(stored.id);
       setQrImage(stored.qrImage);
@@ -177,8 +179,8 @@ export default function BookingPaymentStep({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            amount: Math.max(1, Math.round(totalPrice)),
-            description: t('payment.bookingDescription', { code: bookingCode, hotel: hotelName }),
+            booking_code: bookingCode,
+            pin_code: pinCode,
           }),
         });
         const data = await res.json();
@@ -186,7 +188,7 @@ export default function BookingPaymentStep({
         if (applyStoredInvoice()) return;
 
         const invoiceStatusDate = data.invoice_status_date || new Date().toISOString();
-        saveQPayInvoiceSession({ ...data, invoice_status_date: invoiceStatusDate });
+        saveQPayInvoiceSession({ ...data, invoice_status_date: invoiceStatusDate }, bookingCode);
         setInvoiceId(data.id);
         setQrImage(data.qr_image ?? null);
         setBankUrls(data.urls ?? []);

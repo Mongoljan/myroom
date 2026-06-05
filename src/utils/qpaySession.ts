@@ -5,6 +5,7 @@ export const QPAY_QR_KEY = 'qpay_qr';
 export const QPAY_INVOICE_STATUS_DATE_KEY = 'qpay_invoice_status_date';
 export const QPAY_EXPIRY_KEY = 'qpay_expiry';
 export const QPAY_BANK_URLS_KEY = 'qpay_bank_urls';
+export const QPAY_BOOKING_CODE_KEY = 'qpay_booking_code';
 
 export interface QPayInvoiceResponse {
   id: string;
@@ -50,10 +51,11 @@ export function getStoredQPayInvoiceStatusDate(): string | null {
   return sessionStorage.getItem(QPAY_INVOICE_STATUS_DATE_KEY);
 }
 
-export function saveQPayInvoiceSession(data: QPayInvoiceResponse): void {
+export function saveQPayInvoiceSession(data: QPayInvoiceResponse, bookingCode: string): void {
   if (typeof window === 'undefined') return;
   sessionStorage.setItem(QPAY_INVOICE_ID_KEY, data.id);
   sessionStorage.setItem(QPAY_QR_KEY, data.qr_image ?? '');
+  sessionStorage.setItem(QPAY_BOOKING_CODE_KEY, bookingCode);
 
   if (data.invoice_status_date) {
     sessionStorage.setItem(QPAY_INVOICE_STATUS_DATE_KEY, data.invoice_status_date);
@@ -68,7 +70,7 @@ export function saveQPayInvoiceSession(data: QPayInvoiceResponse): void {
   }
 }
 
-export function restoreQPayInvoiceFromSession(): {
+export function restoreQPayInvoiceFromSession(bookingCode?: string): {
   id: string;
   qrImage: string;
   invoiceStatusDate: string;
@@ -80,8 +82,16 @@ export function restoreQPayInvoiceFromSession(): {
   const id = sessionStorage.getItem(QPAY_INVOICE_ID_KEY);
   const qrImage = sessionStorage.getItem(QPAY_QR_KEY);
   const invoiceStatusDate = sessionStorage.getItem(QPAY_INVOICE_STATUS_DATE_KEY);
+  const storedBookingCode = sessionStorage.getItem(QPAY_BOOKING_CODE_KEY);
 
   if (!id || !qrImage || !invoiceStatusDate) return null;
+
+  if (bookingCode) {
+    if (!storedBookingCode || storedBookingCode !== bookingCode) {
+      clearQPaySession();
+      return null;
+    }
+  }
 
   const remainingSeconds = getQPayRemainingSeconds(invoiceStatusDate);
   if (remainingSeconds <= 0) return null;
@@ -113,6 +123,7 @@ export function clearQPaySession(): void {
   sessionStorage.removeItem(QPAY_INVOICE_STATUS_DATE_KEY);
   sessionStorage.removeItem(QPAY_EXPIRY_KEY);
   sessionStorage.removeItem(QPAY_BANK_URLS_KEY);
+  sessionStorage.removeItem(QPAY_BOOKING_CODE_KEY);
 }
 
 export function syncTimerFromStoredInvoice(): number {

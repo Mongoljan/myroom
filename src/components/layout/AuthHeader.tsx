@@ -32,12 +32,7 @@ export default function AuthHeader() {
           {/* Right controls */}
           <div className="flex items-center gap-3">
             {/* Hotel login link */}
-            <Link
-              href="/hotel/login"
-              className={`hidden sm:inline-flex items-center px-4 h-10 bg-primary hover:bg-primary-600 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
-            >
-              {t('navigation.hotelLogin', 'Буудлаар нэвтрэх')}
-            </Link>
+          
 
             {/* Theme toggle */}
             <button
@@ -56,6 +51,12 @@ export default function AuthHeader() {
 
             {/* Language switcher */}
             <LanguageSwitcher />
+            <Link
+              href="https://hotel-front-five.vercel.app/auth/login"
+              className={`hidden sm:inline-flex items-center px-4 h-10 bg-primary hover:bg-primary-600 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow-md ${TYPOGRAPHY.button.standard} font-medium`}
+            >
+              {t('navigation.hotelLogin', 'Буудлаар нэвтрэх')}
+            </Link>
           </div>
         </div>
       </div>

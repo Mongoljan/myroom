@@ -125,6 +125,7 @@ export interface BookingRoom {
   room_category_id: number;
   room_type_id: number;
   room_count: number;
+  include_breakfast?: boolean;
 }
 
 export interface CreateBookingRequest {

@@ -325,6 +325,7 @@ export default function ImprovedHotelRoomsSection({
       total_price: item.price * item.quantity * nights,
       max_adults: item.room.adultQty ?? 1,
       max_children: item.room.childQty ?? 0,
+      include_breakfast: item.priceType === 'withBreakfast',
     }));
 
     // Calculate total price including nights

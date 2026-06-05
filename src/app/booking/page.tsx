@@ -22,6 +22,7 @@ import {
   clearPaymentSession,
   getBookingPaymentContext,
 } from '@/utils/pendingPaymentSession';
+import { clearQPaySession } from '@/utils/qpaySession';
 
 function StepLabel({ labelKey }: { labelKey: string }) {
   const { t } = useHydratedTranslation();
@@ -48,6 +49,7 @@ interface BookingRoom {
   total_price: number;
   max_adults?: number;
   max_children?: number;
+  include_breakfast?: boolean;
 }
 
 function parseHotelStarCount(ratingStars?: { value?: string } | null): number {
@@ -386,11 +388,13 @@ function BookingContent() {
         rooms: rooms.map(room => ({
           room_category_id: room.room_category_id,
           room_type_id: room.room_type_id,
-          room_count: room.room_count
+          room_count: room.room_count,
+          include_breakfast: room.include_breakfast ?? false,
         }))
       };
 
       const result = await BookingService.createBooking(bookingRequest);
+      clearQPaySession();
       sessionStorage.setItem('booking_step', '3');
       sessionStorage.setItem('booking_result', JSON.stringify(result));
       saveBookingPaymentContext({
@@ -502,6 +506,7 @@ function BookingContent() {
 
           <BookingPaymentStep
             bookingCode={bookingResult.booking_code}
+            pinCode={bookingResult.pin_code}
             totalPrice={totalPrice}
             rooms={rooms}
             checkIn={checkIn}
