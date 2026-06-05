@@ -110,7 +110,7 @@ export default function BookingConfirmationReceipt({
       id="booking-confirmation"
     >
       <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-6 sm:pb-8 print:p-0">
-        <h2 className="text-base font-semibold text-center mb-6 text-[#1a202c] dark:text-white tracking-tight">
+        <h2 className="text-[18px] font-semibold text-center mb-6 text-[#1a202c] dark:text-white tracking-tight">
           {t('bookingExtra.bookingConfirmation', 'Захиалгын хуудас')}
         </h2>
 
@@ -118,7 +118,7 @@ export default function BookingConfirmationReceipt({
           <div className="min-w-0">
             <a
               href={`/hotel/${hotelId}`}
-              className="text-primary hover:underline text-sm font-semibold block mb-2"
+              className="text-primary hover:underline text-[18px] font-semibold block mb-2"
             >
               {displayHotelName}
             </a>
