@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import BookingConfirmationView from '@/components/booking/BookingConfirmationView';
-import type { BookingConfirmationRoom } from '@/components/booking/bookingConfirmationTypes';
+import type { BookingConfirmationHotelDetails, BookingConfirmationRoom } from '@/components/booking/bookingConfirmationTypes';
 import { BookingService } from '@/services/bookingApi';
 import { ApiService } from '@/services/api';
 import { CustomerService } from '@/services/customerApi';
@@ -42,7 +42,7 @@ export default function BookingConfirmationPageContent() {
   const [checkedBooking, setCheckedBooking] = useState<CheckBookingResponse | null>(null);
   const [rooms, setRooms] = useState<BookingConfirmationRoom[]>([]);
   const [hotelId, setHotelId] = useState(hotelIdParam);
-  const [hotelDetails, setHotelDetails] = useState<any | null>(null);
+  const [hotelDetails, setHotelDetails] = useState<BookingConfirmationHotelDetails | null>(null);
   const [hotelPolicy, setHotelPolicy] = useState<PropertyPolicy | null>(null);
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
@@ -87,7 +87,7 @@ export default function BookingConfirmationPageContent() {
       setCheckedBooking(params.checked);
       setRooms(params.resolvedRooms);
       setHotelId(params.resolvedHotelId);
-      setHotelDetails(hotelData);
+      setHotelDetails(hotelData as BookingConfirmationHotelDetails | null);
       setHotelPolicy(policyData[0] || null);
       setCheckIn(params.resolvedCheckIn);
       setCheckOut(params.resolvedCheckOut);
