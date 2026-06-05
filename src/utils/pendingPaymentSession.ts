@@ -13,6 +13,7 @@ export interface BookingPaymentRoom {
   total_price: number;
   max_adults?: number;
   max_children?: number;
+  include_breakfast?: boolean;
 }
 
 export interface BookingPaymentContext {
@@ -40,6 +41,27 @@ const RESULT_KEY = 'booking_result';
 export function saveBookingPaymentContext(context: BookingPaymentContext): void {
   if (typeof window === 'undefined') return;
   sessionStorage.setItem(CONTEXT_KEY, JSON.stringify(context));
+}
+
+export interface BookingUrlParams {
+  hotelId: number;
+  checkIn: string;
+  checkOut: string;
+  totalPrice: number;
+  rooms: BookingPaymentRoom[];
+}
+
+/** True only when the current /booking URL is for the same pending payment in session */
+export function doesUrlMatchPaymentContext(params: BookingUrlParams): boolean {
+  const context = getBookingPaymentContext();
+  if (!context) return false;
+  return (
+    context.hotelId === params.hotelId &&
+    context.checkIn === params.checkIn &&
+    context.checkOut === params.checkOut &&
+    Math.abs(context.totalPrice - params.totalPrice) < 0.01 &&
+    JSON.stringify(context.rooms) === JSON.stringify(params.rooms)
+  );
 }
 
 export function getBookingPaymentContext(): BookingPaymentContext | null {

@@ -30,7 +30,7 @@ export default function BookingConfirmationContactMap({
       {hasContact && (
         <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-sm font-semibold text-[#1a202c] dark:text-white mb-3">{t('bookingExtra.contactHotelTitle')}</h3>
-          <div className="space-y-2 text-sm">
+          <div className="space-y-2.5 text-sm">
             {addressLine && (
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-[#718096] shrink-0 mt-0.5" />
@@ -38,22 +38,32 @@ export default function BookingConfirmationContactMap({
               </div>
             )}
             {hotelPhone && (
-              <div className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-[#718096] shrink-0" />
-                <a href={`tel:${hotelPhone}`} className="text-[#2d3748] dark:text-gray-200 hover:underline font-medium">
-                  {hotelPhone}
-                </a>
+              <div className="flex items-start gap-2">
+                <Phone className="w-3.5 h-3.5 text-[#718096] shrink-0 mt-0.5" />
+                <div>
+                  <span className="text-[#718096] dark:text-gray-400 block text-xs mb-0.5">
+                    {t('bookingExtra.hotelPhoneLabel', 'Утас')}
+                  </span>
+                  <a href={`tel:${hotelPhone.replace(/\s/g, '')}`} className="text-[#2d3748] dark:text-gray-200 hover:underline font-medium">
+                    {hotelPhone}
+                  </a>
+                </div>
               </div>
             )}
-            {hotelEmail && hotelEmail !== hotelPhone && (
-              <div className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-[#718096] shrink-0" />
-                <a
-                  href={`mailto:${hotelEmail}`}
-                  className="text-[#2d3748] dark:text-gray-200 hover:underline truncate font-medium"
-                >
-                  {hotelEmail}
-                </a>
+            {hotelEmail && (
+              <div className="flex items-start gap-2">
+                <Mail className="w-3.5 h-3.5 text-[#718096] shrink-0 mt-0.5" />
+                <div className="min-w-0">
+                  <span className="text-[#718096] dark:text-gray-400 block text-xs mb-0.5">
+                    {t('bookingExtra.hotelEmailLabel', 'И-мэйл')}
+                  </span>
+                  <a
+                    href={`mailto:${hotelEmail}`}
+                    className="text-[#2d3748] dark:text-gray-200 hover:underline truncate font-medium block"
+                  >
+                    {hotelEmail}
+                  </a>
+                </div>
               </div>
             )}
           </div>

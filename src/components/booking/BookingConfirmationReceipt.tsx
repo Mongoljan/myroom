@@ -3,8 +3,11 @@
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Globe } from 'lucide-react';
 import type { PropertyPolicy } from '@/types/api';
-import { getFacilityName } from '@/utils/facilities';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import {
+  getAdditionalInfoTags,
+  getRoomExtraDescription,
+} from '@/utils/bookingConfirmationExtras';
 import GuestCountInline from '@/components/common/GuestCountInline';
 import {
   formatConfirmationDate,
@@ -38,6 +41,7 @@ interface BookingConfirmationReceiptProps {
   totalRoomsBooked: number;
   hotelDetails: BookingConfirmationHotelDetails | null;
   hotelPolicy: PropertyPolicy | null;
+  bookingIncludeBreakfast?: boolean;
 }
 
 export default function BookingConfirmationReceipt({
@@ -63,6 +67,7 @@ export default function BookingConfirmationReceipt({
   totalRoomsBooked,
   hotelDetails,
   hotelPolicy,
+  bookingIncludeBreakfast,
 }: BookingConfirmationReceiptProps) {
   const { t } = useHydratedTranslation();
   const tableHeadClass = 'bg-[#4a5568] text-white';
@@ -95,16 +100,7 @@ export default function BookingConfirmationReceipt({
       ].filter((tier) => tier.pct !== null)
     : [];
 
-  const facilityLines = [
-    ...(hotelDetails?.general_facilities ?? []),
-    ...(hotelDetails?.additional_facilities ?? []),
-  ]
-    .map((f) => getFacilityName(f, 'mn'))
-    .filter(Boolean);
-
-  const parkingPolicy = hotelPolicy?.parking_policy;
-  if (parkingPolicy?.outdoor_parking === 'free') facilityLines.push('Үнэгүй гадна зогсоол');
-  else if (parkingPolicy?.indoor_parking === 'free') facilityLines.push('Үнэгүй дотор зогсоол');
+  const additionalInfoTags = getAdditionalInfoTags(hotelPolicy);
 
   return (
     <motion.div
@@ -242,7 +238,9 @@ export default function BookingConfirmationReceipt({
               {rooms.map((room, index) => (
                 <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
                   <td className="px-3 py-2.5 text-[#2d3748] dark:text-gray-200">{room.room_name}</td>
-                  <td className="px-3 py-2.5 text-[#718096] dark:text-gray-400">—</td>
+                  <td className="px-3 py-2.5 text-[#718096] dark:text-gray-400">
+                    {getRoomExtraDescription(room, bookingIncludeBreakfast)}
+                  </td>
                   <td className="px-3 py-2.5 text-right text-[#2d3748] dark:text-gray-200">
                     {room.price_per_night.toLocaleString()} ₮
                   </td>
@@ -267,14 +265,19 @@ export default function BookingConfirmationReceipt({
           </p>
         </div>
 
-        {facilityLines.length > 0 && (
+        {additionalInfoTags.length > 0 && (
           <div className="mb-6">
             <h3 className="text-sm font-semibold text-[#1a202c] dark:text-white mb-2">
               {t('bookingExtra.additionalInfo', 'Нэмэлт мэдээлэл')}
             </h3>
-            <div className="text-sm text-[#718096] dark:text-gray-400 space-y-0.5">
-              {facilityLines.map((line, i) => (
-                <p key={i}>{line}</p>
+            <div className="flex flex-wrap gap-2">
+              {additionalInfoTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center px-2 py-1 text-xs rounded-full border border-gray-300 dark:border-gray-600 text-sm text-gray-400 dark:text-gray-300 bg-white dark:bg-gray-800"
+                >
+                  {tag}
+                </span>
               ))}
             </div>
           </div>

@@ -125,7 +125,6 @@ export interface BookingRoom {
   room_category_id: number;
   room_type_id: number;
   room_count: number;
-  include_breakfast?: boolean;
 }
 
 export interface CreateBookingRequest {
@@ -140,7 +139,14 @@ export interface CreateBookingRequest {
   org_name?: string;
   taxpayer_register_prefix?: string;
   taxpayer_register_number?: string;
+  /** Top-level flag — true when any selected room includes breakfast */
+  include_breakfast?: boolean;
   rooms: BookingRoom[];
+}
+
+export interface CreateBookingPricingLine {
+  room_number: number;
+  pricing: RoomPricing;
 }
 
 export interface CreateBookingResponse {
@@ -150,6 +156,8 @@ export interface CreateBookingResponse {
   booking_ids: number[];
   nights: number;
   total_rooms: number;
+  include_breakfast?: boolean;
+  pricing?: CreateBookingPricingLine[];
 }
 
 export interface BookingUser {
@@ -567,6 +575,8 @@ export interface PropertyPolicy {
   breakfast_policy: BreakfastPolicy | string | null;
   parking_policy: ParkingPolicy | null;
   child_policy: ChildPolicy | null;
+  pet_policy?: boolean;
+  min_guest_age?: number;
 }
 
 // Suggested Hotels API Types
