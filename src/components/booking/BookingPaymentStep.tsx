@@ -10,10 +10,9 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { formatHotelLocation } from '@/utils/formatHotelLocation';
 import {
   clearQPaySession,
-  getQPayRemainingSeconds,
+  getClientPaymentRemainingSeconds,
   restoreQPayInvoiceFromSession,
   saveQPayInvoiceSession,
-  syncTimerFromStoredInvoice,
 } from '@/utils/qpaySession';
 
 interface BookingRoom {
@@ -199,7 +198,7 @@ export default function BookingPaymentStep({
         setInvoiceId(data.id);
         setQrImage(data.qr_image);
         setBankUrls(data.urls ?? []);
-        const remaining = getQPayRemainingSeconds(invoiceStatusDate);
+        const remaining = getClientPaymentRemainingSeconds();
         setTimeLeft(remaining);
         setTimerExpired(remaining <= 0);
       } catch {
@@ -216,14 +215,16 @@ export default function BookingPaymentStep({
   useEffect(() => {
     if (timerExpired || !invoiceId) return;
 
-    const tick = () => {
-      const remaining = syncTimerFromStoredInvoice();
-      setTimeLeft(remaining);
-      if (remaining <= 0) setTimerExpired(true);
-    };
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          setTimerExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-    tick();
-    const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
   }, [timerExpired, invoiceId]);
 

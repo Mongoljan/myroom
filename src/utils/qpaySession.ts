@@ -6,6 +6,7 @@ export const QPAY_INVOICE_STATUS_DATE_KEY = 'qpay_invoice_status_date';
 export const QPAY_EXPIRY_KEY = 'qpay_expiry';
 export const QPAY_BANK_URLS_KEY = 'qpay_bank_urls';
 export const QPAY_BOOKING_CODE_KEY = 'qpay_booking_code';
+export const QPAY_CLIENT_START_KEY = 'qpay_client_start_ms';
 
 export interface QPayInvoiceResponse {
   id: string;
@@ -14,15 +15,12 @@ export interface QPayInvoiceResponse {
   urls?: Array<{ name: string; description: string; logo: string; link: string }>;
 }
 
-/** Parse QPay invoice_status_date (UTC ISO) to epoch ms */
+/** Parse QPay invoice_status_date to epoch ms (ISO with offset/Z, or local if no timezone) */
 export function parseInvoiceStatusDateMs(invoiceStatusDate?: string | null): number | null {
   if (!invoiceStatusDate?.trim()) return null;
   let normalized = invoiceStatusDate.trim();
   if (!normalized.includes('T')) {
     normalized = normalized.replace(' ', 'T');
-  }
-  if (!/[zZ]|[+-]\d{2}:?\d{2}$/.test(normalized)) {
-    normalized += 'Z';
   }
   const ms = new Date(normalized).getTime();
   return Number.isFinite(ms) ? ms : null;
@@ -40,6 +38,22 @@ export function getQPayRemainingSeconds(invoiceStatusDate?: string | null): numb
   if (!expiryMs) return 0;
   const remaining = Math.floor((expiryMs - Date.now()) / 1000);
   return Math.max(0, Math.min(QPAY_PAYMENT_WINDOW_SECONDS, remaining));
+}
+
+/** Remaining seconds from when the client received the invoice (always max 10:00). */
+export function getClientPaymentRemainingSeconds(): number {
+  if (typeof window === 'undefined') return 0;
+
+  const startStr = sessionStorage.getItem(QPAY_CLIENT_START_KEY);
+  if (startStr) {
+    const startMs = parseInt(startStr, 10);
+    if (Number.isFinite(startMs)) {
+      const elapsed = Math.floor((Date.now() - startMs) / 1000);
+      return Math.max(0, QPAY_PAYMENT_WINDOW_SECONDS - elapsed);
+    }
+  }
+
+  return getQPayRemainingSeconds(getStoredQPayInvoiceStatusDate());
 }
 
 export function isQPaySessionActive(invoiceStatusDate?: string | null): boolean {
@@ -68,6 +82,8 @@ export function saveQPayInvoiceSession(data: QPayInvoiceResponse, bookingCode: s
   if (data.urls?.length) {
     sessionStorage.setItem(QPAY_BANK_URLS_KEY, JSON.stringify(data.urls));
   }
+
+  sessionStorage.setItem(QPAY_CLIENT_START_KEY, String(Date.now()));
 }
 
 export function restoreQPayInvoiceFromSession(bookingCode?: string): {
@@ -94,7 +110,7 @@ export function restoreQPayInvoiceFromSession(bookingCode?: string): {
     return null;
   }
 
-  const remainingSeconds = getQPayRemainingSeconds(invoiceStatusDate);
+  const remainingSeconds = getClientPaymentRemainingSeconds();
   if (remainingSeconds <= 0) return null;
 
   let bankUrls: QPayInvoiceResponse['urls'] = [];
@@ -125,8 +141,9 @@ export function clearQPaySession(): void {
   sessionStorage.removeItem(QPAY_EXPIRY_KEY);
   sessionStorage.removeItem(QPAY_BANK_URLS_KEY);
   sessionStorage.removeItem(QPAY_BOOKING_CODE_KEY);
+  sessionStorage.removeItem(QPAY_CLIENT_START_KEY);
 }
 
 export function syncTimerFromStoredInvoice(): number {
-  return getQPayRemainingSeconds(getStoredQPayInvoiceStatusDate());
+  return getClientPaymentRemainingSeconds();
 }

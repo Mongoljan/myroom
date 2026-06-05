@@ -274,7 +274,7 @@ export default function BookingConfirmationReceipt({
               {additionalInfoTags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center px-3 py-1.5 rounded-full border border-gray-300 dark:border-gray-600 text-sm text-[#4a5568] dark:text-gray-300 bg-white dark:bg-gray-800"
+                  className="inline-flex items-center px-2 py-1 text-xs rounded-full border border-gray-300 dark:border-gray-600 text-sm text-gray-400 dark:text-gray-300 bg-white dark:bg-gray-800"
                 >
                   {tag}
                 </span>

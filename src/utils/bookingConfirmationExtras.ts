@@ -19,7 +19,7 @@ export function getRoomExtraDescription(
   bookingIncludeBreakfast?: boolean
 ): string {
   const withBreakfast = room.include_breakfast ?? bookingIncludeBreakfast;
-  return withBreakfast ? 'Өглөөний цайтай' : '—';
+  return withBreakfast ? 'Өглөөний цайтай' : 'Өглөөний цайгүй';
 }
 
 /** Policy-based free info tags for "Нэмэлт мэдээлэл" (Figma-style chips) */
