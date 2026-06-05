@@ -29,6 +29,7 @@ import {
   syncRoomsFromCreateResponse,
 } from '@/utils/booking';
 import { getCheckInTimeDisplay, getCheckOutTimeDisplay } from '@/utils/policyFormatters';
+import { saveBookingPin } from '@/utils/bookingPinStorage';
 import EbarimtCyrillicLetterSelect from '@/components/booking/EbarimtCyrillicLetterSelect';
 import {
   createBookingGuestFormSchema,
@@ -195,7 +196,13 @@ function BookingContent() {
     setStep(3);
     try {
       const saved = sessionStorage.getItem('booking_result');
-      if (saved) setBookingResult(JSON.parse(saved) as CreateBookingResponse);
+      if (saved) {
+        const parsed = JSON.parse(saved) as CreateBookingResponse;
+        setBookingResult(parsed);
+        if (parsed.booking_code && parsed.pin_code) {
+          saveBookingPin(parsed.booking_code, parsed.pin_code);
+        }
+      }
     } catch { /* ignore */ }
 
     const savedContext = getBookingPaymentContext();
@@ -514,6 +521,7 @@ function BookingContent() {
       clearQPaySession();
       sessionStorage.setItem('booking_step', '3');
       sessionStorage.setItem('booking_result', JSON.stringify(result));
+      saveBookingPin(result.booking_code, result.pin_code);
       if (apiTotal > 0) {
         setTotalPrice(resolvedTotal);
         setRooms(resolvedRooms);

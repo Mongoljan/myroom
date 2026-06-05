@@ -12,6 +12,7 @@ import {
   canResumePaymentForBooking,
   getActivePaymentSession,
 } from '@/utils/pendingPaymentSession';
+import { getBookingPin } from '@/utils/bookingPinStorage';
 
 type StatusFilter = 'all' | 'pending' | 'confirmed' | 'canceled' | 'finished';
 
@@ -128,10 +129,22 @@ export default function BookingsPage() {
 
   const getDetailsHref = (booking: CustomerBooking) => {
     const hotelId = hotelMeta[booking.hotel_name]?.id ?? booking.hotel;
+
     if (booking.status === 'pending' && canResumePaymentForBooking(booking.booking_code)) {
       const session = getActivePaymentSession();
       if (session) return buildBookingPaymentUrl(session.context);
     }
+
+    if (booking.status === 'confirmed' || booking.status === 'finished') {
+      const params = new URLSearchParams({ code: booking.booking_code });
+      if (hotelId) params.set('hotelId', String(hotelId));
+      if (booking.hotel_name) params.set('hotelName', booking.hotel_name);
+      if (booking.room_type) params.set('roomType', booking.room_type);
+      const savedPin = getBookingPin(booking.booking_code);
+      if (savedPin) params.set('pin', savedPin);
+      return `/booking/confirmation?${params.toString()}`;
+    }
+
     return `/hotel/${hotelId}`;
   };
 

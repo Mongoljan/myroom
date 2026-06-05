@@ -1,5 +1,6 @@
 import type { BreakfastPolicy, PropertyPolicy } from '@/types/api';
 import type { BookingConfirmationRoom } from '@/components/booking/bookingConfirmationTypes';
+import { formatPolicyTimeRange } from '@/utils/policyFormatters';
 
 export function formatHotelPhoneDisplay(phone?: string | null): string | undefined {
   if (!phone?.trim()) return undefined;
@@ -70,8 +71,21 @@ export function getAdditionalInfoTags(hotelPolicy: PropertyPolicy | null): strin
   }
 
   const breakfastPolicy = parseBreakfastPolicy(hotelPolicy);
-  if (breakfastPolicy?.breakfast_type) {
-    tags.push(`Өглөөний цай: ${formatBreakfastType(breakfastPolicy.breakfast_type)}`);
+  if (breakfastPolicy) {
+    const status = String(breakfastPolicy.status).toLowerCase();
+    if (status !== 'no' && status !== 'false') {
+      if (breakfastPolicy.breakfast_type) {
+        tags.push(`Өглөөний цай: ${formatBreakfastType(breakfastPolicy.breakfast_type)}`);
+      }
+      const breakfastTime = formatPolicyTimeRange(
+        breakfastPolicy.start_time,
+        breakfastPolicy.end_time,
+        ' – '
+      );
+      if (breakfastTime) {
+        tags.push(`Өглөөний цайны цаг: ${breakfastTime}`);
+      }
+    }
   }
 
   if (hotelPolicy.min_guest_age != null && hotelPolicy.min_guest_age > 0) {
