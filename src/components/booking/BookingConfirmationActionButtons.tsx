@@ -17,7 +17,7 @@ export default function BookingConfirmationActionButtons({
   const { t } = useHydratedTranslation();
 
   const buttonClass =
-    'inline-flex items-center gap-1.5 text-sm font-medium text-[#4a5568] hover:text-[#2d3748] dark:text-gray-400 dark:hover:text-gray-200 transition-colors print:hidden';
+    'inline-flex items-center gap-1.5 text-sm font-medium text-[#4a5568] hover:text-[#2d3748] dark:text-gray-400 dark:hover:text-gray-200 underline underline-offset-2 transition-colors print:hidden';
 
   return (
     <div className={`flex items-center gap-4 ${className}`}>

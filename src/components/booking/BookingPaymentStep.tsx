@@ -105,7 +105,6 @@ export default function BookingPaymentStep({
     { id: 'bankApp', label: t('payment.methods.bankApp') },
     { id: 'transfer', label: t('payment.methods.transfer') },
     { id: 'wallet', label: t('payment.methods.wallet') },
-    { id: 'card', label: t('payment.methods.card') },
   ], [t]);
 
   const weekdays = tAny('payment.weekdays', { returnObjects: true }) as string[];

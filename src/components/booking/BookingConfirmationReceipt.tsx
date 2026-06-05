@@ -271,9 +271,9 @@ export default function BookingConfirmationReceipt({
               {t('bookingExtra.additionalInfo', 'Нэмэлт мэдээлэл')}
             </h3>
             <div className="flex flex-wrap gap-2">
-              {additionalInfoTags.map((tag) => (
+              {additionalInfoTags.map((tag, index) => (
                 <span
-                  key={tag}
+                  key={`${tag}-${index}`}
                   className="inline-flex items-center px-2 py-1 text-xs rounded-full border border-gray-300 dark:border-gray-600 text-sm text-gray-400 dark:text-gray-300 bg-white dark:bg-gray-800"
                 >
                   {tag}

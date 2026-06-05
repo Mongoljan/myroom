@@ -137,25 +137,38 @@ export class ApiService {
   if (cacheOpts?.revalidate !== undefined && isGet) {
     fetchOpts.next = { revalidate: cacheOpts.revalidate };
   }
-  const fetchPromise = fetch(fullUrl, fetchOpts);
-  if (cacheOpts && isGet) ApiCache.setInFlight(cacheOpts.key, fetchPromise as unknown as Promise<T>);
-  const response = await fetchPromise;
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
-      }
+  const requestPromise = (async (): Promise<T> => {
+    const response = await fetch(fullUrl, fetchOpts);
 
-      const data = await response.json();
-      if (cacheOpts && isGet) { ApiCache.set(cacheOpts.key, data); ApiCache.clearInFlight(cacheOpts.key); }
-      
-      // Clean up any invalid image URLs
-      if (data && typeof data === 'object') {
-        this.sanitizeImageUrls(data);
-      }
-      
-      return data;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const data = (await response.json()) as T;
+    if (cacheOpts && isGet) {
+      ApiCache.set(cacheOpts.key, data);
+      ApiCache.clearInFlight(cacheOpts.key);
+    }
+
+    // Clean up any invalid image URLs
+    if (data && typeof data === 'object') {
+      this.sanitizeImageUrls(data as Record<string, unknown>);
+    }
+
+    return data;
+  })();
+
+  if (cacheOpts && isGet) {
+    ApiCache.setInFlight(cacheOpts.key, requestPromise);
+  }
+
+  return await requestPromise;
     } catch (error) {
+      if (cacheOpts && (!options.method || options.method.toUpperCase() === 'GET')) {
+        ApiCache.clearInFlight(cacheOpts.key);
+      }
       throw error;
     }
   }

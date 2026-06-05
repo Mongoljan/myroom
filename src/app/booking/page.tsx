@@ -28,6 +28,12 @@ import {
   getCreateBookingTotal,
   syncRoomsFromCreateResponse,
 } from '@/utils/booking';
+import EbarimtCyrillicLetterSelect from '@/components/booking/EbarimtCyrillicLetterSelect';
+import {
+  createBookingGuestFormSchema,
+  parseBookingGuestFormErrors,
+  type BookingGuestFormField,
+} from '@/utils/bookingGuestFormSchema';
 
 function StepLabel({ labelKey }: { labelKey: string }) {
   const { t } = useHydratedTranslation();
@@ -118,6 +124,7 @@ function BookingContent() {
   const [taxpayerName, setTaxpayerName] = useState('');
   const [ebarimtLoading, setEbarimtLoading] = useState(false);
   const [ebarimtError, setEbarimtError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<Partial<Record<BookingGuestFormField, string>>>({});
 
   // Cancellation policy + ToS state
   const [cancellationAccepted, setCancellationAccepted] = useState(false);
@@ -332,6 +339,7 @@ function BookingContent() {
     if (el.scrollTop + el.clientHeight >= el.scrollHeight - 8) {
       setTosScrolledToEnd(true);
       setTosAccepted(true);
+      clearFieldError('tosAccepted');
     }
   };
 
@@ -394,10 +402,68 @@ function BookingContent() {
     if (name) setOrgName(name);
   };
 
+  const clearFieldError = (field: BookingGuestFormField) => {
+    setFormErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
+  const guestInputClass = (field: BookingGuestFormField) =>
+    `w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:border-primary disabled:opacity-50 ${
+      formErrors[field]
+        ? 'border-red-500 focus:ring-red-500'
+        : 'border-gray-300 dark:border-gray-600 focus:ring-primary'
+    }`;
+
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBookingInProgress(true);
     setBookingError(null);
+
+    const guestSchema = createBookingGuestFormSchema({
+      nameRequired: t('bookingFlow.validation.nameRequired', 'Нэр оруулна уу'),
+      emailRequired: t('bookingFlow.validation.emailRequired', 'И-мэйл хаяг оруулна уу'),
+      emailInvalid: t('bookingFlow.validation.emailInvalid', 'И-мэйл хаяг буруу байна'),
+      phoneRequired: t('bookingFlow.validation.phoneRequired', 'Утасны дугаар оруулна уу'),
+      phoneInvalid: t('bookingFlow.validation.phoneInvalid', 'Утасны дугаар буруу байна'),
+      cancellationRequired: t(
+        'bookingFlow.validation.cancellationRequired',
+        'Захиалга цуцлах нөхцлийг зөвшөөрнө үү'
+      ),
+      tosRequired: t('bookingFlow.validation.tosRequired', 'Үйлчилгээний нөхцөлийг зөвшөөрнө үү'),
+    });
+
+    const guestResult = guestSchema.safeParse({
+      customerName,
+      customerEmail,
+      customerPhone,
+      cancellationAccepted,
+      tosAccepted,
+    });
+
+    if (!guestResult.success) {
+      const errors = parseBookingGuestFormErrors(guestResult.error);
+      setFormErrors(errors);
+      const scrollTarget =
+        errors.customerName || errors.customerEmail || errors.customerPhone
+          ? 'booking-guest-section'
+          : errors.cancellationAccepted
+            ? 'booking-cancellation-section'
+            : 'booking-tos-section';
+      document.getElementById(scrollTarget)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    setFormErrors({});
+
+    if (!ebarimtValid) {
+      document.getElementById('booking-guest-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    setBookingInProgress(true);
 
     try {
       // Map frontend ebarimtType to API value
@@ -405,8 +471,6 @@ function BookingContent() {
         ebarimtType === 'organization' ? 'organization'
         : ebarimtType === 'taxpayer' ? 'taxpayer'
         : 'person';
-
-      const includeBreakfast = rooms.some((room) => room.include_breakfast === true);
 
       const bookingRequest: CreateBookingRequest = {
         hotel_id: hotelId,
@@ -416,7 +480,6 @@ function BookingContent() {
         customer_phone: customerPhone,
         customer_email: customerEmail,
         ebarimt_type: apiEbarimtType,
-        include_breakfast: includeBreakfast,
         ...(ebarimtType === 'organization' && {
           org_register: orgRegister,
           org_name: orgName,
@@ -429,6 +492,7 @@ function BookingContent() {
           room_category_id: room.room_category_id,
           room_type_id: room.room_type_id,
           room_count: room.room_count,
+          include_breakfast: room.include_breakfast ?? false,
         })),
       };
 
@@ -630,19 +694,11 @@ function BookingContent() {
   const ebarimtValid =
     !wantEbarimt ||
     ebarimtType === 'individual' ||
-    (ebarimtType === 'organization' && !!orgRegister.trim() && !!orgName) ||
+    (ebarimtType === 'organization' && orgRegister.length === 8 && !!orgName) ||
     (ebarimtType === 'taxpayer' &&
       taxpayerRegisterPrefix1.length === 1 &&
       taxpayerRegisterPrefix2.length === 1 &&
       taxpayerRegisterNumber.length === 8);
-
-  const canSubmit =
-    !!customerName &&
-    !!customerPhone &&
-    !!customerEmail &&
-    ebarimtValid &&
-    tosAccepted &&
-    !bookingInProgress;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -680,6 +736,7 @@ function BookingContent() {
           {/* Main Form Column */}
           <div className="lg:col-span-2 space-y-6">
             <motion.div
+              id="booking-guest-section"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
@@ -708,37 +765,52 @@ function BookingContent() {
                     <input
                       type="text"
                       value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      required
+                      onChange={(e) => {
+                        setCustomerName(e.target.value);
+                        clearFieldError('customerName');
+                      }}
                       disabled={bookingInProgress}
-                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
+                      className={guestInputClass('customerName')}
                       placeholder={t('bookingFlow.placeholderFirstName')}
                     />
                     <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
+                    {formErrors.customerName && (
+                      <p className="text-xs text-red-500 mt-1">{formErrors.customerName}</p>
+                    )}
                   </div>
                   <div className="relative">
                     <input
                       type="email"
                       value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      required
+                      onChange={(e) => {
+                        setCustomerEmail(e.target.value);
+                        clearFieldError('customerEmail');
+                      }}
                       disabled={bookingInProgress}
-                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
+                      className={guestInputClass('customerEmail')}
                       placeholder={t('bookingFlow.placeholderEmail')}
                     />
                     <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
+                    {formErrors.customerEmail && (
+                      <p className="text-xs text-red-500 mt-1">{formErrors.customerEmail}</p>
+                    )}
                   </div>
                   <div className="relative">
                     <input
                       type="tel"
                       value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
-                      required
+                      onChange={(e) => {
+                        setCustomerPhone(e.target.value);
+                        clearFieldError('customerPhone');
+                      }}
                       disabled={bookingInProgress}
-                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
+                      className={guestInputClass('customerPhone')}
                       placeholder={t('bookingFlow.placeholderPhone')}
                     />
                     <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
+                    {formErrors.customerPhone && (
+                      <p className="text-xs text-red-500 mt-1">{formErrors.customerPhone}</p>
+                    )}
                   </div>
                 </div>
 
@@ -768,7 +840,7 @@ function BookingContent() {
                             : 'text-gray-500 dark:text-gray-400'
                         }`}
                       >
-                        Үгүй
+                        {t('bookingFlow.ebarimtToggleDecline')}
                       </button>
                       <button
                         type="button"
@@ -784,7 +856,7 @@ function BookingContent() {
                             : 'text-gray-500 dark:text-gray-400'
                         }`}
                       >
-                        Тийм
+                        {t('bookingFlow.ebarimtToggleAccept')}
                       </button>
                     </div>
                   </div>
@@ -850,14 +922,20 @@ function BookingContent() {
                             <div className="flex gap-2">
                               <input
                                 value={orgRegister}
-                                onChange={(e) => { setOrgRegister(e.target.value); setOrgName(''); setEbarimtError(null); }}
-                                placeholder="0000000"
+                                onChange={(e) => {
+                                  setOrgRegister(e.target.value.replace(/\D/g, '').slice(0, 8));
+                                  setOrgName('');
+                                  setEbarimtError(null);
+                                }}
+                                placeholder="00000000"
+                                maxLength={8}
+                                inputMode="numeric"
                                 className="flex-1 p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary"
                               />
                               <button
                                 type="button"
                                 onClick={handleOrgSearch}
-                                disabled={ebarimtLoading || !orgRegister.trim()}
+                                disabled={ebarimtLoading || orgRegister.length !== 8}
                                 className="px-3 py-2 text-xs font-medium bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50 whitespace-nowrap"
                               >
                                 {ebarimtLoading ? '...' : t('bookingFlow.ebarimtSearch')}
@@ -907,19 +985,15 @@ function BookingContent() {
                           <div>
                             <label className="block text-xs text-gray-600 mb-1">{t('bookingFlow.registerNumberLabel')}</label>
                             <div className="flex gap-2">
-                              <input
+                              <EbarimtCyrillicLetterSelect
                                 value={taxpayerRegisterPrefix1}
-                                onChange={(e) => setTaxpayerRegisterPrefix1(e.target.value.slice(0, 1).toUpperCase())}
-                                maxLength={1}
+                                onChange={setTaxpayerRegisterPrefix1}
                                 placeholder={t('bookingFlow.ebarimtTaxPrefix1')}
-                                className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
                               />
-                              <input
+                              <EbarimtCyrillicLetterSelect
                                 value={taxpayerRegisterPrefix2}
-                                onChange={(e) => setTaxpayerRegisterPrefix2(e.target.value.slice(0, 1).toUpperCase())}
-                                maxLength={1}
+                                onChange={setTaxpayerRegisterPrefix2}
                                 placeholder={t('bookingFlow.ebarimtTaxPrefix2')}
-                                className="w-10 p-2.5 border border-gray-300 rounded-md text-sm text-center uppercase focus:ring-2 focus:ring-primary focus:border-primary"
                               />
                               <input
                                 value={taxpayerRegisterNumber}
@@ -952,21 +1026,28 @@ function BookingContent() {
 
             {/* Cancellation policy */}
             <motion.div
+              id="booking-cancellation-section"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
             >
-              <label className="flex items-start gap-3 cursor-pointer mb-3">
+              <label className="flex items-start gap-3 cursor-pointer mb-1">
                 <input
                   type="checkbox"
                   checked={cancellationAccepted}
-                  onChange={(e) => setCancellationAccepted(e.target.checked)}
+                  onChange={(e) => {
+                    setCancellationAccepted(e.target.checked);
+                    if (e.target.checked) clearFieldError('cancellationAccepted');
+                  }}
                   className="mt-1 w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
                 />
                 <span className="text-sm font-semibold text-gray-900 dark:text-white">
                   {t('bookingFlow.cancelPolicyAccept')}
                 </span>
               </label>
+              {formErrors.cancellationAccepted && (
+                <p className="text-xs text-red-500 mb-3 ml-7">{formErrors.cancellationAccepted}</p>
+              )}
 
               <p className="text-xs text-gray-600 dark:text-gray-400 ml-7 mb-4">
                 {t('bookingFlow.cancelPolicyIntro')}
@@ -1217,7 +1298,8 @@ function BookingContent() {
               </div>
 
               {/* Terms acceptance */}
-              <label className="flex items-start gap-2 mb-3 cursor-pointer">
+              <div id="booking-tos-section">
+              <label className="flex items-start gap-2 mb-1 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={tosAccepted}
@@ -1242,11 +1324,15 @@ function BookingContent() {
                   {t('bookingFlow.acceptTerms')}
                 </span>
               </label>
+              {formErrors.tosAccepted && (
+                <p className="text-xs text-red-500 mb-3">{formErrors.tosAccepted}</p>
+              )}
+              </div>
 
               <Button
                 type="submit"
                 form="booking-form"
-                disabled={!canSubmit}
+                disabled={bookingInProgress}
                 className="w-full"
               >
                 {bookingInProgress ? (
@@ -1512,7 +1598,7 @@ function BookingContent() {
               <li>Банкны апп / QR код (TDB, Khan Bank, Golomt Bank, MBank гэх мэт)</li>
               <li>Дансаар шилжүүлэх</li>
               <li>Цахим хэтэвчний үйлчилгээ</li>
-              <li>Картаар төлөх</li>
+
             </ul>
             <p>
               Төлбөр хийхдээ гүйлгээний утгыг үнэн зөв бичнэ үү. Буруу гүйлгээний утгаас
@@ -1695,6 +1781,7 @@ function BookingContent() {
                 disabled={!tosScrolledToEnd}
                 onClick={() => {
                   setTosAccepted(true);
+                  clearFieldError('tosAccepted');
                   setTosModalOpen(false);
                 }}
                 className="px-4 py-2 text-sm bg-primary text-white rounded-md hover:bg-primary/90 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
