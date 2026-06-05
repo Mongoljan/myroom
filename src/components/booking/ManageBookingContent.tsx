@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   Calendar, 
@@ -18,6 +18,7 @@ import {
 import { CheckBookingResponse, BookingDetails } from '@/types/api';
 import { ApiService, formatCurrency, formatDate } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { saveBookingPin } from '@/utils/bookingPinStorage';
 
 interface DateChangeModalProps {
   booking: BookingDetails;
@@ -133,6 +134,7 @@ function DateChangeModal({ booking, bookingCode, pinCode, onClose, onUpdate }: D
 
 export default function ManageBookingContent() {
   const { t } = useHydratedTranslation();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [bookingCode, setBookingCode] = useState(searchParams.get('code') || '');
   const [pinCode, setPinCode] = useState(searchParams.get('pin') || '');
@@ -142,23 +144,28 @@ export default function ManageBookingContent() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [showDateModal, setShowDateModal] = useState<BookingDetails | null>(null);
   const [autoSearched, setAutoSearched] = useState(false);
+  const redirectStartedRef = useRef(false);
 
   const fetchBooking = useCallback(async () => {
-    if (!bookingCode || !pinCode) return;
+    if (!bookingCode || !pinCode || redirectStartedRef.current) return;
 
     setLoading(true);
     setError('');
 
     try {
-      const data = await ApiService.checkBooking(bookingCode, pinCode);
-      setBookingData(data);
+      await ApiService.checkBooking(bookingCode, pinCode);
+      redirectStartedRef.current = true;
+      saveBookingPin(bookingCode, pinCode);
+      router.push(
+        `/booking/confirmation?code=${encodeURIComponent(bookingCode)}&pin=${encodeURIComponent(pinCode)}`
+      );
     } catch (error) {
       setError(error instanceof Error ? error.message : t('booking.manage.errorFetch', 'Захиалга олдсонгүй'));
       setBookingData(null);
     } finally {
       setLoading(false);
     }
-  }, [bookingCode, pinCode, t]);
+  }, [bookingCode, pinCode, router, t]);
 
   const handleAction = async (action: 'confirm' | 'cancel') => {
     if (!confirm(action === 'confirm' 
@@ -231,12 +238,12 @@ export default function ManageBookingContent() {
     }
   }, [searchParams, autoSearched, loading]);
 
-  // Fetch booking when codes are set from URL
+  // Fetch booking when codes are set from URL, then redirect to confirmation page
   useEffect(() => {
-    if (autoSearched && bookingCode && pinCode && !bookingData && !error && !loading) {
+    if (autoSearched && bookingCode && pinCode && !error && !loading && !redirectStartedRef.current) {
       fetchBooking();
     }
-  }, [autoSearched, bookingCode, pinCode, bookingData, error, loading, fetchBooking]);
+  }, [autoSearched, bookingCode, pinCode, error, loading, fetchBooking]);
 
   return (
     <div className="pt-24 pb-12 bg-gray-50">

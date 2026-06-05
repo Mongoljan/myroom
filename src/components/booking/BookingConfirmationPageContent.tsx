@@ -6,62 +6,24 @@ import BookingConfirmationView from '@/components/booking/BookingConfirmationVie
 import type { BookingConfirmationRoom } from '@/components/booking/bookingConfirmationTypes';
 import { BookingService } from '@/services/bookingApi';
 import { ApiService } from '@/services/api';
+import { CustomerService } from '@/services/customerApi';
+import { useAuth } from '@/contexts/AuthContext';
 import { calculateNights } from '@/utils/booking';
+import {
+  buildBookingResultFromCheck,
+  buildBookingResultFromCustomer,
+  buildCheckedBookingFromCustomer,
+  buildRoomsFromCheck,
+  buildRoomsFromCustomer,
+  splitCustomerName,
+} from '@/utils/bookingConfirmationLoader';
 import { getBookingPin, saveBookingPin } from '@/utils/bookingPinStorage';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import type { CheckBookingResponse, CreateBookingResponse, PropertyPolicy } from '@/types/api';
 
-function buildBookingResult(
-  bookingCode: string,
-  pinCode: string,
-  checked: CheckBookingResponse
-): CreateBookingResponse {
-  const first = checked.bookings[0];
-  const nights = first
-    ? calculateNights(new Date(first.check_in), new Date(first.check_out))
-    : 1;
-
-  return {
-    message: '',
-    booking_code: bookingCode,
-    pin_code: pinCode,
-    booking_ids: checked.bookings.map((b) => b.id),
-    nights,
-    total_rooms: checked.bookings.length,
-  };
-}
-
-function buildRoomsFromCheck(
-  checked: CheckBookingResponse,
-  fallbackRoomName?: string
-): BookingConfirmationRoom[] {
-  const multi = checked.bookings.length > 1;
-
-  return checked.bookings.map((booking, index) => ({
-    room_category_id: 0,
-    room_type_id: booking.room,
-    room_count: 1,
-    room_name:
-      !multi && fallbackRoomName
-        ? fallbackRoomName
-        : fallbackRoomName
-          ? `${fallbackRoomName}${multi ? ` ${index + 1}` : ''}`
-          : `Өрөө ${booking.room}`,
-    price_per_night: booking.room_price,
-    total_price: booking.total_price,
-  }));
-}
-
-function splitCustomerName(fullName: string): { firstName: string; lastName: string } {
-  const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  if (parts.length <= 1) {
-    return { firstName: parts[0] || '', lastName: '' };
-  }
-  return { lastName: parts[0], firstName: parts.slice(1).join(' ') };
-}
-
 export default function BookingConfirmationPageContent() {
   const { t } = useHydratedTranslation();
+  const { token, user, isLoading: authLoading } = useAuth();
   const searchParams = useSearchParams();
 
   const bookingCode = searchParams.get('code') || '';
@@ -91,7 +53,57 @@ export default function BookingConfirmationPageContent() {
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
 
-  const loadConfirmation = useCallback(
+  const applyConfirmationState = useCallback(
+    async (params: {
+      bookingResult: CreateBookingResponse;
+      checked: CheckBookingResponse;
+      resolvedHotelId: number;
+      resolvedCheckIn: string;
+      resolvedCheckOut: string;
+      resolvedRooms: BookingConfirmationRoom[];
+      customerFirstName: string;
+      customerLastName: string;
+      customerPhone: string;
+      customerEmail: string;
+      pinCode?: string;
+    }) => {
+      const [hotelData, policyData] = await Promise.all([
+        ApiService.getHotelDetails(params.resolvedHotelId, params.resolvedCheckIn, params.resolvedCheckOut).catch(
+          () => null
+        ),
+        ApiService.getPropertyPolicies(params.resolvedHotelId).catch(() => [] as PropertyPolicy[]),
+      ]);
+
+      const resolvedNights = calculateNights(
+        new Date(params.resolvedCheckIn),
+        new Date(params.resolvedCheckOut)
+      );
+
+      if (params.pinCode) {
+        saveBookingPin(params.bookingResult.booking_code, params.pinCode);
+      }
+
+      setBookingResult(params.bookingResult);
+      setCheckedBooking(params.checked);
+      setRooms(params.resolvedRooms);
+      setHotelId(params.resolvedHotelId);
+      setHotelDetails(hotelData);
+      setHotelPolicy(policyData[0] || null);
+      setCheckIn(params.resolvedCheckIn);
+      setCheckOut(params.resolvedCheckOut);
+      setNights(resolvedNights);
+      setTotalPrice(params.checked.total_sum);
+      setCustomerName(params.customerFirstName);
+      setCustomerLastName(params.customerLastName);
+      setCustomerPhone(params.customerPhone);
+      setCustomerEmail(params.customerEmail);
+      setNeedsPin(false);
+      setReady(true);
+    },
+    []
+  );
+
+  const loadFromPin = useCallback(
     async (code: string, pin: string) => {
       if (!code || !pin) return;
 
@@ -105,66 +117,106 @@ export default function BookingConfirmationPageContent() {
           throw new Error(t('booking.manage.errorFetch', 'Захиалга олдсонгүй'));
         }
 
-        const resolvedHotelId = hotelIdParam > 0 ? hotelIdParam : first.hotel;
-        const resolvedCheckIn = first.check_in;
-        const resolvedCheckOut = first.check_out;
-        const resolvedNights = calculateNights(
-          new Date(resolvedCheckIn),
-          new Date(resolvedCheckOut)
-        );
         const { firstName, lastName } = splitCustomerName(first.customer_name);
 
-        const [hotelData, policyData] = await Promise.all([
-          ApiService.getHotelDetails(resolvedHotelId, resolvedCheckIn, resolvedCheckOut).catch(() => null),
-          ApiService.getPropertyPolicies(resolvedHotelId).catch(() => [] as PropertyPolicy[]),
-        ]);
-
-        saveBookingPin(code, pin);
-
-        setBookingResult(buildBookingResult(code, pin, checked));
-        setCheckedBooking(checked);
-        setRooms(buildRoomsFromCheck(checked, roomType || undefined));
-        setHotelId(resolvedHotelId);
-        setHotelDetails(hotelData);
-        setHotelPolicy(policyData[0] || null);
-        setCheckIn(resolvedCheckIn);
-        setCheckOut(resolvedCheckOut);
-        setNights(resolvedNights);
-        setTotalPrice(checked.total_sum);
-        setCustomerName(firstName);
-        setCustomerLastName(lastName);
-        setCustomerPhone(first.customer_phone);
-        setCustomerEmail(first.customer_email);
-        setNeedsPin(false);
-        setReady(true);
+        await applyConfirmationState({
+          bookingResult: buildBookingResultFromCheck(code, pin, checked),
+          checked,
+          resolvedHotelId: hotelIdParam > 0 ? hotelIdParam : first.hotel,
+          resolvedCheckIn: first.check_in,
+          resolvedCheckOut: first.check_out,
+          resolvedRooms: buildRoomsFromCheck(checked, roomType || undefined),
+          customerFirstName: firstName,
+          customerLastName: lastName,
+          customerPhone: first.customer_phone,
+          customerEmail: first.customer_email,
+          pinCode: pin,
+        });
       } catch (err) {
         setReady(false);
         setError(err instanceof Error ? err.message : t('booking.manage.errorFetch', 'Захиалга олдсонгүй'));
-        setNeedsPin(true);
+        if (!token) setNeedsPin(true);
       } finally {
         setLoading(false);
       }
     },
-    [hotelIdParam, roomType, t]
+    [applyConfirmationState, hotelIdParam, roomType, t, token]
   );
 
-  useEffect(() => {
-    if (!bookingCode) return;
+  const loadFromAuthenticatedBooking = useCallback(async () => {
+    if (!token || !bookingCode) return false;
 
-    const storedPin = getBookingPin(bookingCode);
-    const resolvedPin = urlPin || storedPin || '';
-    if (resolvedPin) {
-      loadConfirmation(bookingCode, resolvedPin);
-      return;
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await CustomerService.getBookings(token);
+      const booking = res.bookings.find((item) => item.booking_code === bookingCode);
+      if (!booking) {
+        return false;
+      }
+
+      const checked = buildCheckedBookingFromCustomer(booking, user);
+      const resolvedHotelId = hotelIdParam > 0 ? hotelIdParam : booking.hotel;
+
+      await applyConfirmationState({
+        bookingResult: buildBookingResultFromCustomer(booking),
+        checked,
+        resolvedHotelId,
+        resolvedCheckIn: booking.check_in,
+        resolvedCheckOut: booking.check_out,
+        resolvedRooms: buildRoomsFromCustomer(booking),
+        customerFirstName: user?.first_name || '',
+        customerLastName: user?.last_name || '',
+        customerPhone: user?.phone || '',
+        customerEmail: user?.email || '',
+      });
+
+      return true;
+    } catch {
+      return false;
+    } finally {
+      setLoading(false);
     }
+  }, [applyConfirmationState, bookingCode, hotelIdParam, token, user]);
 
-    setNeedsPin(true);
-  }, [bookingCode, urlPin, loadConfirmation]);
+  useEffect(() => {
+    if (!bookingCode || authLoading) return;
+
+    let cancelled = false;
+
+    const init = async () => {
+      if (token) {
+        const loaded = await loadFromAuthenticatedBooking();
+        if (cancelled) return;
+        if (loaded) return;
+      }
+
+      const storedPin = getBookingPin(bookingCode);
+      const resolvedPin = urlPin || storedPin || '';
+      if (resolvedPin) {
+        await loadFromPin(bookingCode, resolvedPin);
+        return;
+      }
+
+      if (!token) {
+        setNeedsPin(true);
+      } else {
+        setError(t('booking.manage.errorFetch', 'Захиалга олдсонгүй'));
+      }
+    };
+
+    init();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, bookingCode, loadFromAuthenticatedBooking, loadFromPin, token, urlPin, t]);
 
   const handlePinSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (pinInput.length < 4) return;
-    loadConfirmation(bookingCode, pinInput.trim());
+    loadFromPin(bookingCode, pinInput.trim());
   };
 
   if (!bookingCode) {
@@ -177,15 +229,26 @@ export default function BookingConfirmationPageContent() {
     );
   }
 
-  if (needsPin && !ready) {
+  if ((authLoading || loading) && !ready) {
+    return (
+      <div className="min-h-screen bg-[#eef0f3] dark:bg-gray-900 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (needsPin && !ready && !token) {
     return (
       <div className="min-h-screen bg-[#eef0f3] dark:bg-gray-900 py-12 px-4">
         <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <h1 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            {t('bookingExtra.bookingConfirmation', 'Захиалгын хуудас')}
+            {t('booking.manage.title', 'Захиалга шалгах')}
           </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+            {t('bookingExtra.bookingConfirmation', 'Захиалгын хуудас')}
+          </p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-            {t('profileBookings.cancelPinHint', { code: bookingCode })}
+            {t('booking.manage.code', 'Код')}: {bookingCode}
           </p>
           {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
           <form onSubmit={handlePinSubmit} className="space-y-4">
@@ -210,10 +273,12 @@ export default function BookingConfirmationPageContent() {
     );
   }
 
-  if (loading || !ready || !bookingResult) {
+  if (!ready || !bookingResult) {
     return (
-      <div className="min-h-screen bg-[#eef0f3] dark:bg-gray-900 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#eef0f3] dark:bg-gray-900 flex items-center justify-center px-4">
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          {error || t('booking.manage.errorFetch', 'Захиалга олдсонгүй')}
+        </p>
       </div>
     );
   }

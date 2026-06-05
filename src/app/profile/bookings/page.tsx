@@ -12,7 +12,6 @@ import {
   canResumePaymentForBooking,
   getActivePaymentSession,
 } from '@/utils/pendingPaymentSession';
-import { getBookingPin } from '@/utils/bookingPinStorage';
 
 type StatusFilter = 'all' | 'pending' | 'confirmed' | 'canceled' | 'finished';
 
@@ -140,8 +139,6 @@ export default function BookingsPage() {
       if (hotelId) params.set('hotelId', String(hotelId));
       if (booking.hotel_name) params.set('hotelName', booking.hotel_name);
       if (booking.room_type) params.set('roomType', booking.room_type);
-      const savedPin = getBookingPin(booking.booking_code);
-      if (savedPin) params.set('pin', savedPin);
       return `/booking/confirmation?${params.toString()}`;
     }
 

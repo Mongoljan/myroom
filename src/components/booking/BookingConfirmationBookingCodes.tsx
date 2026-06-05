@@ -19,10 +19,12 @@ export default function BookingConfirmationBookingCodes({
         <span className="text-[#718096] dark:text-gray-400">{t('bookingExtra.bookingNumber')}: </span>
         <span className="font-semibold text-[#1a202c] dark:text-white">{bookingCode}</span>
       </div>
-      <div className="text-sm">
-        <span className="text-[#718096] dark:text-gray-400">{t('bookingExtra.pinCodeLabel')}: </span>
-        <span className="font-semibold text-[#1a202c] dark:text-white">{pinCode}</span>
-      </div>
+      {pinCode ? (
+        <div className="text-sm">
+          <span className="text-[#718096] dark:text-gray-400">{t('bookingExtra.pinCodeLabel')}: </span>
+          <span className="font-semibold text-[#1a202c] dark:text-white">{pinCode}</span>
+        </div>
+      ) : null}
     </div>
   );
 }
