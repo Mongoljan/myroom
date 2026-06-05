@@ -20,9 +20,14 @@ import { formatHotelLocation } from '@/utils/formatHotelLocation';
 import {
   saveBookingPaymentContext,
   clearPaymentSession,
+  doesUrlMatchPaymentContext,
   getBookingPaymentContext,
 } from '@/utils/pendingPaymentSession';
 import { clearQPaySession } from '@/utils/qpaySession';
+import {
+  getCreateBookingTotal,
+  syncRoomsFromCreateResponse,
+} from '@/utils/booking';
 
 function StepLabel({ labelKey }: { labelKey: string }) {
   const { t } = useHydratedTranslation();
@@ -152,22 +157,45 @@ function BookingContent() {
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [checkedBooking, setCheckedBooking] = useState<CheckBookingResponse | null>(null);
 
-  // Restore step + bookingResult from sessionStorage after mount (avoids hydration mismatch)
+  // Restore step 3 only when URL matches the pending payment in session (avoids stale booking_code)
   useEffect(() => {
-    if (sessionStorage.getItem('booking_step') === '3') {
-      setStep(3);
-      try {
-        const saved = sessionStorage.getItem('booking_result');
-        if (saved) setBookingResult(JSON.parse(saved) as CreateBookingResponse);
-      } catch { /* ignore */ }
-
-      const savedContext = getBookingPaymentContext();
-      if (savedContext) {
-        if (!customerName && savedContext.customerName) setCustomerName(savedContext.customerName);
-        if (!customerLastName && savedContext.customerLastName) setCustomerLastName(savedContext.customerLastName);
-        if (!customerPhone && savedContext.customerPhone) setCustomerPhone(savedContext.customerPhone);
-        if (!customerEmail && savedContext.customerEmail) setCustomerEmail(savedContext.customerEmail);
+    let urlRooms: BookingRoom[] = [];
+    try {
+      if (roomsData) {
+        urlRooms = JSON.parse(decodeURIComponent(roomsData));
       }
+    } catch { /* ignore */ }
+
+    const canResumeStep3 =
+      sessionStorage.getItem('booking_step') === '3' &&
+      doesUrlMatchPaymentContext({
+        hotelId,
+        checkIn: urlCheckIn,
+        checkOut: urlCheckOut,
+        totalPrice: urlTotalPrice,
+        rooms: urlRooms,
+      });
+
+    if (!canResumeStep3) {
+      if (sessionStorage.getItem('booking_step') === '3') {
+        clearPaymentSession();
+      }
+      setHasMounted(true);
+      return;
+    }
+
+    setStep(3);
+    try {
+      const saved = sessionStorage.getItem('booking_result');
+      if (saved) setBookingResult(JSON.parse(saved) as CreateBookingResponse);
+    } catch { /* ignore */ }
+
+    const savedContext = getBookingPaymentContext();
+    if (savedContext) {
+      if (!customerName && savedContext.customerName) setCustomerName(savedContext.customerName);
+      if (!customerLastName && savedContext.customerLastName) setCustomerLastName(savedContext.customerLastName);
+      if (!customerPhone && savedContext.customerPhone) setCustomerPhone(savedContext.customerPhone);
+      if (!customerEmail && savedContext.customerEmail) setCustomerEmail(savedContext.customerEmail);
     }
     setHasMounted(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -230,6 +258,15 @@ function BookingContent() {
 
     fetchHotelData();
   }, [hotelId]);
+
+  // After create (or session restore), use API pricing as source of truth — not URL estimates
+  useEffect(() => {
+    if (!bookingResult?.pricing?.length) return;
+    const apiTotal = getCreateBookingTotal(bookingResult);
+    if (apiTotal <= 0) return;
+    setTotalPrice(apiTotal);
+    setRooms((prev) => (prev.length ? syncRoomsFromCreateResponse(prev, bookingResult) : prev));
+  }, [bookingResult]);
 
   // Load full booking from API after payment (dates, totals, customer from server)
   useEffect(() => {
@@ -369,6 +406,8 @@ function BookingContent() {
         : ebarimtType === 'taxpayer' ? 'taxpayer'
         : 'person';
 
+      const includeBreakfast = rooms.some((room) => room.include_breakfast === true);
+
       const bookingRequest: CreateBookingRequest = {
         hotel_id: hotelId,
         check_in: checkIn,
@@ -377,6 +416,7 @@ function BookingContent() {
         customer_phone: customerPhone,
         customer_email: customerEmail,
         ebarimt_type: apiEbarimtType,
+        include_breakfast: includeBreakfast,
         ...(ebarimtType === 'organization' && {
           org_register: orgRegister,
           org_name: orgName,
@@ -385,29 +425,37 @@ function BookingContent() {
           taxpayer_register_prefix: taxpayerRegisterPrefix1 + taxpayerRegisterPrefix2,
           taxpayer_register_number: taxpayerRegisterNumber,
         }),
-        rooms: rooms.map(room => ({
+        rooms: rooms.map((room) => ({
           room_category_id: room.room_category_id,
           room_type_id: room.room_type_id,
           room_count: room.room_count,
-          include_breakfast: room.include_breakfast ?? false,
-        }))
+        })),
       };
 
       const result = await BookingService.createBooking(bookingRequest);
+      const apiTotal = getCreateBookingTotal(result);
+      const syncedRooms = syncRoomsFromCreateResponse(rooms, result);
+      const resolvedTotal = apiTotal > 0 ? apiTotal : totalPrice;
+      const resolvedRooms = apiTotal > 0 ? syncedRooms : rooms;
+
       clearQPaySession();
       sessionStorage.setItem('booking_step', '3');
       sessionStorage.setItem('booking_result', JSON.stringify(result));
+      if (apiTotal > 0) {
+        setTotalPrice(resolvedTotal);
+        setRooms(resolvedRooms);
+      }
       saveBookingPaymentContext({
         hotelId,
         hotelName,
         checkIn,
         checkOut,
-        totalPrice,
+        totalPrice: resolvedTotal,
         nights,
         adults: adultsCount,
         children: childrenCount,
         searchedRooms: searchedRoomsCount,
-        rooms,
+        rooms: resolvedRooms,
         customerName,
         customerLastName,
         customerPhone,
@@ -705,24 +753,40 @@ function BookingContent() {
                       <span className="text-sm font-semibold text-gray-900 dark:text-white">{t('bookingFlow.ebarimtTitle')}</span>
                     </div>
                     {/* Toggle */}
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={wantEbarimt}
-                      onClick={() => {
-                        setWantEbarimt((v) => !v);
-                        if (wantEbarimt) setEbarimtType(null);
-                      }}
-                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 ${
-                        wantEbarimt ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
-                      }`}
-                    >
-                      <span
-                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ${
-                          wantEbarimt ? 'translate-x-4' : 'translate-x-0'
+                    <div className="flex items-center rounded-full bg-gray-100 dark:bg-gray-800 p-0.5 border border-gray-200 dark:border-gray-700 shrink-0">
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={!wantEbarimt}
+                        onClick={() => {
+                          setWantEbarimt(false);
+                          setEbarimtType(null);
+                        }}
+                        className={`px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 ${
+                          !wantEbarimt
+                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                            : 'text-gray-500 dark:text-gray-400'
                         }`}
-                      />
-                    </button>
+                      >
+                        Үгүй
+                      </button>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={wantEbarimt}
+                        onClick={() => {
+                          setWantEbarimt(true);
+                          setEbarimtType('individual');
+                        }}
+                        className={`px-3 py-1 text-xs font-medium rounded-full transition-all duration-200 ${
+                          wantEbarimt
+                            ? 'bg-primary text-white shadow-sm'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        Тийм
+                      </button>
+                    </div>
                   </div>
 
                   {wantEbarimt && (

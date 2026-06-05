@@ -9,6 +9,7 @@ export interface BookingConfirmationRoom {
   total_price: number;
   max_adults?: number;
   max_children?: number;
+  include_breakfast?: boolean;
 }
 
 export interface BookingConfirmationHotelDetails {

@@ -84,13 +84,14 @@ export function restoreQPayInvoiceFromSession(bookingCode?: string): {
   const invoiceStatusDate = sessionStorage.getItem(QPAY_INVOICE_STATUS_DATE_KEY);
   const storedBookingCode = sessionStorage.getItem(QPAY_BOOKING_CODE_KEY);
 
-  if (!id || !qrImage || !invoiceStatusDate) return null;
+  if (!id || !qrImage || !invoiceStatusDate) {
+    if (id || qrImage || invoiceStatusDate) clearQPaySession();
+    return null;
+  }
 
-  if (bookingCode) {
-    if (!storedBookingCode || storedBookingCode !== bookingCode) {
-      clearQPaySession();
-      return null;
-    }
+  if (bookingCode && storedBookingCode && storedBookingCode !== bookingCode) {
+    clearQPaySession();
+    return null;
   }
 
   const remainingSeconds = getQPayRemainingSeconds(invoiceStatusDate);

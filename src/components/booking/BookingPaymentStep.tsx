@@ -9,6 +9,7 @@ import InvoiceModal from './InvoiceModal';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { formatHotelLocation } from '@/utils/formatHotelLocation';
 import {
+  clearQPaySession,
   getQPayRemainingSeconds,
   restoreQPayInvoiceFromSession,
   saveQPayInvoiceSession,
@@ -187,10 +188,16 @@ export default function BookingPaymentStep({
 
         if (applyStoredInvoice()) return;
 
+        if (!res.ok || data.error || !data.id || !data.qr_image) {
+          clearQPaySession();
+          setQpayError(data.error || t('payment.qpayError'));
+          return;
+        }
+
         const invoiceStatusDate = data.invoice_status_date || new Date().toISOString();
         saveQPayInvoiceSession({ ...data, invoice_status_date: invoiceStatusDate }, bookingCode);
         setInvoiceId(data.id);
-        setQrImage(data.qr_image ?? null);
+        setQrImage(data.qr_image);
         setBankUrls(data.urls ?? []);
         const remaining = getQPayRemainingSeconds(invoiceStatusDate);
         setTimeLeft(remaining);
@@ -205,9 +212,9 @@ export default function BookingPaymentStep({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Countdown — always derived from stored invoice_status_date + 10 min
+  // Countdown — only while a valid invoice is active
   useEffect(() => {
-    if (timerExpired) return;
+    if (timerExpired || !invoiceId) return;
 
     const tick = () => {
       const remaining = syncTimerFromStoredInvoice();
