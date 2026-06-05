@@ -13,7 +13,6 @@ import {
   XCircle,
   Edit3,
   Trash2,
-  Search,
   AlertCircle
 } from 'lucide-react';
 import { CheckBookingResponse, BookingDetails } from '@/types/api';
@@ -240,28 +239,24 @@ export default function ManageBookingContent() {
   }, [autoSearched, bookingCode, pinCode, bookingData, error, loading, fetchBooking]);
 
   return (
-    <div className="pt-24 pb-12">
+    <div className="pt-24 pb-12 bg-gray-50">
       <div className="container mx-auto px-6 max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="space-y-8"
         >
-          {/* Header */}
-          <div className="text-center">
-            <h1 className="text-h1 font-bold text-gray-900 dark:text-white mb-2">
-              {t('booking.manage.title', 'Захиалгаа удирдах')}
-            </h1>
-            <p className="text-gray-800">
-              {t('booking.manage.subtitle', 'Захиалгын код болон PIN кодоо оруулж захиалгаа харах, удирдах')}
-            </p>
-          </div>
+          {/* Search Card */}
+          <div className="max-w-[583px] mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 space-y-6">
+            <div className="text-center">
+              <h1 className="text-h1 font-bold text-gray-900 dark:text-white">
+                {t('booking.manage.title', 'Захиалга шалгах')}
+              </h1>
+            </div>
 
-          {/* Search Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
             {/* Auto-filled notification */}
             {autoSearched && bookingCode && pinCode && !bookingData && !error && (
-              <div className="mb-4 bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center gap-2">
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-slate-900" />
                 <p className="text-sm text-slate-800">
                   {t('booking.manage.autoFilled', 'Захиалгын мэдээлэл автоматаар бөглөгдлөө')}
@@ -269,48 +264,45 @@ export default function ManageBookingContent() {
               </div>
             )}
 
-            <form onSubmit={(e) => { e.preventDefault(); fetchBooking(); }} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={(e) => { e.preventDefault(); fetchBooking(); }} className="space-y-6">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    {t('booking.manage.bookingCode', 'Захиалгын код')}
-                  </label>
                   <input
                     type="text"
                     value={bookingCode}
                     onChange={(e) => setBookingCode(e.target.value)}
-                    placeholder={t('booking.manage.enterBookingCode', 'Захиалгын код оруулна уу')}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder={t('booking.manage.bookingCodePlaceholder', 'Захиалгын дугаар')}
+                    className="w-full p-2.5 border border-gray-200 text-body-md dark:border-gray-700 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                    {t('booking.manage.pinCode', 'PIN код')}
-                  </label>
                   <input
                     type="text"
                     value={pinCode}
                     onChange={(e) => setPinCode(e.target.value)}
-                    placeholder={t('booking.manage.enterPinCode', 'PIN код оруулна уу')}
-                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder={t('booking.manage.pinCodePlaceholder', 'Пин код')}
+                    className="w-full p-2.5 border border-gray-200 text-body-md dark:border-gray-700 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
                     required
                   />
                 </div>
               </div>
 
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {t('booking.manage.subtitle', 'Захиалгын хуудас дээрх захиалгын дугаар болон пинкодоор нэвтэрч орно уу.')}
+              </p>
+
               <button
                 type="submit"
                 disabled={loading || !bookingCode || !pinCode}
-                className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 disabled:bg-gray-400 disabled:text-white transition-colors"
+                className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-body-md disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-500 transition-all duration-200 shadow-sm hover:shadow-md"
               >
-                <Search className="w-4 h-4" />
-                {loading ? t('booking.manage.searching', 'Хайж байна...') : t('booking.manage.findBooking', 'Захиалга хайх')}
+                {loading ? t('booking.manage.searching', 'Хайж байна...') : t('booking.manage.findBooking', 'Шалгах')}
               </button>
             </form>
 
             {error && (
-              <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-sm">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-800 text-sm">
                 {error}
               </div>
             )}
