@@ -68,7 +68,7 @@ export default function EbarimtCyrillicLetterSelect({
   };
 
   return (
-    <div ref={containerRef} className={`relative w-12 shrink-0 ${className}`}>
+    <div ref={containerRef} className={`relative w-16 shrink-0 ${className}`}>
       <div className="relative">
         <input
           type="text"
@@ -90,7 +90,7 @@ export default function EbarimtCyrillicLetterSelect({
         </button>
       </div>
       {open && (
-        <div className="absolute z-20 mt-1 w-36 max-h-44 overflow-auto bg-white border border-gray-200 rounded-md shadow-lg">
+        <div className="absolute z-20 mt-1 w-40 max-h-44 overflow-auto bg-white border border-gray-200 rounded-md shadow-lg">
           {filtered.map((letter) => (
             <button
               key={letter}

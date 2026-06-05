@@ -28,6 +28,7 @@ import {
   getCreateBookingTotal,
   syncRoomsFromCreateResponse,
 } from '@/utils/booking';
+import { getCheckInTimeDisplay, getCheckOutTimeDisplay } from '@/utils/policyFormatters';
 import EbarimtCyrillicLetterSelect from '@/components/booking/EbarimtCyrillicLetterSelect';
 import {
   createBookingGuestFormSchema,
@@ -353,6 +354,21 @@ function BookingContent() {
     }
   }, [tosModalOpen]);
 
+  // Auto-lookup organization name when register number is complete
+  useEffect(() => {
+    if (ebarimtType !== 'organization') return;
+    if (orgRegister.length === 7) {
+      setOrgName('');
+      lookupEbarimt(orgRegister).then((name) => {
+        if (name) setOrgName(name);
+      });
+    } else {
+      setOrgName('');
+      setEbarimtError(null);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orgRegister, ebarimtType]);
+
   // Auto-lookup taxpayer name when all parts are filled
   useEffect(() => {
     const fullRegno = taxpayerRegisterPrefix1 + taxpayerRegisterPrefix2 + taxpayerRegisterNumber;
@@ -393,13 +409,6 @@ function BookingContent() {
     } finally {
       setEbarimtLoading(false);
     }
-  };
-
-  const handleOrgSearch = async () => {
-    const trimmed = orgRegister.trim();
-    if (!trimmed) return;
-    const name = await lookupEbarimt(trimmed);
-    if (name) setOrgName(name);
   };
 
   const clearFieldError = (field: BookingGuestFormField) => {
@@ -626,6 +635,7 @@ function BookingContent() {
             nights={nights}
             hotelName={hotelName}
             hotelDetails={hotelDetails}
+            hotelPolicy={hotelPolicy}
             adultsCount={adultsCount}
             childrenCount={childrenCount}
             customerName={customerName}
@@ -684,17 +694,13 @@ function BookingContent() {
     return `${date.getFullYear()} -${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${wkMap[date.getDay()]}`;
   };
 
-  const checkInTimeRange = hotelPolicy
-    ? `${hotelPolicy.check_in_from.substring(0, 5)} — ${hotelPolicy.check_in_until.substring(0, 5)}`
-    : '15:00 — 23:00';
-  const checkOutTimeRange = hotelPolicy
-    ? `${hotelPolicy.check_out_from.substring(0, 5)} — ${hotelPolicy.check_out_until.substring(0, 5)}`
-    : '01:00 — 11:00';
+  const checkInTimeRange = getCheckInTimeDisplay(hotelPolicy, '15:00 — 23:00');
+  const checkOutTimeRange = getCheckOutTimeDisplay(hotelPolicy, '01:00 — 11:00');
 
   const ebarimtValid =
     !wantEbarimt ||
     ebarimtType === 'individual' ||
-    (ebarimtType === 'organization' && orgRegister.length === 8 && !!orgName) ||
+    (ebarimtType === 'organization' && orgRegister.length === 7 && !!orgName) ||
     (ebarimtType === 'taxpayer' &&
       taxpayerRegisterPrefix1.length === 1 &&
       taxpayerRegisterPrefix2.length === 1 &&
@@ -923,24 +929,19 @@ function BookingContent() {
                               <input
                                 value={orgRegister}
                                 onChange={(e) => {
-                                  setOrgRegister(e.target.value.replace(/\D/g, '').slice(0, 8));
+                                  setOrgRegister(e.target.value.replace(/\D/g, '').slice(0, 7));
                                   setOrgName('');
                                   setEbarimtError(null);
                                 }}
-                                placeholder="00000000"
-                                maxLength={8}
+                                placeholder="0000000"
+                                maxLength={7}
                                 inputMode="numeric"
                                 className="flex-1 p-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary"
                               />
-                              <button
-                                type="button"
-                                onClick={handleOrgSearch}
-                                disabled={ebarimtLoading || orgRegister.length !== 8}
-                                className="px-3 py-2 text-xs font-medium bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50 whitespace-nowrap"
-                              >
-                                {ebarimtLoading ? '...' : t('bookingFlow.ebarimtSearch')}
-                              </button>
                             </div>
+                            {ebarimtLoading && ebarimtType === 'organization' && (
+                              <p className="text-xs text-gray-500 mt-1">{t('bookingFlow.searching')}</p>
+                            )}
                             {ebarimtError && <p className="text-xs text-red-500 mt-1">{ebarimtError}</p>}
                           </div>
                           {orgName && (

@@ -19,6 +19,7 @@ import {
   syncRoomsFromCreateResponse,
 } from '@/utils/booking';
 import { formatHotelPhoneDisplay } from '@/utils/bookingConfirmationExtras';
+import { getCheckInTimeDisplay, getCheckOutTimeDisplay } from '@/utils/policyFormatters';
 import { HotelService } from '@/services/hotelApi';
 
 export default function BookingConfirmationView(props: BookingConfirmationViewProps) {
@@ -97,8 +98,8 @@ export default function BookingConfirmationView(props: BookingConfirmationViewPr
 
   const addressLine = formatHotelLocation(hotelDetails?.location);
 
-  const checkInTime = hotelPolicy ? hotelPolicy.check_in_from.substring(0, 5) : '14:00';
-  const checkOutTime = hotelPolicy ? hotelPolicy.check_out_until.substring(0, 5) : '12:00';
+  const checkInTime = getCheckInTimeDisplay(hotelPolicy, '14:00');
+  const checkOutTime = getCheckOutTimeDisplay(hotelPolicy, '12:00');
   const totalRoomsBooked = rooms.reduce((sum, r) => sum + r.room_count, 0) || bookingResult.total_rooms;
 
   return (

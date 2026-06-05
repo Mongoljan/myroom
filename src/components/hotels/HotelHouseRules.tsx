@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Calendar, Info, Loader2, AlertCircle, Car, Coffee, Baby, PawPrint, CreditCard, UserCheck, Globe } from 'lucide-react';
+import { formatPolicyTimeRange, getCheckInTimeDisplay, getCheckOutTimeDisplay } from '@/utils/policyFormatters';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { PropertyPolicy, PropertyBasicInfo } from '@/types/api';
@@ -94,11 +95,6 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
 
   const policy = policies[0]; // Assuming we get one policy per property
 
-  // Format time from API (e.g., "09:02:53" -> "09:02")
-  const formatTime = (timeString: string) => {
-    return timeString.substring(0, 5);
-  };
-
   return (
     <section id="house-rules" className="">
       <div className="mb-6">
@@ -142,8 +138,8 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
             <>
               {/* 1. Check-in / Check-out */}
               <Row icon={<Calendar className="w-4 h-4" />} title="Орох цаг / Гарах цаг">
-                <div>Орох цаг: <span className="font-medium text-gray-900 dark:text-white">{formatTime(policy.check_in_from)}</span></div>
-                <div>Гарах цаг: <span className="font-medium text-gray-900 dark:text-white">{formatTime(policy.check_out_from)}</span></div>
+                <div>Орох цаг: <span className="font-medium text-gray-900 dark:text-white">{getCheckInTimeDisplay(policy, '—', ' – ')}</span></div>
+                <div>Гарах цаг: <span className="font-medium text-gray-900 dark:text-white">{getCheckOutTimeDisplay(policy, '—', ' – ')}</span></div>
               </Row>
 
               {/* 2. Parking */}
@@ -304,7 +300,7 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
                     </div>
                   )}
                   {bp.start_time && bp.end_time && (
-                    <div>Цаг: <span className="font-medium">{formatTime(bp.start_time)} – {formatTime(bp.end_time)}</span></div>
+                    <div>Цаг: <span className="font-medium">{formatPolicyTimeRange(bp.start_time, bp.end_time, ' – ')}</span></div>
                   )}
                   {bp.price && Number(bp.price) > 0 && (
                     <div>Үнэ: <span className="font-medium">₮{Number(bp.price).toLocaleString()}</span></div>

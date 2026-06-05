@@ -8,6 +8,8 @@ import InvoiceTypeDialog from './InvoiceTypeDialog';
 import InvoiceModal from './InvoiceModal';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { formatHotelLocation } from '@/utils/formatHotelLocation';
+import { getCheckInTimeDisplay, getCheckOutTimeDisplay } from '@/utils/policyFormatters';
+import { PropertyPolicy } from '@/types/api';
 import {
   clearQPaySession,
   getClientPaymentRemainingSeconds,
@@ -37,6 +39,7 @@ interface BookingPaymentStepProps {
   hotelName: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   hotelDetails: any | null;
+  hotelPolicy?: PropertyPolicy | null;
   adultsCount: number;
   childrenCount: number;
   customerName: string;
@@ -88,6 +91,7 @@ export default function BookingPaymentStep({
   nights,
   hotelName,
   hotelDetails,
+  hotelPolicy,
   adultsCount,
   childrenCount,
   customerName,
@@ -115,6 +119,9 @@ export default function BookingPaymentStep({
     const wk = Array.isArray(weekdays) ? weekdays[date.getDay()] : '';
     return `${date.getFullYear()} -${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}, ${wk}`;
   }, [weekdays]);
+
+  const checkInTimeRange = getCheckInTimeDisplay(hotelPolicy, '15:00 — 23:00');
+  const checkOutTimeRange = getCheckOutTimeDisplay(hotelPolicy, '01:00 — 11:00');
 
   const transferBanks = useMemo(() => ({
     tdb: {
@@ -483,6 +490,7 @@ export default function BookingPaymentStep({
                   <div className="text-sm font-semibold text-gray-900 dark:text-white">
                     {formatDateShort(checkIn)}
                   </div>
+                  <div className="text-xs text-gray-500 mt-0.5">{checkInTimeRange}</div>
                 </div>
                 <div className="flex flex-col items-center px-2 pt-1">
                   <span className="text-xs text-gray-500">{t('payment.nights', { count: nights })}</span>
@@ -493,6 +501,7 @@ export default function BookingPaymentStep({
                   <div className="text-sm font-semibold text-gray-900 dark:text-white">
                     {formatDateShort(checkOut)}
                   </div>
+                  <div className="text-xs text-gray-500 mt-0.5">{checkOutTimeRange}</div>
                 </div>
               </div>
             </div>
