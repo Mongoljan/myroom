@@ -52,11 +52,11 @@ function BookingModal({ room, available, isOpen, onClose, checkIn, checkOut, hot
         customer_phone: customerPhone,
         customer_email: customerEmail,
         ebarimt_type: 'person',
-        include_breakfast: false,
         rooms: [{
           room_category_id: room.room_category,
           room_type_id: room.room_type,
           room_count: roomCount,
+          include_breakfast: false,
         }]
       });
       
