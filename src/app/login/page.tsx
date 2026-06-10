@@ -72,7 +72,7 @@ export default function LoginPage() {
             {/* Email / Phone */}
             <div>
               <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">
-                {t('AuthLogin.emailOrPhone')} <span className="text-red-500">*</span>
+                {t('AuthLogin.emailOrPhone')}
               </label>
               <input
                 id="email"

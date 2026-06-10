@@ -102,7 +102,7 @@ export default function SignupPage() {
             {/* Email / Phone */}
             <div>
               <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">
-                {t('AuthSignup.identifierLabel')} <span className="text-red-500">*</span>
+                {t('AuthSignup.identifierLabel')}
               </label>
               <input
                 type="text"
