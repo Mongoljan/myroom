@@ -272,23 +272,29 @@ export default function ManageBookingContent() {
             )}
 
             <form onSubmit={(e) => { e.preventDefault(); fetchBooking(); }} className="space-y-6">
-              <div className="space-y-4">
+              <div className="space-y-[24px]">
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-[8px]">
+                    {t('booking.manage.bookingCodeLabel', 'Захиалгын дугаар')}
+                  </label>
                   <input
                     type="text"
                     value={bookingCode}
                     onChange={(e) => setBookingCode(e.target.value)}
-                    placeholder={t('booking.manage.bookingCodePlaceholder', 'Захиалгын дугаар')}
+                    placeholder={'12345'}
                     className="w-full p-2.5 border border-gray-200 text-body-md dark:border-gray-700 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
                     required
                   />
                 </div>
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-[8px]">
+                    {t('booking.manage.pinCodeLabel', 'Пин код')}
+                  </label>
                   <input
                     type="text"
                     value={pinCode}
                     onChange={(e) => setPinCode(e.target.value)}
-                    placeholder={t('booking.manage.pinCodePlaceholder', 'Пин код')}
+                    placeholder={'****'}
                     className="w-full p-2.5 border border-gray-200 text-body-md dark:border-gray-700 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
                     required
                   />
