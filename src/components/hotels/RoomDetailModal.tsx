@@ -25,6 +25,7 @@ import {
 import SafeImage from '@/components/common/SafeImage';
 import { EnrichedHotelRoom } from '@/services/hotelRoomsApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { getLocalizedFullRoomName } from '@/utils/roomNames';
 
 interface RoomDetailModalProps {
   room: EnrichedHotelRoom | null;
@@ -77,17 +78,7 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
   const [imgIdx, setImgIdx] = useState(0);
 
   const locale = i18n.language === 'en' ? 'en' : 'mn';
-  const categoryName = room
-    ? (locale === 'en'
-        ? (room.roomCategoryNameEn || room.roomCategoryName)
-        : (room.roomCategoryNameMn || room.roomCategoryName))
-    : '';
-  const typeName = room
-    ? (locale === 'en'
-        ? (room.roomTypeNameEn || room.roomTypeName)
-        : (room.roomTypeNameMn || room.roomTypeName))
-    : '';
-  const fullRoomName = [categoryName, typeName].filter((part) => part && part !== 'Unknown').join(' ');
+  const fullRoomName = room ? getLocalizedFullRoomName(room, locale) : '';
 
   useEffect(() => {
     if (isOpen) setImgIdx(0);

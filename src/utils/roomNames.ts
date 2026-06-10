@@ -38,15 +38,27 @@ export function getLocalizedRoomTypeName(
   return room.roomTypeNameMn || room.roomTypeName || '';
 }
 
+function joinRoomNameParts(
+  categoryName: string,
+  typeName: string,
+  locale: 'en' | 'mn'
+): string {
+  const category = categoryName && categoryName !== 'Unknown' ? categoryName : '';
+  const type = typeName && typeName !== 'Unknown' ? typeName : '';
+  // MN: type first (e.g. "1 нарийн ортой Стандарт өрөө"), EN: category first
+  const parts = locale === 'mn' ? [type, category] : [category, type];
+  return parts.filter(Boolean).join(' ');
+}
+
 export function getLocalizedFullRoomName(
   room: LocalizedRoomNameSource,
   locale: 'en' | 'mn'
 ): string {
-  const parts = [
+  return joinRoomNameParts(
     getLocalizedRoomCategoryName(room, locale),
     getLocalizedRoomTypeName(room, locale),
-  ].filter((part) => part && part !== 'Unknown');
-  return parts.join(' ');
+    locale
+  );
 }
 
 export function resolveRoomDisplayNameFromAllData(
@@ -67,5 +79,5 @@ export function resolveRoomDisplayNameFromAllData(
       ? type?.name || ''
       : type?.name_mn || type?.name || '';
 
-  return [categoryName, typeName].filter(Boolean).join(' ');
+  return joinRoomNameParts(categoryName, typeName, locale);
 }
