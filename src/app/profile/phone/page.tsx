@@ -1,29 +1,30 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { CheckCircle } from 'lucide-react';
+import { CircleCheck, CircleX } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import BackButton from '@/components/common/BackButton';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
-type Step = 'view' | 'enter_phone' | 'verify_otp' | 'verified';
+type Step = 'view' | 'enter_phone' | 'verify_otp';
 
-const OTP_EXPIRY = 5 * 60; // 5 minutes in seconds
+const OTP_EXPIRY = 5 * 60;
 
 export default function PhonePage() {
   const { t } = useHydratedTranslation();
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
 
   const [step, setStep] = useState<Step>('view');
   const [phone, setPhone] = useState('');
-  const [otpDigits, setOtpDigits] = useState(['', '', '', '']);
+  const [otp, setOtp] = useState('');
   const [countdown, setCountdown] = useState(0);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [isChangingPhone, setIsChangingPhone] = useState(false);
 
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startCountdown = useCallback((seconds: number) => {
@@ -48,18 +49,25 @@ export default function PhonePage() {
     return `${m}:${sec}`;
   };
 
-  const handleSendOtp = async () => {
-    const cleaned = phone.replace(/\D/g, '');
+  const sendOtpToPhone = async (targetPhone: string) => {
+    const cleaned = targetPhone.replace(/\D/g, '');
     if (cleaned.length < 8) {
       setError(t('profilePhone.invalidNumber'));
       return;
     }
+
     setError('');
+    setSuccess('');
     setIsSending(true);
     try {
       const res = await CustomerService.sendOTP({ phone: cleaned });
+      setPhone(cleaned);
       startCountdown(res.expires_in_seconds ?? OTP_EXPIRY);
       setStep('verify_otp');
+
+      if (res.otp_code) {
+        alert(t('AuthOTP.devOtpAlert', { code: res.otp_code }));
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : t('profilePhone.error'));
     } finally {
@@ -67,30 +75,50 @@ export default function PhonePage() {
     }
   };
 
-  const handleOtpChange = (idx: number, val: string) => {
-    if (!/^\d*$/.test(val)) return;
-    const next = [...otpDigits];
-    next[idx] = val.slice(-1);
-    setOtpDigits(next);
-    if (val && idx < 3) inputRefs.current[idx + 1]?.focus();
+  const handleSendOtp = async () => {
+    if (!user?.phone) {
+      setIsChangingPhone(true);
+    }
+    await sendOtpToPhone(phone);
   };
 
-  const handleOtpKeyDown = (idx: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otpDigits[idx] && idx > 0) {
-      inputRefs.current[idx - 1]?.focus();
-    }
+  const handleVerifyExistingPhone = async () => {
+    if (!user?.phone) return;
+    setIsChangingPhone(false);
+    await sendOtpToPhone(user.phone);
+  };
+
+  const handleStartChangePhone = () => {
+    setIsChangingPhone(true);
+    setPhone('');
+    setOtp('');
+    setError('');
+    setSuccess('');
+    setStep('enter_phone');
   };
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    const code = otpDigits.join('');
-    if (code.length < 4) return;
+    const cleanedPhone = phone.replace(/\D/g, '');
+    if (otp.length < 6) return;
+
     setError('');
     setIsVerifying(true);
     try {
-      // verifyOTP logs in with phone — for phone change this is a workaround
-      await CustomerService.verifyOTP({ phone: phone.replace(/\D/g, ''), otp_code: code });
-      setStep('verified');
+      const response = await CustomerService.verifyOTP({
+        phone: cleanedPhone,
+        otp_code: otp,
+      });
+      await refreshProfile(response.token);
+      setSuccess(
+        isChangingPhone
+          ? t('profilePhone.changeSuccess')
+          : t('profilePhone.verifySuccess')
+      );
+      setStep('view');
+      setOtp('');
+      setPhone('');
+      setIsChangingPhone(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('profilePhone.invalidOtp'));
     } finally {
@@ -99,11 +127,13 @@ export default function PhonePage() {
   };
 
   const handleResend = async () => {
-    if (countdown > 0) return;
-    await handleSendOtp();
+    if (countdown > 0 || !phone) return;
+    await sendOtpToPhone(phone);
   };
 
   if (!user) return null;
+
+  const displayPhone = user.phone || phone;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
@@ -116,11 +146,17 @@ export default function PhonePage() {
           {error}
         </div>
       )}
+      {success && (
+        <div className="mb-4 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-600">
+          {success}
+        </div>
+      )}
 
-      {/* ── View: current verified phone ── */}
       {step === 'view' && user.phone && (
         <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('profilePhone.verified')}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            {user.is_phone_verified ? t('profilePhone.verified') : t('profilePhone.notverified')}
+          </p>
           <div className="flex items-center gap-3">
             <div className="relative max-w-xs w-full">
               <input
@@ -129,22 +165,38 @@ export default function PhonePage() {
                 readOnly
                 className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 pr-10"
               />
-              <CheckCircle
-                size={18}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
-              />
+              {user.is_phone_verified ? (
+                <CircleCheck
+                  size={18}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+                />
+              ) : (
+                <CircleX
+                  size={18}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500"
+                />
+              )}
             </div>
-            <button
-              onClick={() => { setStep('enter_phone'); setPhone(''); setError(''); }}
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
-            >
-              {t('profilePhone.changePhone')}
-            </button>
+            {!user.is_phone_verified ? (
+              <button
+                onClick={handleVerifyExistingPhone}
+                disabled={isSending}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 whitespace-nowrap"
+              >
+                {isSending ? t('profilePhone.sending') : t('profilePhone.verifyPhone')}
+              </button>
+            ) : (
+              <button
+                onClick={handleStartChangePhone}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition whitespace-nowrap"
+              >
+                {t('profilePhone.changePhone')}
+              </button>
+            )}
           </div>
         </div>
       )}
 
-      {/* ── View: no phone yet ── */}
       {step === 'view' && !user.phone && (
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('profilePhone.enterNewPhone')}</p>
@@ -167,7 +219,6 @@ export default function PhonePage() {
         </div>
       )}
 
-      {/* ── Enter new phone ── */}
       {step === 'enter_phone' && (
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('profilePhone.enterNewPhone')}</p>
@@ -187,53 +238,48 @@ export default function PhonePage() {
               {isSending ? t('profilePhone.sending') : t('profilePhone.getCode')}
             </button>
           </div>
-          <BackButton onClick={() => setStep('view')} className="mt-3" />
+          <BackButton
+            onClick={() => {
+              setStep('view');
+              setPhone('');
+              setError('');
+            }}
+            className="mt-3"
+          />
         </div>
       )}
 
-      {/* ── OTP verification ── */}
       {step === 'verify_otp' && (
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             {t('profilePhone.otpHint')}
           </p>
           <form onSubmit={handleVerify}>
-            <div className="flex items-center gap-3 flex-wrap">
-              {/* Displayed phone */}
+            <div className="flex items-center gap-3 flex-wrap max-w-md">
               <input
                 type="text"
-                value={phone}
+                value={phone || displayPhone}
                 readOnly
                 className="w-36 px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700"
               />
-
-              {/* 4 OTP boxes */}
-              <div className="flex gap-2">
-                {otpDigits.map((d, i) => (
-                  <input
-                    key={i}
-                    ref={(el) => { inputRefs.current[i] = el; }}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={d}
-                    onChange={(e) => handleOtpChange(i, e.target.value)}
-                    onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="w-11 h-11 text-center border border-gray-300 dark:border-gray-600 rounded-lg text-base font-medium text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  />
-                ))}
-              </div>
-
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder={t('ProfileEmail.otpPlaceholder', 'OTP код')}
+                maxLength={6}
+                inputMode="numeric"
+                className="flex-1 min-w-[120px] px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition tracking-widest text-center"
+              />
               <button
                 type="submit"
-                disabled={isVerifying || otpDigits.join('').length < 4}
-                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
+                disabled={isVerifying || otp.length < 6}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 whitespace-nowrap"
               >
                 {isVerifying ? t('profilePhone.verifying') : t('profilePhone.verify')}
               </button>
             </div>
 
-            {/* Countdown + resend */}
             <div className="mt-3 flex items-center gap-3">
               {countdown > 0 && (
                 <span className="text-sm font-medium text-blue-600">
@@ -254,33 +300,15 @@ export default function PhonePage() {
               </button>
             </div>
           </form>
-        </div>
-      )}
-
-      {/* ── Verified ── */}
-      {step === 'verified' && (
-        <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">{t('profilePhone.verified')}</p>
-          <div className="flex items-center gap-3">
-            <div className="relative max-w-xs w-full">
-              <input
-                type="text"
-                value={phone.replace(/\D/g, '')}
-                readOnly
-                className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 pr-10"
-              />
-              <CheckCircle
-                size={18}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
-              />
-            </div>
-            <button
-              onClick={() => { setStep('enter_phone'); setPhone(''); setOtpDigits(['', '', '', '']); setError(''); }}
-              className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
-            >
-              {t('profilePhone.changePhone')}
-            </button>
-          </div>
+          <BackButton
+            onClick={() => {
+              setStep('view');
+              setOtp('');
+              setPhone('');
+              setError('');
+            }}
+            className="mt-3"
+          />
         </div>
       )}
     </div>

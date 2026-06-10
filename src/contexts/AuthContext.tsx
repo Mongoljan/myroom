@@ -21,7 +21,7 @@ interface AuthContextType {
     confirm_password: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
-  refreshProfile: () => Promise<void>;
+  refreshProfile: (nextToken?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -102,14 +102,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [token]);
 
-  const refreshProfile = useCallback(async () => {
-    if (token) {
-      try {
-        const profile = await CustomerService.getProfile(token);
-        setUser(profile);
-      } catch {
-        // silent fail — user stays logged in with stale profile
-      }
+  const refreshProfile = useCallback(async (nextToken?: string) => {
+    const activeToken = nextToken ?? token;
+    if (!activeToken) return;
+
+    if (nextToken) {
+      CustomerService.saveToken(nextToken);
+      setToken(nextToken);
+    }
+
+    try {
+      const profile = await CustomerService.getProfile(activeToken);
+      setUser(profile);
+    } catch {
+      // silent fail — user stays logged in with stale profile
     }
   }, [token]);
 

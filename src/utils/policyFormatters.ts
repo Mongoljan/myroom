@@ -47,3 +47,17 @@ export function getCheckOutTimeDisplay(
   if (!policy?.check_out_from && !policy?.check_out_until) return fallback;
   return formatPolicyTimeRange(policy.check_out_from, policy.check_out_until, separator) || fallback;
 }
+
+/** Single check-in time for compact displays (e.g. booking history cards). */
+export function getCheckInSingleTimeDisplay(
+  policy: PolicyCheckInTimes | null | undefined
+): string {
+  return formatPolicyTime(policy?.check_in_from) || formatPolicyTime(policy?.check_in_until);
+}
+
+/** Single check-out time for compact displays (e.g. booking history cards). */
+export function getCheckOutSingleTimeDisplay(
+  policy: PolicyCheckOutTimes | null | undefined
+): string {
+  return formatPolicyTime(policy?.check_out_until) || formatPolicyTime(policy?.check_out_from);
+}

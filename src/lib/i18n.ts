@@ -346,7 +346,9 @@ const resources = {
         lastNamePlaceholder: "Last Name",
         firstNamePlaceholder: "First Name",
         updating: "Saving...",
-        updateButton: "Update Profile"
+        updateButton: "Update Profile",
+        notverified:"Your phone number is not verified."
+
       },
       ProfilePassword: {
         title: "Change Password",
@@ -1735,7 +1737,11 @@ const resources = {
           completed: "Completed",
           cancelled: "Cancelled"
         },
-        cancelPinHint: "Enter your PIN to cancel booking {{code}}."
+        cancelPinHint: "Enter your PIN to cancel booking {{code}}.",
+        delete: "Delete",
+        deleteComingSoon: "Coming soon",
+        reorder: "Book again",
+        paymentTimeLeft: "{{time}} left to pay"
       },
       profilePhone: {
         title: "Phone Number",
@@ -1743,6 +1749,10 @@ const resources = {
         error: "An error occurred.",
         invalidOtp: "Invalid OTP code.",
         verified: "Your phone number is verified.",
+        notverified: "Your phone number is not verified.",
+        verifyPhone: "Verify number",
+        verifySuccess: "Phone number verified successfully.",
+        changeSuccess: "Phone number changed successfully.",
         changePhone: "Change phone number",
         enterNewPhone: "Enter the new phone number you want to use.",
         sending: "Sending...",
@@ -3551,7 +3561,11 @@ const resources = {
           completed: "Биелсэн",
           cancelled: "Цуцлагдсан"
         },
-        cancelPinHint: "Захиалга {{code}}-г цуцлахын тулд pin кодоо оруулна уу."
+        cancelPinHint: "Захиалга {{code}}-г цуцлахын тулд pin кодоо оруулна уу.",
+        delete: "Устгах",
+        deleteComingSoon: "Удахгүй",
+        reorder: "Дахин захиалах",
+        paymentTimeLeft: "Төлбөр төлөх {{time}} үлдсэн"
       },
       profilePhone: {
         title: "Утасны дугаар",
@@ -3559,6 +3573,10 @@ const resources = {
         error: "Алдаа гарлаа.",
         invalidOtp: "OTP буруу байна.",
         verified: "Таны утасны дугаар баталгаажсан байна.",
+        notverified: "Таны утасны дугаар баталгаажаагүй байна.",
+        verifyPhone: "Дугаар баталгаажуулах",
+        verifySuccess: "Утасны дугаар амжилттай баталгаажлаа.",
+        changeSuccess: "Утасны дугаар амжилттай солигдлоо.",
         changePhone: "Дугаар солих",
         enterNewPhone: "Та солих утасны дугаараа оруулна уу.",
         sending: "Илгээж байна...",
@@ -3763,7 +3781,12 @@ const resources = {
           confirmed: "已确认",
           completed: "已完成",
           cancelled: "已取消"
-        }
+        },
+        cancelPinHint: "请输入 PIN 以取消预订 {{code}}。",
+        delete: "删除",
+        deleteComingSoon: "即将推出",
+        reorder: "再次预订",
+        paymentTimeLeft: "付款剩余 {{time}}"
       },
       profilePhone: {
         title: "电话号码",
@@ -3771,6 +3794,10 @@ const resources = {
         error: "发生错误。",
         invalidOtp: "验证码无效。",
         verified: "您的电话号码已验证。",
+        notverified: "您的电话号码尚未验证。",
+        verifyPhone: "验证号码",
+        verifySuccess: "电话号码验证成功。",
+        changeSuccess: "电话号码更换成功。",
         changePhone: "更换号码",
         enterNewPhone: "请输入要更换的新电话号码。",
         sending: "发送中...",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, CircleX, CircleCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -109,12 +109,15 @@ export default function EmailPage() {
                 readOnly
                 className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 pr-10"
               />
-              {user.is_verified && (
-                <CheckCircle
-                  size={18}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
-                />
-              )}
+              {user.is_email_verified?               <CircleCheck
+                size={18}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500"
+              /> :  
+              <CircleX
+              size={18}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500"
+            /> 
+                          }
             </div>
             {!user.is_verified && step !== 'done' && (
               <button

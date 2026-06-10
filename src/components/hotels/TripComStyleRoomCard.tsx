@@ -276,12 +276,12 @@ export default function TripComStyleRoomCard({
         <div className="flex flex-col sm:flex-row items-stretch">
 
           {/* ── LEFT: image + thumbnails + bed + amenities ── */}
-          <div className="w-full sm:w-1/3 sm:shrink-0 flex flex-col border-b sm:border-b-0 sm:border-r border-gray-100 dark:border-gray-700">
+          <div className="w-full sm:w-1/4 sm:shrink-0 flex flex-col border-b sm:border-b-0 sm:border-r border-gray-100 dark:border-gray-700">
 
             {/* Main image */}
             <div
               className="relative bg-gray-100 dark:bg-gray-700 cursor-pointer group overflow-hidden"
-              style={{ height: '160px' }}
+              style={{ height: '160px',  }}
               onClick={() => setDetailOpen(true)}
             >
               {hasImages ? (
@@ -294,7 +294,7 @@ export default function TripComStyleRoomCard({
                   />
                   {images.length > 1 && (
                     <>
-                      <button
+                      {/* <button
                         onClick={(e) => { e.stopPropagation(); goPrev(); }}
                         className="absolute left-1 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                         aria-label="Өмнөх"
@@ -307,7 +307,7 @@ export default function TripComStyleRoomCard({
                         aria-label="Дараах"
                       >
                         <ChevronRight className="w-3 h-3 text-gray-700 dark:text-gray-300" />
-                      </button>
+                      </button> */}
                       <div className="absolute bottom-1 right-1 flex items-center gap-0.5 bg-black/60 text-white text-xs px-1 py-0.5 rounded">
                         <Camera className="w-2.5 h-2.5" />
                         <span>{images.length}</span>

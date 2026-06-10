@@ -5,11 +5,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import DatePicker from '@/components/DatePicker';
-
-const COUNTRIES = [
-  'Mongolia', 'China', 'Russia', 'Japan', 'South Korea', 'USA', 'Germany',
-  'France', 'UK', 'Australia', 'Canada', 'India', 'Thailand', 'Singapore',
-];
+import NationalitySelect from '@/components/profile/NationalitySelect';
+import EbarimtCyrillicLetterSelect from '@/components/booking/EbarimtCyrillicLetterSelect';
+import { lookupEbarimt } from '@/utils/ebarimtLookup';
+import { getProfileExtras, saveProfileExtras } from '@/utils/profileExtrasStorage';
 
 export default function ProfilePage() {
   const { t } = useHydratedTranslation();
@@ -26,21 +25,129 @@ export default function ProfilePage() {
     gender: '' as 'male' | 'female' | 'other' | '',
     nationality: 'Mongolia',
     invoice_individual: '',
-    invoice_business: '',
+    invoice_business_prefix1: '',
+    invoice_business_prefix2: '',
+    invoice_business_number: '',
     invoice_organization: '',
   });
 
+  const [businessName, setBusinessName] = useState('');
+  const [businessLoading, setBusinessLoading] = useState(false);
+  const [businessError, setBusinessError] = useState<string | null>(null);
+
+  const [orgName, setOrgName] = useState('');
+  const [orgLoading, setOrgLoading] = useState(false);
+  const [orgError, setOrgError] = useState<string | null>(null);
+
   useEffect(() => {
-    if (user) {
+    if (!user) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      first_name: user.first_name || '',
+      last_name: user.last_name || '',
+      gender: user.gender || '',
+      date_of_birth: user.date_of_birth || '',
+    }));
+
+    const extras = getProfileExtras(user.id);
+    if (extras) {
       setFormData((prev) => ({
         ...prev,
-        first_name: user.first_name || '',
-        last_name: user.last_name || '',
-        gender: user.gender || '',
-        date_of_birth: user.date_of_birth || '',
+        nationality: extras.nationality || 'Mongolia',
+        invoice_individual: extras.invoice_individual || '',
+        invoice_business_prefix1: extras.invoice_business_prefix1 || '',
+        invoice_business_prefix2: extras.invoice_business_prefix2 || '',
+        invoice_business_number: extras.invoice_business_number || '',
+        invoice_organization: extras.invoice_organization || '',
       }));
+      setBusinessName(extras.invoice_business_name || '');
+      setOrgName(extras.invoice_organization_name || '');
     }
   }, [user]);
+
+  useEffect(() => {
+    const {
+      invoice_business_prefix1,
+      invoice_business_prefix2,
+      invoice_business_number,
+    } = formData;
+
+    const fullRegno =
+      invoice_business_prefix1 + invoice_business_prefix2 + invoice_business_number;
+
+    if (
+      invoice_business_prefix1.length !== 1 ||
+      invoice_business_prefix2.length !== 1 ||
+      invoice_business_number.length !== 8
+    ) {
+      return;
+    }
+
+    let active = true;
+    setBusinessLoading(true);
+    setBusinessError(null);
+    setBusinessName('');
+
+    lookupEbarimt(fullRegno)
+      .then((result) => {
+        if (!active) return;
+        if (result.found && result.name) {
+          setBusinessName(result.name);
+        } else {
+          setBusinessError(t('bookingFlow.ebarimtNotFound'));
+        }
+      })
+      .catch(() => {
+        if (active) setBusinessError(t('bookingFlow.ebarimtConnectionError'));
+      })
+      .finally(() => {
+        if (active) setBusinessLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    formData.invoice_business_prefix1,
+    formData.invoice_business_prefix2,
+    formData.invoice_business_number,
+  ]);
+
+  useEffect(() => {
+    const { invoice_organization } = formData;
+
+    if (invoice_organization.length !== 7) {
+      return;
+    }
+
+    let active = true;
+    setOrgLoading(true);
+    setOrgError(null);
+    setOrgName('');
+
+    lookupEbarimt(invoice_organization)
+      .then((result) => {
+        if (!active) return;
+        if (result.found && result.name) {
+          setOrgName(result.name);
+        } else {
+          setOrgError(t('bookingFlow.ebarimtNotFound'));
+        }
+      })
+      .catch(() => {
+        if (active) setOrgError(t('bookingFlow.ebarimtConnectionError'));
+      })
+      .finally(() => {
+        if (active) setOrgLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.invoice_organization]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -50,9 +157,13 @@ export default function ProfilePage() {
     setFormData(prev => ({ ...prev, date_of_birth: value }));
   }, []);
 
+  const handleNationalityChange = useCallback((nationality: string) => {
+    setFormData(prev => ({ ...prev, nationality }));
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token) return;
+    if (!token || !user) return;
 
     setError('');
     setSuccess('');
@@ -65,6 +176,18 @@ export default function ProfilePage() {
         gender: formData.gender || undefined,
         date_of_birth: formData.date_of_birth || undefined,
       });
+
+      saveProfileExtras(user.id, {
+        nationality: formData.nationality,
+        invoice_individual: formData.invoice_individual,
+        invoice_business_prefix1: formData.invoice_business_prefix1,
+        invoice_business_prefix2: formData.invoice_business_prefix2,
+        invoice_business_number: formData.invoice_business_number,
+        invoice_business_name: businessName,
+        invoice_organization: formData.invoice_organization,
+        invoice_organization_name: orgName,
+      });
+
       await refreshProfile();
       setSuccess(t('Profile.updateSuccess', 'Мэдээлэл амжилттай шинэчлэгдлээ.'));
     } catch (err) {
@@ -86,9 +209,11 @@ export default function ProfilePage() {
     ? new Date(user.created_at).toLocaleDateString('mn-MN')
     : '';
 
+  const inputClass =
+    'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition';
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
-      {/* Header */}
       <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
         <h1 className="text-h2 font-semibold text-gray-900 dark:text-white">{t('Profile.title', 'Таны профайл')}</h1>
         {lastModified && (
@@ -109,7 +234,6 @@ export default function ProfilePage() {
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Left column */}
           <div className="space-y-5">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.lastName', 'Таны овог')}</label>
@@ -119,7 +243,7 @@ export default function ProfilePage() {
                 value={formData.last_name}
                 onChange={handleChange}
                 placeholder={t('Profile.lastNamePlaceholder', 'Овог')}
-                className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className={inputClass}
               />
             </div>
 
@@ -133,23 +257,13 @@ export default function ProfilePage() {
 
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.nationality', 'Иргэншил')}</label>
-              <div className="relative">
-                <select
-                  name="nationality"
-                  value={formData.nationality}
-                  onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none bg-white dark:bg-gray-700"
-                >
-                  {COUNTRIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">▾</span>
-              </div>
+              <NationalitySelect
+                value={formData.nationality}
+                onChange={handleNationalityChange}
+              />
             </div>
           </div>
 
-          {/* Right column */}
           <div className="space-y-5">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.firstName', 'Өөрийн нэр')}</label>
@@ -159,7 +273,7 @@ export default function ProfilePage() {
                 value={formData.first_name}
                 onChange={handleChange}
                 placeholder={t('Profile.firstNamePlaceholder', 'Нэр')}
-                className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                className={inputClass}
               />
             </div>
 
@@ -170,7 +284,7 @@ export default function ProfilePage() {
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition appearance-none"
+                  className={`${inputClass} appearance-none`}
                 >
                   <option value="">{t('Profile.genderSelect', 'Сонгох')}</option>
                   <option value="male">{t('Profile.male', 'Эрэгтэй')}</option>
@@ -183,36 +297,100 @@ export default function ProfilePage() {
 
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.invoiceLink', 'И-баримт холбох')}</label>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400 w-44 shrink-0">{t('Profile.individual', 'Хувь хүн')}</span>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1.5">{t('Profile.individual', 'Хувь хүн')}</p>
                   <input
                     type="text"
                     name="invoice_individual"
                     value={formData.invoice_individual}
-                    onChange={handleChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
+                      setFormData((prev) => ({ ...prev, invoice_individual: digits }));
+                    }}
+                    placeholder="00000000"
+                    maxLength={8}
+                    inputMode="numeric"
+                    className={inputClass}
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400 w-44 shrink-0">{t('Profile.business', 'Хувь хүн /бизнес эрхлэгч/')}</span>
-                  <input
-                    type="text"
-                    name="invoice_business"
-                    value={formData.invoice_business}
-                    onChange={handleChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                  />
+
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1.5">{t('Profile.business', 'Хувь хүн /бизнес эрхлэгч/')}</p>
+                  <div className="flex gap-2 min-w-0">
+                    <EbarimtCyrillicLetterSelect
+                      value={formData.invoice_business_prefix1}
+                      onChange={(letter) => {
+                        setFormData((prev) => ({ ...prev, invoice_business_prefix1: letter }));
+                        setBusinessName('');
+                        setBusinessError(null);
+                      }}
+                      placeholder={t('bookingFlow.ebarimtTaxPrefix1')}
+                    />
+                    <EbarimtCyrillicLetterSelect
+                      value={formData.invoice_business_prefix2}
+                      onChange={(letter) => {
+                        setFormData((prev) => ({ ...prev, invoice_business_prefix2: letter }));
+                        setBusinessName('');
+                        setBusinessError(null);
+                      }}
+                      placeholder={t('bookingFlow.ebarimtTaxPrefix2')}
+                    />
+                    <input
+                      type="text"
+                      value={formData.invoice_business_number}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
+                        setFormData((prev) => ({ ...prev, invoice_business_number: digits }));
+                        setBusinessName('');
+                        setBusinessError(null);
+                      }}
+                      placeholder="00000000"
+                      maxLength={8}
+                      inputMode="numeric"
+                      className={`${inputClass} min-w-0`}
+                    />
+                  </div>
+                  {businessLoading && (
+                    <p className="text-xs text-gray-500 mt-1">{t('bookingFlow.searching')}</p>
+                  )}
+                  {businessError && (
+                    <p className="text-xs text-red-500 mt-1">{businessError}</p>
+                  )}
+                  {businessName && (
+                    <div className="mt-1 p-2 bg-emerald-50 border border-emerald-200 rounded-md text-sm text-emerald-800 break-words">
+                      {businessName}
+                    </div>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400 w-44 shrink-0">{t('Profile.organization', 'Байгуулага')}</span>
+
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1.5">{t('Profile.organization', 'Байгуулага')}</p>
                   <input
                     type="text"
-                    name="invoice_organization"
                     value={formData.invoice_organization}
-                    onChange={handleChange}
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                    onChange={(e) => {
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 7);
+                      setFormData((prev) => ({ ...prev, invoice_organization: digits }));
+                      setOrgName('');
+                      setOrgError(null);
+                    }}
+                    placeholder="0000000"
+                    maxLength={7}
+                    inputMode="numeric"
+                    className={inputClass}
                   />
+                  {orgLoading && (
+                    <p className="text-xs text-gray-500 mt-1">{t('bookingFlow.searching')}</p>
+                  )}
+                  {orgError && (
+                    <p className="text-xs text-red-500 mt-1">{orgError}</p>
+                  )}
+                  {orgName && (
+                    <div className="mt-1 p-2 bg-emerald-50 border border-emerald-200 rounded-md text-sm text-emerald-800 break-words">
+                      {orgName}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
