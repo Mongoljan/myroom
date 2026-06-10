@@ -39,7 +39,7 @@ export default function BookingConfirmationManageActions({
 
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 sm:p-5 shadow-sm print:hidden">
-      <h3 className="text-sm font-semibold text-[#1a202c] dark:text-white mb-3">{t('bookingExtra.manageBookingTitle')}</h3>
+      <h3 className="text-[16px] font-semibold text-[#1a202c] dark:text-white mb-3">{t('bookingExtra.manageBookingTitle')}</h3>
       <div className="grid grid-cols-2 gap-2">
         {MANAGEMENT_ACTIONS.map((a) => {
           const Icon = a.icon;

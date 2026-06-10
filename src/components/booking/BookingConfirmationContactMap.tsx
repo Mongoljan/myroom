@@ -29,41 +29,48 @@ export default function BookingConfirmationContactMap({
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden shadow-sm print:hidden">
       {hasContact && (
         <div className="p-4 sm:p-5 border-b border-gray-200 dark:border-gray-700">
-          <h3 className="text-sm font-semibold text-[#1a202c] dark:text-white mb-3">{t('bookingExtra.contactHotelTitle')}</h3>
+          <h3 className="text-[16px] font-semibold text-[#1a202c] dark:text-white mb-3">{t('bookingExtra.contactHotelTitle')}</h3>
           <div className="space-y-2.5 text-sm">
             {addressLine && (
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-[#718096] shrink-0 mt-0.5" />
-                <span className="text-[#4a5568] dark:text-gray-300">{addressLine}</span>
+                <p className="text-[#2d3748] dark:text-gray-200 leading-snug">
+                  <span className="text-[#718096] dark:text-gray-400 font-medium">
+                    {t('bookingExtra.hotelAddressLabel', 'Буудлын хаяг')}:
+                  </span>{' '}
+                  {addressLine}
+                </p>
               </div>
             )}
             {hotelPhone && (
-              <div className="flex items-start gap-2">
-                <Phone className="w-3.5 h-3.5 text-[#718096] shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-[#718096] dark:text-gray-400 block text-xs mb-0.5">
-                    {t('bookingExtra.hotelPhoneLabel', 'Утас')}
-                  </span>
-                  <a href={`tel:${hotelPhone.replace(/\s/g, '')}`} className="text-[#2d3748] dark:text-gray-200 hover:underline font-medium">
+              <div className="flex  justify-between gap-2">
+             <div className="flex items-start gap-2">   <Phone className="w-3.5 h-3.5 text-[#718096] shrink-0 mt-0.5" />
+                <p className="text-[#2d3748] dark:text-gray-200 leading-snug">
+                  <span className="text-[#718096] dark:text-gray-400 font-medium">
+                    {t('bookingExtra.hotelPhoneLabel', 'Утас')}:
+                  </span>{' '}
+                 
+                </p>
+                </div>
+                <a href={`tel:${hotelPhone.replace(/\s/g, '')}`} className="hover:underline font-medium">
                     {hotelPhone}
                   </a>
-                </div>
               </div>
             )}
             {hotelEmail && (
-              <div className="flex items-start gap-2">
+              <div className="flex justify-between gap-2 min-w-0">
+                 <div className="flex items-start gap-2">  
                 <Mail className="w-3.5 h-3.5 text-[#718096] shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <span className="text-[#718096] dark:text-gray-400 block text-xs mb-0.5">
-                    {t('bookingExtra.hotelEmailLabel', 'И-мэйл')}
-                  </span>
-                  <a
-                    href={`mailto:${hotelEmail}`}
-                    className="text-[#2d3748] dark:text-gray-200 hover:underline truncate font-medium block"
-                  >
+                <p className="text-[#2d3748] dark:text-gray-200 leading-snug min-w-0">
+                  <span className="text-[#718096] dark:text-gray-400 font-medium">
+                    {t('bookingExtra.hotelEmailLabel', 'И-мэйл')}:
+                  </span>{' '}
+                  
+                </p>
+                </div>
+                <a href={`mailto:${hotelEmail}`} className="hover:underline font-medium break-all">
                     {hotelEmail}
                   </a>
-                </div>
               </div>
             )}
           </div>
@@ -71,13 +78,11 @@ export default function BookingConfirmationContactMap({
       )}
 
       {embedSrc && (
-        <div>
-          <div className="px-4 sm:px-5 py-3 border-b border-gray-200 dark:border-gray-700">
-            <h3 className="text-sm font-semibold text-[#1a202c] dark:text-white">{t('hotel.viewOnMap')}</h3>
-          </div>
+        <div className="px-4 sm:px-5 py-4 sm:py-5">
+          <h3 className="text-sm font-semibold text-[#1a202c] dark:text-white mb-3">{t('hotel.viewOnMap')}</h3>
           <iframe
             src={embedSrc}
-            className="w-full h-44 border-0 bg-[#eef0f3]"
+            className="w-full h-44 border-0 bg-[#eef0f3] rounded-lg"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             title={t('bookingExtra.hotelLocationMap')}
