@@ -208,7 +208,9 @@ export interface BookingActionResponse {
 export interface RoomType {
   id: number;
   name: string;
+  name_mn?: string;
   is_custom: boolean;
+  order?: number;
 }
 
 export interface BedType {
@@ -496,8 +498,10 @@ export interface OutdoorAndView {
 
 export interface RoomCategory {
   id: number;
-  name: string;
-  is_custom: boolean;
+  name_en: string;
+  name_mn: string;
+  is_custom?: boolean;
+  order?: number;
 }
 
 export interface AllData {

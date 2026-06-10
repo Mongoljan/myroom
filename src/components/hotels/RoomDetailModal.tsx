@@ -76,12 +76,18 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
   const { t, i18n } = useHydratedTranslation();
   const [imgIdx, setImgIdx] = useState(0);
 
-  // Language-aware category name
+  const locale = i18n.language === 'en' ? 'en' : 'mn';
   const categoryName = room
-    ? (i18n.language === 'en'
+    ? (locale === 'en'
         ? (room.roomCategoryNameEn || room.roomCategoryName)
         : (room.roomCategoryNameMn || room.roomCategoryName))
     : '';
+  const typeName = room
+    ? (locale === 'en'
+        ? (room.roomTypeNameEn || room.roomTypeName)
+        : (room.roomTypeNameMn || room.roomTypeName))
+    : '';
+  const fullRoomName = [categoryName, typeName].filter((part) => part && part !== 'Unknown').join(' ');
 
   useEffect(() => {
     if (isOpen) setImgIdx(0);
@@ -150,7 +156,7 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={room.roomTypeName}
+      aria-label={fullRoomName}
     >
       {/* Backdrop */}
       <div
@@ -164,12 +170,7 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
           <h2 className="text-[20px] font-semibold text-gray-900 dark:text-white truncate">
-            {room.roomTypeName}
-            {categoryName && categoryName !== 'Unknown' && (
-              <span className="ml-1 font-normal text-gray-500 dark:text-gray-400">
-                / {categoryName}
-              </span>
-            )}
+            {fullRoomName}
           </h2>
           <button
             onClick={onClose}
@@ -202,7 +203,7 @@ export default function RoomDetailModal({ room, isOpen, onClose }: RoomDetailMod
                   />
                   <SafeImage
                     src={images[imgIdx].image}
-                    alt={`${room.roomTypeName} ${imgIdx + 1}`}
+                    alt={`${fullRoomName} ${imgIdx + 1}`}
                     fill
                     className="object-contain z-10"
                   />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -26,6 +26,7 @@ import {
 import { clearQPaySession } from '@/utils/qpaySession';
 import {
   getCreateBookingTotal,
+  getSelectedRoomsGuestCapacity,
   syncRoomsFromCreateResponse,
 } from '@/utils/booking';
 import { getCheckInTimeDisplay, getCheckOutTimeDisplay } from '@/utils/policyFormatters';
@@ -36,6 +37,8 @@ import {
   parseBookingGuestFormErrors,
   type BookingGuestFormField,
 } from '@/utils/bookingGuestFormSchema';
+import { getLocaleCode, resolveRoomDisplayNameFromAllData } from '@/utils/roomNames';
+import type { AllData } from '@/types/api';
 
 function StepLabel({ labelKey }: { labelKey: string }) {
   const { t } = useHydratedTranslation();
@@ -82,7 +85,7 @@ function getGuestRatingDisplay(ratingStars?: { value?: string; label?: string } 
 }
 
 function BookingContent() {
-  const { t, tAny } = useHydratedTranslation();
+  const { t, tAny, i18n } = useHydratedTranslation();
   const { user, isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -101,6 +104,10 @@ function BookingContent() {
   // Parse rooms data from URL
   const roomsData = searchParams.get('rooms');
   const [rooms, setRooms] = useState<BookingRoom[]>([]);
+  const selectedGuestCapacity = useMemo(
+    () => getSelectedRoomsGuestCapacity(rooms),
+    [rooms]
+  );
 
   // Date state (read-only for display)
   const [checkIn] = useState(urlCheckIn);
@@ -148,6 +155,8 @@ function BookingContent() {
   // Promo code (UI only)
   const [promoCode, setPromoCode] = useState('');
   const [promoMessage, setPromoMessage] = useState<string | null>(null);
+
+  const [allRoomData, setAllRoomData] = useState<AllData | null>(null);
 
   // Hotel data state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -257,13 +266,15 @@ function BookingContent() {
       
       try {
         setLoadingHotelData(true);
-        const [hotelData, policyData] = await Promise.all([
+        const [hotelData, policyData, roomLookups] = await Promise.all([
           ApiService.getHotelDetails(hotelId).catch(() => null),
-          ApiService.getPropertyPolicies(hotelId).catch(() => [])
+          ApiService.getPropertyPolicies(hotelId).catch(() => []),
+          ApiService.getAllData().catch(() => null),
         ]);
 
         setHotelDetails(hotelData);
         setHotelPolicy(policyData[0] || null);
+        setAllRoomData(roomLookups);
       } catch {
         // silent fail — UI already handles missing hotel data
       } finally {
@@ -273,6 +284,39 @@ function BookingContent() {
 
     fetchHotelData();
   }, [hotelId]);
+
+  // Resolve full localized room names (category + type) from all-data
+  useEffect(() => {
+    if (!allRoomData || !roomsData) return;
+
+    let parsedRooms: BookingRoom[] = [];
+    try {
+      parsedRooms = JSON.parse(decodeURIComponent(roomsData));
+    } catch {
+      return;
+    }
+    if (!parsedRooms.length) return;
+
+    const locale = getLocaleCode(i18n.language);
+    setRooms((prev) => {
+      const source = prev.length === parsedRooms.length ? prev : parsedRooms;
+      return source.map((room, index) => {
+        const ids = parsedRooms[index] ?? room;
+        return {
+          ...room,
+          room_name:
+            resolveRoomDisplayNameFromAllData(
+              {
+                room_category_id: ids.room_category_id,
+                room_type_id: ids.room_type_id,
+              },
+              allRoomData,
+              locale
+            ) || room.room_name,
+        };
+      });
+    });
+  }, [allRoomData, i18n.language, roomsData]);
 
   // After create (or session restore), use API pricing as source of truth — not URL estimates
   useEffect(() => {
@@ -1241,8 +1285,8 @@ function BookingContent() {
               <div className="mb-4 text-sm text-gray-700 dark:text-gray-300">
                 <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('bookingFlow.guestCapacity')}</div>
                 <GuestCountInline
-                  adults={adultsCount}
-                  childCount={childrenCount}
+                  adults={selectedGuestCapacity.adults}
+                  childCount={selectedGuestCapacity.children}
                 />
               </div>
 

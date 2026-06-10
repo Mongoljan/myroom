@@ -16,6 +16,7 @@ import {
   restoreQPayInvoiceFromSession,
   saveQPayInvoiceSession,
 } from '@/utils/qpaySession';
+import { getSelectedRoomsGuestCapacity } from '@/utils/booking';
 
 interface BookingRoom {
   room_category_id: number;
@@ -104,6 +105,10 @@ export default function BookingPaymentStep({
   onPaymentConfirmed,
 }: BookingPaymentStepProps) {
   const { t, tAny } = useHydratedTranslation();
+  const selectedGuestCapacity = useMemo(
+    () => getSelectedRoomsGuestCapacity(rooms),
+    [rooms]
+  );
 
   const PAYMENT_TABS: Array<{ id: PaymentMethod; label: string }> = useMemo(() => [
     { id: 'bankApp', label: t('payment.methods.bankApp') },
@@ -524,8 +529,8 @@ export default function BookingPaymentStep({
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-gray-500 dark:text-gray-400">{t('payment.guestCapacity')}</span>
               <GuestCountInline
-                adults={adultsCount}
-                childCount={Number(childrenCount) || 0}
+                adults={selectedGuestCapacity.adults}
+                childCount={selectedGuestCapacity.children}
                 className="text-sm text-gray-700 dark:text-gray-300"
                 iconClassName="w-4 h-4 text-gray-500 dark:text-gray-400"
               />

@@ -30,6 +30,7 @@ import SafeImage from '@/components/common/SafeImage';
 import { EnrichedHotelRoom, PriceBreakdown } from '@/services/hotelRoomsApi';
 import { CancellationFee } from '@/types/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { getLocalizedFullRoomName } from '@/utils/roomNames';
 import RoomDetailModal from './RoomDetailModal';
 
 export interface RoomPriceOptions {
@@ -207,10 +208,9 @@ export default function TripComStyleRoomCard({
 
   if (!priceOptions) return null;
 
-  // Language-aware category name (falls back to MN)
-  const categoryName = i18n.language === 'en'
-    ? (room.roomCategoryNameEn || room.roomCategoryName)
-    : (room.roomCategoryNameMn || room.roomCategoryName);
+  const locale = i18n.language === 'en' ? 'en' : 'mn';
+  const englishFullName = getLocalizedFullRoomName(room, 'en');
+  const mongolianFullName = getLocalizedFullRoomName(room, 'mn');
 
   const selectedQty =
     bookingItems.find((i) => i.room.id === room.id && i.priceType === 'base')?.quantity ?? 0;
@@ -257,12 +257,14 @@ export default function TripComStyleRoomCard({
         <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-gray-100 dark:border-gray-700">
           <div className="" >
    
-      <h3 className="text-[18px] font-bold text-gray-900 dark:text-white leading-tight pb-1 border-b border-solid border-gray-200 mb-1">  {room.roomCategoryNameEn } { room.roomTypeName}</h3>   
-        
-     <div className="text-[14px] leading-tight text-gray-500 dark:text-gray-400">   {i18n.language === 'mn' &&
-  `${room.roomCategoryNameMn} ${room.roomTypeName}`
-  
-}</div>  
+      <h3 className="text-[18px] font-bold text-gray-900 dark:text-white leading-tight pb-1 border-b border-solid border-gray-200 mb-1">
+        {englishFullName}
+      </h3>
+      {locale === 'mn' && mongolianFullName && mongolianFullName !== englishFullName && (
+        <div className="text-[14px] leading-tight text-gray-500 dark:text-gray-400 font-normal">
+          {mongolianFullName}
+        </div>
+      )}
    </div>
      
           {isLowStock && (
@@ -288,7 +290,7 @@ export default function TripComStyleRoomCard({
                 <>
                   <SafeImage
                     src={images[imageIndex].image}
-                    alt={room.roomTypeName}
+                    alt={englishFullName}
                     fill
                     className="object-cover transition-transform group-hover:scale-105"
                   />

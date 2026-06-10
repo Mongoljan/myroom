@@ -21,6 +21,7 @@ import SafeImage from '@/components/common/SafeImage';
 import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import type { EnrichedHotelRoom } from '@/services/hotelRoomsApi';
+import { getLocalizedFullRoomName } from '@/utils/roomNames';
 
 interface RoomDetailsModalProps {
   open: boolean;
@@ -70,6 +71,7 @@ export default function RoomDetailsModal({ open, onOpenChange, room }: RoomDetai
     },
   ];
 
+  const fullRoomName = getLocalizedFullRoomName(room, locale);
   const images = room.images || [];
   const goPrev = () => setImageIdx((i) => (i === 0 ? images.length - 1 : i - 1));
   const goNext = () => setImageIdx((i) => (i === images.length - 1 ? 0 : i + 1));
@@ -77,16 +79,13 @@ export default function RoomDetailsModal({ open, onOpenChange, room }: RoomDetai
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-5xl w-[95vw] p-0 border border-slate-200 dark:border-slate-700 bg-white dark:bg-gray-900 text-slate-900 dark:text-white shadow-2xl rounded-2xl overflow-hidden">
-        <DialogTitle className="sr-only">{room.roomTypeName}</DialogTitle>
+        <DialogTitle className="sr-only">{fullRoomName}</DialogTitle>
 
         <div className="flex flex-col max-h-[90vh]">
           {/* Header */}
           <div className="flex items-start justify-between gap-4 px-5 py-4 border-b border-slate-200 dark:border-slate-700">
             <div className="min-w-0">
-              <h2 className="text-h3 font-bold text-gray-900 dark:text-white truncate">{room.roomTypeName}</h2>
-              {room.roomCategoryName && room.roomCategoryName !== 'Unknown' && (
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{room.roomCategoryName}</p>
-              )}
+              <h2 className="text-h3 font-bold text-gray-900 dark:text-white truncate">{fullRoomName}</h2>
             </div>
             <DialogClose asChild>
               <button
@@ -106,7 +105,7 @@ export default function RoomDetailsModal({ open, onOpenChange, room }: RoomDetai
                 <div className="relative w-full aspect-[16/9] bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
                   <SafeImage
                     src={images[imageIdx].image}
-                    alt={`${room.roomTypeName} ${imageIdx + 1}`}
+                    alt={`${fullRoomName} ${imageIdx + 1}`}
                     fill
                     className="object-cover"
                   />

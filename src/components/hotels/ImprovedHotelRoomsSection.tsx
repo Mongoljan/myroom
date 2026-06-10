@@ -13,6 +13,7 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import DateRangePicker from '@/components/common/DateRangePicker';
 import CustomGuestSelector from '@/components/search/CustomGuestSelector';
 import { HotelRoomsSectionSkeleton } from '@/components/skeletons';
+import { getLocaleCode, getLocalizedFullRoomName } from '@/utils/roomNames';
 
 interface ImprovedHotelRoomsSectionProps {
   hotelId: number;
@@ -31,7 +32,7 @@ export default function ImprovedHotelRoomsSection({
   checkOut,
   initialPolicies,
 }: ImprovedHotelRoomsSectionProps) {
-  const { t } = useHydratedTranslation();
+  const { t, i18n } = useHydratedTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -316,11 +317,12 @@ export default function ImprovedHotelRoomsSection({
     const nights = calculateNights();
 
     // Prepare rooms data for booking page
+    const locale = getLocaleCode(i18n.language);
     const roomsData = bookingItems.map(item => ({
       room_category_id: item.room.room_category,
       room_type_id: item.room.room_type,
       room_count: item.quantity,
-      room_name: item.room.roomTypeName,
+      room_name: getLocalizedFullRoomName(item.room, locale),
       price_per_night: item.price,
       total_price: item.price * item.quantity * nights,
       max_adults: item.room.adultQty ?? 1,

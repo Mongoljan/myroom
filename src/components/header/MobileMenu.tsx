@@ -14,6 +14,9 @@ const MobileMenu = () => {
     { label: t('navigation.hotels', 'Hotels'), href: '/search' },
     { label: t('navigation.destinations', 'Destinations'), href: '/destinations' },
     { label: t('navigation.contact', 'Contact'), href: '/contact' },
+    ...(!isAuthenticated
+      ? [{ label: t('navigation.manageBooking', 'Захиалга шалгах'), href: '/booking/manage' }]
+      : []),
   ];
 
   const handleLogout = async () => {

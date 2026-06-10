@@ -28,7 +28,8 @@ interface RoomCardProps {
 
 
 export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: RoomCardProps) {
-  const { t } = useHydratedTranslation();
+  const { t, i18n } = useHydratedTranslation();
+  const locale = i18n.language === 'en' ? 'en' : 'mn';
   const [availability, setAvailability] = useState<AvailabilityResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
@@ -85,7 +86,9 @@ export default function RoomCard({ room, hotelId, checkIn, checkOut, onBook }: R
 
   // Helper functions to get names from IDs
   const getRoomTypeName = (typeId: number) => {
-  return roomData?.room_types.find(type => type.id === typeId)?.name || `Room Type ${typeId}`;
+    const type = roomData?.room_types.find((item) => item.id === typeId);
+    if (!type) return `Room Type ${typeId}`;
+    return locale === 'en' ? type.name : (type.name_mn || type.name);
   };
 
   const getBedTypeName = (bedTypeId: number | undefined) => {

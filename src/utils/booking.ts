@@ -25,6 +25,25 @@ export const calculateBookingTotal = (
   }, 0);
 };
 
+/** Total guest capacity from selected rooms (per-room max × room count). */
+export function getSelectedRoomsGuestCapacity(
+  rooms: Array<{ room_count: number; max_adults?: number; max_children?: number }>
+): { adults: number; children: number } {
+  return {
+    adults: rooms.reduce((sum, room) => sum + (room.max_adults ?? 1) * room.room_count, 0),
+    children: rooms.reduce((sum, room) => sum + (room.max_children ?? 0) * room.room_count, 0),
+  };
+}
+
+export function getBookingItemsGuestCapacity(
+  items: Array<{ room: { adultQty?: number; childQty?: number }; quantity: number }>
+): { adults: number; children: number } {
+  return {
+    adults: items.reduce((sum, item) => sum + (item.room.adultQty ?? 1) * item.quantity, 0),
+    children: items.reduce((sum, item) => sum + (item.room.childQty ?? 0) * item.quantity, 0),
+  };
+}
+
 type BreakfastPriceKey = 'without_breakfast' | 'with_breakfast';
 
 export interface BookingRoomPricingFields {

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { LogOut, Settings, ChevronDown, Moon, Sun, CalendarDays, Heart, Star, BookOpen } from "lucide-react";
+import { LogOut, Settings, ChevronDown, Moon, Sun, CalendarDays, Heart, Star } from "lucide-react";
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { TYPOGRAPHY } from '@/styles/containers';
 import { useAuth } from '@/contexts/AuthContext';
@@ -75,15 +75,17 @@ const Header1 = () => {
                 </div>
               </div>
 
-              {/* Check Order Link */}
-              <div className="hidden lg:flex items-center mr-6">
-                <Link
-                  href="/booking/manage"
-                  className={`text-gray-900 dark:text-gray-100 hover:text-primary transition-colors ${TYPOGRAPHY.nav.primary} font-medium`}
-                >
-                  {t('navigation.manageBooking')}
-                </Link>
-              </div>
+              {/* Check Order Link — guests only (signed-in users manage bookings from profile) */}
+              {!isAuthenticated && (
+                <div className="hidden lg:flex items-center mr-6">
+                  <Link
+                    href="/booking/manage"
+                    className={`text-gray-900 dark:text-gray-100 hover:text-primary transition-colors ${TYPOGRAPHY.nav.primary} font-medium`}
+                  >
+                    {t('navigation.manageBooking')}
+                  </Link>
+                </div>
+              )}
 
               {/* Theme Toggle */}
               <button
@@ -181,14 +183,6 @@ const Header1 = () => {
                             >
                               <Star className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                               {t('navigation.myReviews', 'Үнэлгээнүүд')}
-                            </Link>
-                            <Link
-                              href="/booking/manage"
-                              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                              onClick={() => setProfileMenuOpen(false)}
-                            >
-                              <BookOpen className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                              {t('navigation.manageBooking', 'Захиалга шалгах')}
                             </Link>
                           </div>
 

@@ -4,6 +4,8 @@ import { X, Plus, Minus } from 'lucide-react';
 import { BookingItem } from './RoomCard';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import GuestCountInline from '@/components/common/GuestCountInline';
+import { getLocaleCode, getLocalizedFullRoomName } from '@/utils/roomNames';
+import { getBookingItemsGuestCapacity } from '@/utils/booking';
 
 interface BookingSummaryProps {
   items: BookingItem[];
@@ -32,12 +34,10 @@ export default function BookingSummary({
   onRemoveRoom,
   onBookNow
 }: BookingSummaryProps) {
-  const { t } = useHydratedTranslation();
+  const { t, i18n } = useHydratedTranslation();
+  const locale = getLocaleCode(i18n.language);
   const totalPriceWithNights = totalPrice * nights;
-
-  // Calculate total capacity of selected rooms
-  const totalAdultCapacity = items.reduce((sum, item) => sum + (item.room.adultQty || 0) * item.quantity, 0);
-  const totalChildCapacity = items.reduce((sum, item) => sum + (item.room.childQty || 0) * item.quantity, 0);
+  const selectedGuestCapacity = getBookingItemsGuestCapacity(items);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 sticky top-20 max-h-[calc(100vh-88px)] overflow-y-auto">
@@ -74,7 +74,7 @@ export default function BookingSummary({
                 {/* Row 1: Room name + remove */}
                 <div className="flex justify-between items-center">
                   <h4 className="font-semibold text-gray-900 dark:text-white text-sm leading-tight">
-                {item.room.roomCategoryNameEn}    {item.room.roomTypeName} 
+                {getLocalizedFullRoomName(item.room, locale)}
                   </h4>
                   <button
                     onClick={() => onRemoveRoom(item.room.id, item.priceType)}
@@ -137,8 +137,8 @@ export default function BookingSummary({
             <div className="flex justify-between items-center text-sm mt-2 mb-2">
               <span className="font-bold">Нийт хүний тоо:</span>
               <GuestCountInline
-                adults={totalAdultCapacity}
-                childCount={totalChildCapacity}
+                adults={selectedGuestCapacity.adults}
+                childCount={selectedGuestCapacity.children}
                 className="font-bold text-sm"
               />
             </div>

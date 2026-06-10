@@ -33,7 +33,9 @@ export interface OutdoorAndView {
 export interface RoomType {
   id: number;
   name: string;
+  name_mn?: string;
   is_custom: boolean;
+  order?: number;
 }
 
 export interface BedType {
@@ -142,6 +144,8 @@ export interface AllRoomData {
 
 export interface EnrichedHotelRoom extends HotelRoom {
   roomTypeName: string;
+  roomTypeNameEn: string;
+  roomTypeNameMn: string;
   bedTypeName: string;
   roomCategoryName: string;    // MN (default)
   roomCategoryNameEn: string; // EN
@@ -302,6 +306,8 @@ class HotelRoomsService {
       ...room,
       bed_details: normalizedBedDetails,
       roomTypeName: roomType?.name || 'Unknown',
+      roomTypeNameEn: roomType?.name || 'Unknown',
+      roomTypeNameMn: roomType?.name_mn || roomType?.name || 'Unknown',
       bedTypeName,
       roomCategoryName: roomCategory?.name_mn || 'Unknown',
       roomCategoryNameMn: roomCategory?.name_mn || 'Unknown',

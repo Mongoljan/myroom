@@ -6,6 +6,7 @@ import { BedTypeIcon } from '@/utils/bedTypeIcons';
 import SafeImage from '@/components/common/SafeImage';
 import { EnrichedHotelRoom, PriceBreakdown, RoomFacility } from '@/services/hotelRoomsApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { getLocaleCode, getLocalizedFullRoomName } from '@/utils/roomNames';
 
 export interface RoomPriceOptions {
   basePrice: number; // Final customer-facing price (final_customer_price)
@@ -46,7 +47,8 @@ export default function RoomCard({
   nights = 1,
   showOnlyBasePrice = false
 }: RoomCardProps) {
-  const { t } = useHydratedTranslation();
+  const { t, i18n } = useHydratedTranslation();
+  const fullRoomName = getLocalizedFullRoomName(room, getLocaleCode(i18n.language));
   
   const getRoomQuantity = (priceType: 'base' | 'halfDay' | 'singlePerson'): number => {
     const item = bookingItems.find(item => item.room.id === room.id && item.priceType === priceType);
@@ -85,7 +87,7 @@ export default function RoomCard({
       <div className="px-5 pt-4 pb-3 border-b border-gray-100 dark:border-gray-700">
         <div className="flex items-baseline flex-wrap gap-x-2 gap-y-1">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            {room.roomTypeName}
+            {fullRoomName}
           </h3>
           {room.number_of_rooms_to_sell > 0 && room.number_of_rooms_to_sell <= 5 && (
             <span className="text-sm font-semibold text-red-600 dark:text-red-400">
@@ -93,9 +95,6 @@ export default function RoomCard({
             </span>
           )}
         </div>
-        {room.roomCategoryName && room.roomCategoryName !== 'Unknown' && (
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{room.roomCategoryName}</p>
-        )}
       </div>
 
       <div className="flex flex-col lg:flex-row gap-5 p-5">
@@ -110,7 +109,7 @@ export default function RoomCard({
             {room.images && room.images.length > 0 ? (
               <SafeImage
                 src={room.images[0].image}
-                alt={room.roomTypeName}
+                alt={fullRoomName}
                 fill
                 className="object-cover"
               />
@@ -127,7 +126,7 @@ export default function RoomCard({
                 const isLast = idx === 1 && room.images.length > 3;
                 return (
                   <div key={idx} className="relative rounded-md overflow-hidden bg-gray-100 dark:bg-gray-700">
-                    <SafeImage src={img.image} alt={`${room.roomTypeName} ${idx + 2}`} fill className="object-cover" />
+                    <SafeImage src={img.image} alt={`${fullRoomName} ${idx + 2}`} fill className="object-cover" />
                     {isLast && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-sm font-semibold gap-1">
                         <ImageIcon className="w-3.5 h-3.5" />
