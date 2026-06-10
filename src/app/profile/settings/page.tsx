@@ -47,7 +47,7 @@ export default function SettingsPage() {
   }, [settings.language, i18n]);
 
   useEffect(() => {
-    const hasChanged = 
+    const hasChanged =
       localSettings.currency !== settings.currency ||
       localSettings.language !== settings.language ||
       localSettings.email_booking_confirmed !== settings.email_booking_confirmed ||
@@ -73,7 +73,7 @@ export default function SettingsPage() {
     setSaveError('');
     try {
       const updates: CustomerSettingsUpdateRequest = {};
-      
+
       if (localSettings.currency !== settings.currency) updates.currency = localSettings.currency;
       if (localSettings.language !== settings.language) updates.language = localSettings.language;
       if (localSettings.email_booking_confirmed !== settings.email_booking_confirmed) updates.email_booking_confirmed = localSettings.email_booking_confirmed;
@@ -122,17 +122,15 @@ export default function SettingsPage() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+      {/* Header */}
       <div className="px-6 py-5">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-h2 font-semibold text-gray-900 dark:text-gray-100">
               {t('settings.title')}
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {t('settings.description')}
-            </p>
           </div>
-          
+
           {hasChanges && (
             <div className="flex items-center gap-3">
               {saveSuccess && (
@@ -161,31 +159,31 @@ export default function SettingsPage() {
             </div>
           )}
         </div>
-        
+
         {saveError && (
           <p className="text-sm text-red-600 dark:text-red-400 mt-2">{saveError}</p>
         )}
       </div>
 
+      {/* Language & Currency */}
       <div className="px-6 py-5">
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
           {t('settings.languageCurrency')}
         </h2>
         <div className="space-y-4">
+          <div className="h-px bg-gray-200 dark:bg-gray-700" />
           <div className="flex items-center justify-between">
-            <div>
-              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {t('settings.currency')}
-              </label>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                {t('settings.currencyDescription')}
-              </p>
-            </div>
-            <div className="relative">
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              {t('settings.currency')}
+            </label>
+            <div className="relative ml-auto flex items-center text-sm text-gray-800 dark:text-gray-200">
+              <span className="pr-5 font-normal">
+                {CURRENCY_SYMBOLS[localSettings.currency]} {localSettings.currency} - {t(`settings.currencies.${localSettings.currency}`)}
+              </span>
               <select
                 value={localSettings.currency}
                 onChange={(e) => handleSettingChange('currency', e.target.value as Currency)}
-                className="text-sm text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-10 appearance-none bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none transition min-w-[140px]"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-sm"
               >
                 {CURRENCY_CODES.map((currency) => (
                   <option key={currency} value={currency}>
@@ -193,24 +191,22 @@ export default function SettingsPage() {
                   </option>
                 ))}
               </select>
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">▾</span>
+              <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 text-sm">▾</span>
             </div>
           </div>
-          
+          <div className="h-px bg-gray-200 dark:bg-gray-700" />
           <div className="flex items-center justify-between">
-            <div>
-              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                {t('settings.language')}
-              </label>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                {t('settings.languageDescription')}
-              </p>
-            </div>
-            <div className="relative">
+            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              {t('settings.language')}
+            </label>
+            <div className="relative ml-auto flex items-center text-sm text-gray-800 dark:text-gray-200">
+              <span className="pr-5 font-normal">
+                {t(`settings.languages.${localSettings.language}`)}
+              </span>
               <select
                 value={localSettings.language}
                 onChange={(e) => handleSettingChange('language', e.target.value as Language)}
-                className="text-sm text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 pr-10 appearance-none bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 outline-none transition min-w-[120px]"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer text-sm"
               >
                 {LANGUAGE_CODES.map((lang) => (
                   <option key={lang} value={lang}>
@@ -218,17 +214,20 @@ export default function SettingsPage() {
                   </option>
                 ))}
               </select>
-              <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">▾</span>
+              <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 text-sm">▾</span>
             </div>
           </div>
+          <div className="h-px bg-gray-200 dark:bg-gray-700" />
         </div>
       </div>
 
+      {/* Email Settings */}
       <div className="px-6 py-5">
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-          {t('settings.emailNotifications')}
+          {t('settings.emailSettings')}
         </h2>
         <div className="space-y-4">
+          <div className="h-px bg-gray-200 dark:bg-gray-700" />
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
@@ -248,93 +247,116 @@ export default function SettingsPage() {
               <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
             </label>
           </div>
-
+          <div className="h-px bg-gray-200 dark:bg-gray-700" />
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                {t('settings.marketingEmails')}
+                {t('settings.reviewEmails')}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                {t('settings.marketingEmailsDesc')}
+                {t('settings.reviewEmailsDesc')}
+              </p>
+            </div>
+          </div>
+          <div className="h-px bg-gray-200 dark:bg-gray-700" />
+        </div>
+      </div>
+
+      {/* Notifications */}
+      <div className="px-6 py-5">
+        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+          {t('settings.notifications')}
+        </h2>
+        <div className="space-y-4">
+          <div className="h-px bg-gray-200 dark:bg-gray-700" />
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                {t('settings.notificationReceiveDesc')}
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={!localSettings.email_unsubscribe}
-                onChange={(e) => handleSettingChange('email_unsubscribe', !e.target.checked)}
+                checked={localSettings.notification_enabled}
+                onChange={(e) => handleSettingChange('notification_enabled', e.target.checked)}
                 className="sr-only peer"
               />
               <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
             </label>
           </div>
+          <div className="h-px bg-gray-200 dark:bg-gray-700" />
         </div>
       </div>
 
+      {/* Delete Account */}
       <div className="px-6 py-5">
         <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-          {t('settings.accountManagement')}
+          {t('settings.deleteAccount')}
         </h2>
+        <div className="h-px bg-gray-200 dark:bg-gray-700 mb-4" />
 
-          {deleteStep === 'idle' && (
-            <div className="space-y-3">
+        {deleteStep === 'idle' && (
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {t('settings.deleteAccountWarning')}
+            </p>
+            <button
+              onClick={() => setDeleteStep('confirm')}
+              className="ml-6 shrink-0 text-sm font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+            >
+              {t('settings.deleteAccount')}
+            </button>
+          </div>
+        )}
+
+        {deleteStep === 'confirm' && (
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+                {t('settings.confirmDelete')}
+              </p>
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder={t('settings.passwordPlaceholder')}
+                className="w-full px-3 py-2 border border-red-300 dark:border-red-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none dark:bg-gray-700 dark:text-gray-200"
+              />
+            </div>
+
+            {deleteError && (
+              <p className="text-sm text-red-600 dark:text-red-400">{deleteError}</p>
+            )}
+
+            <div className="flex gap-3">
               <button
-                onClick={() => setDeleteStep('confirm')}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
+                onClick={() => {
+                  setDeleteStep('idle');
+                  setDeletePassword('');
+                  setDeleteError('');
+                }}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
-                {t('settings.deleteAccount')}
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting || !deletePassword}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    {t('settings.deleting')}
+                  </>
+                ) : (
+                  t('settings.deleteAccountConfirm')
+                )}
               </button>
             </div>
-          )}
-
-          {deleteStep === 'confirm' && (
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-red-600 dark:text-red-400 mb-2">
-                  {t('settings.confirmDelete')}
-                </p>
-                <input
-                  type="password"
-                  value={deletePassword}
-                  onChange={(e) => setDeletePassword(e.target.value)}
-                  placeholder={t('settings.passwordPlaceholder')}
-                  className="w-full px-3 py-2 border border-red-300 dark:border-red-600 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none dark:bg-gray-700 dark:text-gray-200"
-                />
-              </div>
-              
-              {deleteError && (
-                <p className="text-sm text-red-600 dark:text-red-400">{deleteError}</p>
-              )}
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setDeleteStep('idle');
-                    setDeletePassword('');
-                    setDeleteError('');
-                  }}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  onClick={handleDelete}
-                  disabled={isDeleting || !deletePassword}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white rounded-lg transition-colors disabled:cursor-not-allowed flex items-center gap-2"
-                >
-                  {isDeleting ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      {t('settings.deleting')}
-                    </>
-                  ) : (
-                    t('settings.deleteAccountConfirm')
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-     
+          </div>
+        )}
       </div>
     </div>
   );
