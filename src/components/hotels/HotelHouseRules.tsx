@@ -5,7 +5,7 @@ import { Calendar, Info, Loader2, AlertCircle, Car, Coffee, Baby, PawPrint, Cred
 import { formatPolicyTimeRange, getCheckInTimeDisplay, getCheckOutTimeDisplay } from '@/utils/policyFormatters';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
-import { PropertyPolicy, PropertyBasicInfo } from '@/types/api';
+import { PropertyPolicy, PropertyBasicInfo, AcceptedCard } from '@/types/api';
 
 interface HotelHouseRulesProps {
   hotelId: number;
@@ -20,6 +20,7 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
   const [loading, setLoading] = useState(!initialPolicies);
   const [error, setError] = useState<string | null>(null);
   const [spokenLanguages, setSpokenLanguages] = useState<string[]>([]);
+  const [acceptedCards, setAcceptedCards] = useState<AcceptedCard[]>([]);
 
   useEffect(() => {
     if (!basicInfo) return;
@@ -40,6 +41,34 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
         setSpokenLanguages(['Монгол']);
       });
   }, [basicInfo]);
+
+  useEffect(() => {
+    const policy = policies[0];
+    if (!policy) return;
+
+    if (Array.isArray(policy.accepted_cards) && policy.accepted_cards.length > 0) {
+      setAcceptedCards([...policy.accepted_cards].sort((a, b) => a.order - b.order));
+      return;
+    }
+
+    const cardIds = policy.accepted_card_ids;
+    if (!cardIds?.length) {
+      setAcceptedCards([]);
+      return;
+    }
+
+    ApiService.getCombinedData()
+      .then((data) => {
+        const cardMap = new Map((data.acceptedCardType ?? []).map((card) => [card.id, card]));
+        const resolved = cardIds
+          .map((id) => cardMap.get(id))
+          .filter(Boolean) as AcceptedCard[];
+        setAcceptedCards(resolved.sort((a, b) => a.order - b.order));
+      })
+      .catch(() => {
+        setAcceptedCards([]);
+      });
+  }, [policies]);
 
   useEffect(() => {
     // Skip fetch if policies were passed in from the server component
@@ -331,16 +360,24 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
                 <div>Тэжээвэр амьтан авчрахыг зөвшөөрдөггүй.</div>
               </Row>
 
-              {/* 8. Payment methods — static */}
-              <Row icon={<CreditCard className="w-4 h-4" />} title="Зөвшөөрөх төлбөрийн хэрэгсэл">
-                <div className="flex flex-wrap gap-2 items-center">
-                  {['Visa', 'Mastercard', 'JCB', 'UnionPay', 'Cash'].map((m) => (
-                    <span key={m} className="inline-flex items-center px-2 py-0.5 rounded border border-gray-300 dark:border-gray-600 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
-                      {m}
-                    </span>
-                  ))}
-                </div>
-              </Row>
+              {/* 8. Payment methods */}
+              {acceptedCards.length > 0 && (
+                <Row icon={<CreditCard className="w-4 h-4" />} title="Зөвшөөрөх төлбөрийн хэрэгсэл">
+                  <div className="flex flex-wrap gap-2 items-center">
+                    {acceptedCards.map((card) => (
+                      <span
+                        key={card.id}
+                        className="inline-flex items-center   rounded  dark:border-gray-600 text-xs font-medium ">
+                      
+                        {card.icon ? (
+                          <img src={card.icon} alt={card.name} className="h-9 w-auto object-contain" />
+                        ) : null}
+                
+                      </span>
+                    ))}
+                  </div>
+                </Row>
+              )}
             </>
           );
         })()}

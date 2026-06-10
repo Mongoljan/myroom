@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Star, MapPin, Copy, Check, Clock, QrCode } from 'lucide-react';
-import GuestCountInline from '@/components/common/GuestCountInline';
+import BookingSidebarRoomsSection from '@/components/booking/BookingSidebarRoomsSection';
 import InvoiceTypeDialog from './InvoiceTypeDialog';
 import InvoiceModal from './InvoiceModal';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -27,6 +27,7 @@ interface BookingRoom {
   total_price: number;
   max_adults?: number;
   max_children?: number;
+  include_breakfast?: boolean;
 }
 
 interface BookingPaymentStepProps {
@@ -442,7 +443,7 @@ export default function BookingPaymentStep({
             className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 sticky top-6"
           >
             <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
-              {t('payment.bookingSummary')}
+              {t('bookingFlow.bookingSummary')}
             </h3>
 
             {/* Hotel summary */}
@@ -511,37 +512,17 @@ export default function BookingPaymentStep({
               </div>
             </div>
 
-            {/* Rooms */}
-            <div className="mb-3">
-              <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('payment.selectedRooms')}</div>
-              {rooms.map((room, i) => (
-                <div key={i} className="flex justify-between items-center py-1">
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white truncate pr-2">
-                    {room.room_name}
-                  </span>
-                  <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                    {t('payment.roomCount', { count: room.room_count })}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <BookingSidebarRoomsSection
+              rooms={rooms}
+              selectedRoomsLabel={t('bookingFlow.selectedRooms')}
+              basePriceLabel={t('bookingFlow.basePrice')}
+              totalPrice={totalPrice}
+              adultCapacity={selectedGuestCapacity.adults}
+              childCapacity={selectedGuestCapacity.children}
+              guestCapacityLabel={t('bookingFlow.guestCapacity')}
+            />
 
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs text-gray-500 dark:text-gray-400">{t('payment.guestCapacity')}</span>
-              <GuestCountInline
-                adults={selectedGuestCapacity.adults}
-                childCount={selectedGuestCapacity.children}
-                className="text-sm text-gray-700 dark:text-gray-300"
-                iconClassName="w-4 h-4 text-gray-500 dark:text-gray-400"
-              />
-            </div>
-
-            {/* Pricing */}
             <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1.5 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">{t('payment.basePrice')}</span>
-                <span className="text-gray-900 dark:text-white">{totalPrice.toLocaleString()} ₮</span>
-              </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600 dark:text-gray-400">{t('payment.coupon')}</span>
                 <span className="text-gray-900 dark:text-white">0 ₮</span>

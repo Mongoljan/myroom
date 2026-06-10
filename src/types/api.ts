@@ -296,6 +296,12 @@ export interface CombinedData {
     languages_name_en: string;
     languages_name_mn: string;
   }>;
+  acceptedCardType: Array<{
+    id: number;
+    name: string;
+    icon: string;
+    order: number;
+  }>;
 }
 
 // Hotel search types
@@ -567,6 +573,13 @@ export interface BreakfastPolicy {
   breakfast_type: string | number;
 }
 
+export interface AcceptedCard {
+  id: number;
+  name: string;
+  icon: string;
+  order: number;
+}
+
 export interface PropertyPolicy {
   id: number;
   property: number;
@@ -580,6 +593,9 @@ export interface PropertyPolicy {
   child_policy: ChildPolicy | null;
   pet_policy?: boolean;
   min_guest_age?: number;
+  languages?: number[];
+  accepted_card_ids?: number[];
+  accepted_cards?: AcceptedCard[];
 }
 
 // Suggested Hotels API Types

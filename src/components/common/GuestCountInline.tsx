@@ -18,7 +18,7 @@ export default function GuestCountInline({
   showLabels = true,
 }: GuestCountInlineProps) {
   return (
-    <span className={`inline-flex items-center flex-wrap gap-x-2 gap-y-0.5 ${className}`}>
+    <span className={`inline-flex items-center gap-x-2 whitespace-nowrap ${className}`}>
       {adults > 0 && (
         <span className="inline-flex items-center gap-0.5">
           <User className={iconClassName} strokeWidth={2} />

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useMotionValue, useMotionTemplate, motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import BackButton from '@/components/common/BackButton';
 
 import EnhancedHotelDetail from '@/components/hotels/EnhancedHotelDetail';
@@ -16,7 +16,14 @@ import { CanvasRevealEffect } from '@/components/ui/canvas-reveal-effect';
 import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
+import { ApiService } from '@/services/api';
 import { SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, HotelFacility, PropertyImage, CancellationFee, PropertyPolicy, getRoomSellingPrice } from '@/types/api';
+
+const STRUCTURED_LOCATION_PARAMS = ['province_id', 'soum_id', 'name_id', 'district', 'location'] as const;
+
+function hasStructuredLocationParam(params: URLSearchParams): boolean {
+  return STRUCTURED_LOCATION_PARAMS.some((key) => params.get(key));
+}
 
 interface HotelPageContentProps {
   hotel: SearchHotelResult;
@@ -38,6 +45,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
   const { addRecentlyViewed } = useRecentlyViewed();
   const { t } = useHydratedTranslation();
   const router = useRouter();
+  const urlSearchParams = useSearchParams();
   const bannerMouseX = useMotionValue(0);
   const bannerMouseY = useMotionValue(0);
   const [isBannerHovered, setIsBannerHovered] = useState(false);
@@ -46,6 +54,39 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
   const handleSectionChange = useCallback((section: string) => {
     setActiveSection(section);
   }, []);
+
+  const handleBackToSearch = useCallback(async () => {
+    const params = new URLSearchParams(urlSearchParams.toString());
+    params.delete('from');
+
+    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    if (!params.get('check_in')) params.set('check_in', today);
+    if (!params.get('check_out')) params.set('check_out', tomorrow);
+    if (!params.get('adults')) params.set('adults', '2');
+    if (!params.get('children')) params.set('children', '0');
+    if (!params.get('rooms')) params.set('rooms', '1');
+    if (!params.get('acc_type')) params.set('acc_type', 'hotel');
+
+    // Search API prefers `name` over `province_id` — drop free-text name when IDs exist
+    if (hasStructuredLocationParam(params)) {
+      params.delete('name');
+    } else if (params.get('name')) {
+      try {
+        const combined = await ApiService.getCombinedData();
+        const province = combined.province?.find((p) => p.name === params.get('name'));
+        if (province) {
+          params.delete('name');
+          params.set('province_id', String(province.id));
+        }
+      } catch {
+        // keep name as fallback
+      }
+    }
+
+    router.push(`/search?${params.toString()}`);
+  }, [router, urlSearchParams]);
   
 
   // Track this hotel as viewed when component mounts
@@ -128,7 +169,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
       <div id="hotel-hero" className="bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-5">
           <BackButton
-            onClick={() => router.push('/search')}
+            onClick={handleBackToSearch}
             className="mb-4"
           />
           <div id="overview">

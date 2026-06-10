@@ -1,37 +1,32 @@
 'use client';
 
-import { useRef } from 'react';
+import { useMemo } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Printer, X } from 'lucide-react';
-
-interface InvoiceRoom {
-  room_name: string;
-  detail?: string;
-  price_per_night: number;
-  room_count: number;
-  total_price: number;
-}
+import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import {
+  buildInvoiceHtmlDocument,
+  openInvoicePrintWindow,
+  type InvoiceDocumentData,
+  type InvoiceRoom,
+} from '@/components/booking/invoiceDocument';
 
 interface InvoiceModalProps {
   open: boolean;
   onClose: () => void;
   type: 'individual' | 'company';
-  // Customer info
   customerName: string;
   customerLastName: string;
   customerPhone: string;
   customerEmail: string;
   orgName?: string;
   orgRegister?: string;
-  // Booking data
   bookingCode: string;
   rooms: InvoiceRoom[];
   totalPrice: number;
-  // Hotel / supplier info
   hotelName: string;
 }
 
-// Mock supplier bank details — replace with real API data when available
 const MOCK_SUPPLIER = {
   bankName: 'Хаан банк',
   accountNumber: 'MN 35000 400 5682083754',
@@ -61,57 +56,76 @@ export default function InvoiceModal({
   totalPrice,
   hotelName,
 }: InvoiceModalProps) {
-  const printRef = useRef<HTMLDivElement>(null);
-  const now = new Date();
-  const issuedAt = formatDateTime(now);
+  const { t } = useHydratedTranslation();
+  const issuedAt = formatDateTime(new Date());
   const paymentDeadline = type === 'individual' ? '10 минут дотор хүчинтэй' : '3 цаг дотор хүчинтэй';
+  const modalTitle =
+    type === 'individual'
+      ? t('bookingExtra.invoiceIndividualTitle', 'Хувь хүний нэхэмжлэх')
+      : t('bookingExtra.invoiceCompanyTitle', 'Байгууллагын нэхэмжлэх');
+
+  const invoiceData = useMemo<InvoiceDocumentData>(
+    () => ({
+      type,
+      modalTitle,
+      customerName,
+      customerLastName,
+      customerPhone,
+      customerEmail,
+      orgName,
+      orgRegister,
+      bookingCode,
+      rooms,
+      totalPrice,
+      hotelName,
+      issuedAt,
+      paymentDeadline,
+    }),
+    [
+      type,
+      modalTitle,
+      customerName,
+      customerLastName,
+      customerPhone,
+      customerEmail,
+      orgName,
+      orgRegister,
+      bookingCode,
+      rooms,
+      totalPrice,
+      hotelName,
+      issuedAt,
+      paymentDeadline,
+    ]
+  );
+
+  const invoiceDocument = useMemo(
+    () => buildInvoiceHtmlDocument(invoiceData),
+    [invoiceData]
+  );
 
   const handlePrint = () => {
-    if (!printRef.current) return;
-    const printContents = printRef.current.innerHTML;
-    const win = window.open('', '_blank', 'width=900,height=700');
-    if (!win) return;
-    win.document.write(`
-      <html>
-        <head>
-          <title>Нэхэмжлэх — ${bookingCode}</title>
-          <style>
-            * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
-            body { background: white; padding: 32px; color: #111; }
-            table { width: 100%; border-collapse: collapse; }
-            th, td { border: 1px solid #ccc; padding: 6px 10px; font-size: 12px; }
-            th { background: #4b5563; color: white; font-weight: 600; text-align: left; }
-            tfoot td { background: #f3f4f6; font-weight: 700; }
-            .label { color: #6b7280; font-size: 11px; }
-            .value { font-size: 12px; color: #111; }
-          </style>
-        </head>
-        <body>${printContents}</body>
-      </html>
-    `);
-    win.document.close();
-    win.focus();
-    win.print();
-    win.close();
+    openInvoicePrintWindow(invoiceDocument);
   };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="w-[95vw] max-w-3xl p-0 overflow-hidden max-h-[90vh] flex flex-col">
-        {/* Modal header */}
         <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
           <DialogTitle className="text-sm font-semibold text-gray-900 dark:text-white">
-            {type === 'individual' ? 'Хувь хүний нэхэмжлэх' : 'Байгууллагын нэхэмжлэх'}
+            {modalTitle}
           </DialogTitle>
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handlePrint}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
               <Printer className="w-3.5 h-3.5" />
-              Хэвлэх
+              {t('bookingExtra.print', 'Хэвлэх')}
             </button>
             <button
+              type="button"
               onClick={onClose}
               className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
             >
@@ -120,21 +134,17 @@ export default function InvoiceModal({
           </div>
         </div>
 
-        {/* Invoice document */}
         <div className="overflow-y-auto flex-1">
-          <div ref={printRef} className="bg-white p-8 text-gray-900">
-            {/* Doc header */}
+          <div className="bg-white p-8 text-gray-900">
             <div className="flex items-start justify-between mb-6">
               <span className="text-xl font-bold tracking-tight text-gray-900">MyRoom</span>
               <h2 className="text-lg font-semibold text-gray-800 text-center flex-1">
                 Нэхэмжлэх нь
               </h2>
-              <div className="w-20" /> {/* spacer */}
+              <div className="w-20" />
             </div>
 
-            {/* Two-column info */}
             <div className="grid grid-cols-2 gap-6 mb-6">
-              {/* Supplier (Нэхэмжлэгч) */}
               <div>
                 <p className="text-xs font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">
                   Нэхэмжлэгч:
@@ -149,7 +159,6 @@ export default function InvoiceModal({
                 </div>
               </div>
 
-              {/* Customer (Захиалагч) */}
               <div>
                 <p className="text-xs font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">
                   Захиалагч:
@@ -174,7 +183,6 @@ export default function InvoiceModal({
               </div>
             </div>
 
-            {/* Rooms table */}
             <table className="w-full border-collapse text-xs mb-6">
               <thead>
                 <tr className="bg-gray-600 text-white">
@@ -214,14 +222,11 @@ export default function InvoiceModal({
               </tfoot>
             </table>
 
-            {/* Footer */}
             <div className="flex gap-6 pt-4 border-t border-gray-200">
-              {/* Stamp placeholder */}
               <div className="w-32 h-28 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center shrink-0">
                 <span className="text-xs text-gray-400">Тамга</span>
               </div>
 
-              {/* Contact info */}
               <div className="flex-1">
                 <p className="text-sm font-bold text-gray-800 mb-1">MyRoom.mn</p>
                 <div className="space-y-0.5 text-xs text-gray-600">

@@ -14,7 +14,7 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import BookingConfirmationView from '@/components/booking/BookingConfirmationView';
 import { useAuth } from '@/contexts/AuthContext';
 import BookingPaymentStep from '@/components/booking/BookingPaymentStep';
-import GuestCountInline from '@/components/common/GuestCountInline';
+import BookingSidebarRoomsSection from '@/components/booking/BookingSidebarRoomsSection';
 import BackButton from '@/components/common/BackButton';
 import { formatHotelLocation } from '@/utils/formatHotelLocation';
 import {
@@ -1281,36 +1281,15 @@ function BookingContent() {
                 </div>
               </div>
 
-              {/* Room capacity */}
-              <div className="mb-4 text-sm text-gray-700 dark:text-gray-300">
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('bookingFlow.guestCapacity')}</div>
-                <GuestCountInline
-                  adults={selectedGuestCapacity.adults}
-                  childCount={selectedGuestCapacity.children}
-                />
-              </div>
-
-              {/* Selected rooms */}
-              <div className="mb-4">
-                <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">{t('bookingFlow.selectedRooms')}</div>
-                {rooms.map((room, index) => (
-                  <div key={index} className="flex justify-between items-center py-1">
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white truncate pr-2">
-                      {room.room_name}
-                    </span>
-                    <span className="text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                      {t('bookingFlow.roomCount', { count: room.room_count })}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1.5 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">{t('bookingFlow.basePrice')}</span>
-                  <span className="text-gray-900 dark:text-white">{totalPrice.toLocaleString()} ₮</span>
-                </div>
-              </div>
+              <BookingSidebarRoomsSection
+                rooms={rooms}
+                selectedRoomsLabel={t('bookingFlow.selectedRooms')}
+                basePriceLabel={t('bookingFlow.basePrice')}
+                totalPrice={totalPrice}
+                adultCapacity={selectedGuestCapacity.adults}
+                childCapacity={selectedGuestCapacity.children}
+                guestCapacityLabel={t('bookingFlow.guestCapacity')}
+              />
 
               {/* Promo code */}
               <div className="mb-4">

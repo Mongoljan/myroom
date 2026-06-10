@@ -82,7 +82,14 @@ export default function ImprovedHotelRoomsSection({
     const hasCheckIn = searchParams.get('check_in');
     const hasCheckOut = searchParams.get('check_out');
     const hasName = searchParams.get('name');
-    const needsUpdate = !hasCheckIn || !hasCheckOut || (!hasName && locationName);
+    const hasStructuredLocation =
+      searchParams.get('province_id') ||
+      searchParams.get('soum_id') ||
+      searchParams.get('name_id') ||
+      searchParams.get('district') ||
+      searchParams.get('location');
+    const needsLocationName = !hasName && !hasStructuredLocation && locationName;
+    const needsUpdate = !hasCheckIn || !hasCheckOut || needsLocationName;
     if (needsUpdate) {
       const params = new URLSearchParams(searchParams.toString());
       if (!hasCheckIn) params.set('check_in', selectedCheckIn);
@@ -90,7 +97,7 @@ export default function ImprovedHotelRoomsSection({
       if (!searchParams.get('adults')) params.set('adults', adultsCount.toString());
       if (!searchParams.get('children')) params.set('children', childrenCountLocal.toString());
       if (!searchParams.get('rooms')) params.set('rooms', roomsCountLocal.toString());
-      if (!hasName && locationName) params.set('name', locationName);
+      if (needsLocationName) params.set('name', locationName);
       router.replace(`?${params.toString()}`, { scroll: false });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
