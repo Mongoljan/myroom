@@ -121,12 +121,12 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       {/* Header */}
       <div className="px-6 py-5">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-h2 font-semibold text-gray-900 dark:text-gray-100">
+            <h1 className="text-xl font-medium text-gray-900 dark:text-gray-100">
               {t('settings.title')}
             </h1>
           </div>
@@ -167,7 +167,7 @@ export default function SettingsPage() {
 
       {/* Language & Currency */}
       <div className="px-6 py-5">
-        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        <h2 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-4">
           {t('settings.languageCurrency')}
         </h2>
         <div className="space-y-4">
@@ -223,7 +223,7 @@ export default function SettingsPage() {
 
       {/* Email Settings */}
       <div className="px-6 py-5">
-        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        <h2 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-4">
           {t('settings.emailSettings')}
         </h2>
         <div className="space-y-4">
@@ -264,7 +264,7 @@ export default function SettingsPage() {
 
       {/* Notifications */}
       <div className="px-6 py-5">
-        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        <h2 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-4">
           {t('settings.notifications')}
         </h2>
         <div className="space-y-4">
@@ -291,7 +291,7 @@ export default function SettingsPage() {
 
       {/* Delete Account */}
       <div className="px-6 py-5">
-        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
+        <h2 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-4">
           {t('settings.deleteAccount')}
         </h2>
         <div className="h-px bg-gray-200 dark:bg-gray-700 mb-4" />

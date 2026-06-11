@@ -811,6 +811,8 @@ function BookingContent() {
 
               <form onSubmit={handleBookingSubmit} id="booking-form" className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.LastNameLabel')}</label>
                   <input
                     type="text"
                     value={customerLastName}
@@ -819,7 +821,9 @@ function BookingContent() {
                     className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
                     placeholder={t('bookingFlow.placeholderLastName')}
                   />
+                </div>
                   <div className="relative">
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.FirstNamelabel')}</label>
                     <input
                       type="text"
                       value={customerName}
@@ -837,6 +841,7 @@ function BookingContent() {
                     )}
                   </div>
                   <div className="relative">
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.EmailLabel')}</label>
                     <input
                       type="email"
                       value={customerEmail}
@@ -854,6 +859,7 @@ function BookingContent() {
                     )}
                   </div>
                   <div className="relative">
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.PhoneLabel')}</label>
                     <input
                       type="tel"
                       value={customerPhone}
@@ -1331,7 +1337,7 @@ function BookingContent() {
 
               {/* Terms acceptance */}
               <div id="booking-tos-section">
-              <label className="flex items-start gap-2 mb-1 cursor-pointer">
+              <label className="flex items-start gap-2 mb-8 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={tosAccepted}
@@ -1785,10 +1791,6 @@ function BookingContent() {
                 Утас: 7777-7777 | И-мэйл: contact@myroom.mn | Вэбсайт: myroom.mn
               </p>
             </div>
-
-            <p className="text-xs text-gray-400 italic pt-1">
-              ↓ Доош гүйлгэж дуусгасны дараа &ldquo;Зөвшөөрөх&rdquo; товч идэвхжинэ.
-            </p>
           </div>
 
           <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between gap-3 shrink-0">
