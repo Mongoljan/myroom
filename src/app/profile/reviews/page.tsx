@@ -391,16 +391,16 @@ export default function ReviewsPage() {
                             <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
                               {hotel.PropertyName}
                             </h5>
-                            {((hotel as any).avg_rating || (hotel as any).rating || (hotel as any).review_count || (hotel as any).reviews_count) ? (
+                            {(hotel.avg_rating || hotel.rating || hotel.review_count || hotel.reviews_count) ? (
                               <div className="flex items-center gap-2 mt-1">
-                                {((hotel as any).avg_rating || (hotel as any).rating) ? (
+                                {(hotel.avg_rating || hotel.rating) ? (
                                   <span className="bg-[#3fb33f] text-white text-[11px] font-bold px-1.5 py-0.5 rounded leading-none">
-                                    {((hotel as any).avg_rating || (hotel as any).rating)} / 5
+                                    {(hotel.avg_rating || hotel.rating)} / 5
                                   </span>
                                 ) : null}
-                                {((hotel as any).review_count || (hotel as any).reviews_count) ? (
+                                {(hotel.review_count || hotel.reviews_count) ? (
                                   <span className="text-xs text-gray-500 dark:text-gray-400">
-                                    {((hotel as any).review_count || (hotel as any).reviews_count)} сэтгэгдэл
+                                    {(hotel.review_count || hotel.reviews_count)} сэтгэгдэл
                                   </span>
                                 ) : null}
                               </div>
