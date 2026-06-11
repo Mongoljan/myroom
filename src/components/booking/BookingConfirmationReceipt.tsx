@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Globe } from 'lucide-react';
-import type { PropertyPolicy } from '@/types/api';
+import type { AllData, PropertyPolicy } from '@/types/api';
+import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import {
   getAdditionalInfoTags,
@@ -17,6 +19,25 @@ import type {
   BookingConfirmationRoom,
   BookingConfirmationHotelDetails,
 } from '@/components/booking/bookingConfirmationTypes';
+import { resolveRoomDisplayNameFromAllData } from '@/utils/roomNames';
+
+function getMnRoomDisplayName(
+  room: BookingConfirmationRoom,
+  allRoomData: AllData | null
+): string {
+  if (allRoomData && room.room_category_id > 0 && room.room_type_id > 0) {
+    const resolved = resolveRoomDisplayNameFromAllData(
+      {
+        room_category_id: room.room_category_id,
+        room_type_id: room.room_type_id,
+      },
+      allRoomData,
+      'mn'
+    );
+    if (resolved) return resolved;
+  }
+  return room.room_name;
+}
 
 interface BookingConfirmationReceiptProps {
   hotelId: number;
@@ -71,6 +92,13 @@ export default function BookingConfirmationReceipt({
 }: BookingConfirmationReceiptProps) {
   const { t } = useHydratedTranslation();
   const tableHeadClass = 'bg-[#4a5568] text-white';
+  const [allRoomData, setAllRoomData] = useState<AllData | null>(null);
+
+  useEffect(() => {
+    ApiService.getAllData()
+      .then(setAllRoomData)
+      .catch(() => setAllRoomData(null));
+  }, []);
 
   const cfConfirm = hotelPolicy?.cancellation_fee;
   const cancelTimeShortConfirm = cfConfirm?.cancel_time?.substring(0, 5);
@@ -218,11 +246,20 @@ export default function BookingConfirmationReceipt({
         </div>
 
         <div className="mb-6">
-          <table className="w-full text-sm border-collapse">
+          <table className="w-full text-sm border-collapse table-fixed">
+            <colgroup>
+              <col className="w-[36%]" />
+              <col className="w-[16%]" />
+              <col className="w-[18%]" />
+              <col className="w-[10%]" />
+              <col className="w-[20%]" />
+            </colgroup>
             <thead>
               <tr className={tableHeadClass}>
-                <th className="text-left font-semibold px-3 py-2.5">{t('bookingExtra.roomTypeCol', 'Өрөө')}</th>
                 <th className="text-left font-semibold px-3 py-2.5">
+                  {t('bookingExtra.roomTypeCol', 'Өрөөний нэр')}
+                </th>
+                <th className="text-left font-semibold px-2 py-2.5 text-xs">
                   {t('bookingExtra.extraDescCol', 'Нэмэлт тайлбар')}
                 </th>
                 <th className="text-right font-semibold px-3 py-2.5">
@@ -237,8 +274,10 @@ export default function BookingConfirmationReceipt({
             <tbody>
               {rooms.map((room, index) => (
                 <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
-                  <td className="px-3 py-2.5 text-[#2d3748] dark:text-gray-200">{room.room_name}</td>
-                  <td className="px-3 py-2.5 text-[#718096] dark:text-gray-400">
+                  <td className="px-3 py-2.5 text-[#2d3748] dark:text-gray-200 align-top leading-snug">
+                    {getMnRoomDisplayName(room, allRoomData)}
+                  </td>
+                  <td className="px-2 py-2.5 text-xs text-[#718096] dark:text-gray-400 align-top leading-snug">
                     {getRoomExtraDescription(room, bookingIncludeBreakfast)}
                   </td>
                   <td className="px-3 py-2.5 text-right text-[#2d3748] dark:text-gray-200">
@@ -332,7 +371,7 @@ export default function BookingConfirmationReceipt({
                         return (
                           <tr key={i} className="border-b border-gray-200 dark:border-gray-700">
                             <td className="px-2 py-2 text-[#2d3748] dark:text-gray-200">
-                              {room.room_name}
+                              {getMnRoomDisplayName(room, allRoomData)}
                               {room.room_count > 1 ? ` (×${room.room_count})` : ''}
                             </td>
                             <td className="px-2 py-2 text-right text-[#2d3748] dark:text-gray-200">
@@ -364,7 +403,7 @@ export default function BookingConfirmationReceipt({
                   {rooms.map((room, i) => (
                     <tr key={i} className="border-b border-gray-200 dark:border-gray-700">
                       <td className="px-2 py-2 text-[#2d3748] dark:text-gray-200">
-                        {room.room_name}
+                        {getMnRoomDisplayName(room, allRoomData)}
                         {room.room_count > 1 ? ` (×${room.room_count})` : ''}
                       </td>
                       {cancelTiers.map((tier) => {
