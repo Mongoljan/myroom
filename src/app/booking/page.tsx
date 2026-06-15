@@ -835,8 +835,10 @@ function BookingContent() {
                     placeholder={t('bookingFlow.placeholderLastName')}
                   />
                 </div>
-                  <div className="relative">
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.FirstNameLabel')}</label>
+                  <div className="relative"> 
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.FirstNameLabel')}
+                      <span className="pl-1 text-red-500 dark:text-red-400 font-bold" aria-hidden="true">*</span>
+                    </label>
                     <input
                       type="text"
                       value={customerName}
@@ -853,7 +855,9 @@ function BookingContent() {
                     )}
                   </div>
                   <div className="relative">
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.EmailLabel')}</label>
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.EmailLabel')}
+                      <span className="pl-1 text-red-500 dark:text-red-400 font-bold" aria-hidden="true">*</span>
+                    </label>
                     <input
                       type="email"
                       value={customerEmail}
@@ -870,7 +874,9 @@ function BookingContent() {
                     )}
                   </div>
                   <div className="relative">
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.PhoneLabel')}</label>
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.PhoneLabel')}
+                      <span className="pl-1 text-red-500 dark:text-red-400 font-bold" aria-hidden="true">*</span>
+                    </label>
                     <input
                       type="tel"
                       value={customerPhone}

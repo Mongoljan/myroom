@@ -146,12 +146,12 @@ export default function SearchFilters({
               {recentIndividualFilters.map((item) => {
                 const isActive = isItemActive(item);
                 return (
-                  <label key={item.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={item.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isActive}
                       onChange={() => toggleRecentFilter(item)}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.label}</span>
                   </label>
@@ -173,12 +173,12 @@ export default function SearchFilters({
                 const isSelected = (filters.propertyTypes || []).includes(pt.id);
                 const count = filterCounts[`propertyType_${pt.id}`];
                 return (
-                  <label key={pt.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={pt.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ propertyTypes: isSelected ? (filters.propertyTypes || []).filter(id => id !== pt.id) : [...(filters.propertyTypes || []), pt.id] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{pt.name_mn}</span>
                     {count !== undefined && count > 0 && (
@@ -203,12 +203,12 @@ export default function SearchFilters({
                 {popularFacs.map((facility) => {
                   const isSelected = (filters.roomFeatures || []).includes(facility.id);
                   return (
-                    <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                    <label key={facility.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => updateFilters({ roomFeatures: isSelected ? (filters.roomFeatures || []).filter(id => id !== facility.id) : [...(filters.roomFeatures || []), facility.id] })}
-                        className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                        className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                       />
                       <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                       {filterCounts[`facility_${facility.id}`] !== undefined && (
@@ -329,12 +329,12 @@ export default function SearchFilters({
               {roomFeatureFacilities.map((facility) => {
                 const isSelected = (filters.roomFeatures || []).includes(facility.id);
                 return (
-                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={facility.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ roomFeatures: isSelected ? (filters.roomFeatures || []).filter(id => id !== facility.id) : [...(filters.roomFeatures || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {filterCounts[`facility_${facility.id}`] !== undefined && (
@@ -359,12 +359,12 @@ export default function SearchFilters({
               {generalServiceFacilities.map((facility) => {
                 const isSelected = (filters.generalServices || []).includes(facility.id);
                 return (
-                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={facility.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ generalServices: isSelected ? (filters.generalServices || []).filter(id => id !== facility.id) : [...(filters.generalServices || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {filterCounts[`facility_${facility.id}`] !== undefined && (
@@ -390,12 +390,12 @@ export default function SearchFilters({
                 const isSelected = (filters.roomFacilities || []).includes(facility.id);
                 const count = filterCounts[`roomFac_${facility.id}`];
                 return (
-                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={facility.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ roomFacilities: isSelected ? (filters.roomFacilities || []).filter(id => id !== facility.id) : [...(filters.roomFacilities || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {count !== undefined && count > 0 && (
@@ -420,12 +420,12 @@ export default function SearchFilters({
               {accessibilityFacilities.map((facility) => {
                 const isSelected = (filters.accessibilityFeatures || []).includes(facility.id);
                 return (
-                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={facility.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ accessibilityFeatures: isSelected ? (filters.accessibilityFeatures || []).filter(id => id !== facility.id) : [...(filters.accessibilityFeatures || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {filterCounts[`accessibility_${facility.id}`] !== undefined && (
@@ -450,12 +450,12 @@ export default function SearchFilters({
               {bedTypeFacilities.map((bt) => {
                 const isSelected = (filters.bedTypes || []).includes(bt.id);
                 return (
-                  <label key={bt.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={bt.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ bedTypes: isSelected ? (filters.bedTypes || []).filter(id => id !== bt.id) : [...(filters.bedTypes || []), bt.id] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{bt.name}</span>
                     {filterCounts[`bedType_${bt.id}`] !== undefined && (
@@ -479,12 +479,12 @@ export default function SearchFilters({
               {neighbourhoodOptions.map(({ name, count }) => {
                 const isSelected = (filters.neighbourhood || []).includes(name);
                 return (
-                  <label key={name} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={name} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ neighbourhood: isSelected ? (filters.neighbourhood || []).filter(n => n !== name) : [...(filters.neighbourhood || []), name] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{name}</span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>
@@ -506,12 +506,12 @@ export default function SearchFilters({
               {landmarkCounts.map(({ id, name_mn, count }) => {
                 const isSelected = (filters.landmark || []).includes(id);
                 return (
-                  <label key={id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ landmark: isSelected ? (filters.landmark || []).filter(l => l !== id) : [...(filters.landmark || []), id] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{name_mn}</span>
                     {count > 0 && <span className="text-xs text-gray-500 dark:text-gray-400">({count})</span>}
@@ -524,12 +524,12 @@ export default function SearchFilters({
           {/* 12. Хөнгөлөлт */}
           {discountedCount > 0 && (
             <div className="space-y-2 border-b border-gray-200 dark:border-gray-600 pb-3">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-start gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={filters.discounted}
                   onChange={(e) => updateFilters({ discounted: e.target.checked })}
-                  className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                  className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                 />
                 <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex-1">Хөнгөлөлт</span>
                 <span className="text-xs text-gray-500 dark:text-gray-400">({discountedCount})</span>
@@ -547,12 +547,12 @@ export default function SearchFilters({
                 const isSelected = (filters.starRating || []).includes(stars);
                 const count = filterCounts[`rating_${stars}`];
                 return (
-                  <label key={rating.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={rating.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ starRating: isSelected ? (filters.starRating || []).filter(s => s !== stars) : [...(filters.starRating || []), stars] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="flex-1 flex items-center gap-0.5">
                       {[...Array(stars)].map((_, i) => (
@@ -584,12 +584,12 @@ export default function SearchFilters({
               {outdoorFacilities.map((facility) => {
                 const isSelected = (filters.outdoorAreas || []).includes(facility.id);
                 return (
-                  <label key={facility.id} className="flex items-center gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
+                  <label key={facility.id} className="flex items-start gap-2 cursor-pointer hover:text-primary-600 transition-colors py-1">
                     <input
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => updateFilters({ outdoorAreas: isSelected ? (filters.outdoorAreas || []).filter(id => id !== facility.id) : [...(filters.outdoorAreas || []), facility.id] })}
-                      className="w-4 h-4 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
+                      className="w-4 h-4 mt-0.5 rounded border-gray-600 dark:border-gray-500 text-primary-600 focus:ring-primary-500 cursor-pointer dark:bg-gray-700"
                     />
                     <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{facility.name_mn}</span>
                     {filterCounts[`facility_${facility.id}`] !== undefined && (

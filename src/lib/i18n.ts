@@ -3151,7 +3151,7 @@ const resources = {
         changeRoom: "Өрөө солих",
         addRoom: "Өрөө нэмэх",
         cancelBookingAction: "Захиалга цуцлах",
-        contactHotelTitle: "Буудалтай холбогдох",
+        contactHotelTitle: "Буудалтай холбоо барих",
         hotelLocationMap: "Буудлын байршил",
         invoiceTypeTitle: "Нэхэмжлэлийг хэн дээр гаргах вэ?",
         invoiceIndividual: "Хувь хүн",
