@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Star, X, MapPin } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
@@ -21,6 +22,10 @@ const LIKE_TAGS = [
   'service',
   'value'
 ];
+
+function resolveHotelImageUrl(raw?: string | null): string {
+  return HotelService.getHotelImageUrl(raw ?? null) ?? '';
+}
 
 export default function ReviewsPage() {
   const { token, user } = useAuth();
@@ -388,24 +393,20 @@ export default function ReviewsPage() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50/30 dark:bg-gray-900/10 gap-3">
                         <div className="flex items-center gap-3">
                           <Link href={`/hotel/${hotel.pk}`} className="flex-shrink-0 cursor-pointer block hover:opacity-90 transition-opacity">
-                            {(hotel.profile_image || booking?.hotel_image) ? (
-                              <img
-                                src={(() => {
-                                  const path = hotel.profile_image || booking?.hotel_image;
-                                  if (!path) return '';
-                                  if (path.startsWith('http://') || path.startsWith('https://')) return path;
-                                  const origin = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://dev.kacc.mn';
-                                  if (path.startsWith('/media/')) return `${origin}${path}`;
-                                  if (path.startsWith('/')) return `${origin}${path}`;
-                                  return `${origin}/media/${path}`;
-                                })()}
-                                alt={hotel.PropertyName}
-                                className="w-20 h-20 rounded object-cover bg-gray-200 dark:bg-gray-800 flex-shrink-0"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <div className="w-20 h-20 rounded bg-gray-250 dark:bg-gray-700 flex-shrink-0" />
-                            )}
+                            {(() => {
+                              const imageSrc = resolveHotelImageUrl(hotel.profile_image || booking?.hotel_image);
+                              return imageSrc ? (
+                                <Image
+                                  src={imageSrc}
+                                  alt={hotel.PropertyName}
+                                  width={80}
+                                  height={80}
+                                  className="w-20 h-20 rounded object-cover bg-gray-200 dark:bg-gray-800 flex-shrink-0"
+                                />
+                              ) : (
+                                <div className="w-20 h-20 rounded bg-gray-250 dark:bg-gray-700 flex-shrink-0" />
+                              );
+                            })()}
                           </Link>
                           <div>
                             <Link href={`/hotel/${hotel.pk}`}>
@@ -433,7 +434,7 @@ export default function ReviewsPage() {
                           onClick={() => {
                             window.location.href = `/hotel/${hotel.pk}`;
                           }}
-                          className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-850 text-gray-700 dark:text-gray-300 text-xs px-3 py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors self-end m-1 font-medium"
+                          className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-850 text-gray-700 dark:text-gray-300 text-xs px-3 py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors self-end m-2 font-medium"
                         >
                           {t('reviews.viewAllReviews', 'View all reviews')}
                         </button>
@@ -497,22 +498,15 @@ export default function ReviewsPage() {
                         <div className="flex flex-1 gap-4 items-start w-full min-w-0">
                           {/* Image */}
                           {(() => {
-                            const imagePath = hotel?.profile_image || booking.hotel_image;
-                            const resolvedSrc = (() => {
-                              if (!imagePath) return '';
-                              if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return imagePath;
-                              const origin = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://dev.kacc.mn';
-                              if (imagePath.startsWith('/media/')) return `${origin}${imagePath}`;
-                              if (imagePath.startsWith('/')) return `${origin}${imagePath}`;
-                              return `${origin}/media/${imagePath}`;
-                            })();
+                            const resolvedSrc = resolveHotelImageUrl(hotel?.profile_image || booking.hotel_image);
                             
                             const renderImage = () => resolvedSrc ? (
-                              <img
+                              <Image
                                 src={resolvedSrc}
                                 alt={hotel?.PropertyName || booking.hotel_name}
-                                className="w-20 h-20 rounded-lg object-cover flex-shrink-0 bg-gray-100"
-                                loading="lazy"
+                                width={80}
+                                height={80}
+                                className="rounded-lg object-cover flex-shrink-0 bg-gray-100"
                               />
                             ) : (
                               <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">

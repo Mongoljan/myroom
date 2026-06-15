@@ -862,7 +862,7 @@ const resources = {
         placeholderEmail: "Email address",
         placeholderPhone: "Phone number",
         LastnameLabel:"Your last name",
-        FirstnameLabel:"Your first name",
+        FirstNameLabel:"Your first name",
         EmailLabel:"Email address",
         PhoneLabel:"Phone number",
         ebarimtTitle: "E-Barimt",
@@ -2701,7 +2701,7 @@ const resources = {
       },
       bookingFlow: {
         stepRoom: "Өрөө\nсонгох",
-        stepGuest: "Хувийн\nмэдээлэл",
+        stepGuest: "Захиалагчийн\nмэдээлэл",
         stepPayment: "Төлбөр\nбаталгаажуулах",
         guestInfoTitle: "Захиалагчийн мэдээлэл",
         placeholderLastName: "Та овгоо оруулна уу",

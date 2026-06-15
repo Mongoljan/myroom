@@ -330,14 +330,14 @@ export default function BookingPaymentStep({
                 <button
                   type="button"
                   onClick={onCancelBooking}
-                  className="text-sm sm:text-base  text-gray-400 hover:text-primary/80 transition-colors border-slate-150 border px-4 py-2 rounded-md"
+                  className="text-sm text-gray-400 hover:text-primary/80 transition-colors border-slate-150 border px-4 py-2 rounded-md"
                 >
                   {t('payment.cancelBooking')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setInvoiceTypeDialogOpen(true)}
-                  className="text-sm sm:text-base font-semibold text-primary hover:text-primary/80 transition-colors underline"
+                  className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors underline"
                 >
                   {t('payment.downloadInvoice')}
                 </button>

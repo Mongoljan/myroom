@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { Fragment, useState, useEffect, useRef, useMemo } from 'react';
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -53,6 +53,61 @@ function StepLabel({ labelKey }: { labelKey: string }) {
         </>
       ) : null}
     </>
+  );
+}
+
+function BookingStepper({ activeStep }: { activeStep: 2 | 3 }) {
+  const steps = [
+    { id: 1, labelKey: 'bookingFlow.stepRoom' },
+    { id: 2, labelKey: 'bookingFlow.stepGuest' },
+    { id: 3, labelKey: 'bookingFlow.stepPayment' },
+  ] as const;
+
+  return (
+    <div className="mb-8 flex items-start w-full">
+      {steps.map((step, index) => {
+        const isComplete = step.id < activeStep;
+        const isActive = step.id === activeStep;
+        const circleClass = isActive
+          ? 'w-11 h-11 bg-gray-50 text-primary tracking-wider shadow-[0_0_0_2px_rgba(59,130,246,0.20)] ring-3 ring-primary/20'
+          : isComplete
+            ? 'w-9 h-9 bg-primary text-white'
+            : 'w-9 h-9 bg-gray-200 dark:bg-gray-700 text-gray-500';
+        const labelClass = isActive
+          ? 'text-sm font-bold text-gray-900 dark:text-white'
+          : isComplete
+            ? 'text-xs font-medium text-gray-500 dark:text-white'
+            : 'text-xs font-medium text-gray-500 dark:text-gray-400';
+        const lineClass = index < steps.length - 1
+          ? isComplete || activeStep > step.id
+            ? 'flex-1 h-0.5 bg-primary mt-4 rounded-full'
+            : 'flex-1 h-0.5 bg-gray-300 dark:bg-gray-700 mt-4 rounded-full'
+          : '';
+
+        return (
+          <Fragment key={step.id}>
+            <div className="flex flex-col items-center min-w-0">
+              <motion.div
+                initial={false}
+                animate={isActive ? { scale: [1, 1.08, 1], y: [-1, 0, -1] } : { scale: 1, y: 0 }}
+                transition={isActive ? { duration: 1.2, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.2 }}
+                className={`${circleClass} rounded-full flex items-center justify-center shrink-0 text-xl font-bold transition-all duration-300`}
+              >
+                {isComplete ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  <span className={isActive ? 'text-base' : 'text-sm'}>{step.id}</span>
+                )}
+              </motion.div>
+              <span className={`${labelClass} mt-1.5 text-center leading-tight`}>
+                <StepLabel labelKey={step.labelKey} />
+              </span>
+            </div>
+            {lineClass ? <div className={lineClass} /> : null}
+          </Fragment>
+        );
+      })}
+    </div>
   );
 }
 
@@ -654,28 +709,7 @@ function BookingContent() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 py-8">
           {/* Stepper — Step 3 active */}
-          <div className="mb-8 flex items-start w-full">
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
-                <Check className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepRoom" /></span>
-            </div>
-            <div className="flex-1 h-px bg-primary mt-4" />
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
-                <Check className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepGuest" /></span>
-            </div>
-            <div className="flex-1 h-px bg-primary mt-4" />
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0 text-sm font-semibold">
-                3
-              </div>
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepPayment" /></span>
-            </div>
-          </div>
+          <BookingStepper activeStep={3} />
 
           <BookingPaymentStep
             bookingCode={bookingResult.booking_code}
@@ -766,28 +800,7 @@ function BookingContent() {
         <div className="relative mb-8">
           <BackButton onClick={() => router.back()} stepperAnchor />
           {/* Stepper — Step 2 active */}
-          <div className="flex items-start w-full">
-          <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
-              <Check className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepRoom" /></span>
-          </div>
-          <div className="flex-1 h-px bg-primary mt-4" />
-          <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0 text-sm font-semibold">
-              2
-            </div>
-            <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepGuest" /></span>
-          </div>
-          <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700 mt-4" />
-          <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 flex items-center justify-center shrink-0 text-sm font-semibold">
-              3
-            </div>
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepPayment" /></span>
-          </div>
-          </div>
+          <BookingStepper activeStep={2} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -823,7 +836,7 @@ function BookingContent() {
                   />
                 </div>
                   <div className="relative">
-                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.FirstNamelabel')}</label>
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.FirstNameLabel')}</label>
                     <input
                       type="text"
                       value={customerName}
@@ -835,7 +848,6 @@ function BookingContent() {
                       className={guestInputClass('customerName')}
                       placeholder={t('bookingFlow.placeholderFirstName')}
                     />
-                    <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                     {formErrors.customerName && (
                       <p className="text-xs text-red-500 mt-1">{formErrors.customerName}</p>
                     )}
@@ -853,7 +865,6 @@ function BookingContent() {
                       className={guestInputClass('customerEmail')}
                       placeholder={t('bookingFlow.placeholderEmail')}
                     />
-                    <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                     {formErrors.customerEmail && (
                       <p className="text-xs text-red-500 mt-1">{formErrors.customerEmail}</p>
                     )}
@@ -871,7 +882,6 @@ function BookingContent() {
                       className={guestInputClass('customerPhone')}
                       placeholder={t('bookingFlow.placeholderPhone')}
                     />
-                    <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                     {formErrors.customerPhone && (
                       <p className="text-xs text-red-500 mt-1">{formErrors.customerPhone}</p>
                     )}
