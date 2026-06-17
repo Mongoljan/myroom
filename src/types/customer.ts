@@ -102,6 +102,10 @@ export interface CustomerBooking {
   has_review: boolean;
   booking_code: string;
   created_at: string;
+  avg_rating?: number | null;
+  rating?: number | null;
+  review_count?: number | null;
+  reviews_count?: number | null;
 }
 
 export interface CustomerBookingsResponse {
@@ -164,6 +168,10 @@ export interface Review {
   rating: number;
   comment: string;
   created_at: string;
+  avg_rating?: number | null;
+  hotel_rating?: number | null;
+  review_count?: number | null;
+  reviews_count?: number | null;
 }
 
 export interface CreateReviewResponse {

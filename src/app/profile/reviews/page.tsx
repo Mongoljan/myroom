@@ -341,7 +341,7 @@ export default function ReviewsPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-none">
-                            {user?.first_name} {user?.last_name}
+                            {user?.first_name ? user.first_name.length > 3 ? user.first_name.slice(0, 3) + '******' : user.first_name + '******' : '******'}
                           </p>
                           <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5 leading-none">
                             {formatDateHyphen(review.created_at)}
@@ -414,20 +414,24 @@ export default function ReviewsPage() {
                                 {hotel.PropertyName}
                               </h5>
                             </Link>
-                            {(hotel.avg_rating || hotel.rating || hotel.review_count || hotel.reviews_count) ? (
-                              <div className="flex items-center gap-2 mt-1">
-                                {(hotel.avg_rating || hotel.rating) ? (
-                                  <span className="bg-[#3fb33f] text-white text-[11px] font-bold px-1.5 py-0.5 rounded leading-none">
-                                    {(hotel.avg_rating || hotel.rating)} / 5
-                                  </span>
-                                ) : null}
-                                {(hotel.review_count || hotel.reviews_count) ? (
-                                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                                    {(hotel.review_count || hotel.reviews_count)} {t('common.reviews', 'reviews')}
-                                  </span>
-                                ) : null}
-                              </div>
-                            ) : null}
+                            {(() => {
+                              const avgRating = review.avg_rating ?? review.hotel_rating ?? booking?.avg_rating ?? booking?.rating ?? hotel?.avg_rating ?? hotel?.rating;
+                              const reviewCount = review.review_count ?? review.reviews_count ?? booking?.review_count ?? booking?.reviews_count ?? hotel?.review_count ?? hotel?.reviews_count;
+                              return (avgRating || reviewCount) ? (
+                                <div className="flex items-center gap-2 mt-1">
+                                  {avgRating ? (
+                                    <span className="bg-[#3fb33f] text-white text-[11px] font-bold px-1.5 py-0.5 rounded leading-none">
+                                      {avgRating} / 5
+                                    </span>
+                                  ) : null}
+                                  {reviewCount ? (
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                      {reviewCount} {t('common.reviews', 'сэтгэгдэл')}
+                                    </span>
+                                  ) : null}
+                                </div>
+                              ) : null;
+                            })()}
                           </div>
                         </div>
                         <button
@@ -534,6 +538,24 @@ export default function ReviewsPage() {
                                 booking.hotel_name
                               )}
                             </h3>
+                            {(() => {
+                              const avgRating = booking.avg_rating ?? booking.rating ?? hotel?.avg_rating ?? hotel?.rating;
+                              const reviewCount = booking.review_count ?? booking.reviews_count ?? hotel?.review_count ?? hotel?.reviews_count;
+                              return (avgRating || reviewCount) ? (
+                                <div className="flex items-center gap-2 mt-1 mb-2">
+                                  {avgRating ? (
+                                    <span className="bg-[#3fb33f] text-white text-[11px] font-bold px-1.5 py-0.5 rounded leading-none">
+                                      {avgRating} / 5
+                                    </span>
+                                  ) : null}
+                                  {reviewCount ? (
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                      {reviewCount} {t('common.reviews', 'сэтгэгдэл')}
+                                    </span>
+                                  ) : null}
+                                </div>
+                              ) : null;
+                            })()}
                             {hotel?.location && (
                               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-3 truncate">
                                 {hotel.location}

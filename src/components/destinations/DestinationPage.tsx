@@ -156,18 +156,8 @@ export default function DestinationPage({ destination }: DestinationPageProps) {
                 {t('breadcrumb.home', 'Нүүр')}
               </button>
               <span>/</span>
-              <span className="text-white">{destinationInfo.name}</span>
+              <span className="text-white">{t('search.popularDestination', 'Алдартай байршлууд')}</span>
             </div>
-
-            {/* Icon */}
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-4"
-            >
-              <MapPin className="w-8 h-8 text-slate-300" />
-            </motion.div>
 
             {/* Title */}
             <h1 className={`${text.displayMd} text-white mb-3`}>
