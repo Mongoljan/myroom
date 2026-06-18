@@ -43,8 +43,8 @@ export interface CustomerProfile {
   date_of_birth?: string;
   is_verified: boolean;
   created_at: string;
-  is_phone_verified:boolean;
-  is_email_verified:boolean;
+  is_phone_verified: boolean;
+  is_email_verified: boolean;
 }
 
 export interface CustomerProfileUpdate {

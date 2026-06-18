@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { Suspense } from 'react';
 import DestinationPage from '@/components/destinations/DestinationPage';
 import { DestinationPageSkeleton } from '@/components/skeletons';
-import LocationInput from '@/components/search/LocationInput';
 
 // ISR - revalidate destination pages every hour
 export const revalidate = 3600;

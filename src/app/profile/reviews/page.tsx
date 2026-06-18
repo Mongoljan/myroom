@@ -226,7 +226,7 @@ export default function ReviewsPage() {
       });
       return hotel?.property_type === typeId;
     }).length;
-};
+  };
 
   const filteredReviews = reviews.filter(review => {
     if (selectedCategory === 'all') return true;
@@ -241,7 +241,7 @@ export default function ReviewsPage() {
       const bp = booking.hotel_name?.toLowerCase() || '';
       return hp === bp || hp.includes(bp) || bp.includes(hp);
     });
-    
+
     return hotel?.property_type === selectedCategory;
   });
 
@@ -266,8 +266,8 @@ export default function ReviewsPage() {
                   setSelectedCategory('all');
                 }}
                 className={`px-1 py-3 text-sm font-semibold transition border-b-2 -mb-px ${activeTab === val
-                    ? 'border-green-600 text-green-600 dark:text-green-400'
-                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  ? 'border-green-600 text-green-600 dark:text-green-400'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
               >
                 {label}
@@ -281,8 +281,8 @@ export default function ReviewsPage() {
           <button
             onClick={() => setSelectedCategory('all')}
             className={`px-4 py-1.5 rounded text-xs font-medium transition-colors ${selectedCategory === 'all'
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+              ? 'bg-green-600 text-white'
+              : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
               }`}
           >
             {t('reviews.categoryAll', 'Бүгд')}({activeTab === 'my' ? reviews.length : pendingBookings.length})
@@ -294,8 +294,8 @@ export default function ReviewsPage() {
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-4 py-1.5 rounded text-xs font-medium transition-colors ${selectedCategory === cat.id
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                   }`}
               >
                 {cat.name}({count})
@@ -503,7 +503,7 @@ export default function ReviewsPage() {
                           {/* Image */}
                           {(() => {
                             const resolvedSrc = resolveHotelImageUrl(hotel?.profile_image || booking.hotel_image);
-                            
+
                             const renderImage = () => resolvedSrc ? (
                               <Image
                                 src={resolvedSrc}
@@ -587,7 +587,7 @@ export default function ReviewsPage() {
                           </div>
 
                           <div className="flex flex-row items-center justify-start sm:justify-end gap-2 w-full sm:w-auto">
-                            <button 
+                            <button
                               className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-850 text-gray-700 dark:text-gray-300 text-xs px-3 py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
                             >
                               {t('reviews.delete', 'Delete')}
@@ -647,8 +647,8 @@ export default function ReviewsPage() {
                       type="button"
                       onClick={() => setEmojiRating(i + 1)}
                       className={`text-3xl w-12 h-12 rounded-full transition-all duration-200 flex items-center justify-center ${emojiRating === i + 1
-                          ? 'bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500 scale-110 shadow-lg'
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-105'
+                        ? 'bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500 scale-110 shadow-lg'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-105'
                         }`}
                     >
                       {emoji}
@@ -677,8 +677,8 @@ export default function ReviewsPage() {
                       type="button"
                       onClick={() => toggleTag(tag)}
                       className={`px-3 py-2 rounded-lg text-sm border transition-all duration-200 ${likedTags.includes(tag)
-                          ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300 shadow-md'
-                          : 'border-gray-300 dark:border-gray-600 text-gray-750 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300 shadow-md'
+                        : 'border-gray-300 dark:border-gray-600 text-gray-750 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                         }`}
                     >
                       {t(`reviews.${tag}`, tag)}
