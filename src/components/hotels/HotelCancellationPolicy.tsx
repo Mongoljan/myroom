@@ -1,11 +1,54 @@
 'use client';
 
-import { ShieldAlert } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
-import { CancellationFee } from '@/types/api';
+import { CancellationFee, CancellationRule } from '@/types/api';
 
 interface HotelCancellationPolicyProps {
   cancellationFee: CancellationFee | null | undefined;
+}
+
+type NormalizedRule = {
+  days_before: number;
+  before: number | string | null;
+  after: number | string | null;
+};
+
+function toNormalized(rule: CancellationRule): NormalizedRule {
+  return {
+    days_before: Number(rule.days_before ?? 0),
+    before:
+      rule.before_time_percentage === undefined || rule.before_time_percentage === null
+        ? null
+        : rule.before_time_percentage,
+    after:
+      rule.after_time_percentage === undefined || rule.after_time_percentage === null
+        ? null
+        : rule.after_time_percentage,
+  };
+}
+
+function buildLegacyRules(fee: CancellationFee): { single: NormalizedRule[]; multi: NormalizedRule[] } {
+  const single: NormalizedRule[] = [];
+  if (fee.single_before_time_percentage || fee.single_after_time_percentage) {
+    single.push({
+      days_before: 0,
+      before: fee.single_before_time_percentage ?? null,
+      after: fee.single_after_time_percentage ?? null,
+    });
+  }
+
+  const multi: NormalizedRule[] = [];
+  const legacyMulti: Array<[number, string | undefined]> = [
+    [5, fee.multi_5days_before_percentage],
+    [3, fee.multi_3days_before_percentage],
+    [2, fee.multi_2days_before_percentage],
+    [1, fee.multi_1day_before_percentage],
+  ];
+  legacyMulti.forEach(([days, pct]) => {
+    if (pct) multi.push({ days_before: days, before: pct, after: null });
+  });
+
+  return { single, multi };
 }
 
 export default function HotelCancellationPolicy({ cancellationFee }: HotelCancellationPolicyProps) {
@@ -15,11 +58,79 @@ export default function HotelCancellationPolicy({ cancellationFee }: HotelCancel
 
   const cancelTime = cancellationFee.cancel_time?.substring(0, 5) ?? '—';
 
-  const hasMulti =
-    cancellationFee.multi_5days_before_percentage ||
-    cancellationFee.multi_3days_before_percentage ||
-    cancellationFee.multi_2days_before_percentage ||
-    cancellationFee.multi_1day_before_percentage;
+  let single: NormalizedRule[] = [];
+  let multi: NormalizedRule[] = [];
+
+  if (Array.isArray(cancellationFee.rules) && cancellationFee.rules.length > 0) {
+    const sorted = [...cancellationFee.rules].sort(
+      (a, b) => (a.order ?? 0) - (b.order ?? 0)
+    );
+    single = sorted.filter((r) => r.room_group === 'single').map(toNormalized);
+    multi = sorted.filter((r) => r.room_group === 'multi').map(toNormalized);
+  } else {
+    const legacy = buildLegacyRules(cancellationFee);
+    single = legacy.single;
+    multi = legacy.multi;
+  }
+
+  if (single.length === 0 && multi.length === 0) return null;
+
+  const renderAmount = (value: number | string) => {
+    if (Number(value) === 0) {
+      return (
+        <span className="text-sm font-semibold text-emerald-600 shrink-0">
+          {t('cancellationPolicy.free', 'Үнэгүй')}
+        </span>
+      );
+    }
+    return (
+      <span className="text-sm font-semibold text-gray-900 dark:text-white shrink-0">
+        {value}%
+      </span>
+    );
+  };
+
+  const renderRule = (rule: NormalizedRule, idx: number) => {
+    const rows: React.ReactNode[] = [];
+
+    if (rule.before !== null) {
+      rows.push(
+        <div key={`${idx}-before`} className="flex items-center justify-between gap-2">
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            {rule.days_before > 0 ? (
+              <>
+                {t('cancellationPolicy.daysBeforeLabel', 'Ирэхээс')}{' '}
+                <span className="font-medium text-gray-900 dark:text-white">{rule.days_before}</span>{' '}
+                {t('cancellationPolicy.daysBeforeSuffix', 'хоногийн өмнө цуцалвал')}
+              </>
+            ) : (
+              <>
+                {t('cancellationPolicy.beforeCancelLabel', 'Өмнөх өдрийн')}{' '}
+                <span className="font-medium text-gray-900 dark:text-white">{cancelTime}</span>{' '}
+                {t('cancellationPolicy.beforeSuffix', 'цагаас өмнө цуцалвал')}
+              </>
+            )}
+          </span>
+          {renderAmount(rule.before)}
+        </div>
+      );
+    }
+
+    if (rule.after !== null) {
+      rows.push(
+        <div key={`${idx}-after`} className="flex items-center justify-between gap-2">
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            {t('cancellationPolicy.beforeCancelLabel', 'Өмнөх өдрийн')}{' '}
+            <span className="font-medium text-gray-900 dark:text-white">{cancelTime}</span>{' '}
+            {t('cancellationPolicy.afterSuffix', 'цагаас хойш цуцалвал')}
+          </span>
+          {renderAmount(rule.after)}
+        </div>
+      );
+    }
+
+    return rows;
+  };
 
   return (
     <section id="cancellation-policy" className="">
@@ -28,89 +139,28 @@ export default function HotelCancellationPolicy({ cancellationFee }: HotelCancel
       </h2>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 space-y-5">
-        {/* Cancel time */}
-        {/* <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-          <ShieldAlert className="w-4 h-4 shrink-0 text-gray-400" />
-          <span className="font-medium text-gray-800 dark:text-gray-200">
-            {t('cancellationPolicy.cancelTime', 'Цуцлах боломжтой цаг')}:
-          </span>
-          <span className="text-gray-900 dark:text-white font-semibold">{cancelTime}</span>
-        </div> */}
-
         {/* Single room */}
-        <div className="space-y-3">
-          <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-            {t('cancellationPolicy.singleRoomLabel', '1 өрөөний захиалгад нийт төлбөрөөс суутгах хураамжийн хувь:')}
-          </p>
-          <div className="space-y-2 pl-1">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {t('cancellationPolicy.beforeCancelLabel', 'Өмнөх өдрийн')} <span className="font-medium text-gray-900 dark:text-white">{cancelTime}</span> {t('cancellationPolicy.beforeSuffix', 'цагаас өмнө цуцалвал')}
-              </span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white shrink-0">
-                {cancellationFee.single_before_time_percentage}%
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                {t('cancellationPolicy.beforeCancelLabel', 'Өмнөх өдрийн')} <span className="font-medium text-gray-900 dark:text-white">{cancelTime}</span> {t('cancellationPolicy.afterSuffix', 'цагаас хойш цуцалвал')}
-              </span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white shrink-0">
-                {cancellationFee.single_after_time_percentage}%
-              </span>
+        {single.length > 0 && (
+          <div className="space-y-3">
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+              {t('cancellationPolicy.singleRoomLabel', '1 өрөөний захиалгад нийт төлбөрөөс суутгах хураамжийн хувь:')}
+            </p>
+            <div className="space-y-2 pl-1">
+              {single.map((rule, idx) => renderRule(rule, idx))}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Multi room */}
-        {hasMulti && (
+        {multi.length > 0 && (
           <>
-            <hr className="border-gray-100 dark:border-gray-700" />
+            {single.length > 0 && <hr className="border-gray-100 dark:border-gray-700" />}
             <div className="space-y-3">
               <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
                 {t('cancellationPolicy.multiRoomLabel', '2 болон түүнээс дээш өрөөнд нийт төлбөрөөс суутгах хураамжийн хувь:')}
               </p>
               <div className="space-y-2 pl-1">
-                {cancellationFee.multi_5days_before_percentage && (
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {t('cancellationPolicy.fiveDaysBefore', 'Ирэх өдрөөсөө 5 хоногийн өмнөх хувь')}
-                    </span>
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white shrink-0">
-                      {cancellationFee.multi_5days_before_percentage}%
-                    </span>
-                  </div>
-                )}
-                {cancellationFee.multi_3days_before_percentage && (
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {t('cancellationPolicy.threeDaysBefore', 'Ирэх өдрөөсөө 3 хоногийн өмнөх хувь')}
-                    </span>
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white shrink-0">
-                      {cancellationFee.multi_3days_before_percentage}%
-                    </span>
-                  </div>
-                )}
-                {cancellationFee.multi_2days_before_percentage && (
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {t('cancellationPolicy.twoDaysBefore', 'Ирэх өдрөөсөө 2 хоногийн өмнөх хувь')}
-                    </span>
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white shrink-0">
-                      {cancellationFee.multi_2days_before_percentage}%
-                    </span>
-                  </div>
-                )}
-                {cancellationFee.multi_1day_before_percentage && (
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {t('cancellationPolicy.oneDayBefore', 'Ирэх өдрөөсөө 1 хоногийн өмнөх хувь')}
-                    </span>
-                    <span className="text-sm font-semibold text-gray-900 dark:text-white shrink-0">
-                      {cancellationFee.multi_1day_before_percentage}%
-                    </span>
-                  </div>
-                )}
+                {multi.map((rule, idx) => renderRule(rule, idx))}
               </div>
             </div>
           </>

@@ -20,7 +20,8 @@ import {
   ConfirmAddress,
   PropertyImage,
   AdditionalInfo,
-  PropertyDetails
+  PropertyDetails,
+  PropertyFaqResponse
 } from '@/types/api';
 
 // Allow overriding API base via env var; fallback to dev endpoint
@@ -522,6 +523,12 @@ export class ApiService {
   static async getAdditionalInfo(infoId: number): Promise<AdditionalInfo> {
     const key = `/additionalInfo/${infoId}`;
     return this.request<AdditionalInfo>(key, {}, { key, ttl: ApiCache.TTL.MED });
+  }
+
+  // Get property FAQs — cached per property (SHORT TTL: 60 s)
+  static async getPropertyFaqs(propertyId: number): Promise<PropertyFaqResponse> {
+    const key = `/property-faqs/?property=${propertyId}`;
+    return this.request<PropertyFaqResponse>(key, {}, { key, ttl: ApiCache.TTL.SHORT });
   }
 }
 

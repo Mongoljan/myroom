@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['*'],
 
+  turbopack: {
+    root: process.cwd(),
+  },
+
   experimental: {
     viewTransition: true,
   },

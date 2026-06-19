@@ -8,6 +8,10 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 interface BookingConfirmationManageActionsProps {
   bookingCode: string;
   pinCode: string;
+  hotelId?: number;
+  checkIn?: string;
+  checkOut?: string;
+  hotelName?: string;
 }
 
 type ManageAction = {
@@ -29,11 +33,26 @@ const MANAGEMENT_ACTIONS: ManageAction[] = [
 export default function BookingConfirmationManageActions({
   bookingCode,
   pinCode,
+  hotelId,
+  checkIn,
+  checkOut,
+  hotelName,
 }: BookingConfirmationManageActionsProps) {
   const { t } = useHydratedTranslation();
   const router = useRouter();
 
   const goManage = (action: string) => {
+    if (action === 'add-room' && hotelId) {
+      const params = new URLSearchParams({
+        code: bookingCode,
+        pin: pinCode,
+        ...(checkIn ? { check_in: checkIn } : {}),
+        ...(checkOut ? { check_out: checkOut } : {}),
+        ...(hotelName ? { hotel_name: hotelName } : {}),
+      });
+      router.push(`/hotel/${hotelId}/add-room?${params.toString()}`);
+      return;
+    }
     router.push(`/booking/manage?code=${bookingCode}&pin=${pinCode}&action=${action}`);
   };
 

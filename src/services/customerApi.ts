@@ -18,6 +18,7 @@ import {
   CreateReviewRequest,
   CreateReviewResponse,
   CustomerReviewsResponse,
+  HotelReviewsResponse,
   CustomerCouponsResponse,
   WishlistCreateRequest,
   WishlistCreateResponse,
@@ -256,6 +257,23 @@ export class CustomerService {
     });
   }
 
+  /**
+   * Delete a booking permanently from history
+   * DELETE /api/bookings/{id}/delete/
+   */
+  static async deleteBooking(
+    token: string,
+    bookingId: number
+  ): Promise<MessageResponse> {
+    const url = this.addTokenToUrl(
+      `https://dev.kacc.mn/api/bookings/${bookingId}/delete/`,
+      token
+    );
+    return this.request<MessageResponse>(url, {
+      method: 'DELETE',
+    });
+  }
+
   // ============================================================
   // OTP & Verification
   // ============================================================
@@ -319,6 +337,14 @@ export class CustomerService {
   static async getReviews(token: string): Promise<CustomerReviewsResponse> {
     const url = this.addTokenToUrl('/reviews/', token);
     return this.request<CustomerReviewsResponse>(url);
+  }
+
+  /**
+   * Get public reviews for a hotel
+   * GET /api/customers/reviews/?hotel_id={id}
+   */
+  static async getHotelReviews(hotelId: number): Promise<HotelReviewsResponse> {
+    return this.request<HotelReviewsResponse>(`/reviews/?hotel_id=${hotelId}`);
   }
 
   /**

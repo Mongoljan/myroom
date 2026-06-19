@@ -184,6 +184,22 @@ export interface CustomerReviewsResponse {
   reviews: Review[];
 }
 
+export interface HotelReviewItem {
+  id: number;
+  customer_name: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
+export interface HotelReviewsResponse {
+  hotel_id: number;
+  total: number;
+  avg_rating: number;
+  rating_breakdown: Record<string, number>;
+  reviews: HotelReviewItem[];
+}
+
 // Coupons
 export interface Coupon {
   id: number;

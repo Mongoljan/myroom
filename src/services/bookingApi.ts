@@ -8,6 +8,24 @@ import {
   AvailabilityResponse
 } from '@/types/api';
 
+export interface AddRoomRequest {
+  booking_code: string;
+  pin_code: string;
+  rooms: {
+    room_category_id: number;
+    room_type_id: number;
+    room_count: number;
+    include_breakfast: boolean;
+  }[];
+}
+
+export interface AddRoomResponse {
+  message: string;
+  booking_code: string;
+  pin_code: string;
+  new_booking_ids: number[];
+}
+
 export class BookingService {
   private static baseURL = 'https://dev.kacc.mn/api';
 
@@ -94,6 +112,13 @@ export class BookingService {
 
   static async confirmBooking(data: BookingActionRequest): Promise<BookingActionResponse> {
     return this.request<BookingActionResponse>('/bookings/confirm/', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  }
+
+  static async addRoom(data: AddRoomRequest): Promise<AddRoomResponse> {
+    return this.request<AddRoomResponse>('/bookings/add-room/', {
       method: 'POST',
       body: JSON.stringify(data)
     });

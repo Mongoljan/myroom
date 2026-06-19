@@ -7,7 +7,6 @@ import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import BookingStyleHotelCard from './BookingStyleHotelCard';
 import { ApiService } from '@/services/api';
 import { SearchResponse, SearchHotelResult, NextAvailableDate } from '@/types/api';
-import SearchHeader from './SearchHeader';
 import SearchResultsHeader from './SearchResultsHeader';
 import SearchFilters, { UB_LANDMARKS } from './SearchFilters';
 import NoResultsState from './NoResultsState';
@@ -574,20 +573,11 @@ export default function SearchResults() {
   const facets = useMemo(() => deriveFacets(hotels, apiData, allDataBedTypes), [hotels, apiData, allDataBedTypes]);
 
   if (loading) {
-    return (
-      <div className="h-screen flex flex-col overflow-hidden">
-        <SearchHeader />
-        <SearchResultsBodySkeleton />
-      </div>
-    );
+    return <SearchResultsBodySkeleton />;
   }
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden mb-[40px]">
-      <SearchHeader />
-
-      {/* Main Results Container — fills remaining height */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+    <div className="flex-1 min-h-0 overflow-hidden">
         <div className="h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col">
           <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 flex-1 min-h-0 overflow-hidden">
             {/* Sidebar - Desktop only, independently scrollable */}
@@ -906,7 +896,6 @@ export default function SearchResults() {
             </div>{/* end main content column */}
           </div>{/* end flex row */}
         </div>{/* end max-w container */}
-      </div>{/* end content area */}
 
       {/* Full Map View */}
       {showMapView && (

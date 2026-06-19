@@ -358,8 +358,8 @@ export default function BookingConfirmationReceipt({
                     <tbody>
                       {rooms.map((room, i) => {
                         const feeBase = room.price_per_night * room.room_count;
-                        const beforePct = parseFloat(cfConfirm.single_before_time_percentage);
-                        const afterPct = parseFloat(cfConfirm.single_after_time_percentage);
+                        const beforePct = cfConfirm.single_before_time_percentage != null ? parseFloat(cfConfirm.single_before_time_percentage) : 0;
+                        const afterPct = cfConfirm.single_after_time_percentage != null ? parseFloat(cfConfirm.single_after_time_percentage) : 0;
                         const beforeFee = Math.round((feeBase * beforePct) / 100);
                         const afterFee = Math.round((feeBase * afterPct) / 100);
                         const afterDisplay =

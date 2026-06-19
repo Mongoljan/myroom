@@ -1768,6 +1768,9 @@ const resources = {
         cancelPinHint: "Enter your PIN to cancel booking {{code}}.",
         delete: "Delete",
         deleteComingSoon: "Coming soon",
+        deleteTitle: "Delete booking",
+        deleteHint: "Booking {{code}} will be permanently removed from your history. This cannot be undone.",
+        deleting: "Deleting...",
         reorder: "Book again",
         paymentTimeLeft: "{{time}} left to pay"
       },
@@ -3620,6 +3623,9 @@ const resources = {
         cancelPinHint: "Захиалга {{code}}-г цуцлахын тулд pin кодоо оруулна уу.",
         delete: "Устгах",
         deleteComingSoon: "Удахгүй",
+        deleteTitle: "Захиалга устгах",
+        deleteHint: "Захиалга {{code}} таны түүхээс бүрмөсөн устгагдана. Үүнийг буцаах боломжгүй.",
+        deleting: "Устгаж байна...",
         reorder: "Дахин захиалах",
         paymentTimeLeft: "Төлбөр төлөх {{time}} үлдсэн"
       },
@@ -3845,6 +3851,9 @@ const resources = {
         cancelPinHint: "请输入 PIN 以取消预订 {{code}}。",
         delete: "删除",
         deleteComingSoon: "即将推出",
+        deleteTitle: "删除预订",
+        deleteHint: "预订 {{code}} 将从您的历史记录中永久删除。此操作无法撤销。",
+        deleting: "正在删除...",
         reorder: "再次预订",
         paymentTimeLeft: "付款剩余 {{time}}"
       },

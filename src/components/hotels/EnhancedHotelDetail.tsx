@@ -9,7 +9,7 @@ import {
   Palmtree, Bus, WashingMachine, Heater, Mountain,
   ArrowLeft, Bell as ConciergeBell, Zap, Hotel, DollarSign, Package,
   MoveVertical as ElevatorIcon, Sunrise, Flame, TreePine, Music, Baby, Heart, Layers3 as Layers, X,
-  PlayCircle, Gem, Check, Camera
+  PlayCircle, Gem, Check, Camera, Globe
 } from 'lucide-react';
 import SafeImage from '@/components/common/SafeImage';
 import { Dialog, DialogContent, DialogClose, DialogTitle } from '@/components/ui/dialog';
@@ -301,6 +301,23 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   const youtubeEmbedUrl = additionalInfo?.YoutubeUrl
     ? getYouTubeEmbedUrl(additionalInfo.YoutubeUrl)
     : null;
+
+  const socialLinks = additionalInfo
+    ? ([
+        { key: 'web', label: t('hotelDetails.website', 'Вэбсайт'), url: additionalInfo.website_url },
+        { key: 'facebook', label: 'Facebook', url: additionalInfo.facebook_url },
+        { key: 'instagram', label: 'Instagram', url: additionalInfo.instagram_url },
+        { key: 'youtube', label: 'YouTube', url: additionalInfo.youtube_url },
+        { key: 'tiktok', label: 'TikTok', url: additionalInfo.tiktok_url },
+        { key: 'x', label: 'X', url: additionalInfo.twitter_url },
+      ].filter((l) => typeof l.url === 'string' && l.url.trim() !== '') as { key: string; label: string; url: string }[])
+    : [];
+
+  const extraVideoEmbeds = (additionalInfo?.videos ?? [])
+    .slice()
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((v) => ({ ...v, embed: getYouTubeEmbedUrl(v.video_url) }))
+    .filter((v) => v.embed);
 
   const nextImage = () => {
     if (allImages.length > 1) {
@@ -787,6 +804,24 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
             </div>
           </div>
 
+          {/* Social links */}
+          {socialLinks.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {socialLinks.map((link) => (
+                <a
+                  key={link.key}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <Globe className="w-3.5 h-3.5 text-gray-500" />
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          )}
+
           {/* YouTube video */}
           {youtubeEmbedUrl && (
             <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm" style={{ aspectRatio: '16/9' }}>
@@ -799,6 +834,24 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
               />
             </div>
           )}
+
+          {/* Additional videos */}
+          {extraVideoEmbeds.map((v, idx) => (
+            <div key={v.id ?? idx} className="space-y-1.5">
+              <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm" style={{ aspectRatio: '16/9' }}>
+                <iframe
+                  src={v.embed as string}
+                  title={v.description || `${hotelName} video ${idx + 1}`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+              {v.description && (
+                <p className="text-sm text-gray-600 dark:text-gray-400">{v.description}</p>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 

@@ -178,16 +178,9 @@ export function TripComRoomCardSkeleton() {
   );
 }
 
-export function HotelPageSkeleton() {
+export function HotelHeroSkeleton() {
   return (
-    <div className="bg-white dark:bg-gray-900 min-h-screen">
-      {/* Search banner (navy) */}
-      <div className="py-6 bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="h-12 rounded-xl bg-white/10 animate-pulse" />
-        </div>
-      </div>
-
+    <>
       <div id="hotel-hero" className="bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-5">
           <Bar className="h-9 w-24 mb-4" />
@@ -211,7 +204,6 @@ export function HotelPageSkeleton() {
         </div>
       </div>
 
-      {/* Sub nav */}
       <div className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-6 py-3 overflow-hidden">
           {[...Array(5)].map((_, i) => (
@@ -219,22 +211,47 @@ export function HotelPageSkeleton() {
           ))}
         </div>
       </div>
+    </>
+  );
+}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
-        <div>
-          <Bar className="h-7 w-36 mb-4" />
-          <div className="mb-6 h-14 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 animate-pulse" />
-          <div className="space-y-4">
-            {[...Array(2)].map((_, i) => (
-              <TripComRoomCardSkeleton key={i} />
-            ))}
-          </div>
-        </div>
-        <div>
-          <Bar className="h-7 w-40 mb-4" />
-          <div className="h-40 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 animate-pulse" />
+export function HotelSectionsSkeleton() {
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+      <div>
+        <Bar className="h-7 w-36 mb-4" />
+        <div className="mb-6 h-14 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 animate-pulse" />
+        <div className="space-y-4">
+          {[...Array(2)].map((_, i) => (
+            <TripComRoomCardSkeleton key={i} />
+          ))}
         </div>
       </div>
+      <div>
+        <Bar className="h-7 w-40 mb-4" />
+        <div className="h-40 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 animate-pulse" />
+      </div>
+      <div>
+        <Bar className="h-7 w-32 mb-4" />
+        <div className="h-56 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
+export function HotelPageSkeleton() {
+  return (
+    <div className="bg-white dark:bg-gray-900 min-h-screen">
+      {/* Search banner (navy) */}
+      <div className="py-6 bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="h-12 rounded-xl bg-white/10 animate-pulse" />
+        </div>
+      </div>
+
+      <HotelHeroSkeleton />
+
+      <HotelSectionsSkeleton />
     </div>
   );
 }

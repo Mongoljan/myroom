@@ -84,6 +84,10 @@ export default function BookingsPage() {
   const [isCanceling, setIsCanceling] = useState(false);
   const [cancelError, setCancelError] = useState('');
 
+  const [deleteTarget, setDeleteTarget] = useState<CustomerBooking | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
   const [reviewTarget, setReviewTarget] = useState<CustomerBooking | null>(null);
   const [emojiRating, setEmojiRating] = useState(3);
   const [likedTags, setLikedTags] = useState<string[]>([]);
@@ -225,6 +229,21 @@ export default function BookingsPage() {
       setCancelError(err instanceof Error ? err.message : t('profileBookings.error'));
     } finally {
       setIsCanceling(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget || !token) return;
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      await CustomerService.deleteBooking(token, deleteTarget.id);
+      setBookings((prev) => prev.filter((b) => b.id !== deleteTarget.id));
+      setDeleteTarget(null);
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : t('profileBookings.error'));
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -463,9 +482,11 @@ export default function BookingsPage() {
                     {(booking.status === 'finished' || booking.status === 'canceled') && (
                       <button
                         type="button"
-                        disabled
-                        title={t('profileBookings.deleteComingSoon')}
-                        className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        onClick={() => {
+                          setDeleteTarget(booking);
+                          setDeleteError('');
+                        }}
+                        className="px-3 py-1.5 border border-red-300 dark:border-red-700 rounded-lg text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
                       >
                         {t('profileBookings.delete')}
                       </button>
@@ -530,6 +551,37 @@ export default function BookingsPage() {
                 className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition disabled:opacity-50"
               >
                 {isCanceling ? t('profileBookings.cancelling') : t('profileBookings.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-sm">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-2">{t('profileBookings.deleteTitle')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              {t('profileBookings.deleteHint', { code: deleteTarget.booking_code })}
+            </p>
+            {deleteError && (
+              <p className="text-sm text-red-500 mb-3">{deleteError}</p>
+            )}
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              >
+                {t('profileBookings.cancelBtn')}
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition disabled:opacity-50"
+              >
+                {isDeleting ? t('profileBookings.deleting') : t('profileBookings.delete')}
               </button>
             </div>
           </div>
