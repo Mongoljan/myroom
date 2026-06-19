@@ -2,501 +2,404 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { ArrowLeft, Bed, CheckCircle, XCircle, Minus, Plus, Clock } from 'lucide-react';
-import Header1 from '@/components/header/Header1';
-import { ApiService } from '@/services/api';
+import { ArrowLeft } from 'lucide-react';
+import { hotelRoomsService, EnrichedHotelRoom } from '@/services/hotelRoomsApi';
 import { BookingService } from '@/services/bookingApi';
-import { Room, RoomPrice, AllRoomData } from '@/types/api';
+import { BookingDetails } from '@/types/api';
+import TripComStyleRoomCard from '@/components/hotels/TripComStyleRoomCard';
+import BookingSummary from '@/components/hotels/BookingSummary';
+import { RoomPriceOptions, BookingItem } from '@/components/hotels/RoomCard';
+import BookingPaymentStep from '@/components/booking/BookingPaymentStep';
+import { HotelRoomsSectionSkeleton } from '@/components/skeletons';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { getLocalizedFullRoomName, getLocaleCode } from '@/utils/roomNames';
+import { getBookingPin } from '@/utils/bookingPinStorage';
+import { splitCustomerName, flattenBookingDetails } from '@/utils/bookingConfirmationLoader';
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ── date helpers ──────────────────────────────────────────────────────────────
 
 const MN_DAYS = ['Ня', 'Да', 'Мя', 'Лха', 'Пү', 'Ба', 'Бя'];
 
-function formatInfoBarDate(dateStr: string): string {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) return dateStr;
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const dow = MN_DAYS[d.getDay()];
-  return `${y} - ${m} - ${day}, ${dow}`;
+function fmtDate(s: string): string {
+  const d = new Date(s);
+  if (isNaN(d.getTime())) return s;
+  return `${d.getFullYear()} - ${String(d.getMonth() + 1).padStart(2, '0')} - ${String(d.getDate()).padStart(2, '0')}, ${MN_DAYS[d.getDay()]}`;
 }
 
-function calcNights(checkIn: string, checkOut: string): number {
-  if (!checkIn || !checkOut) return 0;
-  const diff = new Date(checkOut).getTime() - new Date(checkIn).getTime();
-  return Math.max(0, Math.round(diff / (1000 * 60 * 60 * 24)));
+function calcNights(a: string, b: string): number {
+  return Math.max(1, Math.round((new Date(b).getTime() - new Date(a).getTime()) / 86_400_000));
 }
 
-function formatMNT(amount: number): string {
-  return amount.toLocaleString('mn-MN') + ' ₮';
+// BookingRoom shape expected by BookingPaymentStep
+interface BookingRoom {
+  room_category_id: number;
+  room_type_id: number;
+  room_count: number;
+  room_name: string;
+  price_per_night: number;
+  total_price: number;
+  max_adults?: number;
+  max_children?: number;
+  include_breakfast?: boolean;
 }
 
-// ── per-room availability ──────────────────────────────────────────────────────
-
-interface AvailState { loading: boolean; count: number }
-
-// ── selected room entry ──────────────────────────────────────────────────────
-
-interface SelectedRoom {
-  room: Room;
-  quantity: number;
-  pricePerNight: number;
-  includeBreakfast: boolean;
-}
-
-// ── main component ────────────────────────────────────────────────────────────
+// ── page ──────────────────────────────────────────────────────────────────────
 
 function AddRoomContent() {
-  const { t } = useHydratedTranslation();
-  const params = useParams();
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const { t, i18n } = useHydratedTranslation();
+  const locale = getLocaleCode(i18n.language);
+  const params  = useParams();
+  const sp      = useSearchParams();
+  const router  = useRouter();
 
-  const hotelId = Number(params.id);
-  const bookingCode = searchParams.get('code') || '';
-  const pinCode = searchParams.get('pin') || '';
-  const checkIn = searchParams.get('check_in') || '';
-  const checkOut = searchParams.get('check_out') || '';
-  const hotelName = searchParams.get('hotel_name') || '';
-  const nights = calcNights(checkIn, checkOut);
+  const hotelId     = Number(params.id);
+  const bookingCode = sp.get('code')       || '';
+  const rawPin      = sp.get('pin')        || '';
+  const pinCode     = rawPin || (typeof window !== 'undefined' ? (getBookingPin(bookingCode) || '') : '');
+  const checkIn     = sp.get('check_in')   || '';
+  const checkOut    = sp.get('check_out')  || '';
+  const hotelName   = sp.get('hotel_name') || '';
+  const nights      = calcNights(checkIn, checkOut);
 
-  const [rooms, setRooms] = useState<Room[]>([]);
-  const [roomsLoading, setRoomsLoading] = useState(true);
-  const [prices, setPrices] = useState<RoomPrice[]>([]);
-  const [roomData, setRoomData] = useState<AllRoomData | null>(null);
-  const [avail, setAvail] = useState<Record<number, AvailState>>({});
-  const [selected, setSelected] = useState<SelectedRoom[]>([]);
-  const [submitting, setSubmitting] = useState(false);
+  const [rooms,         setRooms]         = useState<EnrichedHotelRoom[]>([]);
+  const [roomPrices,    setRoomPrices]    = useState<Record<string, RoomPriceOptions>>({});
+  const [bookingItems,  setBookingItems]  = useState<BookingItem[]>([]);
+  const [existingRooms, setExistingRooms] = useState<BookingDetails[]>([]);
+  const [loading,       setLoading]       = useState(true);
+
+  // Customer info from the existing booking
+  const [customerName,     setCustomerName]     = useState('');
+  const [customerLastName, setCustomerLastName] = useState('');
+  const [customerPhone,    setCustomerPhone]    = useState('');
+  const [customerEmail,    setCustomerEmail]    = useState('');
+
+  // Payment step state
+  const [submitting,  setSubmitting]  = useState(false);
   const [submitError, setSubmitError] = useState('');
-  const [successData, setSuccessData] = useState<{ booking_code: string; pin_code: string; message: string } | null>(null);
+  const [paymentData, setPaymentData] = useState<{
+    bookingCode: string;
+    pinCode: string;
+    bookingRooms: BookingRoom[];
+    totalPrice: number;
+  } | null>(null);
 
-  // fetch rooms + prices + room-data labels
+  // ── fetch rooms + existing booking ───────────────────────────────────────
   useEffect(() => {
-    if (!hotelId) return;
+    if (!hotelId || !checkIn || !checkOut) return;
     (async () => {
       try {
-        setRoomsLoading(true);
-        const [roomsRes, pricesRes, rdRes] = await Promise.all([
-          ApiService.getRoomsInHotel(hotelId),
-          ApiService.getRoomPrices(hotelId),
-          ApiService.getAllRoomData(),
+        setLoading(true);
+        const [roomsData, bookingData] = await Promise.all([
+          hotelRoomsService.getEnrichedHotelRooms(hotelId, checkIn, checkOut),
+          bookingCode && pinCode
+            ? BookingService.checkBooking(bookingCode, pinCode).catch(() => null)
+            : Promise.resolve(null),
         ]);
-        setRooms(roomsRes);
-        setPrices(pricesRes);
-        setRoomData(rdRes);
-      } catch {
-        // silent
+        setRooms(roomsData);
+        if (bookingData?.bookings) {
+          const allRooms = flattenBookingDetails(bookingData.bookings);
+          setExistingRooms(allRooms);
+          const first = allRooms[0];
+          if (first) {
+            const { firstName, lastName } = splitCustomerName(first.customer_name || '');
+            setCustomerName(firstName);
+            setCustomerLastName(lastName);
+            setCustomerPhone(first.customer_phone || '');
+            setCustomerEmail(first.customer_email || '');
+          }
+        }
+
+        const pricesData: Record<string, RoomPriceOptions> = {};
+        roomsData.forEach(room => {
+          const key      = `${room.room_type}-${room.room_category}`;
+          const selling  = room.pricing?.per_night?.without_breakfast?.selling_price  ?? room.price_breakdown?.final_customer_price ?? 0;
+          const original = room.pricing?.per_night?.without_breakfast?.original_price ?? room.price_breakdown?.base_price ?? selling;
+          const discPct  = room.pricing?.per_night?.without_breakfast?.discount_percent ?? 0;
+          const withBf   = room.pricing?.per_night?.with_breakfast?.selling_price ?? 0;
+          const bfAddon  = room.pricing?.breakfast_price ?? 0;
+
+          if (selling > 0) {
+            pricesData[key] = {
+              basePrice:        selling,
+              basePriceRaw:     original,
+              halfDayPrice:     room.half_day_price    && room.half_day_price    > 0 ? room.half_day_price    : undefined,
+              singlePersonPrice: room.single_person_price && room.single_person_price > 0 ? room.single_person_price : undefined,
+              breakfastPrice:   withBf > 0 ? withBf : bfAddon > 0 ? selling + bfAddon : undefined,
+              breakfastPriceRaw: room.pricing?.per_night?.with_breakfast?.original_price ?? undefined,
+              discount:         discPct > 0 ? { type: 'PERCENT' as const, value: Math.round(discPct) } : undefined,
+              priceBreakdown:   room.price_breakdown,
+            };
+          }
+        });
+        setRoomPrices(pricesData);
       } finally {
-        setRoomsLoading(false);
+        setLoading(false);
       }
     })();
-  }, [hotelId]);
+  }, [hotelId, checkIn, checkOut]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // check availability per room once rooms are loaded and dates are available
-  useEffect(() => {
-    if (!rooms.length || !checkIn || !checkOut) return;
-    rooms.forEach((room) => {
-      setAvail((prev) => ({ ...prev, [room.id]: { loading: true, count: 0 } }));
-      ApiService.checkAvailability(hotelId, room.room_type, room.room_category, checkIn, checkOut)
-        .then((res) => {
-          setAvail((prev) => ({ ...prev, [room.id]: { loading: false, count: res.available_rooms } }));
-        })
-        .catch(() => {
-          setAvail((prev) => ({ ...prev, [room.id]: { loading: false, count: 0 } }));
-        });
-    });
-  }, [rooms, hotelId, checkIn, checkOut]);
+  // ── room selection logic ──────────────────────────────────────────────────
+  const updateQty = (
+    room: EnrichedHotelRoom,
+    priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast',
+    quantity: number
+  ) => {
+    if (quantity === 0) {
+      setBookingItems(prev => prev.filter(i => !(i.room.id === room.id && i.priceType === priceType)));
+      return;
+    }
+    const key          = `${room.room_type}-${room.room_category}`;
+    const priceOptions = roomPrices[key];
+    if (!priceOptions) return;
 
-  // helpers
-  const getRoomTypeName = (typeId: number) => {
-    const type = roomData?.room_types.find((r) => r.id === typeId);
-    return type ? (type.name_mn || type.name) : `Type ${typeId}`;
-  };
+    const maxQty = room.rooms_possible > 0 ? room.rooms_possible : room.number_of_rooms_to_sell;
+    let price    = priceOptions.basePrice;
+    if (priceType === 'halfDay'       && priceOptions.halfDayPrice)      price = priceOptions.halfDayPrice;
+    if (priceType === 'singlePerson'  && priceOptions.singlePersonPrice) price = priceOptions.singlePersonPrice;
+    if (priceType === 'withBreakfast' && priceOptions.breakfastPrice)    price = priceOptions.breakfastPrice;
 
-  const getRoomCategoryName = (catId: number) => {
-    const cat = roomData?.room_rates.find((r) => r.id === catId);
-    return cat ? cat.name : `Rate ${catId}`;
-  };
+    setBookingItems(prev => {
+      const otherQty  = prev.filter(i => i.room.id === room.id && i.priceType !== priceType).reduce((s, i) => s + i.quantity, 0);
+      const cappedQty = Math.min(quantity, maxQty - otherQty);
+      if (cappedQty <= 0) return prev.filter(i => !(i.room.id === room.id && i.priceType === priceType));
 
-  const getPriceForRoom = (room: Room): number => {
-    const match = prices.find(
-      (p) => p.room_type === room.room_type && p.room_category === room.room_category
-    );
-    return match?.base_price || room.final_price || room.base_price || 0;
-  };
-
-  const getAvail = (roomId: number): AvailState =>
-    avail[roomId] ?? { loading: true, count: 0 };
-
-  // selection handlers
-  const getSelectedEntry = (room: Room) => selected.find((s) => s.room.id === room.id);
-
-  const setQuantity = (room: Room, qty: number) => {
-    const price = getPriceForRoom(room);
-    setSelected((prev) => {
-      const exists = prev.find((s) => s.room.id === room.id);
-      if (qty <= 0) return prev.filter((s) => s.room.id !== room.id);
-      if (exists) return prev.map((s) => (s.room.id === room.id ? { ...s, quantity: qty } : s));
-      return [...prev, { room, quantity: qty, pricePerNight: price, includeBreakfast: false }];
+      const newItem: BookingItem = { room, priceType, quantity: cappedQty, price, maxQuantity: maxQty };
+      const idx = prev.findIndex(i => i.room.id === room.id && i.priceType === priceType);
+      if (idx >= 0) { const u = [...prev]; u[idx] = newItem; return u; }
+      return [...prev, newItem];
     });
   };
 
-  const toggleBreakfast = (roomId: number) => {
-    setSelected((prev) =>
-      prev.map((s) =>
-        s.room.id === roomId ? { ...s, includeBreakfast: !s.includeBreakfast } : s
-      )
-    );
+  const handleQuantityChange = (
+    roomId: number,
+    priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast',
+    quantity: number
+  ) => {
+    const room = rooms.find(r => r.id === roomId);
+    if (room) updateQty(room, priceType, quantity);
   };
 
-  const totalPrice = selected.reduce(
-    (sum, s) => sum + s.pricePerNight * s.quantity * Math.max(nights, 1),
-    0
-  );
+  const handleRemoveRoom = (
+    roomId: number,
+    priceType: 'base' | 'halfDay' | 'singlePerson' | 'withBreakfast'
+  ) => handleQuantityChange(roomId, priceType, 0);
 
-  // submit
-  const handleAddRooms = async () => {
-    if (!selected.length) return;
+  const totalRooms = bookingItems.reduce((s, i) => s + i.quantity, 0);
+  const totalPrice = bookingItems.reduce((s, i) => s + i.price * i.quantity, 0);
+
+  // ── step 1 → call addRoom API then show payment ───────────────────────────
+  const handleBookNow = async () => {
+    if (!bookingItems.length) return;
     setSubmitting(true);
     setSubmitError('');
     try {
-      const result = await BookingService.addRoom({
+      const res = await BookingService.addRoom({
         booking_code: bookingCode,
-        pin_code: pinCode,
-        rooms: selected.map((s) => ({
-          room_category_id: s.room.room_category,
-          room_type_id: s.room.room_type,
-          room_count: s.quantity,
-          include_breakfast: s.includeBreakfast,
+        pin_code:     pinCode,
+        rooms: bookingItems.map(item => ({
+          room_category_id:  item.room.room_category,
+          room_type_id:      item.room.room_type,
+          room_count:        item.quantity,
+          include_breakfast: item.priceType === 'withBreakfast',
         })),
       });
-      setSuccessData(result);
+
+      // Build BookingRoom[] for BookingPaymentStep
+      const bookingRooms: BookingRoom[] = bookingItems.map(item => ({
+        room_category_id:  item.room.room_category,
+        room_type_id:      item.room.room_type,
+        room_count:        item.quantity,
+        room_name:         getLocalizedFullRoomName(item.room, locale),
+        price_per_night:   item.price,
+        total_price:       item.price * item.quantity * nights,
+        max_adults:        item.room.adultQty,
+        max_children:      item.room.childQty,
+        include_breakfast: item.priceType === 'withBreakfast',
+      }));
+
+      setPaymentData({
+        bookingCode: res.booking_code,
+        pinCode:     res.pin_code,
+        bookingRooms,
+        totalPrice:  totalPrice * nights,
+      });
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : t('addRoom.errorGeneric', 'Алдаа гарлаа, дахин оролдоно уу.'));
+      setSubmitError(err instanceof Error ? err.message : t('addRoom.errorGeneric', 'Алдаа гарлаа'));
     } finally {
       setSubmitting(false);
     }
   };
 
-  // ── success screen ──────────────────────────────────────────────────────────
-
-  if (successData) {
+  // ── step 2: payment screen (reuses BookingPaymentStep) ───────────────────
+  if (paymentData) {
     return (
-      <>
-        <Header1 />
-        <div className="pt-24 min-h-screen bg-[#eef0f3] flex items-center justify-center p-6">
-          <div className="bg-white rounded-2xl shadow-sm p-10 max-w-md w-full text-center space-y-5">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              {t('addRoom.successTitle', 'Өрөө амжилттай нэмэгдлээ!')}
-            </h2>
-            <p className="text-gray-500 text-sm">{successData.message}</p>
-            <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-1 text-left">
-              <p>
-                <span className="font-medium text-gray-700">{t('booking.bookingCode', 'Захиалгын код')}:</span>{' '}
-                <span className="font-mono font-bold">{successData.booking_code}</span>
-              </p>
-              <p>
-                <span className="font-medium text-gray-700">{t('booking.pinCode', 'PIN код')}:</span>{' '}
-                <span className="font-mono font-bold">{successData.pin_code}</span>
-              </p>
-            </div>
-            <button
-              onClick={() =>
-                router.push(
-                  `/booking/confirmation?code=${encodeURIComponent(successData.booking_code)}&pin=${encodeURIComponent(successData.pin_code)}`
-                )
-              }
-              className="w-full bg-slate-900 text-white py-3 rounded-xl font-medium hover:bg-slate-800 transition-colors"
-            >
-              {t('addRoom.viewBooking', 'Захиалга харах')}
-            </button>
-          </div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <BookingPaymentStep
+            bookingCode={paymentData.bookingCode}
+            pinCode={paymentData.pinCode}
+            totalPrice={paymentData.totalPrice}
+            rooms={paymentData.bookingRooms}
+            checkIn={checkIn}
+            checkOut={checkOut}
+            nights={nights}
+            hotelName={hotelName}
+            hotelDetails={null}
+            hotelPolicy={null}
+            adultsCount={1}
+            childrenCount={0}
+            customerName={customerName}
+            customerLastName={customerLastName}
+            customerPhone={customerPhone}
+            customerEmail={customerEmail}
+            onCancelBooking={() => setPaymentData(null)}
+            onPaymentConfirmed={() => {
+              router.push(
+                `/booking/confirmation?code=${encodeURIComponent(paymentData.bookingCode)}&pin=${encodeURIComponent(paymentData.pinCode)}`
+              );
+            }}
+          />
         </div>
-      </>
+      </div>
     );
   }
 
-  // ── main layout ─────────────────────────────────────────────────────────────
-
+  // ── step 1: room selection ────────────────────────────────────────────────
   return (
     <>
-      <Header1 />
-
-      {/* ── Info bar (matches Figma node 610:290) ─────────────────────────── */}
-      <div className="fixed top-[72px] left-0 right-0 z-30 bg-white border-b border-[#d9d9d9]">
-        <div className="max-w-[1560px] mx-auto px-6 h-[106px] flex items-center justify-between">
-          {/* Left: back + hotel name */}
+      {/* ── Info bar ─────────────────────────────────────────────────────── */}
+      <div className="sticky top-0 z-40 bg-white border-b border-gray-200">
+        <div className="max-w-[1400px] mx-auto px-6 h-[90px] flex items-center justify-between">
           <div className="flex flex-col gap-1">
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-1 text-[#0e68dd] text-sm font-normal hover:underline"
+              className="inline-flex items-center gap-1 text-[#0e68dd] text-sm hover:underline w-fit"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-3.5 h-3.5" />
               {t('common.back', 'Буцах')}
             </button>
             <p className="text-[18px] font-medium text-[#464646]">{hotelName}</p>
           </div>
 
-          {/* Right: dates */}
-          <div className="flex items-center gap-6 text-sm">
-            <div className="flex flex-col items-start gap-0.5">
-              <span className="text-[#464646] text-[12px]">{t('addRoom.checkInLabel', 'Орох өдөр')}</span>
-              <span className="text-[14px] font-semibold text-black">{formatInfoBarDate(checkIn)}</span>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <p className="text-[11px] text-[#464646] mb-0.5">{t('addRoom.checkInLabel', 'Орох өдөр')}</p>
+              <p className="text-[13px] font-semibold text-black">{fmtDate(checkIn)}</p>
             </div>
-            <span className="text-[#464646] text-[12px]">-{nights} {t('addRoom.nights', 'шөнө')}-</span>
-            <div className="flex flex-col items-start gap-0.5">
-              <span className="text-[#464646] text-[12px]">{t('addRoom.checkOutLabel', 'Гарах өдөр')}</span>
-              <span className="text-[14px] font-semibold text-black">{formatInfoBarDate(checkOut)}</span>
+            <p className="text-[12px] text-[#464646]">-{nights} {t('addRoom.nights', 'шөнө')}-</p>
+            <div className="text-center">
+              <p className="text-[11px] text-[#464646] mb-0.5">{t('addRoom.checkOutLabel', 'Гарах өдөр')}</p>
+              <p className="text-[13px] font-semibold text-black">{fmtDate(checkOut)}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Page body ─────────────────────────────────────────────────────── */}
-      <div className="pt-[178px] pb-12 bg-[#eef0f3] min-h-screen">
-        <div className="max-w-[1560px] mx-auto px-6">
-          <p className="text-[18px] text-black mb-5">{t('addRoom.availableRooms', 'Боломжит өрөөнүүд')}</p>
+      {/* ── Body ─────────────────────────────────────────────────────────── */}
+      <div className="bg-[#f4f5f7] min-h-screen py-6">
+        <div className="max-w-[1400px] mx-auto px-6">
 
-          <div className="flex gap-6 items-start">
-            {/* ── Room list ─────────────────────────────────────────────── */}
-            <div className="flex-1 bg-white border border-[#d9d9d9] rounded-[10px] overflow-hidden">
-              {roomsLoading ? (
-                <div className="p-8 space-y-4">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="animate-pulse flex gap-4">
-                      <div className="w-[200px] h-[160px] bg-gray-200 rounded-lg shrink-0" />
-                      <div className="flex-1 space-y-3 py-2">
-                        <div className="h-5 bg-gray-200 rounded w-2/3" />
-                        <div className="h-4 bg-gray-200 rounded w-1/2" />
-                        <div className="h-4 bg-gray-200 rounded w-1/3" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : rooms.length === 0 ? (
-                <div className="p-12 text-center text-gray-500">
-                  {t('addRoom.noRooms', 'Өрөө олдсонгүй')}
-                </div>
-              ) : (
-                <div className="divide-y divide-gray-100">
-                  {rooms.map((room) => {
-                    const av = getAvail(room.id);
-                    const price = getPriceForRoom(room);
-                    const entry = getSelectedEntry(room);
-                    const qty = entry?.quantity ?? 0;
-                    const typeName = getRoomTypeName(room.room_type);
-                    const catName = getRoomCategoryName(room.room_category);
-                    const image = room.images?.[0]?.image;
-                    const isAvail = !av.loading && av.count > 0;
-                    const maxQty = Math.min(av.count, 10);
+          <p className="text-[18px] text-black font-normal mb-4">{t('addRoom.availableRooms', 'Боломжит өрөөнүүд')}</p>
 
-                    return (
-                      <div key={room.id} className="flex gap-5 p-5">
-                        {/* Image */}
-                        <div className="relative w-[190px] h-[150px] shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                          {image ? (
-                            <Image
-                              src={`https://dev.kacc.mn${image}`}
-                              alt={room.room_Description}
-                              fill
-                              className="object-cover"
-                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Bed className="w-10 h-10 text-gray-400" />
-                            </div>
-                          )}
-                        </div>
+          {loading ? (
+            <HotelRoomsSectionSkeleton />
+          ) : (
+            <div className="flex gap-5 items-start">
 
-                        {/* Details */}
-                        <div className="flex-1 min-w-0 flex flex-col justify-between">
-                          <div>
-                            <div className="flex items-baseline gap-2 flex-wrap">
-                              <span className="text-[15px] font-medium text-gray-900">{typeName}</span>
-                              <span className="text-[13px] text-gray-400">– {catName}</span>
-                            </div>
-                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{room.room_Description}</p>
-                            <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
-                              <span>{room.room_size} м²</span>
-                              <span>· {room.adultQty + room.childQty} {t('hotel.guests', 'зочин')}</span>
-                              {room.is_Bathroom && <span>· {t('room.bathroom', 'Угаалгын өрөөтэй')}</span>}
-                            </div>
-                          </div>
-
-                          {/* Availability badge */}
-                          <div className="mt-2">
-                            {av.loading ? (
-                              <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                                <Clock className="w-3 h-3 animate-spin" /> Шалгаж байна...
-                              </span>
-                            ) : isAvail ? (
-                              <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
-                                <CheckCircle className="w-3 h-3" /> {av.count} {t('room.available', 'өрөө боломжтой')}
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 text-xs text-red-500 font-medium">
-                                <XCircle className="w-3 h-3" /> {t('room.unavailable', 'Боломжгүй')}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Price + qty */}
-                        <div className="shrink-0 flex flex-col items-end justify-between w-[180px]">
-                          <div className="text-right">
-                            <p className="text-[18px] font-semibold text-gray-900">{formatMNT(price)}</p>
-                            <p className="text-xs text-gray-400">{t('room.perNight', '1 шөнийн үнэ')}</p>
-                            {nights > 0 && (
-                              <p className="text-xs text-gray-500 mt-0.5">
-                                {nights} {t('addRoom.nights', 'шөнө')} · {formatMNT(price * nights)}
-                              </p>
-                            )}
-                          </div>
-
-                          {/* Quantity control */}
-                          <div className="flex items-center gap-2 mt-3">
-                            <button
-                              type="button"
-                              disabled={qty === 0}
-                              onClick={() => setQuantity(room, qty - 1)}
-                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-                            >
-                              <Minus className="w-3.5 h-3.5" />
-                            </button>
-                            <span className="w-6 text-center text-sm font-medium text-gray-900">{qty}</span>
-                            <button
-                              type="button"
-                              disabled={!isAvail || qty >= maxQty}
-                              onClick={() => setQuantity(room, qty + 1)}
-                              className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
-                            >
-                              <Plus className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-
-                          {/* Breakfast toggle */}
-                          {qty > 0 && (room.breakfast_include_price ?? 0) > 0 && (
-                            <button
-                              type="button"
-                              onClick={() => toggleBreakfast(room.id)}
-                              className={`mt-2 text-xs px-2 py-1 rounded-full border transition-colors ${
-                                entry?.includeBreakfast
-                                  ? 'border-green-500 text-green-700 bg-green-50'
-                                  : 'border-gray-300 text-gray-500'
-                              }`}
-                            >
-                              {t('room.breakfast', 'Өглөөний цай')}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            {/* ── Summary panel ─────────────────────────────────────────── */}
-            <div className="w-[300px] shrink-0 bg-white rounded-xl border border-[#d9d9d9] p-5 space-y-4 sticky top-[190px]">
-              {/* Stay dates */}
-              <div>
-                <p className="text-xs text-gray-500 mb-2">{t('addRoom.stayDates', 'Stay Dates')}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="text-center">
-                    <p className="font-medium text-gray-900">{checkIn ? new Date(checkIn).toLocaleDateString('en', { month: 'short', day: 'numeric' }) : '--'}</p>
-                    <p className="text-xs text-gray-400">{t('houseRules.checkIn', 'Check-in')}</p>
+              {/* ── Room cards ──────────────────────────────────────────── */}
+              <div className="flex-1 min-w-0 space-y-3">
+                {rooms.length === 0 ? (
+                  <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
+                    {t('addRoom.noRooms', 'Өрөө олдсонгүй')}
                   </div>
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500">{nights} {t('addRoom.night', 'night')}</p>
-                    <div className="border-t border-gray-300 w-12 mx-auto my-1" />
-                  </div>
-                  <div className="text-center">
-                    <p className="font-medium text-gray-900">{checkOut ? new Date(checkOut).toLocaleDateString('en', { month: 'short', day: 'numeric' }) : '--'}</p>
-                    <p className="text-xs text-gray-400">{t('houseRules.checkOut', 'Check-out')}</p>
-                  </div>
-                </div>
+                ) : rooms.map(room => {
+                  const key          = `${room.room_type}-${room.room_category}`;
+                  const priceOptions = roomPrices[key];
+                  const roomItems    = bookingItems.filter(i => i.room.id === room.id);
+                  return (
+                    <TripComStyleRoomCard
+                      key={room.id}
+                      room={room}
+                      priceOptions={priceOptions}
+                      bookingItems={roomItems}
+                      onQuantityChange={(priceType, qty) => updateQty(room, priceType, qty)}
+                      nights={nights}
+                      checkIn={checkIn}
+                      totalSelectedRooms={totalRooms}
+                    />
+                  );
+                })}
               </div>
 
-              <hr className="border-gray-100" />
+              {/* ── Right panel ──────────────────────────────────────────── */}
+              <div className="w-[300px] shrink-0 space-y-3 sticky top-[90px]">
 
-              {/* Total price */}
-              <div>
-                <p className="text-xs text-gray-500">{t('booking.totalPrice', 'Total Price')}</p>
-                <p className="text-[22px] font-bold text-gray-900 mt-1">₮{totalPrice.toLocaleString('mn-MN')}</p>
-                {selected.length > 0 && (
-                  <p className="text-xs text-gray-400 mt-0.5">
-                    ₮{totalPrice.toLocaleString('mn-MN')} × {nights} {t('addRoom.night', 'night')}
-                  </p>
+                {/* Existing booked rooms */}
+                {existingRooms.length > 0 && (
+                  <div className="bg-white rounded-lg border border-gray-200 p-4">
+                    <h3 className="text-sm font-semibold text-gray-800 mb-3">
+                      {t('addRoom.currentlyBooked', 'Одоо захиалсан өрөөнүүд')}
+                    </h3>
+                    <div className="space-y-2">
+                      {existingRooms.map((b) => {
+                        const matchedRoom = rooms.find(r => r.id === b.room);
+                        const label = matchedRoom
+                          ? getLocalizedFullRoomName(matchedRoom, locale)
+                          : `${t('addRoom.room', 'Өрөө')} #${b.room}`;
+                        const isAdded = Boolean(b.parent_booking);
+                        return (
+                          <div key={b.id} className="flex items-start justify-between gap-2 py-2 border-b border-gray-100 last:border-0">
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-800 truncate">{label}</p>
+                              <p className="text-[11px] text-gray-400 mt-0.5">
+                                {isAdded
+                                  ? t('bookingExtra.addedRoom', 'Нэмсэн өрөө')
+                                  : t('bookingExtra.originalRoom', 'Анхны захиалга')}
+                                {' · '}
+                                {b.status === 'confirmed' ? t('addRoom.statusConfirmed', 'Баталгаажсан')
+                                  : b.status === 'finished' ? t('addRoom.statusFinished', 'Дууссан')
+                                  : b.status === 'canceled' ? t('addRoom.statusCanceled', 'Цуцлагдсан')
+                                  : b.status}
+                              </p>
+                            </div>
+                            <p className="text-xs font-semibold text-gray-700 whitespace-nowrap">
+                              ₮{Number(b.total_price).toLocaleString()}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="flex justify-between items-center mt-2 pt-2 border-t border-gray-100">
+                      <span className="text-xs text-gray-500">{t('addRoom.totalBooked', 'Нийт захиалга')}:</span>
+                      <span className="text-xs font-bold text-gray-800">
+                        ₮{existingRooms.reduce((s, b) => s + Number(b.total_price), 0).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* New rooms selection summary */}
+                <BookingSummary
+                  items={bookingItems}
+                  totalRooms={totalRooms}
+                  totalPrice={totalPrice}
+                  checkIn={checkIn}
+                  checkOut={checkOut}
+                  nights={nights}
+                  onQuantityChange={handleQuantityChange}
+                  onRemoveRoom={handleRemoveRoom}
+                  onBookNow={handleBookNow}
+                />
+                {submitting && (
+                  <p className="text-center text-sm text-gray-500 mt-2">{t('addRoom.adding', 'Уншиж байна...')}</p>
+                )}
+                {submitError && (
+                  <p className="text-center text-sm text-red-500 mt-2">{submitError}</p>
                 )}
               </div>
 
-              {/* Add room button */}
-              <button
-                type="button"
-                disabled={selected.length === 0 || submitting}
-                onClick={handleAddRooms}
-                className="w-full bg-[#1a6de0] hover:bg-[#1559bb] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl transition-colors text-sm"
-              >
-                {submitting
-                  ? t('addRoom.adding', 'Нэмж байна...')
-                  : `${t('addRoom.addRoomBtn', 'Өрөө нэмэх')} (${selected.reduce((s, r) => s + r.quantity, 0)})`}
-              </button>
-
-              {submitError && (
-                <p className="text-xs text-red-600 text-center">{submitError}</p>
-              )}
-
-              {/* Selected rooms list */}
-              {selected.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-medium text-gray-700">{t('addRoom.selectedRooms', 'Selected Rooms')}</p>
-                  {selected.map((s) => (
-                    <div key={s.room.id} className="border border-gray-200 rounded-lg p-3 relative">
-                      <button
-                        type="button"
-                        onClick={() => setQuantity(s.room, 0)}
-                        className="absolute top-2 right-2 text-red-400 hover:text-red-600"
-                      >
-                        <XCircle className="w-4 h-4" />
-                      </button>
-                      <p className="text-sm font-medium text-gray-800 pr-5">{getRoomTypeName(s.room.room_type)}</p>
-                      <p className="text-xs text-[#1a6de0]">{getRoomCategoryName(s.room.room_category)}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        ₮{s.pricePerNight.toLocaleString('mn-MN')} × {s.quantity} = ₮{(s.pricePerNight * s.quantity * Math.max(nights, 1)).toLocaleString('mn-MN')}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs text-gray-500">{t('addRoom.qty', 'Тоо')}:</span>
-                        <button
-                          type="button"
-                          onClick={() => setQuantity(s.room, s.quantity - 1)}
-                          className="w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50"
-                        >
-                          <Minus className="w-2.5 h-2.5" />
-                        </button>
-                        <span className="text-xs font-medium">{s.quantity}</span>
-                        <button
-                          type="button"
-                          disabled={s.quantity >= Math.min(getAvail(s.room.id).count, 10)}
-                          onClick={() => setQuantity(s.room, s.quantity + 1)}
-                          className="w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-50 disabled:opacity-40"
-                        >
-                          <Plus className="w-2.5 h-2.5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </>
@@ -506,17 +409,12 @@ function AddRoomContent() {
 export default function AddRoomPage() {
   return (
     <Suspense fallback={
-      <>
-        <Header1 />
-        <div className="pt-[178px] min-h-screen bg-[#eef0f3]">
-          <div className="max-w-[1560px] mx-auto px-6">
-            <div className="animate-pulse space-y-4">
-              <div className="h-6 bg-gray-200 rounded w-48" />
-              <div className="bg-white rounded-xl h-64" />
-            </div>
-          </div>
+      <div className="min-h-screen bg-[#f4f5f7]">
+        <div className="sticky top-0 z-40 bg-white border-b border-gray-200 h-[90px]" />
+        <div className="max-w-[1400px] mx-auto px-6 py-6">
+          <HotelRoomsSectionSkeleton />
         </div>
-      </>
+      </div>
     }>
       <AddRoomContent />
     </Suspense>

@@ -102,6 +102,10 @@ export interface CustomerBooking {
   has_review: boolean;
   booking_code: string;
   created_at: string;
+  /** Set when multiple API rows share one booking_code */
+  booking_ids?: number[];
+  room_count?: number;
+  has_added_rooms?: boolean;
   avg_rating?: number | null;
   rating?: number | null;
   review_count?: number | null;

@@ -214,6 +214,8 @@ export interface BookingDetails {
   coupon: string | null;
   total_price: number;
   created_at: string;
+  parent_booking?: number | null;
+  extra_rooms?: BookingDetails[];
 }
 
 export interface CheckBookingResponse {

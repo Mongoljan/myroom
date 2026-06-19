@@ -10,6 +10,9 @@ export interface BookingConfirmationRoom {
   max_adults?: number;
   max_children?: number;
   include_breakfast?: boolean;
+  /** True when room was added via add-room after the original booking */
+  is_added_room?: boolean;
+  booked_at?: string;
 }
 
 export interface BookingConfirmationHotelDetails {

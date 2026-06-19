@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { useToast } from '@/components/common/ToastContainer';
 import { CustomerService } from '@/services/customerApi';
 import { ApiService } from '@/services/api';
 import { HotelService } from '@/services/hotelApi';
@@ -55,6 +56,7 @@ function getHotelMetaKey(booking: CustomerBooking): string {
 export default function BookingsPage() {
   const { t } = useHydratedTranslation();
   const { token, user } = useAuth();
+  const { addToast } = useToast();
   const router = useRouter();
 
   const TABS: { label: string; value: StatusFilter }[] = useMemo(() => [
@@ -237,9 +239,13 @@ export default function BookingsPage() {
     setIsDeleting(true);
     setDeleteError('');
     try {
-      await CustomerService.deleteBooking(token, deleteTarget.id);
-      setBookings((prev) => prev.filter((b) => b.id !== deleteTarget.id));
+      const idsToDelete = deleteTarget.booking_ids?.length
+        ? deleteTarget.booking_ids
+        : [deleteTarget.id];
+      await Promise.all(idsToDelete.map((id) => CustomerService.deleteBooking(token, id)));
+      setBookings((prev) => prev.filter((b) => b.booking_code !== deleteTarget.booking_code));
       setDeleteTarget(null);
+      addToast({ type: 'success', title: t('profileBookings.deleteSuccess') });
     } catch (err) {
       setDeleteError(err instanceof Error ? err.message : t('profileBookings.error'));
     } finally {
@@ -393,9 +399,16 @@ export default function BookingsPage() {
                     {formatBookingCreatedAtMongolia(booking.created_at)}
                   </span>
                 </div>
-                <span className={`text-sm font-medium ${STATUS_BADGE_STYLES[booking.status] ?? 'text-gray-500 dark:text-gray-400'}`}>
-                  {STATUS_LABELS[booking.status] ?? booking.status_label}
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={`text-sm font-medium ${STATUS_BADGE_STYLES[booking.status] ?? 'text-gray-500 dark:text-gray-400'}`}>
+                    {STATUS_LABELS[booking.status] ?? booking.status_label}
+                  </span>
+                  {booking.has_added_rooms && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                      {t('profileBookings.roomAdded')}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center gap-4 p-4">
@@ -416,7 +429,14 @@ export default function BookingsPage() {
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{meta.address}</p>
                   )}
                   {booking.room_type && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{booking.room_type}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">
+                      {booking.room_type}
+                      {(booking.room_count ?? 1) > 1 && (
+                        <span className="ml-1">
+                          ({t('profileBookings.roomsCount', { count: booking.room_count })})
+                        </span>
+                      )}
+                    </p>
                   )}
                   <div className="flex flex-wrap items-center gap-2 mt-2 text-xs">
                     <span className="text-blue-600 font-medium">

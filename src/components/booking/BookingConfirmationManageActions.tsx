@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { Calendar, RefreshCw, Plus, X, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { getBookingPin } from '@/utils/bookingPinStorage';
 
 interface BookingConfirmationManageActionsProps {
   bookingCode: string;
@@ -43,9 +44,10 @@ export default function BookingConfirmationManageActions({
 
   const goManage = (action: string) => {
     if (action === 'add-room' && hotelId) {
+      const resolvedPin = pinCode || getBookingPin(bookingCode) || '';
       const params = new URLSearchParams({
         code: bookingCode,
-        pin: pinCode,
+        pin: resolvedPin,
         ...(checkIn ? { check_in: checkIn } : {}),
         ...(checkOut ? { check_out: checkOut } : {}),
         ...(hotelName ? { hotel_name: hotelName } : {}),
