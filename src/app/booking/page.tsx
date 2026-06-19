@@ -16,6 +16,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import BookingPaymentStep from '@/components/booking/BookingPaymentStep';
 import BookingSidebarRoomsSection from '@/components/booking/BookingSidebarRoomsSection';
 import BackButton from '@/components/common/BackButton';
+import BookingFlowStepper from '@/components/booking/BookingFlowStepper';
+import {
+  buildHotelRoomStepUrl,
+  canResumeGuestStep,
+  canResumePaymentStep,
+  markBookingGuestStep,
+  markBookingPaymentStep,
+  type BookingFlowStep,
+} from '@/utils/bookingFlowNavigation';
 import { formatHotelLocation } from '@/utils/formatHotelLocation';
 import {
   saveBookingPaymentContext,
@@ -39,22 +48,6 @@ import {
 } from '@/utils/bookingGuestFormSchema';
 import { getLocaleCode, resolveRoomDisplayNameFromAllData } from '@/utils/roomNames';
 import type { AllData } from '@/types/api';
-
-function StepLabel({ labelKey }: { labelKey: string }) {
-  const { t } = useHydratedTranslation();
-  const parts = t(labelKey).split('\n');
-  return (
-    <>
-      {parts[0]}
-      {parts[1] ? (
-        <>
-          <br />
-          {parts[1]}
-        </>
-      ) : null}
-    </>
-  );
-}
 
 interface BookingRoom {
   room_category_id: number;
@@ -175,34 +168,24 @@ function BookingContent() {
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [checkedBooking, setCheckedBooking] = useState<CheckBookingResponse | null>(null);
 
-  // Restore step 3 only when URL matches the pending payment in session (avoids stale booking_code)
-  useEffect(() => {
-    let urlRooms: BookingRoom[] = [];
-    try {
-      if (roomsData) {
-        urlRooms = JSON.parse(decodeURIComponent(roomsData));
-      }
-    } catch { /* ignore */ }
+  const getUrlBookingParams = (urlRooms: BookingRoom[]) => ({
+    hotelId,
+    checkIn: urlCheckIn,
+    checkOut: urlCheckOut,
+    totalPrice: urlTotalPrice,
+    rooms: urlRooms,
+  });
 
-    const canResumeStep3 =
-      sessionStorage.getItem('booking_step') === '3' &&
-      doesUrlMatchPaymentContext({
-        hotelId,
-        checkIn: urlCheckIn,
-        checkOut: urlCheckOut,
-        totalPrice: urlTotalPrice,
-        rooms: urlRooms,
-      });
+  const getGuestFormSnapshot = () => ({
+    customerName,
+    customerLastName,
+    customerPhone,
+    customerEmail,
+    cancellationAccepted,
+    tosAccepted,
+  });
 
-    if (!canResumeStep3) {
-      if (sessionStorage.getItem('booking_step') === '3') {
-        clearPaymentSession();
-      }
-      setHasMounted(true);
-      return;
-    }
-
-    setStep(3);
+  const restorePendingBookingSession = (urlRooms: BookingRoom[], resumePayment: boolean) => {
     try {
       const saved = sessionStorage.getItem('booking_result');
       if (saved) {
@@ -220,7 +203,41 @@ function BookingContent() {
       if (!customerLastName && savedContext.customerLastName) setCustomerLastName(savedContext.customerLastName);
       if (!customerPhone && savedContext.customerPhone) setCustomerPhone(savedContext.customerPhone);
       if (!customerEmail && savedContext.customerEmail) setCustomerEmail(savedContext.customerEmail);
+      if (savedContext.customerName || savedContext.customerEmail) {
+        setCancellationAccepted(true);
+        setTosAccepted(true);
+      }
     }
+
+    if (resumePayment) {
+      setStep(3);
+    }
+  };
+
+  // Restore pending booking when URL still matches session (step 2 or 3)
+  useEffect(() => {
+    let urlRooms: BookingRoom[] = [];
+    try {
+      if (roomsData) {
+        urlRooms = JSON.parse(decodeURIComponent(roomsData));
+      }
+    } catch { /* ignore */ }
+
+    const urlParams = getUrlBookingParams(urlRooms);
+    const savedStep = sessionStorage.getItem('booking_step');
+    const urlMatches = doesUrlMatchPaymentContext(urlParams);
+    const canResumeGuest = canResumeGuestStep(urlParams);
+    const canResumePayment = savedStep === '3' && urlMatches && canResumeGuest;
+
+    if (!canResumeGuest) {
+      if (savedStep === '3' && !urlMatches) {
+        clearPaymentSession();
+      }
+      setHasMounted(true);
+      return;
+    }
+
+    restorePendingBookingSession(urlRooms, canResumePayment);
     setHasMounted(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -478,6 +495,58 @@ function BookingContent() {
         : 'border-gray-300 dark:border-gray-600 focus:ring-primary'
     }`;
 
+  const navigateToRoomStep = () => {
+    markBookingGuestStep();
+    router.push(
+      buildHotelRoomStepUrl({
+        hotelId,
+        checkIn,
+        checkOut,
+        adults: adultsCount,
+        children: childrenCount,
+        searchedRooms: searchedRoomsCount,
+      })
+    );
+  };
+
+  const handleStepperClick = (target: BookingFlowStep) => {
+    if (target === 1) {
+      navigateToRoomStep();
+      return;
+    }
+    if (target === 2 && step === 3) {
+      markBookingGuestStep();
+      setStep(2);
+      return;
+    }
+    if (target === 3 && step === 2) {
+      const canSkip = canResumePaymentStep(
+        getUrlBookingParams(rooms),
+        getGuestFormSnapshot()
+      );
+      if (!canSkip) return;
+
+      if (!bookingResult) {
+        try {
+          const saved = sessionStorage.getItem('booking_result');
+          if (saved) {
+            setBookingResult(JSON.parse(saved) as CreateBookingResponse);
+          }
+        } catch { /* ignore */ }
+      }
+      markBookingPaymentStep();
+      setStep(3);
+    }
+  };
+
+  const hasPendingBookingResult =
+    Boolean(bookingResult) ||
+    (typeof window !== 'undefined' && Boolean(sessionStorage.getItem('booking_result')));
+
+  const canGoToPaymentStep =
+    hasPendingBookingResult &&
+    canResumePaymentStep(getUrlBookingParams(rooms), getGuestFormSnapshot());
+
   const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBookingError(null);
@@ -520,6 +589,23 @@ function BookingContent() {
 
     if (!ebarimtValid) {
       document.getElementById('booking-guest-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    if (
+      canResumePaymentStep(getUrlBookingParams(rooms), getGuestFormSnapshot()) &&
+      (bookingResult || sessionStorage.getItem('booking_result'))
+    ) {
+      if (!bookingResult) {
+        try {
+          const saved = sessionStorage.getItem('booking_result');
+          if (saved) {
+            setBookingResult(JSON.parse(saved) as CreateBookingResponse);
+          }
+        } catch { /* ignore */ }
+      }
+      markBookingPaymentStep();
+      setStep(3);
       return;
     }
 
@@ -653,29 +739,12 @@ function BookingContent() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto px-4 py-8">
-          {/* Stepper — Step 3 active */}
-          <div className="mb-8 flex items-start w-full">
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
-                <Check className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepRoom" /></span>
-            </div>
-            <div className="flex-1 h-px bg-primary mt-4" />
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
-                <Check className="w-4 h-4" />
-              </div>
-              <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepGuest" /></span>
-            </div>
-            <div className="flex-1 h-px bg-primary mt-4" />
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0 text-sm font-semibold">
-                3
-              </div>
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepPayment" /></span>
-            </div>
-          </div>
+          <BookingFlowStepper
+            activeStep={3}
+            onStepClick={handleStepperClick}
+            canGoToStep2
+            className="mb-8"
+          />
 
           <BookingPaymentStep
             bookingCode={bookingResult.booking_code}
@@ -764,30 +833,12 @@ function BookingContent() {
       
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="relative mb-8">
-          <BackButton onClick={() => router.back()} stepperAnchor />
-          {/* Stepper — Step 2 active */}
-          <div className="flex items-start w-full">
-          <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
-              <Check className="w-4 h-4" />
-            </div>
-            <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepRoom" /></span>
-          </div>
-          <div className="flex-1 h-px bg-primary mt-4" />
-          <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shrink-0 text-sm font-semibold">
-              2
-            </div>
-            <span className="text-xs font-medium text-gray-900 dark:text-white mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepGuest" /></span>
-          </div>
-          <div className="flex-1 h-px bg-gray-300 dark:bg-gray-700 mt-4" />
-          <div className="flex flex-col items-center">
-            <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 flex items-center justify-center shrink-0 text-sm font-semibold">
-              3
-            </div>
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-1.5 text-center leading-tight"><StepLabel labelKey="bookingFlow.stepPayment" /></span>
-          </div>
-          </div>
+          <BackButton onClick={navigateToRoomStep} stepperAnchor />
+          <BookingFlowStepper
+            activeStep={2}
+            onStepClick={handleStepperClick}
+            canGoToStep3={canGoToPaymentStep}
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -14,6 +14,11 @@ import DateRangePicker from '@/components/common/DateRangePicker';
 import CustomGuestSelector from '@/components/search/CustomGuestSelector';
 import { HotelRoomsSectionSkeleton } from '@/components/skeletons';
 import { getLocaleCode, getLocalizedFullRoomName } from '@/utils/roomNames';
+import BookingFlowStepper from '@/components/booking/BookingFlowStepper';
+import {
+  canResumeGuestStep,
+  type BookingFlowStep,
+} from '@/utils/bookingFlowNavigation';
 
 interface ImprovedHotelRoomsSectionProps {
   hotelId: number;
@@ -358,6 +363,38 @@ export default function ImprovedHotelRoomsSection({
     router.push(`/booking?${params.toString()}`);
   };
 
+  const buildUrlRoomsPayload = () => {
+    const nights = calculateNights();
+    const locale = getLocaleCode(i18n.language);
+    return bookingItems.map((item) => ({
+      room_category_id: item.room.room_category,
+      room_type_id: item.room.room_type,
+      room_count: item.quantity,
+      room_name: getLocalizedFullRoomName(item.room, locale),
+      price_per_night: item.price,
+      total_price: item.price * item.quantity * nights,
+      max_adults: item.room.adultQty ?? 1,
+      max_children: item.room.childQty ?? 0,
+      include_breakfast: item.priceType === 'withBreakfast',
+    }));
+  };
+
+  const canGoToGuestStep =
+    bookingItems.length > 0 ||
+    canResumeGuestStep({
+      hotelId,
+      checkIn: effectiveCheckIn,
+      checkOut: effectiveCheckOut,
+      totalPrice: getTotalPrice() * calculateNights(),
+      rooms: buildUrlRoomsPayload(),
+    });
+
+  const handleFlowStepClick = (target: BookingFlowStep) => {
+    if (target === 2 && bookingItems.length > 0) {
+      handleBookNow();
+    }
+  };
+
   if (loading) {
     return <HotelRoomsSectionSkeleton />;
   }
@@ -468,6 +505,13 @@ export default function ImprovedHotelRoomsSection({
 
   return (
     <div>
+      <BookingFlowStepper
+        activeStep={1}
+        onStepClick={handleFlowStepClick}
+        canGoToStep2={canGoToGuestStep}
+        className="mb-6"
+      />
+
       {/* Room Search Bar */}
       <div className="mb-6 bg-white dark:bg-gray-800 border border-primary rounded-xl shadow-sm overflow-hidden">
         <div className="flex flex-col lg:flex-row lg:items-center divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
