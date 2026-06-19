@@ -1,12 +1,14 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { PropertyFaq } from '@/types/api';
+import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 interface HotelFAQSectionProps {
   faqs?: PropertyFaq[];
+  hotelId?: number;
 }
 
 function getLocalizedText(
@@ -69,10 +71,20 @@ function FaqColumn({
   );
 }
 
-export default function HotelFAQSection({ faqs = [] }: HotelFAQSectionProps) {
+export default function HotelFAQSection({ faqs: faqsProp, hotelId }: HotelFAQSectionProps) {
   const { t, i18n } = useHydratedTranslation();
   const locale: 'en' | 'mn' = i18n.language === 'en' ? 'en' : 'mn';
   const [openId, setOpenId] = useState<number | null>(null);
+  const [fetchedFaqs, setFetchedFaqs] = useState<PropertyFaq[]>([]);
+
+  useEffect(() => {
+    if (faqsProp !== undefined || !hotelId) return;
+    ApiService.getPropertyFaqs(hotelId)
+      .then((res) => setFetchedFaqs(res.faqs || []))
+      .catch(() => {});
+  }, [hotelId, faqsProp]);
+
+  const faqs = faqsProp ?? fetchedFaqs;
 
   const answeredFaqs = useMemo(
     () => faqs.filter(hasAnswer),
