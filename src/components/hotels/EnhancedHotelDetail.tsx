@@ -761,7 +761,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
               ))}
             </div>
             {hotel.google_map && (
-              <button onClick={() => setShowMapModal(true)} className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium">
+              <button onClick={() => setShowMapModal(true)} className="flex items-center gap-1  hover:text-slate-800 text-sm font-medium underline text-primary pl-5.5 mt-1">
                 {t('hotelDetails.viewOnMap', 'Газрын зураг дээр харах')}
               </button>
             )}

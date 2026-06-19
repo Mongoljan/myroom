@@ -330,14 +330,14 @@ export default function BookingPaymentStep({
                 <button
                   type="button"
                   onClick={onCancelBooking}
-                  className="text-sm sm:text-base  text-gray-400 hover:text-primary/80 transition-colors border-slate-150 border px-4 py-2 rounded-md"
+                  className="text-sm text-gray-400 hover:text-primary/80 transition-colors border-slate-150 border px-4 py-2 rounded-md"
                 >
                   {t('payment.cancelBooking')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setInvoiceTypeDialogOpen(true)}
-                  className="text-sm sm:text-base font-semibold text-primary hover:text-primary/80 transition-colors underline"
+                  className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors underline"
                 >
                   {t('payment.downloadInvoice')}
                 </button>
@@ -510,6 +510,7 @@ export default function BookingPaymentStep({
                   <div className="text-xs text-gray-500 mt-0.5">{checkOutTimeRange}</div>
                 </div>
               </div>
+              <div className="px-1 pt-1 mt-4 border-t border-gray-200 dark:border-gray-700 "></div>
             </div>
 
             <BookingSidebarRoomsSection
@@ -522,42 +523,39 @@ export default function BookingPaymentStep({
               guestCapacityLabel={t('bookingFlow.guestCapacity')}
             />
 
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-1.5 mb-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">{t('payment.coupon')}</span>
-                <span className="text-gray-900 dark:text-white">0 ₮</span>
-              </div>
+
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600 dark:text-gray-400">{t('payment.coupon')}</span>
+              <span className="text-gray-900 dark:text-white">0 ₮</span>
             </div>
 
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-3 mb-4">
-              <div className="flex justify-between items-baseline">
-                <span className="text-sm font-semibold text-gray-900 dark:text-white">
+              <div className="flex justify-between items-baseline pt-2 pb-4">
+                <span className="text-base font-semibold text-gray-900 dark:text-white">
                   {t('payment.totalDue')}
                 </span>
                 <span className="text-lg font-bold text-gray-900 dark:text-white">
                   {totalPrice.toLocaleString()}₮
                 </span>
               </div>
-            </div>
 
             {/* Customer info */}
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-              <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <p className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 {t('payment.guestInfo')}
               </p>
-              <div className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+              <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                 <div className="flex gap-1">
-                  <span className="w-24 shrink-0">{t('payment.guestFullName')}</span>
+                  <span className="w-30 shrink-0">{t('payment.guestFullName')}</span>
                   <span className="text-gray-900 dark:text-white font-medium">
                     {[customerLastName, customerName].filter(Boolean).join(' ') || '—'}
                   </span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="w-24 shrink-0">{t('payment.guestPhone')}</span>
+                  <span className="w-30 shrink-0">{t('payment.guestPhone')}</span>
                   <span className="text-gray-900 dark:text-white font-medium">{customerPhone || '—'}</span>
                 </div>
                 <div className="flex gap-1">
-                  <span className="w-24 shrink-0">{t('payment.guestEmail')}</span>
+                  <span className="w-30 shrink-0">{t('payment.guestEmail')}</span>
                   <span className="text-gray-900 dark:text-white font-medium break-all">
                     {customerEmail || '—'}
                   </span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { Fragment, useState, useEffect, useRef, useMemo } from 'react';
 import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -48,6 +48,77 @@ import {
 } from '@/utils/bookingGuestFormSchema';
 import { getLocaleCode, resolveRoomDisplayNameFromAllData } from '@/utils/roomNames';
 import type { AllData } from '@/types/api';
+
+function StepLabel({ labelKey }: { labelKey: string }) {
+  const { t } = useHydratedTranslation();
+  const parts = t(labelKey).split('\n');
+  return (
+    <>
+      {parts[0]}
+      {parts[1] ? (
+        <>
+          <br />
+          {parts[1]}
+        </>
+      ) : null}
+    </>
+  );
+}
+
+function BookingStepper({ activeStep }: { activeStep: 2 | 3 }) {
+  const steps = [
+    { id: 1, labelKey: 'bookingFlow.stepRoom' },
+    { id: 2, labelKey: 'bookingFlow.stepGuest' },
+    { id: 3, labelKey: 'bookingFlow.stepPayment' },
+  ] as const;
+
+  return (
+    <div className="mb-8 flex items-start w-full">
+      {steps.map((step, index) => {
+        const isComplete = step.id < activeStep;
+        const isActive = step.id === activeStep;
+        const circleClass = isActive
+          ? 'w-11 h-11 bg-gray-50 text-primary tracking-wider shadow-[0_0_0_2px_rgba(59,130,246,0.20)] ring-3 ring-primary/20'
+          : isComplete
+            ? 'w-9 h-9 bg-primary text-white'
+            : 'w-9 h-9 bg-gray-200 dark:bg-gray-700 text-gray-500';
+        const labelClass = isActive
+          ? 'text-sm font-bold text-gray-900 dark:text-white'
+          : isComplete
+            ? 'text-xs font-medium text-gray-500 dark:text-white'
+            : 'text-xs font-medium text-gray-500 dark:text-gray-400';
+        const lineClass = index < steps.length - 1
+          ? isComplete || activeStep > step.id
+            ? 'flex-1 h-0.5 bg-primary mt-4 rounded-full'
+            : 'flex-1 h-0.5 bg-gray-300 dark:bg-gray-700 mt-4 rounded-full'
+          : '';
+
+        return (
+          <Fragment key={step.id}>
+            <div className="flex flex-col items-center min-w-0">
+              <motion.div
+                initial={false}
+                animate={isActive ? { scale: [1, 1.08, 1], y: [-1, 0, -1] } : { scale: 1, y: 0 }}
+                transition={isActive ? { duration: 1.2, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.2 }}
+                className={`${circleClass} rounded-full flex items-center justify-center shrink-0 text-xl font-bold transition-all duration-300`}
+              >
+                {isComplete ? (
+                  <Check className="w-4 h-4" />
+                ) : (
+                  <span className={isActive ? 'text-base' : 'text-sm'}>{step.id}</span>
+                )}
+              </motion.div>
+              <span className={`${labelClass} mt-1.5 text-center leading-tight`}>
+                <StepLabel labelKey={step.labelKey} />
+              </span>
+            </div>
+            {lineClass ? <div className={lineClass} /> : null}
+          </Fragment>
+        );
+      })}
+    </div>
+  );
+}
 
 interface BookingRoom {
   room_category_id: number;
@@ -862,6 +933,8 @@ function BookingContent() {
 
               <form onSubmit={handleBookingSubmit} id="booking-form" className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.LastNameLabel')}</label>
                   <input
                     type="text"
                     value={customerLastName}
@@ -870,7 +943,11 @@ function BookingContent() {
                     className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary disabled:opacity-50"
                     placeholder={t('bookingFlow.placeholderLastName')}
                   />
-                  <div className="relative">
+                </div>
+                  <div className="relative"> 
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.FirstNameLabel')}
+                      <span className="pl-1 text-red-500 dark:text-red-400 font-bold" aria-hidden="true">*</span>
+                    </label>
                     <input
                       type="text"
                       value={customerName}
@@ -882,12 +959,14 @@ function BookingContent() {
                       className={guestInputClass('customerName')}
                       placeholder={t('bookingFlow.placeholderFirstName')}
                     />
-                    <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                     {formErrors.customerName && (
                       <p className="text-xs text-red-500 mt-1">{formErrors.customerName}</p>
                     )}
                   </div>
                   <div className="relative">
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.EmailLabel')}
+                      <span className="pl-1 text-red-500 dark:text-red-400 font-bold" aria-hidden="true">*</span>
+                    </label>
                     <input
                       type="email"
                       value={customerEmail}
@@ -899,12 +978,14 @@ function BookingContent() {
                       className={guestInputClass('customerEmail')}
                       placeholder={t('bookingFlow.placeholderEmail')}
                     />
-                    <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                     {formErrors.customerEmail && (
                       <p className="text-xs text-red-500 mt-1">{formErrors.customerEmail}</p>
                     )}
                   </div>
                   <div className="relative">
+                    <label className="text-sm font-medium text-gray-900 dark:text-white">{t('bookingFlow.PhoneLabel')}
+                      <span className="pl-1 text-red-500 dark:text-red-400 font-bold" aria-hidden="true">*</span>
+                    </label>
                     <input
                       type="tel"
                       value={customerPhone}
@@ -916,7 +997,6 @@ function BookingContent() {
                       className={guestInputClass('customerPhone')}
                       placeholder={t('bookingFlow.placeholderPhone')}
                     />
-                    <span className="absolute right-3 top-3 text-red-500 text-sm leading-none">*</span>
                     {formErrors.customerPhone && (
                       <p className="text-xs text-red-500 mt-1">{formErrors.customerPhone}</p>
                     )}
@@ -1382,7 +1462,7 @@ function BookingContent() {
 
               {/* Terms acceptance */}
               <div id="booking-tos-section">
-              <label className="flex items-start gap-2 mb-1 cursor-pointer">
+              <label className="flex items-start gap-2 mb-8 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={tosAccepted}
@@ -1836,10 +1916,6 @@ function BookingContent() {
                 Утас: 7777-7777 | И-мэйл: contact@myroom.mn | Вэбсайт: myroom.mn
               </p>
             </div>
-
-            <p className="text-xs text-gray-400 italic pt-1">
-              ↓ Доош гүйлгэж дуусгасны дараа &ldquo;Зөвшөөрөх&rdquo; товч идэвхжинэ.
-            </p>
           </div>
 
           <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between gap-3 shrink-0">

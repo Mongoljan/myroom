@@ -20,6 +20,11 @@ export interface HotelInfo {
     approved: boolean;
   } | null;
   profile_image?: string | null;
+  // Rating fields returned by the API
+  avg_rating?: number | null;
+  rating?: number | null;
+  review_count?: number | null;
+  reviews_count?: number | null;
 }
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://dev.kacc.mn';

@@ -77,7 +77,7 @@ export default function SectionHotelCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      className={`w-[280px] flex-shrink-0 ${className}`}
+      className={`flex-shrink-0 ${className || 'w-[280px]'}`}
     >
       <Link
         href={`/hotel/${id}`}

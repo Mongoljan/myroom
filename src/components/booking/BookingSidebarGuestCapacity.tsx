@@ -14,7 +14,7 @@ export default function BookingSidebarGuestCapacity({
   guestCapacityLabel,
 }: BookingSidebarGuestCapacityProps) {
   return (
-    <div className="flex items-center justify-between gap-3 pt-2 mt-1">
+    <div className="flex items-center justify-between">
       <span className="text-sm text-gray-700 dark:text-gray-300 shrink-0">
         {guestCapacityLabel}
       </span>

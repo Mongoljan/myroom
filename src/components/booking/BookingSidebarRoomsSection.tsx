@@ -31,7 +31,7 @@ export default function BookingSidebarRoomsSection({
 }: BookingSidebarRoomsSectionProps) {
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-3">
         <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">{selectedRoomsLabel}</div>
         {rooms.map((room, index) => (
           <div key={index} className="flex items-center justify-between gap-2 py-1">
@@ -51,25 +51,23 @@ export default function BookingSidebarRoomsSection({
                 />
               )}
             </span>
-            <span className="text-sm font-semibold text-gray-900 dark:text-gray-400 whitespace-nowrap shrink-0">
+            <span className="text-sm font-semibold text-gray-900 dark:text-gray-400 whitespace-nowrap shrink-0 ">
               x {room.room_count}
             </span>
           </div>
         ))}
       </div>
-
-      <div className="border-t border-gray-200 dark:border-gray-700  mb-4 space-y-1.5">
+              <div className="border-t border-gray-200 dark:border-gray-700  mb space-y-4 mb-3"></div>
       <BookingSidebarGuestCapacity
           adultCapacity={adultCapacity}
           childCapacity={childCapacity}
           guestCapacityLabel={guestCapacityLabel}
         />
+
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600 dark:text-gray-400">{basePriceLabel}</span>
-          <span className="text-gray-900 dark:text-white">{totalPrice.toLocaleString()} ₮</span>
+          <span className="text-gray-600 dark:text-gray-400 py-1">{basePriceLabel}</span>
+          <span className="text-gray-900 dark:text-white py-1">{totalPrice.toLocaleString()} ₮</span>
         </div>
- 
-      </div>
     </>
   );
 }

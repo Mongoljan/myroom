@@ -82,7 +82,7 @@ export default function SearchResultsHeader({
       {/* Main Header */}
       <div className=" backdrop-blur-sm rounded-lg p-1.5 relative overflow-hidden">
         {/* Subtle gradient background */}
-        <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-gray-100 dark:border-gray-700 mb-2 pb-2">
+        <div className="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-2 pb-2">
 
           {/* Search Info Row - Trip.com style */}
           <div>
