@@ -199,8 +199,7 @@ export default function HelpPageContent() {
               })}
             </div>
           </div>
-
-          {/* FAQ Items - matching existing FAQ style */}
+          {/* FAQ Items - two independent columns so expanding one doesn't affect the other */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeCategory}
@@ -208,95 +207,102 @@ export default function HelpPageContent() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-2 items-start mt-2"
+              className="flex flex-col md:flex-row gap-x-5 gap-y-2 mt-2"
             >
-              {activeCategoryData?.faqs.map((faq, index) => {
-                const isOpen = openFaqIndex === index;
+              {[0, 1].map((colIndex) => (
+                <div key={colIndex} className="flex flex-col gap-y-2 flex-1 min-w-0">
+                  {activeCategoryData?.faqs
+                    .map((faq, index) => ({ faq, index })) // keep original index for state/order
+                    .filter(({ index }) => index % 2 === colIndex) // even -> col 0, odd -> col 1 (matches old grid order)
+                    .map(({ faq, index }) => {
+                      const isOpen = openFaqIndex === index;
 
-                return (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="group"
-                  >
-                    <motion.div
-                      className=" bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
-                      whileHover={{
-                        y: -2,
-                        boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
-                      }}
-                      layout
-                    >
-                      <motion.button
-                        onClick={() => toggleFaq(index)}
-                        className={`w-full text-left px-4 py-3 md:h-20 min-h-[4.5rem] flex items-center focus:outline-none transition-colors duration-200 ${
-                          isOpen ? 'bg-gray-200 dark:bg-gray-700/50' : ''
-                        }`}
-                      >
-                        <div className="flex items-center justify-between w-full">
-                          <div className="flex items-center flex-1 min-w-0">
-                            <h3 className={`${TYPOGRAPHY.card.subtitle} font-bold text-gray-900 dark:text-white pr-3 line-clamp-2`}>
-                              {faq.question}
-                            </h3>
-                          </div>
-
+                      return (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="group"
+                        >
                           <motion.div
-                            animate={{ rotate: isOpen ? 180 : 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                          >
-                            <ChevronDown className="w-4 h-4" />
-                          </motion.div>
-                        </div>
-                      </motion.button>
-
-                      <AnimatePresence initial={false}>
-                        {isOpen && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{
-                              height: "auto",
-                              opacity: 1,
-                              transition: {
-                                height: { duration: 0.3, ease: "easeInOut" },
-                                opacity: { duration: 0.2, delay: 0.1 }
-                              }
+                            layout
+                            className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
+                            whileHover={{
+                              y: -2,
+                              boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
                             }}
-                            exit={{
-                              height: 0,
-                              opacity: 0,
-                              transition: {
-                                height: { duration: 0.3, ease: "easeInOut" },
-                                opacity: { duration: 0.1 }
-                              }
-                            }}
-                            className="overflow-hidden"
                           >
-                            <motion.div
-                              className="px-4 pb-4 bg-white dark:bg-gray-800"
-                              initial={{ y: -10, opacity: 0 }}
-                              animate={{ y: 0, opacity: 1 }}
-                              exit={{ y: -10, opacity: 0 }}
-                              transition={{ duration: 0.2, delay: 0.1 }}
+                            <motion.button
+                              onClick={() => toggleFaq(index)}
+                              className={`w-full text-left px-4 py-3 md:h-20 min-h-[4.5rem] flex items-center focus:outline-none transition-colors duration-200 ${
+                                isOpen ? 'bg-gray-200 dark:bg-gray-700/50' : ''
+                              }`}
                             >
-                              <motion.p
-                                className={`${TYPOGRAPHY.body.standard} font-normal text-gray-600 dark:text-gray-400`}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.3, delay: 0.2 }}
-                              >
-                                {faq.answer}
-                              </motion.p>
-                            </motion.div>
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center flex-1 min-w-0">
+                                  <h3 className={`${TYPOGRAPHY.card.subtitle} font-bold text-gray-900 dark:text-white pr-3 line-clamp-2`}>
+                                    {faq.question}
+                                  </h3>
+                                </div>
+
+                                <motion.div
+                                  animate={{ rotate: isOpen ? 180 : 0 }}
+                                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                                  className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                >
+                                  <ChevronDown className="w-4 h-4" />
+                                </motion.div>
+                              </div>
+                            </motion.button>
+
+                            <AnimatePresence initial={false}>
+                              {isOpen && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{
+                                    height: "auto",
+                                    opacity: 1,
+                                    transition: {
+                                      height: { duration: 0.3, ease: "easeInOut" },
+                                      opacity: { duration: 0.2, delay: 0.1 }
+                                    }
+                                  }}
+                                  exit={{
+                                    height: 0,
+                                    opacity: 0,
+                                    transition: {
+                                      height: { duration: 0.3, ease: "easeInOut" },
+                                      opacity: { duration: 0.1 }
+                                    }
+                                  }}
+                                  className="overflow-hidden"
+                                >
+                                  <motion.div
+                                    className="px-4 py-4 bg-white dark:bg-gray-800"
+                                    initial={{ y: -10, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: -10, opacity: 0 }}
+                                    transition={{ duration: 0.2, delay: 0.1 }}
+                                  >
+                                    <motion.p
+                                      className={`${TYPOGRAPHY.body.standard} font-normal text-gray-600 dark:text-gray-400`}
+                                      initial={{ opacity: 0 }}
+                                      animate={{ opacity: 1 }}
+                                      transition={{ duration: 0.3, delay: 0.2 }}
+                                    >
+                                      {faq.answer}
+                                    </motion.p>
+                                  </motion.div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
-                  </motion.div>
-                );
-              })}
+                        </motion.div>
+                      );
+                    })}
+                </div>
+              ))}
             </motion.div>
           </AnimatePresence>
         </section>

@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import { CustomerBooking, Review } from '@/types/customer';
 import { HotelService, HotelInfo } from '@/services/hotelApi';
+import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 
 type ReviewTab = 'my' | 'pending';
@@ -20,7 +21,9 @@ const LIKE_TAGS = [
   'location',
   'food',
   'service',
-  'value'
+  'value',
+  'wifi',
+  'comfort'
 ];
 
 function resolveHotelImageUrl(raw?: string | null): string {
@@ -37,6 +40,7 @@ export default function ReviewsPage() {
   const [pendingBookings, setPendingBookings] = useState<CustomerBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hotels, setHotels] = useState<Map<number, HotelInfo>>(new Map());
+  const [hotelRatings, setHotelRatings] = useState<Map<number, { rating: string, label: string }>>(new Map());
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
 
   // Write review modal
@@ -87,10 +91,33 @@ export default function ReviewsPage() {
 
           // Also store the name map for later use
           (window as unknown as Record<string, unknown>).__hotelByNameMap = hotelByNameMap;
-        } catch (hotelError) {
+          
+          // Fetch ratings like DestinationPage
+          try {
+            const searchRes = await ApiService.searchHotels({
+              check_in: new Date().toISOString().split('T')[0],
+              check_out: new Date(Date.now() + 24*60*60*1000).toISOString().split('T')[0],
+              adults: 2, children: 0, rooms: 1, acc_type: 'hotel'
+            });
+            if (searchRes && searchRes.results) {
+              const ratingsMap = new Map<number, { rating: string, label: string }>();
+              searchRes.results.forEach((h: { hotel_id: number; rating_stars?: { value?: string; label?: string } }) => {
+                if (h.rating_stars) {
+                  ratingsMap.set(h.hotel_id, {
+                    rating: h.rating_stars.value || '0',
+                    label: h.rating_stars.label || ''
+                  });
+                }
+              });
+              setHotelRatings(ratingsMap);
+            }
+          } catch {
+            // ignore rating fetch errors
+          }
+        } catch {
           // Continue without hotel info - we can still match by name
         }
-      } catch (error) {
+      } catch {
       } finally {
         setIsLoading(false);
       }
@@ -122,7 +149,7 @@ export default function ReviewsPage() {
         } else {
           // Try partial match
           const entries = Array.from(hotelByNameMap.entries());
-          const partialMatch = entries.find(([name, hotel]) =>
+          const partialMatch = entries.find(([name]) =>
             name.includes(hotelNameLower) || hotelNameLower.includes(name)
           );
           if (partialMatch) {
@@ -244,7 +271,6 @@ export default function ReviewsPage() {
 
     return hotel?.property_type === selectedCategory;
   });
-
   return (
     <div className="space-y-6">
       {/* Title */}
@@ -389,13 +415,16 @@ export default function ReviewsPage() {
                     )}
 
                     {/* Hotel card */}
-                    {hotel && (
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50/30 dark:bg-gray-900/10 gap-3">
-                        <div className="flex items-center gap-3">
-                          <Link href={`/hotel/${hotel.pk}`} className="flex-shrink-0 cursor-pointer block hover:opacity-90 transition-opacity">
-                            {(() => {
-                              const imageSrc = resolveHotelImageUrl(hotel.profile_image || booking?.hotel_image);
-                              return imageSrc ? (
+                    {hotel && (() => {
+                      const ratingData = hotelRatings.get(hotel.pk);
+                      const avgRating = ratingData?.rating;
+                      const imageSrc = resolveHotelImageUrl(hotel.profile_image || booking?.hotel_image);
+                      return (
+                        <div className="flex items-center justify-between border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50/30 dark:bg-gray-900/20 overflow-hidden">
+                          {/* Left: image + info */}
+                          <div className="flex items-center gap-3 p-2">
+                            <Link href={`/hotel/${hotel.pk}`} className="flex-shrink-0 block hover:opacity-90 transition-opacity">
+                              {imageSrc ? (
                                 <Image
                                   src={imageSrc}
                                   alt={hotel.PropertyName}
@@ -405,45 +434,39 @@ export default function ReviewsPage() {
                                 />
                               ) : (
                                 <div className="w-20 h-20 rounded bg-gray-250 dark:bg-gray-700 flex-shrink-0" />
-                              );
-                            })()}
-                          </Link>
-                          <div>
-                            <Link href={`/hotel/${hotel.pk}`}>
-                              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm hover:text-blue-600 transition-colors cursor-pointer">
-                                {hotel.PropertyName}
-                              </h5>
+                              )}
                             </Link>
-                            {(() => {
-                              const avgRating = review.avg_rating ?? review.hotel_rating ?? booking?.avg_rating ?? booking?.rating ?? hotel?.avg_rating ?? hotel?.rating;
-                              const reviewCount = review.review_count ?? review.reviews_count ?? booking?.review_count ?? booking?.reviews_count ?? hotel?.review_count ?? hotel?.reviews_count;
-                              return (avgRating || reviewCount) ? (
-                                <div className="flex items-center gap-2 mt-1">
-                                  {avgRating ? (
-                                    <span className="bg-[#3fb33f] text-white text-[11px] font-bold px-1.5 py-0.5 rounded leading-none">
-                                      {avgRating} / 5
-                                    </span>
-                                  ) : null}
-                                  {reviewCount ? (
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                      {reviewCount} {t('common.reviews', 'сэтгэгдэл')}
-                                    </span>
-                                  ) : null}
+                            <div className="flex flex-col gap-1 min-w-0">
+                              <Link href={`/hotel/${hotel.pk}`}>
+                                <h5 className="font-bold text-gray-900 dark:text-gray-100 text-sm hover:text-blue-600 transition-colors cursor-pointer leading-snug">
+                                  {hotel.PropertyName}
+                                </h5>
+                              </Link>
+                              {avgRating && parseFloat(avgRating) > 0 && (
+                                <div className="flex items-center gap-1">
+                                  <span className="bg-green-600 text-white text-sm font-medium px-1.5 py-0.5 rounded leading-none flex items-baseline gap-0.5">
+                                    {parseFloat(avgRating).toFixed(1)}
+                                    <span className="text-[12px] font-normal opacity-90">/5</span>
+                                  </span>
+                                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 leading-none">
+                                    {(review.review_count ?? review.reviews_count ?? hotel.review_count ?? hotel.reviews_count) ? ` • ${review.review_count ?? review.reviews_count ?? hotel.review_count ?? hotel.reviews_count} ${t('hotel.reviews_count', 'сэтгэгдэл')}` : ''}
+                                  </span>
                                 </div>
-                              ) : null;
-                            })()}
+                              )}
+                            </div>
+                          </div>
+                          {/* Right: button */}
+                          <div className="flex-shrink-0 pr-3">
+                            <button
+                              onClick={() => { window.location.href = `/hotel/${hotel.pk}`; }}
+                              className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs px-3 py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium whitespace-nowrap"
+                            >
+                              {t('reviews.viewAllReviews', 'Бүх сэтгэгдэл үзэх')}
+                            </button>
                           </div>
                         </div>
-                        <button
-                          onClick={() => {
-                            window.location.href = `/hotel/${hotel.pk}`;
-                          }}
-                          className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-850 text-gray-700 dark:text-gray-300 text-xs px-3 py-1.5 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors self-end m-2 font-medium"
-                        >
-                          {t('reviews.viewAllReviews', 'View all reviews')}
-                        </button>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </div>
                 );
               })}
@@ -538,24 +561,6 @@ export default function ReviewsPage() {
                                 booking.hotel_name
                               )}
                             </h3>
-                            {(() => {
-                              const avgRating = booking.avg_rating ?? booking.rating ?? hotel?.avg_rating ?? hotel?.rating;
-                              const reviewCount = booking.review_count ?? booking.reviews_count ?? hotel?.review_count ?? hotel?.reviews_count;
-                              return (avgRating || reviewCount) ? (
-                                <div className="flex items-center gap-2 mt-1 mb-2">
-                                  {avgRating ? (
-                                    <span className="bg-[#3fb33f] text-white text-[11px] font-bold px-1.5 py-0.5 rounded leading-none">
-                                      {avgRating} / 5
-                                    </span>
-                                  ) : null}
-                                  {reviewCount ? (
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">
-                                      {reviewCount} {t('common.reviews', 'сэтгэгдэл')}
-                                    </span>
-                                  ) : null}
-                                </div>
-                              ) : null;
-                            })()}
                             {hotel?.location && (
                               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 mb-3 truncate">
                                 {hotel.location}
@@ -614,9 +619,9 @@ export default function ReviewsPage() {
       {/* ── Write Review Modal ── */}
       {reviewTarget && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-40 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-md mx-auto">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-2xl w-full max-w-[500px] mx-auto">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-start justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {t('reviews.rateExperience', 'Rate Your Experience')}
@@ -640,7 +645,7 @@ export default function ReviewsPage() {
                 <label className="block text-sm font-medium text-gray-705 dark:text-gray-300 mb-3">
                   {t('reviews.overallRating', 'Overall Rating')}
                 </label>
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-center gap-10">
                   {EMOJI_RATINGS.map((emoji, i) => (
                     <button
                       key={i}
