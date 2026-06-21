@@ -1,5 +1,12 @@
-import { HotelPageSkeleton } from '@/components/skeletons';
+import HotelPageBanner from '@/components/hotels/HotelPageBanner';
+import { HotelHeroSkeleton, HotelSectionsSkeleton } from '@/components/skeletons';
 
 export default function HotelLoading() {
-  return <HotelPageSkeleton />;
+  return (
+    <div className="bg-white dark:bg-gray-900 min-h-screen">
+      <HotelPageBanner />
+      <HotelHeroSkeleton />
+      <HotelSectionsSkeleton />
+    </div>
+  );
 }

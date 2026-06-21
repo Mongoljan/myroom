@@ -166,6 +166,10 @@ export default function BookingConfirmationView(props: BookingConfirmationViewPr
             <BookingConfirmationManageActions
               bookingCode={bookingResult.booking_code}
               pinCode={bookingResult.pin_code}
+              hotelId={hotelId}
+              checkIn={displayCheckIn}
+              checkOut={displayCheckOut}
+              hotelName={displayHotelName}
             />
             <BookingConfirmationContactMap
               addressLine={addressLine}

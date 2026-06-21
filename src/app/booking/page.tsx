@@ -1282,8 +1282,8 @@ function BookingContent() {
                           <tbody className="divide-y divide-dashed divide-gray-200 dark:divide-gray-700">
                             {rooms.length > 0 ? rooms.map((room, i) => {
                               const feeBase = room.price_per_night * room.room_count;
-                              const beforePct = cf ? parseFloat(cf.single_before_time_percentage) : null;
-                              const afterPct  = cf ? parseFloat(cf.single_after_time_percentage)  : null;
+                              const beforePct = cf?.single_before_time_percentage != null ? parseFloat(cf.single_before_time_percentage) : null;
+                              const afterPct  = cf?.single_after_time_percentage != null ? parseFloat(cf.single_after_time_percentage)  : null;
                               const beforeFee = beforePct !== null ? Math.round((feeBase * beforePct) / 100) : null;
                               const afterFee  = afterPct  !== null ? Math.round((feeBase * afterPct)  / 100) : null;
                               const afterDisplay =

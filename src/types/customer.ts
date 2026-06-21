@@ -102,6 +102,10 @@ export interface CustomerBooking {
   has_review: boolean;
   booking_code: string;
   created_at: string;
+  /** Set when multiple API rows share one booking_code */
+  booking_ids?: number[];
+  room_count?: number;
+  has_added_rooms?: boolean;
   avg_rating?: number | null;
   rating?: number | null;
   review_count?: number | null;
@@ -182,6 +186,22 @@ export interface CreateReviewResponse {
 export interface CustomerReviewsResponse {
   count: number;
   reviews: Review[];
+}
+
+export interface HotelReviewItem {
+  id: number;
+  customer_name: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
+export interface HotelReviewsResponse {
+  hotel_id: number;
+  total: number;
+  avg_rating: number;
+  rating_breakdown: Record<string, number>;
+  reviews: HotelReviewItem[];
 }
 
 // Coupons

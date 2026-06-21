@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { useToast } from '@/components/common/ToastContainer';
 import { CustomerService } from '@/services/customerApi';
 import { ApiService } from '@/services/api';
 import { HotelService } from '@/services/hotelApi';
@@ -55,6 +56,7 @@ function getHotelMetaKey(booking: CustomerBooking): string {
 export default function BookingsPage() {
   const { t } = useHydratedTranslation();
   const { token, user } = useAuth();
+  const { addToast } = useToast();
   const router = useRouter();
 
   const TABS: { label: string; value: StatusFilter }[] = useMemo(() => [
@@ -83,6 +85,10 @@ export default function BookingsPage() {
   const [pinCode, setPinCode] = useState('');
   const [isCanceling, setIsCanceling] = useState(false);
   const [cancelError, setCancelError] = useState('');
+
+  const [deleteTarget, setDeleteTarget] = useState<CustomerBooking | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   const [reviewTarget, setReviewTarget] = useState<CustomerBooking | null>(null);
   const [emojiRating, setEmojiRating] = useState(3);
@@ -225,6 +231,25 @@ export default function BookingsPage() {
       setCancelError(err instanceof Error ? err.message : t('profileBookings.error'));
     } finally {
       setIsCanceling(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget || !token) return;
+    setIsDeleting(true);
+    setDeleteError('');
+    try {
+      const idsToDelete = deleteTarget.booking_ids?.length
+        ? deleteTarget.booking_ids
+        : [deleteTarget.id];
+      await Promise.all(idsToDelete.map((id) => CustomerService.deleteBooking(token, id)));
+      setBookings((prev) => prev.filter((b) => b.booking_code !== deleteTarget.booking_code));
+      setDeleteTarget(null);
+      addToast({ type: 'success', title: t('profileBookings.deleteSuccess') });
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : t('profileBookings.error'));
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -374,9 +399,16 @@ export default function BookingsPage() {
                     {formatBookingCreatedAtMongolia(booking.created_at)}
                   </span>
                 </div>
-                <span className={`text-sm font-medium ${STATUS_BADGE_STYLES[booking.status] ?? 'text-gray-500 dark:text-gray-400'}`}>
-                  {STATUS_LABELS[booking.status] ?? booking.status_label}
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={`text-sm font-medium ${STATUS_BADGE_STYLES[booking.status] ?? 'text-gray-500 dark:text-gray-400'}`}>
+                    {STATUS_LABELS[booking.status] ?? booking.status_label}
+                  </span>
+                  {booking.has_added_rooms && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                      {t('profileBookings.roomAdded')}
+                    </span>
+                  )}
+                </div>
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center gap-4 p-4">
@@ -397,7 +429,14 @@ export default function BookingsPage() {
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{meta.address}</p>
                   )}
                   {booking.room_type && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{booking.room_type}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">
+                      {booking.room_type}
+                      {(booking.room_count ?? 1) > 1 && (
+                        <span className="ml-1">
+                          ({t('profileBookings.roomsCount', { count: booking.room_count })})
+                        </span>
+                      )}
+                    </p>
                   )}
                   <div className="flex flex-wrap items-center gap-2 mt-2 text-xs">
                     <span className="text-blue-600 font-medium">
@@ -463,9 +502,11 @@ export default function BookingsPage() {
                     {(booking.status === 'finished' || booking.status === 'canceled') && (
                       <button
                         type="button"
-                        disabled
-                        title={t('profileBookings.deleteComingSoon')}
-                        className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-xs text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                        onClick={() => {
+                          setDeleteTarget(booking);
+                          setDeleteError('');
+                        }}
+                        className="px-3 py-1.5 border border-red-300 dark:border-red-700 rounded-lg text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
                       >
                         {t('profileBookings.delete')}
                       </button>
@@ -530,6 +571,37 @@ export default function BookingsPage() {
                 className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition disabled:opacity-50"
               >
                 {isCanceling ? t('profileBookings.cancelling') : t('profileBookings.cancel')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-40 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-sm">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-2">{t('profileBookings.deleteTitle')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              {t('profileBookings.deleteHint', { code: deleteTarget.booking_code })}
+            </p>
+            {deleteError && (
+              <p className="text-sm text-red-500 mb-3">{deleteError}</p>
+            )}
+            <div className="flex gap-2 justify-end">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              >
+                {t('profileBookings.cancelBtn')}
+              </button>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm transition disabled:opacity-50"
+              >
+                {isDeleting ? t('profileBookings.deleting') : t('profileBookings.delete')}
               </button>
             </div>
           </div>

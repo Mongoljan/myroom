@@ -14,6 +14,8 @@ export interface PropertyBasicInfo {
   property: number;
   star_rating: number;
   languages: number[];
+  total_floor?: number | null;
+  requires_floor_count?: boolean;
 }
 
 // Confirm Address API Response
@@ -21,7 +23,6 @@ export interface ConfirmAddress {
   id: number;
   district: string;
   zipCode: string;
-  total_floor_number: number;
   property: number;
   province_city: number;
   soum: number;
@@ -36,12 +37,44 @@ export interface PropertyImage {
   is_profile?: boolean;
 }
 
+// Additional Info — video item
+export interface AdditionalVideo {
+  id?: number;
+  video_url: string;
+  description?: string;
+  order?: number;
+}
+
 // Additional Info API Response
 export interface AdditionalInfo {
   id: number;
   About: string;
   YoutubeUrl: string;
+  website_url?: string | null;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
+  youtube_url?: string | null;
+  tiktok_url?: string | null;
+  twitter_url?: string | null;
+  videos?: AdditionalVideo[];
   property: number;
+}
+
+// Property FAQ (answered question for a specific property)
+export interface PropertyFaq {
+  id: number;
+  property: number;
+  question: number;
+  question_mn: string;
+  question_en: string;
+  answer_mn: string;
+  answer_en: string;
+  updated_at: string;
+}
+
+export interface PropertyFaqResponse {
+  count: number;
+  faqs: PropertyFaq[];
 }
 
 // Facility item as returned by property-details API
@@ -181,6 +214,8 @@ export interface BookingDetails {
   coupon: string | null;
   total_price: number;
   created_at: string;
+  parent_booking?: number | null;
+  extra_rooms?: BookingDetails[];
 }
 
 export interface CheckBookingResponse {
@@ -530,12 +565,23 @@ export interface RoomFeature {
 }
 
 // Property policies
+export interface CancellationRule {
+  id?: number;
+  room_group: 'single' | 'multi';
+  days_before: number;
+  before_time_percentage: number | string;
+  after_time_percentage?: number | string | null;
+  order: number;
+}
+
 export interface CancellationFee {
   id?: number;
   property?: number;
   cancel_time: string;
-  single_before_time_percentage: string;
-  single_after_time_percentage: string;
+  rules?: CancellationRule[];
+  // Legacy flat fields (kept optional for backward compatibility)
+  single_before_time_percentage?: string;
+  single_after_time_percentage?: string;
   multi_5days_before_percentage?: string;
   multi_3days_before_percentage?: string;
   multi_2days_before_percentage?: string;
@@ -559,6 +605,7 @@ export interface ChildPolicy {
   allow_children: boolean;
   max_child_age: number | null;
   child_bed_available: 'yes' | 'no' | null;
+  free_breakfast_max_age?: number | null;
   allow_extra_bed: boolean;
   extra_bed_price: string | null;
 }
@@ -593,6 +640,7 @@ export interface PropertyPolicy {
   child_policy: ChildPolicy | null;
   pet_policy?: boolean;
   min_guest_age?: number;
+  total_extra_beds?: number;
   languages?: number[];
   accepted_card_ids?: number[];
   accepted_cards?: AcceptedCard[];

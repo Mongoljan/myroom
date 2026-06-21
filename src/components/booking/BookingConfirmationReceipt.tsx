@@ -20,6 +20,7 @@ import type {
   BookingConfirmationHotelDetails,
 } from '@/components/booking/bookingConfirmationTypes';
 import { resolveRoomDisplayNameFromAllData } from '@/utils/roomNames';
+import { formatBookingCreatedAtMongolia } from '@/utils/bookingPendingPayment';
 
 function getMnRoomDisplayName(
   room: BookingConfirmationRoom,
@@ -129,6 +130,49 @@ export default function BookingConfirmationReceipt({
     : [];
 
   const additionalInfoTags = getAdditionalInfoTags(hotelPolicy);
+  const originalRooms = rooms.filter((room) => !room.is_added_room);
+  const addedRooms = rooms.filter((room) => room.is_added_room);
+  const hasAddedRooms = addedRooms.length > 0;
+
+  const renderRoomRow = (room: BookingConfirmationRoom, key: string | number) => {
+    const breakfastDesc = getRoomExtraDescription(room, bookingIncludeBreakfast);
+    const bookingTypeLabel = room.is_added_room
+      ? t('bookingExtra.addedRoom', 'Нэмсэн өрөө')
+      : t('bookingExtra.originalRoom', 'Анхны захиалга');
+    const bookedAtLabel = room.booked_at
+      ? formatBookingCreatedAtMongolia(room.booked_at)
+      : '';
+
+    return (
+      <tr key={key} className="border-b border-gray-200 dark:border-gray-700">
+        <td className="px-3 py-2.5 text-[#2d3748] dark:text-gray-200 align-top leading-snug">
+          {getMnRoomDisplayName(room, allRoomData)}
+        </td>
+        <td className="px-2 py-2.5 text-xs text-[#718096] dark:text-gray-400 align-top leading-snug">
+          <span
+            className={`inline-block mb-1 px-1.5 py-0.5 rounded text-[10px] font-medium ${
+              room.is_added_room
+                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
+                : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+            }`}
+          >
+            {bookingTypeLabel}
+          </span>
+          {bookedAtLabel && (
+            <p className="text-[10px] text-gray-400 dark:text-gray-500">{bookedAtLabel}</p>
+          )}
+          {breakfastDesc && <p className="mt-0.5">{breakfastDesc}</p>}
+        </td>
+        <td className="px-3 py-2.5 text-right text-[#2d3748] dark:text-gray-200">
+          {room.price_per_night.toLocaleString()} ₮
+        </td>
+        <td className="px-3 py-2.5 text-center text-[#2d3748] dark:text-gray-200">{room.room_count}</td>
+        <td className="px-3 py-2.5 text-right font-semibold text-[#2d3748] dark:text-gray-200">
+          {room.total_price.toLocaleString()} ₮
+        </td>
+      </tr>
+    );
+  };
 
   return (
     <motion.div
@@ -272,23 +316,18 @@ export default function BookingConfirmationReceipt({
               </tr>
             </thead>
             <tbody>
-              {rooms.map((room, index) => (
-                <tr key={index} className="border-b border-gray-200 dark:border-gray-700">
-                  <td className="px-3 py-2.5 text-[#2d3748] dark:text-gray-200 align-top leading-snug">
-                    {getMnRoomDisplayName(room, allRoomData)}
-                  </td>
-                  <td className="px-2 py-2.5 text-xs text-[#718096] dark:text-gray-400 align-top leading-snug">
-                    {getRoomExtraDescription(room, bookingIncludeBreakfast)}
-                  </td>
-                  <td className="px-3 py-2.5 text-right text-[#2d3748] dark:text-gray-200">
-                    {room.price_per_night.toLocaleString()} ₮
-                  </td>
-                  <td className="px-3 py-2.5 text-center text-[#2d3748] dark:text-gray-200">{room.room_count}</td>
-                  <td className="px-3 py-2.5 text-right font-semibold text-[#2d3748] dark:text-gray-200">
-                    {room.total_price.toLocaleString()} ₮
+              {originalRooms.map((room, index) => renderRoomRow(room, `original-${index}`))}
+              {hasAddedRooms && (
+                <tr className="bg-blue-50/60 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800">
+                  <td
+                    colSpan={5}
+                    className="px-3 py-2 text-xs font-semibold text-blue-700 dark:text-blue-300"
+                  >
+                    {t('bookingExtra.addedRoomsSection', 'Нэмсэн өрөөнүүд')}
                   </td>
                 </tr>
-              ))}
+              )}
+              {addedRooms.map((room, index) => renderRoomRow(room, `added-${index}`))}
             </tbody>
             <tfoot>
               <tr className="bg-[#edf2f7] dark:bg-gray-700/50 text-[#1a202c] dark:text-white border-t border-gray-200 dark:border-gray-600">
@@ -358,8 +397,8 @@ export default function BookingConfirmationReceipt({
                     <tbody>
                       {rooms.map((room, i) => {
                         const feeBase = room.price_per_night * room.room_count;
-                        const beforePct = parseFloat(cfConfirm.single_before_time_percentage);
-                        const afterPct = parseFloat(cfConfirm.single_after_time_percentage);
+                        const beforePct = cfConfirm.single_before_time_percentage != null ? parseFloat(cfConfirm.single_before_time_percentage) : 0;
+                        const afterPct = cfConfirm.single_after_time_percentage != null ? parseFloat(cfConfirm.single_after_time_percentage) : 0;
                         const beforeFee = Math.round((feeBase * beforePct) / 100);
                         const afterFee = Math.round((feeBase * afterPct) / 100);
                         const afterDisplay =

@@ -276,6 +276,14 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
                           : <span className="text-gray-500">байхгүй</span>
                         }
                       </div>
+                      {policy.child_policy.free_breakfast_max_age != null && (
+                        <div>
+                          Үнэгүй өглөөний цай:{' '}
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {policy.child_policy.free_breakfast_max_age} хүртэлх насны хүүхдэд
+                          </span>
+                        </div>
+                      )}
                       <div>
                         Нэмэлт ор:{' '}
                         {policy.child_policy.allow_extra_bed ? (
@@ -290,6 +298,14 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
                         )}
                       </div>
                     </>
+                  )}
+                  {policy.total_extra_beds != null && policy.total_extra_beds > 0 && (
+                    <div>
+                      Нийт нэмэлт ор:{' '}
+                      <span className="font-medium text-gray-900 dark:text-white">
+                        {policy.total_extra_beds}
+                      </span>
+                    </div>
                   )}
                 </Row>
               )}
