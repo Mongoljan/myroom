@@ -330,16 +330,10 @@ function BookingContent() {
         const searchedChildren = parseInt(searchParams.get('children') || '0');
         const guestMismatch = searchedAdults > totalAdultCapacity || (searchedChildren > 0 && searchedChildren > totalChildCapacity);
         const totalRoomCount = parsedRooms.reduce((sum, r) => sum + r.room_count, 0);
-        const isMultiRoom = totalRoomCount >= 2;
         const hasRoomMismatch = searchedRoomsCount > 1 && totalRoomCount < searchedRoomsCount;
         const hasMismatch = guestMismatch || hasRoomMismatch;
-        if (hasMismatch && isMultiRoom) {
+        if (hasMismatch) {
           setMismatchModalOpen(true);
-          setPendingMultiRoomModal(true);
-        } else if (hasMismatch) {
-          setMismatchModalOpen(true);
-        } else if (isMultiRoom) {
-          setMultiRoomCancelModalOpen(true);
         }
       } catch {
         // ignore malformed rooms data

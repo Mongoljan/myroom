@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { Star, User } from 'lucide-react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
-import type { HotelReviewsResponse } from '@/types/customer';
+import type { HotelReviewItem, HotelReviewsResponse } from '@/types/customer';
 
 interface HotelReviewsProps {
   reviewsData: HotelReviewsResponse | null;
@@ -11,15 +11,85 @@ interface HotelReviewsProps {
 
 const STAR_LEVELS = [5, 4, 3, 2, 1] as const;
 
+const AVATAR_COLORS = [
+  'bg-emerald-600',
+  'bg-blue-600',
+  'bg-violet-600',
+  'bg-rose-600',
+  'bg-amber-600',
+  'bg-teal-600',
+  'bg-indigo-600',
+  'bg-orange-600',
+] as const;
+
+function getAvatarColor(name: string): (typeof AVATAR_COLORS)[number] {
+  let hash = 0;
+  for (let i = 0; i < name.length; i += 1) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+interface ReviewCommentProps {
+  comment: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+  readMoreLabel: string;
+  showLessLabel: string;
+}
+
+function ReviewComment({
+  comment,
+  isExpanded,
+  onToggle,
+  readMoreLabel,
+  showLessLabel,
+}: ReviewCommentProps) {
+  const textRef = useRef<HTMLParagraphElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = textRef.current;
+    if (!el || isExpanded) return;
+    setIsOverflowing(el.scrollHeight > el.clientHeight + 1);
+  }, [comment, isExpanded]);
+
+  const showToggle = isExpanded || isOverflowing;
+
+  return (
+    <div className={isExpanded ? '' : 'min-h-[140px]'}>
+      <p
+        ref={textRef}
+        className={`text-sm text-gray-800 dark:text-gray-200 leading-snug ${
+          isExpanded ? '' : 'line-clamp-7'
+        }`}
+      >
+        {comment}
+      </p>
+      {showToggle && (
+        <button
+          type="button"
+          onClick={onToggle}
+          className="mt-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          {isExpanded ? showLessLabel : readMoreLabel}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
   const { t } = useHydratedTranslation();
-  const [showAll, setShowAll] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [expandedReviewIds, setExpandedReviewIds] = useState<Set<number>>(new Set());
 
   const total = reviewsData?.total ?? 0;
   const avgRating = reviewsData?.avg_rating ?? 0;
   const reviews = reviewsData?.reviews ?? [];
   const ratingBreakdown = reviewsData?.rating_breakdown ?? {};
-  const displayedReviews = showAll ? reviews : reviews.slice(0, 3);
   const maxBreakdownCount = Math.max(
     ...STAR_LEVELS.map((star) => ratingBreakdown[String(star)] ?? 0),
     1
@@ -33,12 +103,90 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
     return t('hotel.poor', 'Poor');
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+  const formatDateShort = (dateString: string) => {
+    const d = new Date(dateString);
+    if (!Number.isFinite(d.getTime())) return '';
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}/${m}/${day}`;
+  };
+
+  const updateScrollButtons = () => {
+    const element = scrollRef.current;
+    if (!element) return;
+    setCanScrollLeft(element.scrollLeft > 0);
+    setCanScrollRight(element.scrollLeft < element.scrollWidth - element.clientWidth - 10);
+  };
+
+  useEffect(() => {
+    if (reviews.length === 0) return;
+    const timer = setTimeout(updateScrollButtons, 100);
+    return () => clearTimeout(timer);
+  }, [reviews, expandedReviewIds]);
+
+  const toggleExpanded = (reviewId: number) => {
+    setExpandedReviewIds((prev) => {
+      if (prev.has(reviewId)) {
+        return new Set();
+      }
+      return new Set([reviewId]);
     });
+  };
+
+  const scrollCarousel = (direction: 'left' | 'right') => {
+    scrollRef.current?.scrollBy({
+      left: direction === 'left' ? -296 : 296,
+      behavior: 'smooth',
+    });
+  };
+
+  const renderReviewCard = (review: HotelReviewItem) => {
+    const isExpanded = expandedReviewIds.has(review.id);
+    const avatarColor = getAvatarColor(review.customer_name || '?');
+
+    return (
+      <div
+        key={review.id}
+        className={`flex shrink-0 w-[280px] flex-col border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-800 p-3.5 transition-[height] duration-200 ${
+          isExpanded ? 'shadow-md z-1 relative' : 'min-h-[220px]'
+        }`}
+      >
+        <div className="flex items-start gap-2.5">
+          <div
+            className={`w-9 h-9 ${avatarColor} rounded-full flex items-center justify-center shrink-0`}
+          >
+            <span className="text-sm font-semibold text-white">
+              {review.customer_name?.charAt(0)?.toUpperCase() || '?'}
+            </span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <h4 className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+              {review.customer_name}
+            </h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              {formatDateShort(review.created_at)}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-2.5">
+          {review.comment ? (
+            <ReviewComment
+              comment={review.comment}
+              isExpanded={isExpanded}
+              onToggle={() => toggleExpanded(review.id)}
+              readMoreLabel={t('common.readMore', 'Read more')}
+              showLessLabel={t('common.showLess', 'Show less')}
+            />
+          ) : (
+            <p className="text-sm text-gray-400 dark:text-gray-500 italic">
+              {t('hotel.reviewsSection.noComment', 'No written comment')}
+            </p>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -54,7 +202,7 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
                 {getRatingText(avgRating)}
               </span>
               <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                {total} {t('hotel.reviews_count', 'үнэлгээ')}
+                {t('hotel.comments', 'Сэтгэгдэл')} - {total}
               </span>
             </>
           ) : (
@@ -64,7 +212,7 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
                 {t('hotel.noRatingsYet', 'Үнэлгээ байхгүй')}
               </span>
               <span className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                0 {t('hotel.reviews_count', 'үнэлгээ')}
+                {t('hotel.comments', 'Сэтгэгдэл')} - 0
               </span>
             </>
           )}
@@ -97,11 +245,11 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
       <div className="border-t border-gray-200 dark:border-gray-700 my-5" />
 
       <div>
-        <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">
-          {t('hotel.comments', 'Сэтгэгдэл')}
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+          {t('hotel.comments', 'Сэтгэгдэл')} ({total})
         </h3>
 
-        {displayedReviews.length === 0 ? (
+        {reviews.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center">
             <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-3">
               <svg className="w-7 h-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -116,60 +264,38 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
             </p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {displayedReviews.map((review) => (
-              <div key={review.id} className="border-b border-gray-200 dark:border-gray-700 pb-6 last:border-b-0">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center shrink-0">
-                    <User className="w-5 h-5 text-slate-900 dark:text-slate-300" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <h4 className="font-semibold text-gray-900 dark:text-white">{review.customer_name}</h4>
-                      <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0">
-                        {formatDate(review.created_at)}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < review.rating
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'text-gray-300 dark:text-gray-600'
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    {review.comment ? (
-                      <p className="text-gray-800 dark:text-gray-300 leading-relaxed">{review.comment}</p>
-                    ) : (
-                      <p className="text-sm text-gray-400 dark:text-gray-500 italic">
-                        {t('hotel.reviewsSection.noComment', 'No written comment')}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="relative">
+            {canScrollLeft && (
+              <button
+                type="button"
+                onClick={() => scrollCarousel('left')}
+                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                aria-label={t('common.previous', 'Previous')}
+              >
+                <ChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+              </button>
+            )}
+            {canScrollRight && (
+              <button
+                type="button"
+                onClick={() => scrollCarousel('right')}
+                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-800 rounded-full p-2 shadow-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                aria-label={t('common.next', 'Next')}
+              >
+                <ChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+              </button>
+            )}
+            <div
+              ref={scrollRef}
+              className="flex items-start gap-4 overflow-x-auto pb-2 scroll-smooth scrollbar-hide"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              onScroll={updateScrollButtons}
+            >
+              {reviews.map((review) => renderReviewCard(review))}
+            </div>
           </div>
         )}
       </div>
-
-      {reviews.length > 3 && (
-        <div className="text-center mt-6">
-          <button
-            type="button"
-            onClick={() => setShowAll(!showAll)}
-            className="px-6 py-2 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-300"
-          >
-            {showAll
-              ? t('hotel.reviewsSection.showLess', 'Show Less')
-              : t('hotel.reviewsSection.showAll', `Show All ${reviews.length} Reviews`)}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

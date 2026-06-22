@@ -261,6 +261,11 @@ export default function BookingsPage() {
     return getMetaForBooking(booking)?.id;
   };
 
+  const getHotelHref = (booking: CustomerBooking): string | null => {
+    const hotelId = getHotelId(booking);
+    return hotelId ? `/hotel/${hotelId}` : null;
+  };
+
   const getConfirmationHref = (booking: CustomerBooking) => {
     const hotelId = getHotelId(booking);
     const params = new URLSearchParams({ code: booking.booking_code });
@@ -384,6 +389,7 @@ export default function BookingsPage() {
             ? getPendingPaymentRemainingSeconds(booking.created_at)
             : 0;
           const hotelId = getHotelId(booking);
+          const hotelHref = getHotelHref(booking);
           const canPay = booking.status === 'pending' && pendingSeconds > 0 && !!hotelId;
 
           return (
@@ -412,21 +418,52 @@ export default function BookingsPage() {
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center gap-4 p-4">
-                <div className="w-full md:w-24 h-36 md:h-20 rounded-lg bg-gray-200 dark:bg-gray-600 shrink-0 overflow-hidden relative">
-                  {meta?.imageUrl && (
-                    <img
-                      src={meta.imageUrl}
-                      alt={booking.hotel_name}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                    />
-                  )}
-                </div>
+                {hotelHref ? (
+                  <Link
+                    href={hotelHref}
+                    className="w-full md:w-24 h-36 md:h-20 rounded-lg bg-gray-200 dark:bg-gray-600 shrink-0 overflow-hidden relative block hover:opacity-90 transition-opacity"
+                  >
+                    {meta?.imageUrl && (
+                      <img
+                        src={meta.imageUrl}
+                        alt={booking.hotel_name}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    )}
+                  </Link>
+                ) : (
+                  <div className="w-full md:w-24 h-36 md:h-20 rounded-lg bg-gray-200 dark:bg-gray-600 shrink-0 overflow-hidden relative">
+                    {meta?.imageUrl && (
+                      <img
+                        src={meta.imageUrl}
+                        alt={booking.hotel_name}
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    )}
+                  </div>
+                )}
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{booking.hotel_name}</h3>
-                  {meta?.address && (
-                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{meta.address}</p>
+                  {hotelHref ? (
+                    <Link href={hotelHref} className="group block min-w-0">
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white leading-snug group-hover:text-primary group-hover:underline">
+                        {booking.hotel_name}
+                      </span>
+                      {meta?.address && (
+                        <span className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate block group-hover:text-primary group-hover:underline">
+                          {meta.address}
+                        </span>
+                      )}
+                    </Link>
+                  ) : (
+                    <>
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug">{booking.hotel_name}</h3>
+                      {meta?.address && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">{meta.address}</p>
+                      )}
+                    </>
                   )}
                   {booking.room_type && (
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate">

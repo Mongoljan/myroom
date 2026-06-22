@@ -35,10 +35,11 @@ export async function fetchHotelHeroData(
   if (!hotel) return null;
 
   const hotelId = hotel.hotel_id;
-  const [basicInfoResult, propertyImagesResult, propertyDetailsResult] = await Promise.allSettled([
+  const [basicInfoResult, propertyImagesResult, propertyDetailsResult, reviewsResult] = await Promise.allSettled([
     ApiService.getPropertyBasicInfo(hotelId),
     ApiService.getPropertyImages(hotelId),
     ApiService.getPropertyDetails(hotelId),
+    CustomerService.getHotelReviews(hotelId),
   ]);
 
   const basicInfo: PropertyBasicInfo | null =
@@ -53,6 +54,9 @@ export async function fetchHotelHeroData(
     propertyDetailsResult.status === 'fulfilled' && propertyDetailsResult.value.length > 0
       ? propertyDetailsResult.value[0]
       : null;
+
+  const reviewsData: HotelReviewsResponse | null =
+    reviewsResult.status === 'fulfilled' ? reviewsResult.value : null;
 
   let additionalInfo: AdditionalInfo | null = null;
   if (propertyDetails?.Additional_Information) {
@@ -69,6 +73,7 @@ export async function fetchHotelHeroData(
     propertyImages,
     propertyDetails,
     additionalInfo,
+    reviewsData,
   };
 }
 

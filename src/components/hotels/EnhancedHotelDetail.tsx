@@ -17,6 +17,7 @@ import GoogleMapModal, { NearbyPlace } from '@/components/common/GoogleMapModal'
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ApiService } from '@/services/api';
 import { ConfirmAddress, Facility, SearchHotelResult, PropertyDetails, PropertyBasicInfo, AdditionalInfo, PropertyImage } from '@/types/api';
+import type { HotelReviewsResponse } from '@/types/customer';
 import { formatDistrictLabel } from '@/utils/formatHotelLocation';
 import { Train, Plane, Landmark, Utensils as RestaurantIcon, ShoppingBag, Building2 } from 'lucide-react';
 import WishlistHeart from '@/components/wishlist/WishlistHeart';
@@ -28,9 +29,10 @@ interface EnhancedHotelDetailProps {
   basicInfo: PropertyBasicInfo | null;
   additionalInfo: AdditionalInfo | null;
   propertyImages?: PropertyImage[];
+  reviewsData?: HotelReviewsResponse | null;
 }
 
-export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo, additionalInfo, propertyImages = [] }: EnhancedHotelDetailProps) {
+export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo, additionalInfo, propertyImages = [], reviewsData = null }: EnhancedHotelDetailProps) {
   const { t } = useHydratedTranslation();
   const { isAuthenticated } = useAuthenticatedUser();
   const router = useRouter();
@@ -46,6 +48,17 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   const [showAboutModal, setShowAboutModal] = useState(false);
   const [isAboutClamped, setIsAboutClamped] = useState(false);
   const aboutRef = useRef<HTMLParagraphElement>(null);
+
+  const guestReviewTotal = reviewsData?.total ?? 0;
+  const guestAvgRating = reviewsData?.avg_rating ?? 0;
+
+  const getGuestRatingText = (rating: number) => {
+    if (rating >= 4.5) return t('hotel.excellent', 'Excellent');
+    if (rating >= 4.0) return t('hotel.veryGood', 'Very Good');
+    if (rating >= 3.5) return t('hotel.good', 'Good');
+    if (rating >= 3.0) return t('hotel.fair', 'Fair');
+    return t('hotel.poor', 'Poor');
+  };
 
   useEffect(() => {
     const fetchHotelDetails = async () => {
@@ -740,19 +753,29 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           )}
 
           {/* Зочдын үнэлгээ */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3 min-h-40">
-            <div className="flex items-center gap-2 mb-2">
-              <Star className="w-4 h-4 text-yellow-400" />
-              <h3 className="text-[16px] font-semibold text-gray-900 dark:text-white">
-                {t('hotelDetails.guestRating', 'Зочдын үнэлгээ')}
-              </h3>
-            </div>
-            <div className="flex items-center gap-2 text-sm">
-              <span className="font-bold text-gray-300 dark:text-gray-600">—</span>
-              <span className="text-gray-400 dark:text-gray-500">{t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}</span>
-
-            </div>
-              <div className="mb-40"> </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-3">
+            <h3 className="text-[16px] font-semibold text-gray-900 dark:text-white mb-3">
+              {t('hotelDetails.guestRating', 'Зочдын үнэлгээ')}
+            </h3>
+            {guestReviewTotal > 0 ? (
+              <div className="flex items-center gap-3">
+                <div className="bg-indigo-600 text-white px-2.5 py-1.5 rounded-lg shrink-0">
+                  <span className="text-lg font-bold leading-none">{guestAvgRating.toFixed(1)}</span>
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {getGuestRatingText(guestAvgRating)}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {t('hotel.comments', 'Сэтгэгдэл')} - {guestReviewTotal}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                {t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}
+              </p>
+            )}
           </div>
 
           {/* Ойр орчимд */}

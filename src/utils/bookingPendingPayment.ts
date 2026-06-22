@@ -28,14 +28,18 @@ export function formatPendingPaymentCountdown(totalSeconds: number): string {
 }
 
 /** Display booking created date in Mongolia local time (UTC + 8). */
-export function formatBookingCreatedAtMongolia(createdAt: string): string {
+export function formatBookingCreatedAtMongolia(createdAt: string, includeTime = false): string {
   const d = new Date(createdAt);
   if (!Number.isFinite(d.getTime())) return '';
   d.setUTCHours(d.getUTCHours() + 8);
   const y = d.getUTCFullYear();
   const m = String(d.getUTCMonth() + 1).padStart(2, '0');
   const day = String(d.getUTCDate()).padStart(2, '0');
-  return `${y}/${m}/${day}`;
+  const date = `${y}/${m}/${day}`;
+  if (!includeTime) return date;
+  const h = String(d.getUTCHours()).padStart(2, '0');
+  const min = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${date}, ${h}:${min}`;
 }
 
 export interface ResumePaymentParams {
