@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Star, User } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import type { HotelReviewsResponse } from '@/types/customer';
+import { ReviewDrawer } from './ReviewDrawer';
 
 interface HotelReviewsProps {
   reviewsData: HotelReviewsResponse | null;
@@ -15,11 +16,14 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
   const { t } = useHydratedTranslation();
   const [showAll, setShowAll] = useState(false);
 
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [selectedHotel, setSelectedHotel] = useState(null)
+
   const total = reviewsData?.total ?? 0;
   const avgRating = reviewsData?.avg_rating ?? 0;
   const reviews = reviewsData?.reviews ?? [];
   const ratingBreakdown = reviewsData?.rating_breakdown ?? {};
-  const displayedReviews = showAll ? reviews : reviews.slice(0, 3);
+  const displayedReviews = reviews.slice(0, 4);
   const maxBreakdownCount = Math.max(
     ...STAR_LEVELS.map((star) => ratingBreakdown[String(star)] ?? 0),
     1
@@ -156,17 +160,16 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
           </div>
         )}
       </div>
+      <ReviewDrawer open={drawerOpen} onOpenChange={setDrawerOpen} reviewsData={reviewsData} />
 
-      {reviews.length > 3 && (
+      {reviews.length > 4 && (
         <div className="text-center mt-6">
           <button
             type="button"
-            onClick={() => setShowAll(!showAll)}
+            onClick={() => setDrawerOpen(true)}
             className="px-6 py-2 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-300"
           >
-            {showAll
-              ? t('hotel.reviewsSection.showLess', 'Show Less')
-              : t('hotel.reviewsSection.showAll', `Show All ${reviews.length} Reviews`)}
+            {t('hotel.reviewsSection.showAll', `Show All ${reviews.length} Reviews`)}
           </button>
         </div>
       )}

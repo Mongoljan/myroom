@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, HelpCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { PropertyFaq } from '@/types/api';
 import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -112,41 +113,130 @@ export default function HotelFAQSection({ faqs: faqsProp, hotelId }: HotelFAQSec
 
   return (
     <div>
-      <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-5">
+      <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-5 text-left flex items-center gap-2">
         {t('hotelDetails.faqTitle', 'Түгээмэл асуулт, хариултууд')}
       </h2>
+      
+      <section id="faq" className=" bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
 
-      <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-gray-700">
-        {/* Left column */}
-        <div>
-          {leftFaqs.map((faq, i) => (
-            <FaqItem
-              key={faq.id}
-              faq={faq}
-              isOpen={openId === faq.id}
-              onToggle={() => handleToggle(faq.id)}
-              locale={locale}
-              isLast={i === leftFaqs.length - 1}
-            />
+      <AnimatePresence mode="wait">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col md:flex-row gap-x-5 gap-y-2"
+        >
+          {[0, 1].map((colIndex) => (
+            <div key={colIndex} className="flex flex-col gap-y-2 flex-1 min-w-0">
+              {answeredFaqs
+                .map((faq, index) => ({ faq, index }))
+                .filter(({ index }) => index % 2 === colIndex)
+                .map(({ faq, index }) => {
+                  const isOpen = openId === faq.id;
+                  const question = getLocalizedText(faq, 'question', locale);
+                  const answer = getLocalizedText(faq, 'answer', locale);
+
+                  return (
+                    <motion.div
+                      key={faq.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="group"
+                    >
+                      <motion.div
+                        layout
+                        className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden hover:shadow-sm transition-all duration-200"
+                        whileHover={{
+                          y: -2,
+                          boxShadow:
+                            '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+                        }}
+                      >
+                        <motion.button
+                          onClick={() => handleToggle(faq.id)}
+                          className={`w-full text-left px-4 py-3 md:h-20 min-h-[4.5rem] flex items-center focus:outline-none transition-colors duration-200 ${
+                            isOpen ? 'bg-gray-200 dark:bg-gray-700/50' : ''
+                          }`}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center flex-1 min-w-0">
+                              <h3 className="text-sm font-bold text-gray-900 dark:text-white pr-3 line-clamp-2">
+                                {question}
+                              </h3>
+                            </div>
+
+                            <motion.div
+                              animate={{ rotate: isOpen ? 180 : 0 }}
+                              transition={{ duration: 0.3, ease: 'easeInOut' }}
+                              className="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                            >
+                              <ChevronDown className="w-4 h-4" />
+                            </motion.div>
+                          </div>
+                        </motion.button>
+
+                        <AnimatePresence initial={false}>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{
+                                height: 'auto',
+                                opacity: 1,
+                                transition: {
+                                  height: { duration: 0.3, ease: 'easeInOut' },
+                                  opacity: { duration: 0.2, delay: 0.1 },
+                                },
+                              }}
+                              exit={{
+                                height: 0,
+                                opacity: 0,
+                                transition: {
+                                  height: { duration: 0.3, ease: 'easeInOut' },
+                                  opacity: { duration: 0.1 },
+                                },
+                              }}
+                              className="overflow-hidden"
+                            >
+                              <motion.div
+                                className="px-4 py-4 bg-white dark:bg-gray-800"
+                                initial={{ y: -10, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                exit={{ y: -10, opacity: 0 }}
+                                transition={{ duration: 0.2, delay: 0.1 }}
+                              >
+                                <div className="text-[13px] font-normal text-gray-600 dark:text-gray-400 space-y-1">
+                                  {answer.split('\n').map((line, i) => {
+                                    const trimmed = line.trim();
+                                    if (!trimmed) return null;
+                                    const isBullet =
+                                      trimmed.startsWith('-') ||
+                                      trimmed.startsWith('•') ||
+                                      trimmed.startsWith('○');
+                                    return isBullet ? (
+                                      <div key={i} className="flex gap-2 items-start">
+                                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
+                                        <span>{trimmed.replace(/^[-•○]\s*/, '')}</span>
+                                      </div>
+                                    ) : (
+                                      <p key={i}>{trimmed}</p>
+                                    );
+                                  })}
+                                </div>
+                              </motion.div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.div>
+                    </motion.div>
+                  );
+                })}
+            </div>
           ))}
-        </div>
-
-        {/* Right column */}
-        {rightFaqs.length > 0 && (
-          <div>
-            {rightFaqs.map((faq, i) => (
-              <FaqItem
-                key={faq.id}
-                faq={faq}
-                isOpen={openId === faq.id}
-                onToggle={() => handleToggle(faq.id)}
-                locale={locale}
-                isLast={i === rightFaqs.length - 1}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+        </motion.div>
+      </AnimatePresence>
+    </section>
     </div>
   );
 }

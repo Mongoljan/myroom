@@ -58,14 +58,6 @@ export default function ProfileLayout({ children }: { children: React.ReactNode 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="flex gap-8 items-start">
           <aside className="w-60 shrink-0">
-            <Link
-              href="/"
-              className="flex items-center justify-center gap-2 w-full mb-4 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-all shadow-md hover:shadow-lg"
-            >
-              <Hotel size={18} />
-              <span>{t('profileNav.bookHotel')}</span>
-            </Link>
-
             <div className="mb-1">
               <div className="flex items-center justify-between px-3 py-2.5 rounded-lg cursor-default select-none">
                 <div className="flex items-center gap-2.5 text-gray-700 dark:text-gray-300 font-medium text-sm">

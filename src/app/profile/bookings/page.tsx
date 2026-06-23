@@ -346,11 +346,10 @@ export default function BookingsPage() {
             <button
               key={tab.value}
               onClick={() => setActiveTab(tab.value)}
-              className={`px-4 py-2 text-sm rounded-full whitespace-nowrap transition font-medium ${
-                activeTab === tab.value
+              className={`px-4 py-2 text-sm rounded-full whitespace-nowrap transition font-medium ${activeTab === tab.value
                   ? 'bg-gray-800 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -640,11 +639,10 @@ export default function BookingsPage() {
                       key={i}
                       type="button"
                       onClick={() => setEmojiRating(i + 1)}
-                      className={`text-3xl w-12 h-12 rounded-full transition-all duration-200 flex items-center justify-center ${
-                        emojiRating === i + 1
+                      className={`text-3xl w-12 h-12 rounded-full transition-all duration-200 flex items-center justify-center ${emojiRating === i + 1
                           ? 'bg-blue-50 dark:bg-blue-900/30 ring-2 ring-blue-500 scale-110 shadow-lg'
                           : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-105'
-                      }`}
+                        }`}
                     >
                       {emoji}
                     </button>
@@ -670,11 +668,10 @@ export default function BookingsPage() {
                       key={tag}
                       type="button"
                       onClick={() => toggleTag(tag)}
-                      className={`px-3 py-2 rounded-lg text-sm border transition-all duration-200 ${
-                        likedTags.includes(tag)
+                      className={`px-3 py-2 rounded-lg text-sm border transition-all duration-200 ${likedTags.includes(tag)
                           ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300 shadow-md'
                           : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
+                        }`}
                     >
                       {t(`reviews.${tag}`, tag)}
                     </button>
