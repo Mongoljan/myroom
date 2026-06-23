@@ -90,7 +90,7 @@ export default function HotelSectionsView({
 
         <div id="reviews">
           <h2 className="text-h2 font-semibold text-gray-900 dark:text-white mb-4">
-            {t('hotel.reviews', 'Шүүмж, үнэлгээ')}
+          Зочдын үнэлгээ
           </h2>
           <HotelReviews reviewsData={reviewsData ?? null} />
         </div>

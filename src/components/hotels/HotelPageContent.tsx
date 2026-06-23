@@ -183,6 +183,7 @@ export default function HotelPageContent({ hotel, searchParams, propertyDetails,
               basicInfo={basicInfo ?? null}
               additionalInfo={additionalInfo ?? null}
               propertyImages={propertyImages ?? []}
+              reviewsData={reviewsData ?? null}
             />
           </div>
         </div>

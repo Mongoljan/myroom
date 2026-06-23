@@ -76,7 +76,6 @@ export function ReviewDrawer({ open, onOpenChange, reviewsData }: ReviewDrawerPr
                   <div className="w-full sm:w-[240px] flex flex-col gap-4 shrink-0">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
-                        {/* Empty circle avatar */}
                       </div>
                       <span className="font-bold text-gray-900 truncate">
                         {review.customer_name}

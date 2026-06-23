@@ -46,36 +46,51 @@ export function buildBookingResultFromCheck(
   };
 }
 
+function resolveBookingInventoryId(booking: BookingDetails): number | undefined {
+  const raw = booking.room ?? (booking as { room_id?: number }).room_id;
+  if (typeof raw === 'number' && raw > 0) return raw;
+  return undefined;
+}
+
+function bookingDetailsToConfirmationRoom(
+  booking: BookingDetails,
+  isAdded = false
+): BookingConfirmationRoom {
+  return {
+    room_category_id: 0,
+    room_type_id: 0,
+    hotel_room_id: resolveBookingInventoryId(booking),
+    room_count: 1,
+    room_name: '',
+    price_per_night: booking.room_price,
+    total_price: booking.total_price,
+    include_breakfast: booking.include_breakfast,
+    is_added_room: isAdded,
+    booked_at: booking.created_at,
+  };
+}
+
 export function buildRoomsFromCheck(
   checked: CheckBookingResponse,
-  fallbackRoomName?: string
+  _fallbackRoomName?: string
 ): BookingConfirmationRoom[] {
   const rooms: BookingConfirmationRoom[] = [];
+  const seenAddedIds = new Set<number>();
 
   for (const parent of checked.bookings) {
-    rooms.push({
-      room_category_id: 0,
-      room_type_id: parent.room,
-      room_count: 1,
-      room_name: fallbackRoomName || `Өрөө ${parent.room}`,
-      price_per_night: parent.room_price,
-      total_price: parent.total_price,
-      is_added_room: false,
-      booked_at: parent.created_at,
-    });
+    if (parent.parent_booking != null) continue;
+
+    rooms.push(bookingDetailsToConfirmationRoom(parent, false));
 
     for (const extra of parent.extra_rooms ?? []) {
-      rooms.push({
-        room_category_id: 0,
-        room_type_id: extra.room,
-        room_count: 1,
-        room_name: fallbackRoomName || `Өрөө ${extra.room}`,
-        price_per_night: extra.room_price,
-        total_price: extra.total_price,
-        is_added_room: true,
-        booked_at: extra.created_at,
-      });
+      rooms.push(bookingDetailsToConfirmationRoom(extra, true));
+      seenAddedIds.add(extra.id);
     }
+  }
+
+  for (const booking of checked.bookings) {
+    if (booking.parent_booking == null || seenAddedIds.has(booking.id)) continue;
+    rooms.push(bookingDetailsToConfirmationRoom(booking, true));
   }
 
   return rooms;
@@ -164,7 +179,7 @@ export function buildRoomsFromCustomers(bookings: CustomerBooking[]): BookingCon
       room_category_id: 0,
       room_type_id: 0,
       room_count: 1,
-      room_name: booking.room_type || 'Өрөө',
+      room_name: booking.room_type || '',
       price_per_night: pricePerNight,
       total_price: booking.total_price,
       is_added_room: index > 0,

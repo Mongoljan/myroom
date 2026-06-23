@@ -214,6 +214,7 @@ export interface BookingDetails {
   coupon: string | null;
   total_price: number;
   created_at: string;
+  include_breakfast?: boolean;
   parent_booking?: number | null;
   extra_rooms?: BookingDetails[];
 }
@@ -269,8 +270,11 @@ export interface BreakfastOption {
 
 export interface RoomRate {
   id: number;
-  name: string;
+  name?: string;
+  name_en?: string;
+  name_mn?: string;
   is_custom: boolean;
+  order?: number;
 }
 
 export interface ExtraBed {

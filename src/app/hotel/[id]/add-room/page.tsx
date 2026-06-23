@@ -95,7 +95,10 @@ function AddRoomContent() {
             ? BookingService.checkBooking(bookingCode, pinCode).catch(() => null)
             : Promise.resolve(null),
         ]);
-        setRooms(roomsData);
+        const availableRooms = roomsData.filter(
+          (room) => room.rooms_possible > 0 && room.hasValidPricing
+        );
+        setRooms(availableRooms);
         if (bookingData?.bookings) {
           const allRooms = flattenBookingDetails(bookingData.bookings);
           setExistingRooms(allRooms);
@@ -110,7 +113,7 @@ function AddRoomContent() {
         }
 
         const pricesData: Record<string, RoomPriceOptions> = {};
-        roomsData.forEach(room => {
+        availableRooms.forEach(room => {
           const key      = `${room.room_type}-${room.room_category}`;
           const selling  = room.pricing?.per_night?.without_breakfast?.selling_price  ?? room.price_breakdown?.final_customer_price ?? 0;
           const original = room.pricing?.per_night?.without_breakfast?.original_price ?? room.price_breakdown?.base_price ?? selling;
@@ -346,16 +349,11 @@ function AddRoomContent() {
                         const label = matchedRoom
                           ? getLocalizedFullRoomName(matchedRoom, locale)
                           : `${t('addRoom.room', 'Өрөө')} #${b.room}`;
-                        const isAdded = Boolean(b.parent_booking);
                         return (
                           <div key={b.id} className="flex items-start justify-between gap-2 py-2 border-b border-gray-100 last:border-0">
                             <div className="flex-1 min-w-0">
                               <p className="text-xs font-medium text-gray-800 truncate">{label}</p>
                               <p className="text-[11px] text-gray-400 mt-0.5">
-                                {isAdded
-                                  ? t('bookingExtra.addedRoom', 'Нэмсэн өрөө')
-                                  : t('bookingExtra.originalRoom', 'Анхны захиалга')}
-                                {' · '}
                                 {b.status === 'confirmed' ? t('addRoom.statusConfirmed', 'Баталгаажсан')
                                   : b.status === 'finished' ? t('addRoom.statusFinished', 'Дууссан')
                                   : b.status === 'canceled' ? t('addRoom.statusCanceled', 'Цуцлагдсан')

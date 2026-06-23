@@ -25,6 +25,7 @@ export default async function HotelHeroAsync({ id, searchParams }: HotelHeroAsyn
       propertyImages={data.propertyImages}
       propertyDetails={data.propertyDetails}
       additionalInfo={data.additionalInfo}
+      reviewsData={data.reviewsData}
     />
   );
 }

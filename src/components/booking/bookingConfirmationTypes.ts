@@ -10,7 +10,9 @@ export interface BookingConfirmationRoom {
   max_adults?: number;
   max_children?: number;
   include_breakfast?: boolean;
-  /** True when room was added via add-room after the original booking */
+  /** Hotel inventory room id from check-booking API (`booking.room`) */
+  hotel_room_id?: number;
+  /** Room added after the original booking (from `extra_rooms` or later customer row) */
   is_added_room?: boolean;
   booked_at?: string;
 }

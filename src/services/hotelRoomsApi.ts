@@ -254,7 +254,10 @@ class HotelRoomsService {
 
   private enrichRoomData(room: HotelRoom, allData: AllRoomData): EnrichedHotelRoom {
     const roomType = allData.room_types.find(rt => rt.id === room.room_type);
-    const roomCategory = allData.room_category.find(rc => rc.id === room.room_category);
+    const roomCategory =
+      allData.room_category.find(rc => rc.id === room.room_category) ??
+      (allData as AllRoomData & { room_rates?: Array<{ id: number; name?: string; name_en?: string; name_mn?: string }> })
+        .room_rates?.find((rate) => rate.id === room.room_category);
 
     // bed_details from /roomsInHotels/ ships objects with { id, name, quantity }.
     // Older shape has { bed_type, quantity } and a top-level bed_type number.
@@ -309,9 +312,12 @@ class HotelRoomsService {
       roomTypeNameEn: roomType?.name || 'Unknown',
       roomTypeNameMn: roomType?.name_mn || roomType?.name || 'Unknown',
       bedTypeName,
-      roomCategoryName: roomCategory?.name_mn || 'Unknown',
-      roomCategoryNameMn: roomCategory?.name_mn || 'Unknown',
-      roomCategoryNameEn: roomCategory?.name_en || 'Unknown',
+      roomCategoryName: (roomCategory as { name_mn?: string })?.name_mn || 'Unknown',
+      roomCategoryNameMn: (roomCategory as { name_mn?: string })?.name_mn || 'Unknown',
+      roomCategoryNameEn:
+        (roomCategory as { name_en?: string })?.name_en ||
+        (roomCategory as { name?: string })?.name ||
+        'Unknown',
       facilitiesDetails,
       bathroomItemsDetails,
       freeToiletriesDetails,

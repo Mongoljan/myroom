@@ -27,7 +27,7 @@ type ManageAction = {
 const MANAGEMENT_ACTIONS: ManageAction[] = [
   { icon: Calendar, labelKey: 'bookingExtra.changeDate', action: 'change-date', primary: true },
   { icon: RefreshCw, labelKey: 'bookingExtra.changeRoom', action: 'change-room', primary: false },
-  { icon: Plus, labelKey: 'bookingExtra.addRoom', action: 'add-room', primary: false, linkStyle: true },
+  { icon: Plus, labelKey: 'bookingExtra.addRoom', action: 'add-room', primary: false },
   { icon: X, labelKey: 'bookingExtra.cancelBookingAction', action: 'cancel', danger: true, primary: false },
 ];
 

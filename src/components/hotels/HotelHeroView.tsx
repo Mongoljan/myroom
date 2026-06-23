@@ -15,6 +15,7 @@ import {
   PropertyImage,
   getRoomSellingPrice,
 } from '@/types/api';
+import type { HotelReviewsResponse } from '@/types/customer';
 
 const STRUCTURED_LOCATION_PARAMS = ['province_id', 'soum_id', 'name_id', 'district', 'location'] as const;
 
@@ -28,6 +29,7 @@ interface HotelHeroViewProps {
   propertyImages?: PropertyImage[];
   propertyDetails?: PropertyDetails | null;
   additionalInfo?: AdditionalInfo | null;
+  reviewsData?: HotelReviewsResponse | null;
 }
 
 export default function HotelHeroView({
@@ -36,6 +38,7 @@ export default function HotelHeroView({
   propertyImages,
   propertyDetails,
   additionalInfo,
+  reviewsData,
 }: HotelHeroViewProps) {
   const [activeSection, setActiveSection] = useState('overview');
   const { addRecentlyViewed } = useRecentlyViewed();
@@ -93,6 +96,7 @@ export default function HotelHeroView({
               basicInfo={basicInfo ?? null}
               additionalInfo={additionalInfo ?? null}
               propertyImages={propertyImages ?? []}
+              reviewsData={reviewsData ?? null}
             />
           </div>
         </div>

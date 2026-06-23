@@ -3,12 +3,11 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { Button } from '@/components/ui/Button';
 import BookingConfirmationActionButtons from '@/components/booking/BookingConfirmationActionButtons';
 import BookingConfirmationReceipt from '@/components/booking/BookingConfirmationReceipt';
-import BookingConfirmationEmailNotice from '@/components/booking/BookingConfirmationEmailNotice';
 import BookingConfirmationBookingCodes from '@/components/booking/BookingConfirmationBookingCodes';
 import BookingConfirmationManageActions from '@/components/booking/BookingConfirmationManageActions';
 import BookingConfirmationContactMap from '@/components/booking/BookingConfirmationContactMap';
@@ -105,12 +104,17 @@ export default function BookingConfirmationView(props: BookingConfirmationViewPr
   return (
     <div className="min-h-screen bg-[#eef0f3] dark:bg-gray-900 py-8 print:bg-white print:py-0">
       <div className="max-w-7xl mx-auto px-4 print:px-0 print:max-w-full">
-        <div className="mb-4 flex items-center gap-2 print:hidden">
-          <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
-            <Check className="w-3 h-3 text-white" strokeWidth={3} />
+        <div className="mb-4  gap-1 sm:gap-4 print:hidden">
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0">
+              <Check className="w-3 h-3 text-white" strokeWidth={3} />
+            </div>
+            <p className="text-lg font-semibold text-[#1a202c] dark:text-white">
+              {t('bookingExtra.confirmationTitle', 'Таны захиалга амжилттай баталгаажлаа. Баярлалаа.')}
+            </p>
           </div>
-          <p className="text-lg font-semibold text-[#1a202c] dark:text-white">
-            {t('bookingExtra.confirmationTitle', 'Таны захиалга амжилттай баталгаажлаа. Баярлалаа.')}
+          <p className="text-xs lg:text-[13px] font-medium text-gray-500 dark:text-gray-200 ">
+            {t('bookingExtra.confirmationSubtitle')}
           </p>
         </div>
 
@@ -121,9 +125,7 @@ export default function BookingConfirmationView(props: BookingConfirmationViewPr
               onPrint={handlePrint}
             />
           </div>
-          <div className="lg:col-span-1 flex items-center min-h-[28px] print:hidden">
-            <BookingConfirmationEmailNotice />
-          </div>
+          <div className="hidden lg:block lg:col-span-1 min-h-[28px] print:hidden" />
 
           <div className="lg:col-span-2">
             <BookingConfirmationReceipt
