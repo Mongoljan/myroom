@@ -10,6 +10,25 @@ import {
 } from "@/components/ui/drawer"
 import type { HotelReviewsResponse } from '@/types/customer';
 
+const AVATAR_COLORS = [
+  'bg-emerald-600',
+  'bg-blue-600',
+  'bg-violet-600',
+  'bg-rose-600',
+  'bg-amber-600',
+  'bg-teal-600',
+  'bg-indigo-600',
+  'bg-orange-600',
+] as const;
+
+function getAvatarColor(name: string): (typeof AVATAR_COLORS)[number] {
+  let hash = 0;
+  for (let i = 0; i < name.length; i += 1) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
 interface ReviewDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -69,13 +88,18 @@ export function ReviewDrawer({ open, onOpenChange, reviewsData }: ReviewDrawerPr
 
           {/* Reviews List */}
           <div className="flex flex-col gap-6 mt-4">
-            {reviews.map((review) => (
+            {reviews.map((review) => {
+              const avatarColor = getAvatarColor(review.customer_name || '?');
+              return (
               <div key={review.id} className="border-b border-gray-100 pb-8 last:border-0 last:pb-0">
                 <div className="flex flex-col sm:flex-row gap-6">
                   {/* Left Side: User Info & Meta */}
                   <div className="w-full sm:w-[240px] flex flex-col gap-4 shrink-0">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${avatarColor}`}>
+                        <span className="text-sm font-semibold text-white">
+                          {review.customer_name?.charAt(0)?.toUpperCase() || '?'}
+                        </span>
                       </div>
                       <span className="font-bold text-gray-900 truncate">
                         {review.customer_name}
@@ -125,7 +149,7 @@ export function ReviewDrawer({ open, onOpenChange, reviewsData }: ReviewDrawerPr
                   </div>
                 </div>
               </div>
-            ))}
+            )})}
           </div>
         </div>
       </DrawerContent>

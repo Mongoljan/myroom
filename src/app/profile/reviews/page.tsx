@@ -28,6 +28,11 @@ function resolveHotelImageUrl(raw?: string | null): string {
   return HotelService.getHotelImageUrl(raw ?? null) ?? '';
 }
 
+const formatName = (firstName?: string, lastName?: string) => {
+  const name = [firstName, lastName].filter(Boolean).join(' ');
+  return name || 'Хэрэглэгч';
+};
+
 export default function ReviewsPage() {
   const { token, user } = useAuth();
   const { t } = useHydratedTranslation();
@@ -286,7 +291,7 @@ export default function ReviewsPage() {
       </div>
 
       {/* List */}
-      <div className="px-6 pb-6 space-y-4">
+      <div className="px-6 pb-6 space-y-4 ">
         {isLoading && (
           <div className="flex justify-center py-12">
             <div className="w-7 h-7 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
@@ -306,7 +311,7 @@ export default function ReviewsPage() {
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 divide-y divide-gray-200 dark:divide-gray-700/60">
               {filteredReviews.map((review) => {
                 const booking = allBookings.find((b) => b.id === review.booking);
                 const hotel = getHotelForReview(review);
@@ -317,26 +322,33 @@ export default function ReviewsPage() {
                 return (
                   <div
                     key={review.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
+                    className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden mb-10 last:mb-0"
                   >
-                    {/* Booking meta header */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
-                        <span>
-                          {t('reviews.bookingNumber', 'Booking:')}{' '}
-                          <span className="text-gray-800 dark:text-gray-200 font-medium">
-                            {booking?.booking_code ?? '—'}
-                          </span>
+                    {/* Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0 flex items-center justify-center">
+                        <span className="text-[14px] font-semibold text-gray-600 dark:text-gray-300">
+                          {user?.first_name?.charAt(0)?.toUpperCase() || 'Х'}
                         </span>
-                        {booking && (
-                          <span>
-                            {formatDateSlash(booking.check_in)} –{' '}
-                            {formatDateSlash(booking.check_out)}
-                          </span>
-                        )}
                       </div>
+                      <div>
+                        <div className="text-[14px] font-medium text-gray-900 dark:text-white leading-tight">
+                          {formatName(user?.first_name, user?.last_name)}
+                        </div>
+                        <div className="text-[12px] text-gray-500 dark:text-gray-400 mt-1">
+                          <span>{formatDateSlash(review.created_at?.slice(0, 10))}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                 
+                    <div className="flex flex-col items-start sm:items-end justify-start gap-1.5 shrink-0 sm:text-right">
                       <div className="flex items-center gap-1.5">
-                        <span className="pt-0.5 text-xs text-gray-500 dark:text-gray-400">{t('reviews.yourRating', 'Таны өгсөн үнэлгээ:')}</span>
+                        <span className="pt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                          {t('reviews.yourRating', 'Таны өгсөн үнэлгээ:')}
+                        </span>
                         <div className="flex items-center gap-1">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
@@ -351,16 +363,35 @@ export default function ReviewsPage() {
                           ))}
                         </div>
                       </div>
-                    </div>
 
-                      {review.comment && (
-                        <p className="px-4 pb-2 text-sm text-gray-700 dark:text-gray-300 mt-2 leading-relaxed">
-                          {review.comment}
-                        </p>
+                      {booking && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-wrap items-center sm:justify-end gap-1.5 mt-0.5">
+                          <span>
+                            {formatDateSlash(booking.check_in)} - {formatDateSlash(booking.check_out)}
+                          </span>
+                          
+                          {booking.room_type && (
+                            <>
+                              <span>/</span>
+                              <span className="truncate">
+                                {booking.room_type}
+                              </span>
+                            </>
+                          )}
+                        </div>
                       )}
-                    <hr className="w-auto mx-4 border-gray-200 dark:border-gray-700" />
 
-                    {/* Card body */}
+                    </div>
+                  </div>
+                    {/* Comment */}
+                    {review.comment && (
+                      <p className="px-4 pb-2 text-sm text-gray-700 dark:text-gray-300 mt-3 leading-relaxed">
+                        {review.comment}
+                      </p>
+                    )}
+                    <hr className="w-auto mx-4 border-gray-200 dark:border-gray-700 mt-2" />
+
+                    {/* Hotel Card */}
                     <div className="flex flex-col md:flex-row md:items-center gap-4 p-4">
                       {/* Image */}
                       <div className="w-full md:w-24 h-24 md:h-20 rounded-lg bg-gray-200 dark:bg-gray-600 shrink-0 overflow-hidden relative">
@@ -383,7 +414,7 @@ export default function ReviewsPage() {
                             />
                           )
                         ) : null}
-                      </div>                    
+                      </div>
 
                       {/* Text */}
                       <div className="flex-1 min-w-0">
@@ -406,7 +437,6 @@ export default function ReviewsPage() {
                           </p>
                         )}
 
-                        {/* avg rating + review count — from getHotelReviews(), same as hotel page */}
                         {(() => {
                           const rd = hotelRatingsMap.get(review.hotel);
                           const avg = rd?.avg_rating ?? 0;
@@ -425,7 +455,6 @@ export default function ReviewsPage() {
                         })()}
                       </div>
 
-                      {/* Right action — deep-links to the #reviews section */}
                       {hotel && (
                         <div className="mt-12 shrink-0">
                           <Link
