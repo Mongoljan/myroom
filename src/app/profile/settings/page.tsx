@@ -207,7 +207,7 @@ function DeleteAccountModal({ onClose }: DeleteAccountModalProps) {
           </div>
         )}
 
-        {/* ── SUCCESS ─────────────────────────────────────────── */}
+        {/*SUCCESS */}
         {modalState === 'success' && (
           <div className="flex flex-col items-center text-center px-8 py-10 gap-5">
             <div className="flex items-center justify-center w-16 h-16 bg-green-500 rounded-full shadow-lg">
