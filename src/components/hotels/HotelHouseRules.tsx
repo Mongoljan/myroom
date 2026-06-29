@@ -316,13 +316,13 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
               {/* 5. Breakfast */}
               {bp && bp.status && (
                 <Row icon={<Coffee className="w-4 h-4" />} title="Өглөөний цай">
-                  {/* Status: paid / free / included */}
                   <div>
                     {(() => {
                       const st = String(bp.status).toLowerCase();
-                      if (st === 'paid') return <span>Нөхцөл: <span className="font-medium text-amber-600 dark:text-amber-400">Төлбөртэй</span></span>;
-                      if (st === 'free' || st === 'true') return <span>Нөхцөл: <span className="font-medium text-green-600 dark:text-green-400">Үнэгүй (багтсан)</span></span>;
-                      return <span>Нөхцөл: <span className="font-medium">{bp.status}</span></span>;
+                      if (st === 'no' || st === 'false') return <span className="text-gray-500">Байхгүй</span>;
+                      if (st === 'paid') return <span className="font-medium text-amber-600 dark:text-amber-400">Төлбөртэй</span>;
+                      if (st === 'free' || st === 'true') return <span className="font-medium text-green-600 dark:text-green-400">Үнэгүй</span>;
+                      return <span className="font-medium">{bp.status}</span>;
                     })()}
                   </div>
                   {/* Breakfast type */}

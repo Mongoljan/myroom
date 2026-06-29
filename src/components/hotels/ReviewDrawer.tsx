@@ -39,6 +39,7 @@ export function ReviewDrawer({ open, onOpenChange, reviewsData }: ReviewDrawerPr
   if (!reviewsData) return null;
 
   const { total, avg_rating, reviews } = reviewsData;
+  const safeAvgRating = typeof avg_rating === 'number' ? avg_rating : 0;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -58,7 +59,7 @@ export function ReviewDrawer({ open, onOpenChange, reviewsData }: ReviewDrawerPr
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-              <span className="text-lg font-bold text-gray-900">{avg_rating.toFixed(1)}</span>
+              <span className="text-lg font-bold text-gray-900">{safeAvgRating.toFixed(1)}</span>
               <span className="text-sm font-medium text-gray-500">
                 Маш сайн ({total} Сэтгэгдэл)
               </span>
@@ -73,11 +74,11 @@ export function ReviewDrawer({ open, onOpenChange, reviewsData }: ReviewDrawerPr
           {/* Rating Breakdown Bar */}
           <div className="bg-[#7fb4f5] rounded-xl p-5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 text-white shadow-sm">
             {[
-              { label: 'Цэвэрхэн тухтай', value: avg_rating.toFixed(1) },
-              { label: 'Үйлчилгээ', value: avg_rating.toFixed(1) },
-              { label: 'Байршил', value: avg_rating.toFixed(1) },
-              { label: 'Үнэ цэнэ', value: avg_rating.toFixed(1) },
-              { label: 'Дотоод тохижилт', value: avg_rating.toFixed(1) },
+              { label: 'Цэвэрхэн тухтай', value: safeAvgRating.toFixed(1) },
+              { label: 'Үйлчилгээ', value: safeAvgRating.toFixed(1) },
+              { label: 'Байршил', value: safeAvgRating.toFixed(1) },
+              { label: 'Үнэ цэнэ', value: safeAvgRating.toFixed(1) },
+              { label: 'Дотоод тохижилт', value: safeAvgRating.toFixed(1) },
             ].map((item, idx) => (
               <div key={idx} className="flex flex-col items-center flex-1 text-center gap-1">
                 <span className="text-xl sm:text-2xl font-semibold">{item.value}</span>
