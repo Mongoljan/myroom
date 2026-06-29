@@ -314,10 +314,11 @@ export class ApiService {
     // Search API has no availability for this hotel across all windows.
     // Build a SearchHotelResult from the property-level endpoints instead.
     try {
-      const [basicInfoArr, detailsArr, imagesArr] = await Promise.all([
+      const [basicInfoArr, detailsArr, imagesArr, combinedData] = await Promise.all([
         this.getPropertyBasicInfo(hotelId).catch(() => [] as PropertyBasicInfo[]),
         this.getPropertyDetails(hotelId).catch(() => [] as PropertyDetails[]),
         this.getPropertyImages(hotelId).catch(() => [] as PropertyImage[]),
+        this.getCombinedData().catch(() => null),
       ]);
 
       const basicInfo = basicInfoArr[0];
@@ -329,8 +330,11 @@ export class ApiService {
         .filter(img => img !== coverImage)
         .map(img => ({ url: img.image, description: img.description }));
 
-      const starValue = basicInfo.star_rating;
-      const starLabel = `${starValue} star${starValue !== 1 ? 's' : ''}`;
+      // basicInfo.star_rating is a rating ID from combined-data; map it to the actual star count.
+      const ratingId = basicInfo.star_rating;
+      const matchedRating = combinedData?.ratings?.find(r => r.id === ratingId);
+      const starCount = matchedRating ? (parseInt(matchedRating.rating) || 0) : 0;
+      const starLabel = starCount > 0 ? `${starCount} star${starCount !== 1 ? 's' : ''}` : 'No rating';
 
       return {
         hotel_id: hotelId,
@@ -345,7 +349,7 @@ export class ApiService {
           cover: coverImage ? coverImage.image : '',
           gallery,
         },
-        rating_stars: { id: starValue, value: `${starValue} star`, label: starLabel },
+        rating_stars: { id: ratingId, value: starCount > 0 ? `${starCount} star` : '0', label: starLabel },
         google_map: details?.google_map ?? '',
         general_facilities: details?.general_facilities ?? [],
         additional_facilities: details?.additional_facilities ?? [],

@@ -44,6 +44,7 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
   const [facilitiesMap, setFacilitiesMap] = useState<Map<number, Facility>>(new Map());
   const [provinceMap, setProvinceMap] = useState<Map<number, string>>(new Map());
   const [soumMap, setSoumMap] = useState<Map<number, string>>(new Map());
+  const [ratingsMap, setRatingsMap] = useState<Map<number, number>>(new Map());
   const [showMapModal, setShowMapModal] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
   const [isAboutClamped, setIsAboutClamped] = useState(false);
@@ -93,6 +94,13 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
           soumMapTemp.set(soumItem.id, soumItem.name);
         });
         setSoumMap(soumMapTemp);
+
+        // Map rating ID -> actual star count (e.g. id 3 -> "1 star" -> 1)
+        const ratingsMapTemp = new Map<number, number>();
+        (combinedData.ratings || []).forEach(r => {
+          ratingsMapTemp.set(r.id, parseInt(r.rating) || 0);
+        });
+        setRatingsMap(ratingsMapTemp);
       } catch {
         // silent fail — hotel renders without extra detail maps
       } finally {
@@ -355,10 +363,11 @@ export default function EnhancedHotelDetail({ hotel, propertyDetails, basicInfo,
 
   // Use hotel object data directly
   const hotelName = hotel.property_name;
-  // Use basicInfo.star_rating (hotel category stars) if available, otherwise fall back to search API value
-  // Normalize: if value > 5 it was stored as a rating ID (offset by 2), convert to actual star count
-  const rawStarRating = basicInfo?.star_rating ?? getStarRating(hotel.rating_stars?.value || 0);
-  const starRating = Math.max(0, Math.floor(rawStarRating > 5 ? rawStarRating - 2 : rawStarRating));
+  // Use basicInfo.star_rating (hotel category) if available, otherwise fall back to search API value.
+  // basicInfo.star_rating is a rating ID from combined-data; map it to the actual star count.
+  const starRating = basicInfo?.star_rating
+    ? Math.max(0, Math.floor(ratingsMap.get(basicInfo.star_rating) ?? 0))
+    : Math.max(0, Math.floor(getStarRating(hotel.rating_stars?.value || 0)));
 
   // Generate nearby places based on location
   const getNearbyPlaces = (): NearbyPlace[] => {

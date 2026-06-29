@@ -23,8 +23,11 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
   const [acceptedCards, setAcceptedCards] = useState<AcceptedCard[]>([]);
 
   useEffect(() => {
-    if (!basicInfo) return;
-    if (!basicInfo.languages?.length) {
+    // Languages are configured in the property policy (step 4); basicInfo.languages
+    // is often empty, so prefer policy.languages and fall back to basicInfo.
+    const policyLanguages = policies[0]?.languages ?? [];
+    const languageIds = policyLanguages.length > 0 ? policyLanguages : (basicInfo?.languages ?? []);
+    if (!languageIds.length) {
       // No languages configured — default to Mongolian
       setSpokenLanguages(['Монгол']);
       return;
@@ -33,14 +36,14 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
       .then((data) => {
         const langs = data.languages ?? [];
         const langMap = new Map(langs.map((l) => [l.id, l.languages_name_mn || l.languages_name_en]));
-        const resolved = basicInfo.languages.map((id) => langMap.get(id)).filter(Boolean) as string[];
+        const resolved = languageIds.map((id) => langMap.get(id)).filter(Boolean) as string[];
         // If IDs didn't resolve, fall back to Mongolian
         setSpokenLanguages(resolved.length > 0 ? resolved : ['Монгол']);
       })
       .catch(() => {
         setSpokenLanguages(['Монгол']);
       });
-  }, [basicInfo]);
+  }, [policies, basicInfo]);
 
   useEffect(() => {
     const policy = policies[0];
@@ -366,14 +369,22 @@ export default function HotelHouseRules({ hotelId, initialPolicies, basicInfo }:
                 </Row>
               )}
 
-              {/* 7. Age requirement — static default */}
+              {/* 7. Age requirement */}
               <Row icon={<UserCheck className="w-4 h-4" />} title="Насны шаардлага">
-                <div>Бүртгэлд насны шаардлага байхгүй.</div>
+                <div>
+                  {policy.min_guest_age
+                    ? '18-аас дээш насны зочин үйлчлүүлэх боломжтой.'
+                    : 'Бүртгэлд насны шаардлага байхгүй.'}
+                </div>
               </Row>
 
-              {/* 7. Pets — static default */}
+              {/* 7. Pets */}
               <Row icon={<PawPrint className="w-4 h-4" />} title="Тэжээвэр амьтан">
-                <div>Тэжээвэр амьтан авчрахыг зөвшөөрдөггүй.</div>
+                <div>
+                  {policy.pet_policy
+                    ? 'Тэжээвэр амьтан авчрахыг зөвшөөрнө.'
+                    : 'Тэжээвэр амьтан авчрахыг зөвшөөрдөггүй.'}
+                </div>
               </Row>
 
               {/* 8. Payment methods */}
