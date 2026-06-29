@@ -19,7 +19,7 @@ export default function Footer() {
           <div className="md:col-span-1 flex flex-col gap-4">
             {/* Logo */}
             <div>
-              <span className="text-2xl font-bold text-white">MyRoom</span>
+              <span className="text-2xl font-bold text-white">{t('footer.brandName', 'MyRoom')}</span>
             </div>
 
             {/* Contact */}
@@ -42,7 +42,7 @@ export default function Footer() {
                 </a>
                 <div className="flex items-start gap-2">
                   <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-                  <span>Khan-Uul district, 15th khoroo, Chinggis Avenue street, 33/2-1508, Ulaanbaatar, Mongolia</span>
+                  <span>{t('footer.address', 'Khan-Uul district, 15th khoroo, Chinggis Avenue street, 33/2-1508, Ulaanbaatar, Mongolia')}</span>
                 </div>
               </div>
             </div>
@@ -84,33 +84,39 @@ export default function Footer() {
 
           {/* Col 2 — БИДНИЙ ТУХАЙ */}
           <div>
-            <h4 className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-4">БИДНИЙ ТУХАЙ</h4>
+            <h4 className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-4">
+              {t('footer.aboutUs', 'Бидний тухай')}
+            </h4>
             <ul className="space-y-2.5 text-sm text-slate-300">
-              <li><Link href="/about" className="hover:text-white transition-colors">Танилцуулга</Link></li>
-              <li><Link href="/terms" className="hover:text-white transition-colors">Үйлчилгээний нөхцөл</Link></li>
-              <li><Link href="/privacy" className="hover:text-white transition-colors">Нууцлалын бодлого</Link></li>
-              <li><Link href="/logo-download" className="hover:text-white transition-colors">Лого татаж авах</Link></li>
+              <li><Link href="/about" className="hover:text-white transition-colors">{t('footer.introduction', 'Танилцуулга')}</Link></li>
+              <li><Link href="/terms" className="hover:text-white transition-colors">{t('footer.termsOfService', 'Үйлчилгээний нөхцөл')}</Link></li>
+              <li><Link href="/privacy" className="hover:text-white transition-colors">{t('footer.privacyPolicy', 'Нууцлалын бодлого')}</Link></li>
+              <li><Link href="/logo-download" className="hover:text-white transition-colors">{t('footer.downloadLogo', 'Лого татаж авах')}</Link></li>
             </ul>
           </div>
 
           {/* Col 3 — ТУСЛАМЖ */}
           <div>
-            <h4 className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-4">ТУСЛАМЖ</h4>
+            <h4 className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-4">
+              {t('footer.support', 'Тусламж')}
+            </h4>
             <ul className="space-y-2.5 text-sm text-slate-300">
-              <li><span className="text-slate-300">Заавар</span></li>
-              <li><span className="text-slate-300">Мэдээлэл</span></li>
-              <li><Link href="/help#faq" className="hover:text-white transition-colors">Түгээмэл асуулт, хариулт</Link></li>
-              <li><Link href="/help#contact" className="hover:text-white transition-colors">Санал, хүсэлт</Link></li>
+              <li><span className="text-slate-300">{t('footer.instructions', 'Заавар')}</span></li>
+              <li><span className="text-slate-300">{t('footer.information', 'Мэдээлэл')}</span></li>
+              <li><Link href="/help#faq" className="hover:text-white transition-colors">{t('footer.faq', 'Түгээмэл асуулт, хариулт')}</Link></li>
+              <li><Link href="/help#contact" className="hover:text-white transition-colors">{t('footer.feedback', 'Санал, хүсэлт')}</Link></li>
             </ul>
           </div>
 
           {/* Col 4 — ХАМТАРЧ АЖИЛЛАХ + partner icons */}
           <div className="flex flex-col gap-4">
             <div>
-              <h4 className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-4">ХАМТАРЧ АЖИЛЛАХ</h4>
+              <h4 className="text-xs font-semibold text-slate-400 tracking-widest uppercase mb-4">
+                {t('footer.partnership', 'Хамтарч ажиллах')}
+              </h4>
               <ul className="space-y-2.5 text-sm text-slate-300">
-                <li><a href="https://hotel-front-five.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Өрөө удирдлагын систем</a></li>
-                <li><a href="https://hotel-front-five.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Бүртгүүлэх / Нэвтрэх</a></li>
+                <li><a href="https://hotel-front-five.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">{t('footer.roomManagementSystem', 'Өрөө удирдлагын систем')}</a></li>
+                <li><a href="https://hotel-front-five.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">{t('footer.partnerLogin', 'Бүртгүүлэх / Нэвтрэх')}</a></li>
               </ul>
             </div>
             {/* Payment / bank logos */}
@@ -139,7 +145,7 @@ export default function Footer() {
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98l-.09.06c-.22.15-2.19 1.28-2.17 3.82.02 3.02 2.65 4.03 2.68 4.04l-.06.26zM13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
               </svg>
               <div className="leading-tight">
-                <div className="text-slate-400 text-[10px]">Download on the</div>
+                <div className="text-slate-400 text-[10px]">{t('footer.downloadOnThe', 'Download on the')}</div>
                 <div className="text-white text-sm font-semibold">App Store</div>
               </div>
             </a>
@@ -151,7 +157,7 @@ export default function Footer() {
                 <path d="M3.18 23.76c.3.17.64.24.99.2l12.6-7.27-2.88-2.88-10.71 9.95zM.54 1.96C.2 2.3 0 2.84 0 3.54v16.92c0 .7.2 1.24.55 1.58l.08.08 9.48-9.48v-.22L.62 1.88l-.08.08zm19.54 8.58l-2.69-1.55-3.19 3.19 3.19 3.19 2.7-1.56c.77-.44.77-1.16 0-1.6l-.01-.67zM4.17.24L16.77 7.5l-2.88 2.88L3.18.43C3.48 0 3.82-.07 4.17.24z"/>
               </svg>
               <div className="leading-tight">
-                <div className="text-slate-400 text-[10px]">GET IT ON</div>
+                <div className="text-slate-400 text-[10px]">{t('footer.getItOn', 'GET IT ON')}</div>
                 <div className="text-white text-sm font-semibold">Google Play</div>
               </div>
             </a>
@@ -164,7 +170,7 @@ export default function Footer() {
       <div className="border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <p className="text-sm text-slate-500">
-            © 2025 MyRoom. {t('footer.allRightsReserved', 'Зохиогчийн эрхээр хамгаалагдсан')}.
+            © {new Date().getFullYear()} {t('footer.brandName', 'MyRoom')}. {t('footer.allRightsReserved', 'Зохиогчийн эрхээр хамгаалагдсан')}.
           </p>
         </div>
       </div>

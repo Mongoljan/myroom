@@ -299,7 +299,7 @@ export default function HotelSearchForm({ compact = false, onSearchActiveChange 
                   <Calendar className={`${compact ? 'w-4 h-4 mr-2 text-gray-700' : 'w-6 h-6 text-slate-900'} dark:text-gray-300 shrink-0`} />
                   <div className="flex-1 min-w-0">
                     <div className={`text-xs font-medium text-gray-500 dark:text-gray-400 ${compact ? 'mb-0.5' : 'mb-1'}`}>
-                      {t('search.dateLabel', 'Орох - Гарах')}
+                      {t('search.selectDates', 'Орох - Гарах')}
                     </div>
                     <div className="relative z-[1]">
                       <DateRangePicker

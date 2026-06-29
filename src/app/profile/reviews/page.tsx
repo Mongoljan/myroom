@@ -9,6 +9,7 @@ import { CustomerService } from '@/services/customerApi';
 import { CustomerBooking, Review, HotelReviewsResponse } from '@/types/customer';
 import { HotelService, HotelInfo } from '@/services/hotelApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { ReviewDrawer } from '@/components/hotels/ReviewDrawer';
 
 type ReviewTab = 'my' | 'pending';
 
@@ -54,9 +55,34 @@ export default function ReviewsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
+  // Review Drawer state
+  const [selectedReviewHotelId, setSelectedReviewHotelId] = useState<number | null>(null);
+  const [isReviewDrawerOpen, setIsReviewDrawerOpen] = useState(false);
+
+  const handleViewReviews = async (hotelId: number) => {
+    setSelectedReviewHotelId(hotelId);
+    setIsReviewDrawerOpen(true);
+
+    if (!hotelRatingsMap.has(hotelId)) {
+      try {
+        const data = await CustomerService.getHotelReviews(hotelId);
+        setHotelRatingsMap((prev) => {
+          const newMap = new Map(prev);
+          newMap.set(hotelId, data);
+          return newMap;
+        });
+      } catch (err) {
+        console.error('Алдаа гарлаа:', err);
+      }
+    }
+  };
+
   useEffect(() => {
     if (!token) return;
-    setIsLoading(true);
+    
+    Promise.resolve().then(() => {
+      setIsLoading(true);
+    });
 
     const fetchData = async () => {
       try {
@@ -64,7 +90,7 @@ export default function ReviewsPage() {
           CustomerService.getReviews(token),
           CustomerService.getBookings(token),
         ]);
-
+ 
         setReviews(revRes.reviews);
         setAllBookings(bookRes.bookings);
 
@@ -322,7 +348,7 @@ export default function ReviewsPage() {
                 return (
                   <div
                     key={review.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden mb-10 last:mb-0"
+                    className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden mb-6 last:mb-0"
                   >
                     {/* Header */}
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-100 dark:border-gray-700">
@@ -448,7 +474,7 @@ export default function ReviewsPage() {
                                 <span>/5</span>
                               </span>
                               <span className="text-xs mt-1 text-gray-500 dark:text-gray-400">
-                                {total} {t('hotel.reviews_count', 'сэтгэгдэл')}
+                                {total} {t('reviews.comment', 'сэтгэгдэл')}
                               </span>
                             </div>
                           );
@@ -457,12 +483,13 @@ export default function ReviewsPage() {
 
                       {hotel && (
                         <div className="mt-12 shrink-0">
-                          <Link
-                            href={`/hotel/${hotel.pk}#reviews`}
-                            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition inline-block"
+                          <button
+                            type="button"
+                            onClick={() => handleViewReviews(hotel.pk)}
+                            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition inline-block cursor-pointer"
                           >
                             {t('reviews.viewAllReviews', 'Бүх сэтгэгдэл үзэх')}
-                          </Link>
+                          </button>
                         </div>
                       )}
                     </div>
@@ -610,7 +637,7 @@ export default function ReviewsPage() {
                           </div>
                           {nights > 0 && (
                             <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-                              {nights} {t('common.nights', 'шөнө')}
+                              {t('bookingFlow.nights', { count: nights })}
                             </p>
                           )}
                         </div>
@@ -764,6 +791,12 @@ export default function ReviewsPage() {
           </div>
         </div>
       )}
+
+      <ReviewDrawer
+        open={isReviewDrawerOpen}
+        onOpenChange={setIsReviewDrawerOpen}
+        reviewsData={selectedReviewHotelId ? hotelRatingsMap.get(selectedReviewHotelId) || null : null}
+      />
     </div>
   );
 }

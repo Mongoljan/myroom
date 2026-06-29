@@ -310,7 +310,7 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
             onClick={() => setDrawerOpen(true)}
             className="px-6 py-2 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-300"
           >
-            {t('hotel.reviewsSection.showAll', `Show All ${reviews.length} Reviews`)}
+            {t('hotel.reviewsSection.showAll', { count: reviews.length })}
           </button>
         </div>
       )}
