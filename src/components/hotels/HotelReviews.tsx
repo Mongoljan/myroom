@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { ReviewDrawer } from './ReviewDrawer';
 import type { HotelReviewItem, HotelReviewsResponse } from '@/types/customer';
 
 interface HotelReviewsProps {
@@ -86,10 +87,14 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [expandedReviewIds, setExpandedReviewIds] = useState<Set<number>>(new Set());
 
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [selectedHotel, setSelectedHotel] = useState(null)
+
   const total = reviewsData?.total ?? 0;
   const avgRating = reviewsData?.avg_rating ?? 0;
   const reviews = reviewsData?.reviews ?? [];
   const ratingBreakdown = reviewsData?.rating_breakdown ?? {};
+  const displayedReviews = reviews.slice(0, 4);
   const maxBreakdownCount = Math.max(
     ...STAR_LEVELS.map((star) => ratingBreakdown[String(star)] ?? 0),
     1
@@ -296,6 +301,19 @@ export default function HotelReviews({ reviewsData }: HotelReviewsProps) {
           </div>
         )}
       </div>
+      <ReviewDrawer open={drawerOpen} onOpenChange={setDrawerOpen} reviewsData={reviewsData} />
+
+      {reviews.length > 4 && (
+        <div className="text-center mt-6">
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="px-6 py-2 border border-gray-200 dark:border-gray-700 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-900 dark:text-gray-300"
+          >
+            {t('hotel.reviewsSection.showAll', `Show All ${reviews.length} Reviews`)}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

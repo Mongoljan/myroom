@@ -155,7 +155,7 @@ export default function FaqSection() {
                           className="overflow-hidden"
                         >
                           <motion.div 
-                            className="px-4 pb-4 bg-white dark:bg-gray-800"
+                            className="px-4 py-4 bg-white dark:bg-gray-800"
                             initial={{ y: -10, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ y: -10, opacity: 0 }}

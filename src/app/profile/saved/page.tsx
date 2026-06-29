@@ -80,12 +80,13 @@ export default function SavedPage() {
                 <button
                   key={province}
                   onClick={() => setActiveProvince(province)}
-                  className={`px-4 py-1.5 text-sm rounded-full whitespace-nowrap border transition ${
+                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap ${
                     activeProvince === province
-                      ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent'
-                      : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                      : 'bg-gray-100 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
+                  
                   {province}({count})
                 </button>
               );

@@ -1,8 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Calendar, RefreshCw, Plus, X, type LucideIcon } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import { Plus, ChevronRight, Download, Printer } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { getBookingPin } from '@/utils/bookingPinStorage';
 
@@ -13,23 +12,9 @@ interface BookingConfirmationManageActionsProps {
   checkIn?: string;
   checkOut?: string;
   hotelName?: string;
+  onDownload?: () => void;
+  onPrint?: () => void;
 }
-
-type ManageAction = {
-  icon: LucideIcon;
-  labelKey: string;
-  action: string;
-  primary?: boolean;
-  danger?: boolean;
-  linkStyle?: boolean;
-};
-
-const MANAGEMENT_ACTIONS: ManageAction[] = [
-  { icon: Calendar, labelKey: 'bookingExtra.changeDate', action: 'change-date', primary: true },
-  { icon: RefreshCw, labelKey: 'bookingExtra.changeRoom', action: 'change-room', primary: false },
-  { icon: Plus, labelKey: 'bookingExtra.addRoom', action: 'add-room', primary: false },
-  { icon: X, labelKey: 'bookingExtra.cancelBookingAction', action: 'cancel', danger: true, primary: false },
-];
 
 export default function BookingConfirmationManageActions({
   bookingCode,
@@ -38,6 +23,8 @@ export default function BookingConfirmationManageActions({
   checkIn,
   checkOut,
   hotelName,
+  onDownload,
+  onPrint,
 }: BookingConfirmationManageActionsProps) {
   const { t } = useHydratedTranslation();
   const router = useRouter();
@@ -60,44 +47,46 @@ export default function BookingConfirmationManageActions({
 
   return (
     <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 sm:p-5 shadow-sm print:hidden">
-      <h3 className="text-[16px] font-semibold text-[#1a202c] dark:text-white mb-3">{t('bookingExtra.manageBookingTitle')}</h3>
-      <div className="grid grid-cols-2 gap-2">
-        {MANAGEMENT_ACTIONS.map((a) => {
-          const Icon = a.icon;
-          const label = t(a.labelKey);
-          if (a.linkStyle) {
-            return (
-              <button
-                key={a.action}
-                type="button"
-                onClick={() => goManage(a.action)}
-                className="text-sm font-medium text-primary hover:underline text-left py-2 px-2 flex items-center gap-1.5 rounded-lg border border-transparent"
-              >
-                <Icon className="w-3.5 h-3.5 shrink-0" />
-                {label}
-              </button>
-            );
-          }
-          return (
-            <Button
-              key={a.action}
-              variant={a.primary ? 'primary' : 'ghost'}
-              size="sm"
-              className={`w-full flex items-center justify-start gap-1.5 !rounded-lg !shadow-none text-sm font-medium ${
-                a.danger
-                  ? '!text-red-600 hover:!text-red-700 !border-red-200'
-                  : a.primary
-                    ? ''
-                    : '!bg-[#f7fafc] dark:!bg-gray-700/50 !border-gray-200 dark:!border-gray-600 !text-[#2d3748] dark:!text-gray-200'
-              }`}
-              onClick={() => goManage(a.action)}
-            >
-              <Icon className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate text-left">{label}</span>
-            </Button>
-          );
-        })}
+      <h3 className="text-[16px] font-semibold text-[#1a202c] dark:text-white mb-4">
+        {t('bookingExtra.manageBookingTitle', 'Захиалга удирдах')}
+      </h3>
+      
+      <div className="flex flex-col gap-3">
+        <button
+          onClick={onDownload}
+          className="flex items-center justify-between w-full h-[46px] px-4 rounded-[10px] bg-[#64bc14] hover:bg-[#58a612] text-white text-[15px] font-medium transition-colors"
+        >
+          <span>{t('bookingExtra.downloadBookingPage', 'Download booking page')}</span>
+          <Download className="w-[18px] h-[18px]" strokeWidth={2} />
+        </button>
+
+        <button
+          onClick={onPrint}
+          className="flex items-center justify-between w-full h-[46px] px-4 rounded-[10px] bg-[#f99400] hover:bg-[#e08500] text-white text-[15px] font-medium transition-colors"
+        >
+          <span>{t('bookingExtra.printBookingPage', 'Print booking page')}</span>
+          <Printer className="w-[18px] h-[18px]" strokeWidth={2} />
+        </button>
+
+        <button
+          onClick={() => goManage('add-room')}
+          className="flex items-center justify-between w-full h-[46px] px-4 rounded-[10px] bg-[#717680] hover:bg-[#60646d] text-white text-[15px] font-medium transition-colors"
+        >
+          <span>{t('bookingExtra.addRoom', 'Өрөө нэмэх')}</span>
+          <Plus className="w-[18px] h-[18px]" strokeWidth={2} />
+        </button>
+
+        <div className="h-px w-full bg-gray-100 dark:bg-gray-700 my-1 border-none" />
+
+        <button
+          onClick={() => goManage('cancel')}
+          className="flex items-center justify-between w-full h-[46px] px-4 rounded-[10px] bg-[#feeceb] hover:bg-[#fcd9d7] dark:bg-red-950/30 dark:hover:bg-red-900/40 text-[#e24a41] text-[15px] font-medium transition-colors"
+        >
+          <span>{t('bookingExtra.cancelBookingAction', 'Захиалга цуцлах')}</span>
+          <ChevronRight className="w-5 h-5" strokeWidth={2} />
+        </button>
       </div>
     </div>
   );
 }
+
