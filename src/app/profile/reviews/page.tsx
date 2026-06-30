@@ -423,11 +423,13 @@ export default function ReviewsPage() {
                       <div className="w-full md:w-24 h-24 md:h-20 rounded-lg bg-gray-200 dark:bg-gray-600 shrink-0 overflow-hidden relative">
                         {imageSrc ? (
                           hotel ? (
-                            <Link href={`/hotel/${hotel.pk}`} className="block w-full h-full">
+                            <Link href={`/hotel/${hotel.pk}`} className="block w-full h-full relative">
                               <Image
                                 src={imageSrc}
                                 alt={hotel.PropertyName}
                                 fill
+                                priority 
+                                sizes="(max-width: 768px) 100vw, 96px"
                                 className="object-cover"
                               />
                             </Link>
@@ -436,12 +438,13 @@ export default function ReviewsPage() {
                               src={imageSrc}
                               alt={booking?.hotel_name ?? ''}
                               fill
+                              priority
+                              sizes="(max-width: 768px) 100vw, 96px" 
                               className="object-cover"
                             />
                           )
                         ) : null}
                       </div>
-
                       {/* Text */}
                       <div className="flex-1 min-w-0">
                         {hotel ? (
@@ -566,12 +569,14 @@ export default function ReviewsPage() {
                           hasLink ? (
                             <Link
                               href={`/hotel/${hotelId}`}
-                              className="block w-full h-full"
+                              className="block w-full h-full relative"
                             >
                               <Image
                                 src={resolvedSrc}
                                 alt={hotel?.PropertyName || booking.hotel_name}
                                 fill
+                                priority
+                                sizes="(max-width: 768px) 100vw, 96px" 
                                 className="object-cover"
                               />
                             </Link>
@@ -580,6 +585,8 @@ export default function ReviewsPage() {
                               src={resolvedSrc}
                               alt={booking.hotel_name}
                               fill
+                              priority
+                              sizes="(max-width: 768px) 100vw, 96px" 
                               className="object-cover"
                             />
                           )

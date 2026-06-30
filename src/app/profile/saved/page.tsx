@@ -1,13 +1,16 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Heart, Star, RefreshCw } from 'lucide-react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { Heart, Star, RefreshCw, Calendar, ChevronDown } from 'lucide-react';
 import { useWishlist } from '@/hooks/useCustomer';
 import { useAuth } from '@/contexts/AuthContext';
 import { WishlistItem } from '@/types/customer';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { formatHotelLocation } from '@/utils/formatHotelLocation';
+import DateRangePicker from '@/components/common/DateRangePicker';
+import CustomGuestSelector from '@/components/search/CustomGuestSelector';
 
 export default function SavedPage() {
   const { t } = useHydratedTranslation();
@@ -15,7 +18,34 @@ export default function SavedPage() {
   const { wishlist, loading, refresh, removeHotel } = useWishlist(token || undefined);
   const [removingIds, setRemovingIds] = useState<Set<number>>(new Set());
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  // Read filter parameters from URL
+  const checkIn = searchParams.get('check_in') || '';
+  const checkOut = searchParams.get('check_out') || '';
+  const adults = parseInt(searchParams.get('adults') || '2');
+  const children = parseInt(searchParams.get('children') || '0');
+  const rooms = parseInt(searchParams.get('rooms') || '1');
+  const selectedCategory = searchParams.get('property_type') || 'all';
+
   const [activeProvince, setActiveProvince] = useState<string>('all');
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+
+  const dateContainerRef = useRef<HTMLDivElement>(null);
+  const categoryRef = useRef<HTMLDivElement>(null);
+
+  // Close category dropdown on clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (categoryRef.current && !categoryRef.current.contains(event.target as Node)) {
+        setIsCategoryOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleRemove = async (hotelId: number) => {
     if (!token) return;
@@ -31,14 +61,79 @@ export default function SavedPage() {
     }
   };
 
-  // Group by province
+  // Update URL Search Parameters
+  const updateUrlParams = (newParams: Record<string, string | number>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(newParams).forEach(([key, val]) => {
+      if (val === 'all' || val === '' || val === undefined) {
+        params.delete(key);
+      } else {
+        params.set(key, val.toString());
+      }
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const handleGuestChange = (newAdults: number, newChildren: number, newRooms: number) => {
+    updateUrlParams({
+      adults: newAdults,
+      children: newChildren,
+      rooms: newRooms,
+    });
+  };
+
+  // Helper to match property type IDs or names robustly
+  const matchesPropertyType = (itemPropertyType: string | null | undefined, selectedId: string) => {
+    if (selectedId === 'all') return true;
+    if (!itemPropertyType) return false;
+
+    if (String(itemPropertyType) === String(selectedId)) return true;
+
+    // Fallback dictionary for string property type values
+    const typeMap: Record<string, string[]> = {
+      '1': ['hotel', 'zochid buudal', 'буудал'],
+      '8': ['resort', 'amraltyn gazar', 'амралт'],
+      '7': ['camp', 'tourist camp', 'juulchny baaz', 'бааз'],
+    };
+
+    const searchTerms = typeMap[selectedId] || [];
+    const typeLower = itemPropertyType.toLowerCase();
+    return searchTerms.some(term => typeLower.includes(term));
+  };
+
+  // Categories mapping
+  const PROPERTY_CATEGORIES = [
+    { id: 'all', name: t('reviews.categoryAll', 'Бүгд') },
+    { id: '1', name: t('reviews.propertyTypes.hotel', 'Зочид буудал') },
+    { id: '8', name: t('reviews.propertyTypes.resort', 'Амралтын газар') },
+    { id: '7', name: t('reviews.propertyTypes.camp', 'Жуулчны бааз') },
+  ];
+
+  // Helper to generate hotel link containing search parameters
+  const getHotelLink = (hotelId: number) => {
+    const params = new URLSearchParams();
+    if (checkIn) params.set('check_in', checkIn);
+    if (checkOut) params.set('check_out', checkOut);
+    if (adults) params.set('adults', adults.toString());
+    if (children) params.set('children', children.toString());
+    if (rooms) params.set('rooms', rooms.toString());
+
+    const queryString = params.toString();
+    return `/hotel/${hotelId}${queryString ? `?${queryString}` : ''}`;
+  };
+
+  // Filter wishlist items matching chosen category first, then province
+  const itemsMatchingCategory = wishlist.filter((item: WishlistItem) =>
+    matchesPropertyType(item.hotel.property_type, selectedCategory)
+  );
+
   const provinces = Array.from(
-    new Set(wishlist.map((item: WishlistItem) => item.hotel.location?.province_city).filter(Boolean))
+    new Set(itemsMatchingCategory.map((item: WishlistItem) => item.hotel.location?.province_city).filter(Boolean))
   ) as string[];
 
-  const filtered = activeProvince === 'all'
-    ? wishlist
-    : wishlist.filter((item: WishlistItem) => item.hotel.location?.province_city === activeProvince);
+  const filtered = itemsMatchingCategory.filter((item: WishlistItem) =>
+    activeProvince === 'all' || item.hotel.location?.province_city === activeProvince
+  );
 
   if (loading) {
     return (
@@ -63,38 +158,128 @@ export default function SavedPage() {
 
         {/* Province tabs */}
         {provinces.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="flex gap-8 border-b border-gray-100 dark:border-gray-700 overflow-x-auto pb-px">
+            {/* 'All' Button */}
             <button
               onClick={() => setActiveProvince('all')}
-              className={`px-4 py-1.5 text-sm rounded-full whitespace-nowrap border transition ${
+              className={`flex items-center gap-2 px-1 py-3 text-sm font-semibold transition border-b-2 -mb-px whitespace-nowrap ${
                 activeProvince === 'all'
-                  ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 border-transparent'
-                  : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border-transparent'
               }`}
             >
-              Бүгд ({wishlist.length})
+              Бүгд
+              {itemsMatchingCategory.length > 0 && (
+                <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-blue-600 text-white leading-none">
+                  {itemsMatchingCategory.length > 99 ? '99+' : itemsMatchingCategory.length}
+                </span>
+              )}
             </button>
+
+            {/* Dynamic Province Buttons */}
             {provinces.map(province => {
-              const count = wishlist.filter((i: WishlistItem) => i.hotel.location?.province_city === province).length;
+              const count = itemsMatchingCategory.filter((i: WishlistItem) => i.hotel.location?.province_city === province).length;
               return (
                 <button
                   key={province}
                   onClick={() => setActiveProvince(province)}
-                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap ${
+                  className={`flex items-center gap-2 px-1 py-3 text-sm font-semibold transition border-b-2 -mb-px whitespace-nowrap ${
                     activeProvince === province
-                      ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
-                      : 'bg-gray-100 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border-transparent'
                   }`}
                 >
-                  
-                  {province}({count})
+                  {province}
+                  {count > 0 && (
+                    <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-blue-600 text-white leading-none">
+                      {count > 99 ? '99+' : count}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </div>
         )}
       </div>
+      
+      {/* Filter Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-2 items-center m-6" style={{ overflow: 'visible' }}>
+        
+        {/* Date Picker */}
+        <div ref={dateContainerRef} className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl px-4 py-2 flex items-center gap-4 cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 transition relative h-11">
+          <Calendar className="w-4 h-4 shrink-0" />
+          <div className="flex-1 min-w-0 text-sm font-medium overflow-hidden">
+            <div className="relative z-[1] w-full truncate whitespace-nowrap">
+              <DateRangePicker
+                checkIn={checkIn}
+                checkOut={checkOut}
+                onDateChange={(newCheckIn, newCheckOut) => {
+                  updateUrlParams({ check_in: newCheckIn, check_out: newCheckOut });
+                }}
+                placeholder={t('search.selectDates', 'Орох - Гарах')}
+                minimal={true}
+                anchorRef={dateContainerRef}
+              />
+            </div>
+          </div>
+        </div>
 
+        {/* Guest Selector */}
+        <div className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl flex items-center hover:border-gray-300 dark:hover:border-gray-600 transition relative z-[10] px-4 py-2 h-11">
+          <CustomGuestSelector
+            adults={adults}
+            childrenCount={children}
+            rooms={rooms}
+            onGuestChange={handleGuestChange}
+            className="w-full relative z-[10]"
+            compact={true}
+            hideLabel={true}                   
+            textSizeClass="text-sm font-medium"
+          />
+        </div>
+
+        {/* Property Type Dropdown */}
+        <div ref={categoryRef} className="relative z-[1] md:ml-6"> 
+          <button
+            type="button"
+            onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+            className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl px-4 py-2 flex items-center justify-between gap-2 hover:border-gray-300 dark:hover:border-gray-600 transition focus:outline-none h-11"
+          >
+            <div className="flex-1 text-left min-w-0">
+                <div className="text-[11px] text-gray-400 dark:text-gray-500 truncate leading-tight">
+                  {t('search.propertyTypeLabel', 'Төрлөөр ангилах')}
+                </div>
+              <div className="text-sm font-medium text-gray-900 dark:text-white truncate leading-tight">
+                {PROPERTY_CATEGORIES.find(c => c.id === selectedCategory)?.name || t('reviews.categoryAll', 'Бүгд')}
+              </div>
+            </div>
+            <ChevronDown className={`w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
+          </button>
+
+          {/* Dropdown Menu */}
+          {isCategoryOpen && (
+            <div className="absolute right-0 mt-1.5 w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl z-50 py-1">
+              {PROPERTY_CATEGORIES.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    updateUrlParams({ property_type: cat.id });
+                    setIsCategoryOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2 text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
+                    selectedCategory === cat.id
+                      ? 'text-blue-600 dark:text-blue-400 font-semibold bg-blue-50/50 dark:bg-blue-900/10'
+                      : 'text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  {cat.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       {/* Card grid */}
       <div className="p-6">
         {filtered.length === 0 ? (
@@ -114,7 +299,7 @@ export default function SavedPage() {
                 <div key={item.id} className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 flex flex-col">
                   {/* Image */}
                   <div className="relative h-48 bg-gray-100 dark:bg-gray-700 shrink-0">
-                    <Link href={`/hotel/${h.id}`} className="block w-full h-full">
+                    <Link href={getHotelLink(h.id)} className="block w-full h-full">
                       {/* Gradient placeholder always behind */}
                       <div className="absolute inset-0 bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700" />
                       {/* Image overlays placeholder; hidden on error */}
@@ -141,7 +326,7 @@ export default function SavedPage() {
                   </div>
 
                   {/* Body */}
-                  <Link href={`/hotel/${h.id}`} className="flex flex-col flex-1 p-4 gap-1">
+                  <Link href={getHotelLink(h.id)} className="flex flex-col flex-1 p-4 gap-1">
                     <h3 className="font-bold text-sm text-gray-900 dark:text-white leading-snug line-clamp-1">{h.PropertyName}</h3>
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                       {formatHotelLocation(h.location)}

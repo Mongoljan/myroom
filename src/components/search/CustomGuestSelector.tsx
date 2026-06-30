@@ -17,6 +17,8 @@ interface CustomGuestSelectorProps {
   compact?: boolean;
   onOpenChange?: (open: boolean) => void;
   maxChildAge?: number;
+  hideLabel?: boolean; 
+  textSizeClass?: string;
 }
 
 export default function CustomGuestSelector({
@@ -29,6 +31,8 @@ export default function CustomGuestSelector({
   compact = false,
   onOpenChange,
   maxChildAge = 17,
+  hideLabel = false,
+  textSizeClass = 'text-sm',
 }: CustomGuestSelectorProps) {
   const { t } = useHydratedTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -199,10 +203,10 @@ export default function CustomGuestSelector({
         <div className="flex items-center gap-4">
           <User className={`${compact ? 'w-4 h-4' : 'w-6 h-6'} text-slate-900`} />
           <div className="text-left">
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+            <div className={`text-xs font-medium text-gray-500 dark:text-gray-400 ${hideLabel ? 'hidden' : 'mb-1'}`}>
               {t('search.guest', 'Зочин')}
             </div>
-            <div className="text-base font-medium text-gray-900 dark:text-white">
+            <div className={`text-base font-medium text-gray-900 dark:text-white ${textSizeClass}`}>
               {getGuestText()}
             </div>
           </div>

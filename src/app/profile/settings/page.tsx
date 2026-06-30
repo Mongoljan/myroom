@@ -103,7 +103,7 @@ function DeleteAccountModal({ onClose }: DeleteAccountModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
 
-        {/* ── LOADING ─────────────────────────────────────────── */}
+        {/*LOADING*/}
         {modalState === 'loading' && (
           <div className="flex flex-col items-center justify-center py-14 px-8 gap-4">
             <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
@@ -113,7 +113,7 @@ function DeleteAccountModal({ onClose }: DeleteAccountModalProps) {
           </div>
         )}
 
-        {/* ── BLOCKED ─────────────────────────────────────────── */}
+        {/*BLOCKED*/}
         {modalState === 'blocked' && (
           <div className="flex flex-col items-center text-center px-8 py-10 gap-5">
             <div className="flex items-center justify-center w-16 h-16">
@@ -464,14 +464,18 @@ export default function SettingsPage() {
                   {t('settings.bookingConfirmationEmailsDesc')}
                 </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
+              <label className="relative inline-flex items-center cursor-pointer-none"> {/* Changed cursor */}
                 <input
                   type="checkbox"
                   checked={localSettings.email_booking_confirmed}
                   onChange={(e) => handleSettingChange('email_booking_confirmed', e.target.checked)}
                   className="sr-only peer"
+                  disabled
                 />
-                <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                <div className="
+                  w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600
+                  peer-disabled:opacity-50 peer-disabled:cursor-not-allowed 
+                "></div>
               </label>
             </div>
             <div className="h-px bg-gray-200 dark:bg-gray-700" />

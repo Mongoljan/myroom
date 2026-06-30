@@ -66,17 +66,27 @@ export function ReviewDrawer({ open, onOpenChange, reviewsData }: ReviewDrawerPr
       <DrawerContent className="fixed inset-y-0 right-0 left-auto bottom-auto mt-0 h-screen w-[90vw] sm:w-[500px] md:w-[700px] lg:w-[800px] rounded-l-2xl sm:rounded-l-none bg-white p-0 flex flex-col shadow-2xl [&>div.mx-auto]:hidden">
         <DrawerHeader className="border-b border-gray-100 p-6 flex flex-row items-center justify-between shrink-0">
           <DrawerTitle className="text-xl font-bold text-gray-900">
-            Зочдын үнэлгээ
+            {t('hotelDetails.guestRating', 'Зочдын үнэлгээ')}
           </DrawerTitle>
+
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-              <span className="text-lg font-bold text-gray-900">{safeAvgRating.toFixed(1)}</span>
-              <span className="text-sm font-medium text-gray-500">
-                Маш сайн ({total} Сэтгэгдэл)
+            {guestReviewTotal > 0 ? (
+              <div className="flex items-center gap-2">
+                <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                <span className="text-lg font-bold text-gray-900">
+                  {guestAvgRating.toFixed(1)}
+                </span>
+                <span className="text-sm font-medium text-gray-500">
+                  {getGuestRatingText(guestAvgRating)} ({t('hotel.comments', 'Сэтгэгдэл')} - {guestReviewTotal})
+                </span>
+              </div>
+            ) : (
+              <span className="text-sm font-medium text-gray-400">
+                {t('hotelDetails.noRatingsYet', 'Үнэлгээ байхгүй')}
               </span>
-            </div>
-            <DrawerClose className="rounded-full p-1 hover:bg-gray-100 transition-colors">
+            )}
+
+            <DrawerClose className="rounded-full p-1 hover:bg-gray-100 transition-colors ml-2">
               <X className="w-5 h-5 text-gray-500" />
             </DrawerClose>
           </div>
@@ -86,11 +96,11 @@ export function ReviewDrawer({ open, onOpenChange, reviewsData }: ReviewDrawerPr
           {/* Rating Breakdown Bar */}
           <div className="bg-[#7fb4f5] rounded-xl p-5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-4 text-white shadow-sm">
             {[
-              { label: 'Цэвэрхэн тухтай', value: safeAvgRating.toFixed(1) },
-              { label: 'Үйлчилгээ', value: safeAvgRating.toFixed(1) },
-              { label: 'Байршил', value: safeAvgRating.toFixed(1) },
-              { label: 'Үнэ цэнэ', value: safeAvgRating.toFixed(1) },
-              { label: 'Дотоод тохижилт', value: safeAvgRating.toFixed(1) },
+              { label: t('reviews.cleanliness', 'Цэвэрхэн тухтай'), value: safeAvgRating.toFixed(1) },
+              { label: t('reviews.service', 'Үйлчилгээ'), value: safeAvgRating.toFixed(1) },
+              { label: t('reviews.location', 'Байршил'), value: safeAvgRating.toFixed(1) },
+              { label: t('reviews.value', 'Үнэ цэнэ'), value: safeAvgRating.toFixed(1) },
+              { label: t('reviews.comfort', 'Дотоод тохижилт'), value: safeAvgRating.toFixed(1) },
             ].map((item, idx) => (
               <div key={idx} className="flex flex-col items-center flex-1 text-center gap-1">
                 <span className="text-lg sm:text-xl font-semibold">{item.value}</span>
