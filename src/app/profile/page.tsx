@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
@@ -31,6 +31,8 @@ export default function ProfilePage() {
     invoice_organization: '',
   });
 
+  const [initialFormData, setInitialFormData] = useState(formData);
+
   const [businessName, setBusinessName] = useState('');
   const [businessLoading, setBusinessLoading] = useState(false);
   const [businessError, setBusinessError] = useState<string | null>(null);
@@ -42,28 +44,40 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!user) return;
 
-    setFormData((prev) => ({
-      ...prev,
-      first_name: user.first_name || '',
+    const loaded = {
       last_name: user.last_name || '',
-      gender: user.gender || '',
+      first_name: user.first_name || '',
       date_of_birth: user.date_of_birth || '',
-    }));
+      gender: user.gender || ('' as 'male' | 'female' | 'other' | ''),
+      nationality: 'Mongolia',
+      invoice_individual: '',
+      invoice_business_prefix1: '',
+      invoice_business_prefix2: '',
+      invoice_business_number: '',
+      invoice_organization: '',
+    };
 
     const extras = getProfileExtras(user.id);
+    let extraBusinessName = '';
+    let extraOrgName = '';
+
     if (extras) {
-      setFormData((prev) => ({
-        ...prev,
-        nationality: extras.nationality || 'Mongolia',
-        invoice_individual: extras.invoice_individual || '',
-        invoice_business_prefix1: extras.invoice_business_prefix1 || '',
-        invoice_business_prefix2: extras.invoice_business_prefix2 || '',
-        invoice_business_number: extras.invoice_business_number || '',
-        invoice_organization: extras.invoice_organization || '',
-      }));
-      setBusinessName(extras.invoice_business_name || '');
-      setOrgName(extras.invoice_organization_name || '');
+      loaded.nationality = extras.nationality || 'Mongolia';
+      loaded.invoice_individual = extras.invoice_individual || '';
+      loaded.invoice_business_prefix1 = extras.invoice_business_prefix1 || '';
+      loaded.invoice_business_prefix2 = extras.invoice_business_prefix2 || '';
+      loaded.invoice_business_number = extras.invoice_business_number || '';
+      loaded.invoice_organization = extras.invoice_organization || '';
+      extraBusinessName = extras.invoice_business_name || '';
+      extraOrgName = extras.invoice_organization_name || '';
     }
+
+    Promise.resolve().then(() => {
+      setBusinessName(extraBusinessName);
+      setOrgName(extraOrgName);
+      setFormData(loaded);
+      setInitialFormData(loaded); // baseline snapshot for the diff check
+    });
   }, [user]);
 
   useEffect(() => {
@@ -85,9 +99,12 @@ export default function ProfilePage() {
     }
 
     let active = true;
-    setBusinessLoading(true);
-    setBusinessError(null);
-    setBusinessName('');
+    Promise.resolve().then(() => {
+      if (!active) return;
+      setBusinessLoading(true);
+      setBusinessError(null);
+      setBusinessName('');
+    });
 
     lookupEbarimt(fullRegno)
       .then((result) => {
@@ -123,9 +140,12 @@ export default function ProfilePage() {
     }
 
     let active = true;
-    setOrgLoading(true);
-    setOrgError(null);
-    setOrgName('');
+    Promise.resolve().then(() => {
+      if (!active) return;
+      setOrgLoading(true);
+      setOrgError(null);
+      setOrgName('');
+    });
 
     lookupEbarimt(invoice_organization)
       .then((result) => {
@@ -161,6 +181,11 @@ export default function ProfilePage() {
     setFormData(prev => ({ ...prev, nationality }));
   }, []);
 
+  const hasChanges = useMemo(
+    () => JSON.stringify(formData) !== JSON.stringify(initialFormData),
+    [formData, initialFormData]
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token || !user) return;
@@ -189,6 +214,7 @@ export default function ProfilePage() {
       });
 
       await refreshProfile();
+      setInitialFormData(formData);
       setSuccess(t('Profile.updateSuccess', 'Мэдээлэл амжилттай шинэчлэгдлээ.'));
     } catch (err) {
       setError(err instanceof Error ? err.message : t('Profile.updateError', 'Алдаа гарлаа.'));
@@ -210,7 +236,7 @@ export default function ProfilePage() {
     : '';
 
   const inputClass =
-    'w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition';
+    'w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition';
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
@@ -234,7 +260,7 @@ export default function ProfilePage() {
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="space-y-5">
+          <div className="space-y-8">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.lastName', 'Таны овог')}</label>
               <input
@@ -264,7 +290,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="space-y-5">
+          <div className="space-y-8">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.firstName', 'Өөрийн нэр')}</label>
               <input
@@ -400,7 +426,7 @@ export default function ProfilePage() {
         <div className="flex justify-end mt-6">
           <button
             type="submit"
-            disabled={isSaving}
+            disabled={isSaving || !hasChanges}
             className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSaving ? t('Profile.updating', 'Хадгалж байна...') : t('Profile.updateButton', 'Мэдээлэл шинэчлэх')}

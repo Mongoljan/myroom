@@ -10,6 +10,9 @@ interface SafeImageProps {
   className?: string;
   placeholder?: 'blur' | 'empty';
   blurDataURL?: string;
+  sizes?: string;
+  priority?: boolean;
+  loading?: 'eager' | 'lazy';
 }
 
 const MEDIA_BASE_URL =
@@ -31,7 +34,10 @@ export default function SafeImage({
   fill = false,
   className = '',
   placeholder,
-  blurDataURL
+  blurDataURL,
+  sizes,
+  priority,
+  loading,
 }: SafeImageProps) {
   const [hasError, setHasError] = useState(false);
 
@@ -54,6 +60,9 @@ export default function SafeImage({
       placeholder={placeholder}
       blurDataURL={blurDataURL}
       unoptimized={hasError} // Skip optimization for placeholder only
+      sizes={sizes}
+      priority={priority}
+      loading={loading}
     />
   );
 }

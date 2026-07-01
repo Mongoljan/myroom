@@ -21,6 +21,7 @@ import {
   getPendingPaymentRemainingSeconds,
 } from '@/utils/bookingPendingPayment';
 import { dedupeCustomerBookings } from '@/utils/customerBookings';
+import React from 'react';
 
 type StatusFilter = 'all' | 'pending' | 'confirmed' | 'canceled' | 'finished';
 
@@ -340,6 +341,17 @@ export default function BookingsPage() {
     const formatted = formatDate(date);
     return time ? `${formatted}, ${time}` : formatted;
   };
+  const tabCounts = React.useMemo(() => {
+    const counts: Record<string, number> = { all: bookings.length };
+    
+    bookings.forEach((booking) => {
+      if (booking.status) {
+        counts[booking.status] = (counts[booking.status] || 0) + 1;
+      }
+    });
+    
+    return counts;
+  }, [bookings]);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -356,7 +368,7 @@ export default function BookingsPage() {
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
             >
-              {tab.label}
+              {tab.label} ({tabCounts[tab.value] || 0})
             </button>
           ))}
         </div>

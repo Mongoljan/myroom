@@ -42,6 +42,7 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [allBookings, setAllBookings] = useState<CustomerBooking[]>([]);
   const [pendingBookings, setPendingBookings] = useState<CustomerBooking[]>([]);
+  const [seenBookingIds, setSeenBookingIds] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hotels, setHotels] = useState<Map<number, HotelInfo>>(new Map());
   const [hotelRatingsMap, setHotelRatingsMap] = useState<Map<number, HotelReviewsResponse>>(new Map());
@@ -76,6 +77,38 @@ export default function ReviewsPage() {
       }
     }
   };
+
+  useEffect(() => {
+    const stored = localStorage.getItem('seen_booking_ids');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        Promise.resolve().then(() => {
+          setSeenBookingIds(parsed);
+        });
+      } catch (e) {
+        console.error('Failed to parse seen_booking_ids:', e);
+      }
+    }
+  }, []);
+
+  const markBookingsAsSeen = (ids: number[]) => {
+    setSeenBookingIds((prev) => {
+      const newIds = ids.filter((id) => !prev.includes(id));
+      if (newIds.length === 0) return prev;
+      const next = [...prev, ...newIds];
+      localStorage.setItem('seen_booking_ids', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    if (activeTab === 'pending' && pendingBookings.length > 0) {
+      Promise.resolve().then(() => {
+        markBookingsAsSeen(pendingBookings.map((b) => b.id));
+      });
+    }
+  }, [activeTab, pendingBookings]);
 
   useEffect(() => {
     if (!token) return;
@@ -241,6 +274,8 @@ export default function ReviewsPage() {
     return getHotelForPending(booking)?.property_type === selectedCategory;
   });
 
+  const unseenCount = pendingBookings.filter((b) => !seenBookingIds.includes(b.id)).length;
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       {/* Header */}
@@ -270,9 +305,9 @@ export default function ReviewsPage() {
               }`}
             >
               {label}
-              {val === 'pending' && pendingBookings.length > 0 && (
-                <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-blue-600 text-white leading-none">
-                  {pendingBookings.length > 99 ? '99+' : pendingBookings.length}
+              {val === 'pending' && unseenCount > 0 && (
+                <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold rounded-full bg-blue-600 text-white leading-none">
+                  +{unseenCount}
                 </span>
               )}
             </button>
@@ -344,6 +379,9 @@ export default function ReviewsPage() {
                 const imageSrc = resolveHotelImageUrl(
                   hotel?.profile_image || booking?.hotel_image
                 );
+                const ratingData = hotelRatingsMap.get(review.hotel);
+                const avgRating = ratingData?.avg_rating ?? hotel?.avg_rating ?? null;
+                const totalReviews = ratingData?.total ?? hotel?.review_count ?? null;
 
                 return (
                   <div
@@ -466,22 +504,27 @@ export default function ReviewsPage() {
                           </p>
                         )}
 
-                        {(() => {
-                          const rd = hotelRatingsMap.get(review.hotel);
-                          const avg = rd?.avg_rating ?? 0;
-                          const total = rd?.total ?? 0;
-                          return (
-                            <div className="flex items-center gap-5 mt-4">
-                              <span className="bg-green-600 text-white text-xs font-medium px-1.5  rounded leading-none inline-flex items-center gap-1">
-                                <span className="text-sm font-bold">{avg.toFixed(1)}</span>
+                        {/* Stars + rating */}
+                        {avgRating != null && avgRating > 0 && (
+                          <div className="flex items-center gap-3 mt-4">
+                            <div className="flex items-center">
+                              <Star
+                                size={14}
+                                className="text-yellow-400 fill-yellow-400"
+                              />                       
+                              <span className="text-xs font-medium px-1 inline-flex items-baseline gap-0.5">
+                                <span className="text-sm font-bold">{avgRating.toFixed(1)}</span>
                                 <span>/5</span>
                               </span>
-                              <span className="text-xs mt-1 text-gray-500 dark:text-gray-400">
-                                {total} {t('reviews.comment', 'сэтгэгдэл')}
-                              </span>
                             </div>
-                          );
-                        })()}
+
+                            {totalReviews != null && (
+                              <span className="text-xs mt-0.5 text-gray-500 dark:text-gray-400">
+                                {totalReviews} {t('reviews.comment', 'сэтгэгдэл')}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {hotel && (

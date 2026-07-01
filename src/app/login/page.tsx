@@ -68,7 +68,7 @@ export default function LoginPage() {
             <h1 className="text-h1 font-bold text-gray-900 dark:text-white">{t('AuthLogin.title')}</h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
             {/* Email / Phone */}
             <div>
               <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">
@@ -87,39 +87,40 @@ export default function LoginPage() {
                 disabled={isLoading}
               />
             </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">{t('AuthLogin.passwordLabel')}</label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
-                  placeholder={t('AuthLogin.passwordPlaceholder')}
-                  disabled={isLoading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                  tabIndex={-1}
-                >
-                  {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
-                </button>
+            <div className="flex flex-col gap-1">
+              {/* Password */}
+              <div>
+                <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">{t('AuthLogin.passwordLabel')}</label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
+                    placeholder={t('AuthLogin.passwordPlaceholder')}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Forgot password */}
-            <div className="flex justify-end -mt-1">
-              <Link href="/login/forgot" className="text-caption text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                {t('AuthLogin.forgotPassword')}
-              </Link>
+              {/* Forgot password */}
+              <div className="flex justify-end -mt-1">
+                <Link href="/login/forgot" className="text-caption text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  {t('AuthLogin.forgotPassword')}
+                </Link>
+              </div>
             </div>
 
             {/* Submit */}

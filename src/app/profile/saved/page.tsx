@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import SafeImage from '@/components/common/SafeImage';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { Heart, Star, RefreshCw, Calendar, ChevronDown } from 'lucide-react';
+import { Heart, Star, RefreshCw, Calendar } from 'lucide-react';
 import { useWishlist } from '@/hooks/useCustomer';
 import { useAuth } from '@/contexts/AuthContext';
 import { WishlistItem } from '@/types/customer';
@@ -158,43 +159,35 @@ export default function SavedPage() {
 
         {/* Province tabs */}
         {provinces.length > 0 && (
-          <div className="flex gap-8 border-b border-gray-100 dark:border-gray-700 overflow-x-auto pb-px">
+          <div className="flex gap-1 overflow-x-auto pb-1">
+            
             {/* 'All' Button */}
             <button
               onClick={() => setActiveProvince('all')}
-              className={`flex items-center gap-2 px-1 py-3 text-sm font-semibold transition border-b-2 -mb-px whitespace-nowrap ${
+              className={`px-4 py-2 text-sm rounded-full whitespace-nowrap transition font-medium ${
                 activeProvince === 'all'
-                  ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border-transparent'
+                  ? 'bg-gray-800 text-white'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
-              Бүгд
-              {itemsMatchingCategory.length > 0 && (
-                <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-blue-600 text-white leading-none">
-                  {itemsMatchingCategory.length > 99 ? '99+' : itemsMatchingCategory.length}
-                </span>
-              )}
+              Бүгд ({itemsMatchingCategory.length > 99 ? '99+' : itemsMatchingCategory.length})
             </button>
 
             {/* Dynamic Province Buttons */}
             {provinces.map(province => {
               const count = itemsMatchingCategory.filter((i: WishlistItem) => i.hotel.location?.province_city === province).length;
+              
               return (
                 <button
                   key={province}
                   onClick={() => setActiveProvince(province)}
-                  className={`flex items-center gap-2 px-1 py-3 text-sm font-semibold transition border-b-2 -mb-px whitespace-nowrap ${
+                  className={`px-4 py-2 text-sm rounded-full whitespace-nowrap transition font-medium ${
                     activeProvince === province
-                      ? 'text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border-transparent'
+                      ? 'bg-gray-800 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
-                  {province}
-                  {count > 0 && (
-                    <span className="inline-flex items-center justify-center w-5 h-5 text-xs font-bold rounded-full bg-blue-600 text-white leading-none">
-                      {count > 99 ? '99+' : count}
-                    </span>
-                  )}
+                  {province} ({count > 99 ? '99+' : count})
                 </button>
               );
             })}
@@ -288,23 +281,25 @@ export default function SavedPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((item: WishlistItem) => {
+            {filtered.map((item: WishlistItem, index: number) => {
               const h = item.hotel;
               const isRemoving = removingIds.has(h.id);
               return (
                 <div key={item.id} className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow bg-white dark:bg-gray-800 flex flex-col">
                   {/* Image */}
                   <div className="relative h-48 bg-gray-100 dark:bg-gray-700 shrink-0">
-                    <Link href={getHotelLink(h.id)} className="block w-full h-full">
+                    <Link href={getHotelLink(h.id)} className="relative block w-full h-full">
                       {/* Gradient placeholder always behind */}
                       <div className="absolute inset-0 bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700" />
                       {/* Image overlays placeholder; hidden on error */}
                       {h.profile_image && (
-                        <img
-                          src={h.profile_image.startsWith('/') ? `https://dev.kacc.mn${h.profile_image}` : h.profile_image}
+                        <SafeImage
+                          src={h.profile_image}
                           alt={h.PropertyName}
-                          className="absolute inset-0 w-full h-full object-cover"
-                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          fill
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          priority={index < 3}
+                          className="object-cover"
                         />
                       )}
                     </Link>
@@ -329,21 +324,24 @@ export default function SavedPage() {
                     </p>
 
                     {/* Stars + rating */}
-                    <div className="flex items-center gap-2 mt-1">
-                      {h.star_rating != null && h.star_rating > 0 && (
-                        <div className="flex items-center gap-0.5">
-                          {Array.from({ length: h.star_rating }).map((_, i) => (
-                            <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                          ))}
+                    {h.avg_rating != null && h.avg_rating > 0 && (
+                      <div className="flex items-center gap-3 mt-4">
+                        <div className="flex items-center">
+                          <Star
+                            size={14}
+                            className="text-yellow-400 fill-yellow-400"
+                          />
+                          <span className="text-xs font-medium px-1 inline-flex items-baseline gap-0.5">
+                            <span className="text-sm font-bold">{h.avg_rating.toFixed(1)}</span>
+                            <span>/5</span>
+                          </span>
                         </div>
-                      )}
-                      {h.avg_rating != null && (
-                        <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                          {h.avg_rating}/5
-                          <span className="font-normal ml-1">{h.review_count} сэтгэгдэл</span>
+
+                        <span className="text-xs mt-0.5 text-gray-500 dark:text-gray-400">
+                          {h.review_count} {t('reviews.comment', 'сэтгэгдэл')}
                         </span>
-                      )}
-                    </div>
+                      </div>
+                    )}
 
                     {/* Price */}
                     {h.min_price != null && (

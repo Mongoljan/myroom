@@ -98,7 +98,7 @@ export default function SignupPage() {
             <h1 className="text-h1 font-bold text-gray-900 dark:text-white">{t('AuthSignup.signUpButton')}</h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-8">
             {/* Email / Phone */}
             <div>
               <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">
@@ -135,55 +135,55 @@ export default function SignupPage() {
                 </button>
               </div>
             </div>
-
-            {/* Confirm Password */}
-            <div>
-              <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">{t('AuthSignup.confirmPasswordLabel')}</label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
-                  placeholder={t('AuthSignup.confirmPasswordEnterPlaceholder')}
-                  disabled={isLoading}
-                />
-                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" tabIndex={-1}>
-                  {showConfirmPassword ? <Eye size={16} /> : <EyeOff size={16} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Password requirements */}
-            <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-2">
-                <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasMinLength ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
-                  {hasMinLength && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
+            <div className="flex flex-col gap-1">
+              {/* Confirm Password */}
+              <div>
+                <label className="block text-body-md font-medium text-gray-900 dark:text-gray-100 mb-1.5">{t('AuthSignup.confirmPasswordLabel')}</label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2.5 pr-11 text-body-md text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-700 transition"
+                    placeholder={t('AuthSignup.confirmPasswordEnterPlaceholder')}
+                    disabled={isLoading}
+                  />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" tabIndex={-1}>
+                    {showConfirmPassword ? <Eye size={16} /> : <EyeOff size={16} />}
+                  </button>
                 </div>
-                <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordMinCharsRule')}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasComplexity ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
-                  {hasComplexity && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
-                </div>
-                <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordComplexityRule')}</span>
-              </div>
-              {confirmPassword.length > 0 && (
+
+              {/* Password requirements */}
+              <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-2">
-                  <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${passwordsMatch ? 'border-primary-600 bg-primary-600' : 'border-red-400 bg-red-400'}`}>
-                    {passwordsMatch
-                      ? <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                      : <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
-                    }
+                  <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasMinLength ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
+                    {hasMinLength && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
                   </div>
-                  <span className={`text-caption ${passwordsMatch ? 'text-gray-500 dark:text-gray-400' : 'text-red-500'}`}>
-                    {passwordsMatch ? t('AuthSignup.passwordMatchOk') : t('AuthSignup.passwordMismatch')}
-                  </span>
+                  <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordMinCharsRule')}</span>
                 </div>
-              )}
+                <div className="flex items-center gap-2">
+                  <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasComplexity ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
+                    {hasComplexity && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
+                  </div>
+                  <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordComplexityRule')}</span>
+                </div>
+                {confirmPassword.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${passwordsMatch ? 'border-primary-600 bg-primary-600' : 'border-red-400 bg-red-400'}`}>
+                      {passwordsMatch
+                        ? <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                        : <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                      }
+                    </div>
+                    <span className={`text-caption ${passwordsMatch ? 'text-gray-500 dark:text-gray-400' : 'text-red-500'}`}>
+                      {passwordsMatch ? t('AuthSignup.passwordMatchOk') : t('AuthSignup.passwordMismatch')}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-
             {/* Terms checkbox */}
             <div className="flex items-start gap-2.5">
               <input
