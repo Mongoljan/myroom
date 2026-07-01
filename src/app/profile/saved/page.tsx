@@ -201,64 +201,60 @@ export default function SavedPage() {
           </div>
         )}
       </div>
-      
-      {/* Filter Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-2 items-center m-6" style={{ overflow: 'visible' }}>
-        
+     {/* Filter Bar */}
+      <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-2 items-center m-6" style={{ overflow: 'visible' }}>
+
         {/* Date Picker */}
-        <div ref={dateContainerRef} className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl px-4 py-2 flex items-center gap-4 cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 transition relative h-11">
+        <div ref={dateContainerRef} className="w-full md:w-auto border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl px-4 py-2 flex items-center gap-4 cursor-pointer hover:border-gray-300 dark:hover:border-gray-600 transition relative h-11">
           <Calendar className="w-4 h-4 shrink-0" />
-          <div className="flex-1 min-w-0 text-sm font-medium overflow-hidden">
-            <div className="relative z-[1] w-full truncate whitespace-nowrap">
-              <DateRangePicker
-                checkIn={checkIn}
-                checkOut={checkOut}
-                onDateChange={(newCheckIn, newCheckOut) => {
-                  updateUrlParams({ check_in: newCheckIn, check_out: newCheckOut });
-                }}
-                placeholder={t('search.selectDates', 'Орох - Гарах')}
-                minimal={true}
-                anchorRef={dateContainerRef}
-              />
-            </div>
+          <div className="text-sm font-medium whitespace-nowrap">
+            <DateRangePicker
+              checkIn={checkIn}
+              checkOut={checkOut}
+              onDateChange={(newCheckIn, newCheckOut) => {
+                updateUrlParams({ check_in: newCheckIn, check_out: newCheckOut });
+              }}
+              placeholder={t('search.selectDates', 'Орох - Гарах')}
+              minimal={true}
+              anchorRef={dateContainerRef}
+            />
           </div>
         </div>
 
         {/* Guest Selector */}
-        <div className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl flex items-center hover:border-gray-300 dark:hover:border-gray-600 transition relative z-[10] px-4 py-2 h-11">
+        <div className="w-full md:w-auto border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl flex items-center hover:border-gray-300 dark:hover:border-gray-600 transition relative z-[10] px-4 py-2 h-11">
           <CustomGuestSelector
             adults={adults}
             childrenCount={children}
             rooms={rooms}
             onGuestChange={handleGuestChange}
-            className="w-full relative z-[10]"
+            className="w-auto whitespace-nowrap relative z-[10]"
             compact={true}
-            hideLabel={true}                   
+            hideLabel={true}
             textSizeClass="text-sm font-medium"
           />
         </div>
 
         {/* Property Type Dropdown */}
-        <div ref={categoryRef} className="relative z-[1] md:ml-6"> 
+        <div ref={categoryRef} className="relative z-[1] w-full md:w-auto md:ml-auto">
           <button
             type="button"
             onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-            className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl px-4 py-2 flex items-center justify-between gap-2 hover:border-gray-300 dark:hover:border-gray-600 transition focus:outline-none h-11"
+            className="w-full md:w-auto border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-xl px-4 py-2 flex items-center gap-2 hover:border-gray-300 dark:hover:border-gray-600 transition focus:outline-none h-11"
           >
-            <div className="flex-1 text-left min-w-0">
-                <div className="text-[11px] text-gray-400 dark:text-gray-500 truncate leading-tight">
-                  {t('search.propertyTypeLabel', 'Төрлөөр ангилах')}
-                </div>
-              <div className="text-sm font-medium text-gray-900 dark:text-white truncate leading-tight">
+            <div className="flex items-baseline gap-2 whitespace-nowrap">
+              <span className="text-sm text-gray-400 dark:text-gray-500 leading-tight">
+                {t('search.propertyTypeLabel', 'Төрлөөр ангилах')}:
+              </span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white leading-tight">
                 {PROPERTY_CATEGORIES.find(c => c.id === selectedCategory)?.name || t('reviews.categoryAll', 'Бүгд')}
-              </div>
+              </span>
             </div>
-            <ChevronDown className={`w-5 h-5 text-gray-400 dark:text-gray-500 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {/* Dropdown Menu */}
           {isCategoryOpen && (
-            <div className="absolute right-0 mt-1.5 w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl z-50 py-1">
+            <div className="absolute right-0 mt-1.5 min-w-full w-max bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl z-50 py-1">
               {PROPERTY_CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
@@ -267,7 +263,7 @@ export default function SavedPage() {
                     updateUrlParams({ property_type: cat.id });
                     setIsCategoryOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-2 text-sm transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
+                  className={`w-full text-left px-4 py-2 text-sm whitespace-nowrap transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
                     selectedCategory === cat.id
                       ? 'text-blue-600 dark:text-blue-400 font-semibold bg-blue-50/50 dark:bg-blue-900/10'
                       : 'text-gray-700 dark:text-gray-300'
