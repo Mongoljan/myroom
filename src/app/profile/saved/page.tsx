@@ -247,7 +247,7 @@ export default function SavedPage() {
 
           {/* Dropdown Menu */}
           {isCategoryOpen && (
-            <div className="absolute right-0 mt-1.5 min-w-full w-max bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl z-50 py-1">
+            <div className="absolute right-0 mt-1.5 w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-xl z-50 py-1">
               {PROPERTY_CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}

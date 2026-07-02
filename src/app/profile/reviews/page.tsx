@@ -8,8 +8,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { CustomerService } from '@/services/customerApi';
 import { CustomerBooking, Review, HotelReviewsResponse } from '@/types/customer';
 import { HotelService, HotelInfo } from '@/services/hotelApi';
+import { ApiService } from '@/services/api';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
 import { ReviewDrawer } from '@/components/hotels/ReviewDrawer';
+import { formatHotelLocation } from '@/utils/formatHotelLocation';
 
 type ReviewTab = 'my' | 'pending';
 
@@ -46,6 +48,7 @@ export default function ReviewsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [hotels, setHotels] = useState<Map<number, HotelInfo>>(new Map());
   const [hotelRatingsMap, setHotelRatingsMap] = useState<Map<number, HotelReviewsResponse>>(new Map());
+  const [hotelLocationsMap, setHotelLocationsMap] = useState<Map<number, string>>(new Map());
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
 
   // Write review modal
@@ -133,20 +136,43 @@ export default function ReviewsPage() {
         setPendingBookings(pendingList);
 
         // Fetch hotel info (for names, images, location)
+        const localHotelMap = new Map<number, HotelInfo>();
         try {
           const allHotels = await HotelService.getApprovedHotels();
-          const hotelMap = new Map<number, HotelInfo>();
           allHotels.forEach((hotel: HotelInfo) => {
-            hotelMap.set(hotel.pk, hotel);
+            localHotelMap.set(hotel.pk, hotel);
           });
-          setHotels(hotelMap);
+          setHotels(localHotelMap);
         } catch {
           // Continue without hotel info
         }
 
+        const findHotelInMap = (name?: string): HotelInfo | undefined => {
+          if (!name) return undefined;
+          const nameLower = name.toLowerCase();
+          return Array.from(localHotelMap.values()).find(
+            (h) =>
+              h.PropertyName.toLowerCase() === nameLower ||
+              h.PropertyName.toLowerCase().includes(nameLower) ||
+              nameLower.includes(h.PropertyName.toLowerCase())
+          );
+        };
+
         // Fetch real avg_rating + review count for each hotel the user reviewed
         // Uses the same API the hotel page uses: GET /reviews/?hotel_id={id}
         const uniqueHotelIds = [...new Set(revRes.reviews.map((r) => r.hotel).filter(Boolean))];
+
+        // Collect IDs for pending bookings — resolve via name-match if booking.hotel is missing
+        const pendingHotelIds = bookRes.bookings
+          .filter((b) => b.status === 'finished' && !b.has_review)
+          .map((b) => {
+            if (b.hotel && b.hotel > 0) return b.hotel;
+            return findHotelInMap(b.hotel_name)?.pk ?? null;
+          })
+          .filter((id): id is number => id !== null && id > 0);
+
+        const allUniqueIds = [...new Set([...uniqueHotelIds, ...pendingHotelIds])];
+
         if (uniqueHotelIds.length > 0) {
           const ratingsEntries = await Promise.all(
             uniqueHotelIds.map(async (id) => {
@@ -163,6 +189,26 @@ export default function ReviewsPage() {
             if (entry) ratingsMap.set(entry[0], entry[1]);
           });
           setHotelRatingsMap(ratingsMap);
+        }
+
+        // Fetch structured location for each hotel (same approach as bookings page)
+        if (allUniqueIds.length > 0) {
+          const locationEntries = await Promise.all(
+            allUniqueIds.map(async (id) => {
+              try {
+                const details = await ApiService.getHotelDetails(id).catch(() => null);
+                const formatted = formatHotelLocation(details?.location);
+                return [id, formatted] as [number, string];
+              } catch {
+                return null;
+              }
+            })
+          );
+          const locMap = new Map<number, string>();
+          locationEntries.forEach((entry) => {
+            if (entry && entry[1]) locMap.set(entry[0], entry[1]);
+          });
+          setHotelLocationsMap(locMap);
         }
       } catch {
         // ignore fetch errors
@@ -497,10 +543,10 @@ export default function ReviewsPage() {
                           </h3>
                         )}
 
-                        {hotel?.location && (
+                        {(hotelLocationsMap.get(review.hotel) || hotel?.location) && (
                           <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate flex items-center gap-1">
                             <MapPin className="w-3 h-3 shrink-0" />
-                            {hotel.location}
+                            {hotelLocationsMap.get(review.hotel) || hotel?.location}
                           </p>
                         )}
 
@@ -655,10 +701,10 @@ export default function ReviewsPage() {
                           )}
                         </h3>
 
-                        {hotel?.location && (
+                        {(hotelLocationsMap.get(hotelId as number) || hotel?.location) && (
                           <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 truncate flex items-center gap-1">
                             <MapPin className="w-3 h-3 shrink-0" />
-                            {hotel.location}
+                            {hotelLocationsMap.get(hotelId as number) || hotel?.location}
                           </p>
                         )}
 

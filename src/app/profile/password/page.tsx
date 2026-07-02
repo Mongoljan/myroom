@@ -147,40 +147,43 @@ export default function PasswordPage() {
             </div>
           </div>
 
-          {/* Password requirements */}
-          {(newPassword.length > 0 || confirmPassword.length > 0) && (
-            <div className="flex flex-col gap-0.5">
-              <div className="flex items-center gap-2">
-                <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasMinLength ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
-                  {hasMinLength && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
-                </div>
-                <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordMinCharsRule')}</span>
+        {/* Password requirements */}
+          <div className="flex flex-col gap-0.5">
+            {/* Minimum Length Requirement */}
+            <div className="flex items-center gap-2">
+              <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasMinLength ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
+                {hasMinLength && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
               </div>
-              <div className="flex items-center gap-2">
-                <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasComplexity ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
-                  {hasComplexity && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
-                </div>
-                <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordComplexityRule')}</span>
-              </div>
-              {confirmPassword.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${passwordsMatch ? 'border-primary-600 bg-primary-600' : 'border-red-400 bg-red-400'}`}>
-                    {passwordsMatch
-                      ? <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                      : <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
-                    }
-                  </div>
-                  <span className={`text-caption ${passwordsMatch ? 'text-gray-500 dark:text-gray-400' : 'text-red-500'}`}>
-                    {passwordsMatch ? t('AuthSignup.passwordMatchOk') : t('AuthSignup.passwordMismatch')}
-                  </span>
-                </div>
-              )}
+              <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordMinCharsRule')}</span>
             </div>
-          )}
+
+            {/* Complexity Requirement */}
+            <div className="flex items-center gap-2">
+              <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${hasComplexity ? 'border-primary-600 bg-primary-600' : 'border-gray-300 dark:border-gray-600'}`}>
+                {hasComplexity && <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>}
+              </div>
+              <span className="text-caption text-gray-500 dark:text-gray-400">{t('AuthSignup.passwordComplexityRule')}</span>
+            </div>
+
+            {/* Match Check */}
+            {formData.confirm_password?.length > 0 && (
+              <div className="flex items-center gap-2">
+                <div className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${passwordsMatch ? 'border-primary-600 bg-primary-600' : 'border-red-400 bg-red-400'}`}>
+                  {passwordsMatch
+                    ? <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
+                    : <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+                  }
+                </div>
+                <span className={`text-caption ${passwordsMatch ? 'text-gray-500 dark:text-gray-400' : 'text-red-500'}`}>
+                  {passwordsMatch ? t('AuthSignup.passwordMatchOk') : t('AuthSignup.passwordMismatch')}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
         <button
           type="submit"
-          disabled={isSaving}
+          disabled={isSaving || !hasMinLength || !hasComplexity || !passwordsMatch}
           className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50"
         >
           {isSaving ? t('ProfilePassword.changing', 'Солиж байна...') : t('ProfilePassword.changeButton', 'Солих')}

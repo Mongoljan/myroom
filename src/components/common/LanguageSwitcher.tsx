@@ -1,12 +1,23 @@
 "use client";
 import { Globe } from 'lucide-react';
 import { useHydratedTranslation } from '@/hooks/useHydratedTranslation';
+import { useAuth } from '@/contexts/AuthContext';
+import { updateCustomerSettings, clearSettingsCache } from '@/utils/customerSettings';
 
 export default function LanguageSwitcher() {
   const { i18n, mounted } = useHydratedTranslation();
+  const { token } = useAuth();
 
-  const toggle = () => {
-    i18n.changeLanguage(i18n.language === 'mn' ? 'en' : 'mn');
+  const toggle = async () => {
+    const nextLang = i18n.language === 'mn' ? 'en' : 'mn';
+    // Update the UI immediately
+    i18n.changeLanguage(nextLang);
+
+    // If the user is logged in, persist the preference to the backend
+    if (token) {
+      clearSettingsCache(); // invalidate cache so Settings page re-reads fresh data
+      await updateCustomerSettings(token, { language: nextLang as 'mn' | 'en' | 'zh' });
+    }
   };
 
   return (

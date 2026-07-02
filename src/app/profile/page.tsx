@@ -240,27 +240,36 @@ export default function ProfilePage() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
-      <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700">
-        <h1 className="text-h2 font-semibold text-gray-900 dark:text-white">{t('Profile.title', 'Таны профайл')}</h1>
-        {lastModified && (
-          <p className="text-sm text-gray-400 mt-0.5">{t('Profile.lastModified', 'Сүүлд өөрчилсөн')}: {lastModified}</p>
-        )}
-      </div>
-
-      {error && (
-        <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
-          {error}
-        </div>
-      )}
-      {success && (
-        <div className="mb-4 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-600">
-          {success}
-        </div>
-      )}
-
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="space-y-8">
+        <div className="mb-6 pb-4 border-b border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-h2 font-semibold text-gray-900 dark:text-white">{t('Profile.title', 'Таны профайл')}</h1>
+            {lastModified && (
+              <p className="text-sm text-gray-400 mt-0.5">{t('Profile.lastModified', 'Сүүлд өөрчилсөн')}: {lastModified}</p>
+            )}
+          </div>
+          <button
+            type="submit"
+            disabled={isSaving || !hasChanges}
+            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+          >
+            {isSaving ? t('Profile.updating', 'Хадгалж байна...') : t('Profile.updateButton', 'Мэдээлэл шинэчлэх')}
+          </button>
+        </div>
+
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-600">
+            {success}
+          </div>
+        )}
+      
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-20">
+          <div className="space-y-6">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.lastName', 'Таны овог')}</label>
               <input
@@ -290,7 +299,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-6">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.firstName', 'Өөрийн нэр')}</label>
               <input
@@ -320,26 +329,33 @@ export default function ProfilePage() {
                 <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">▾</span>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">{t('Profile.invoiceLink', 'И-баримт холбох')}</label>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1.5">{t('Profile.individual', 'Хувь хүн')}</p>
-                  <input
-                    type="text"
-                    name="invoice_individual"
-                    value={formData.invoice_individual}
-                    onChange={(e) => {
-                      const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
-                      setFormData((prev) => ({ ...prev, invoice_individual: digits }));
-                    }}
-                    placeholder="00000000"
-                    maxLength={8}
-                    inputMode="numeric"
-                    className={inputClass}
-                  />
-                </div>
+
+        <label className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-2 mt-10">{t('Profile.invoiceLink', 'И-баримт холбох')}</label>
+        {/* Full-width divider line */}
+        <div className="h-px bg-gray-200 dark:bg-gray-700 my-2"></div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-20">
+          <div>
+            <div className="space-y-6">
+              <div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1.5">{t('Profile.individual', 'Хувь хүн')}</p>
+                    <input
+                      type="text"
+                      name="invoice_individual"
+                      value={formData.invoice_individual}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 8);
+                        setFormData((prev) => ({ ...prev, invoice_individual: digits }));
+                      }}
+                      placeholder="00000000"
+                      maxLength={8}
+                      inputMode="numeric"
+                      className={inputClass}
+                    />
+                  </div>
 
                 <div>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1.5">{t('Profile.business', 'Хувь хүн /бизнес эрхлэгч/')}</p>
@@ -419,18 +435,7 @@ export default function ProfilePage() {
                   )}
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-end mt-6">
-          <button
-            type="submit"
-            disabled={isSaving || !hasChanges}
-            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isSaving ? t('Profile.updating', 'Хадгалж байна...') : t('Profile.updateButton', 'Мэдээлэл шинэчлэх')}
-          </button>
+            </div>       
         </div>
       </form>
     </div>

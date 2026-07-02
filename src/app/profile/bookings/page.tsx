@@ -547,19 +547,6 @@ export default function BookingsPage() {
                       </button>
                     )}
 
-                    {(booking.status === 'finished' || booking.status === 'canceled') && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteTarget(booking);
-                          setDeleteError('');
-                        }}
-                        className="px-3 py-1.5 border border-red-300 dark:border-red-700 rounded-lg text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
-                      >
-                        {t('profileBookings.delete')}
-                      </button>
-                    )}
-
                     {booking.status === 'canceled' && hotelId && (
                       <Link
                         href={`/hotel/${hotelId}`}
@@ -576,6 +563,19 @@ export default function BookingsPage() {
                         className="px-3 py-1.5 border border-red-300 dark:border-red-700 rounded-lg text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
                       >
                         {t('profileBookings.cancel')}
+                      </button>
+                    )}
+
+                    {(booking.status === 'finished' || booking.status === 'canceled') && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDeleteTarget(booking);
+                          setDeleteError('');
+                        }}
+                        className="px-3 py-1.5 border border-red-300 dark:border-red-700 rounded-lg text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                      >
+                        {t('profileBookings.delete')}
                       </button>
                     )}
                   </div>

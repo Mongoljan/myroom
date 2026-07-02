@@ -67,6 +67,24 @@ export default function DatePicker({ value, onChange, className = '', disabled =
 
   return (
     <div className={`flex gap-2 ${className}`}>
+      
+      {/* Year */}
+      <div className="relative w-28">
+        <select
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          disabled={disabled}
+          className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition appearance-none bg-white dark:bg-gray-700 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
+        >
+          <option value="">{t('datePicker.year', 'Year')}</option>
+          {years.map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
+        </select>
+        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">▾</span>
+      </div>
       {/* Month */}
       <div className="relative flex-1">
         <select
@@ -97,24 +115,6 @@ export default function DatePicker({ value, onChange, className = '', disabled =
           {days.map((d) => (
             <option key={d} value={d}>
               {d}
-            </option>
-          ))}
-        </select>
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">▾</span>
-      </div>
-
-      {/* Year */}
-      <div className="relative w-28">
-        <select
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-          disabled={disabled}
-          className="w-full px-3.5 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition appearance-none bg-white dark:bg-gray-700 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-500"
-        >
-          <option value="">{t('datePicker.year', 'Year')}</option>
-          {years.map((y) => (
-            <option key={y} value={y}>
-              {y}
             </option>
           ))}
         </select>

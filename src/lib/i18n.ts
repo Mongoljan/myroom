@@ -2256,7 +2256,7 @@ const resources = {
         lastNamePlaceholder: "Овог",
         firstNamePlaceholder: "Нэр",
         updating: "Хадгалж байна...",
-        updateButton: "Мэдээлэл шинэчлэх"
+        updateButton: "Хадгалах",
       },
       ProfilePassword: {
         title: "Нууц үг солих",

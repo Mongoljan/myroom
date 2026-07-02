@@ -298,8 +298,8 @@ export default function CustomGuestSelector({
 
               {/* Per-child age inputs */}
               {localChildren > 0 && (
-                <div className="space-y-2 pt-1">
-                  <p className={`text-xs leading-snug ${showAgeErrors && childAges.some(a => a === -1) ? 'text-red-600 dark:text-red-400 font-medium' : 'text-amber-600 dark:text-amber-400'}`}>
+                <div className="space-y-2 pt-1 w-full">
+                  <p className={`text-xs leading-snug text-justify ${showAgeErrors && childAges.some(a => a === -1) ? 'text-red-600 dark:text-red-400 font-medium' : 'text-amber-600 dark:text-amber-400'}`}>
                     Өрөөний үнийг үнэн зөв тооцоолоход шаардлагатай тул хүүхэд бүрийн насыг үнэн зөв оруулна уу.
                     {showAgeErrors && childAges.some(a => a === -1) && ' Бүх хүүхэдийн насыг сонгоно уу.'}
                   </p>

@@ -8,6 +8,7 @@ import { useCustomerSettings } from '@/hooks/useCustomer';
 import { CheckCircle, RefreshCw, AlertCircle, X } from 'lucide-react';
 import { CustomerSettingsUpdateRequest, Currency, Language } from '@/types/customer';
 import { CustomerService } from '@/services/customerApi';
+import { clearSettingsCache } from '@/utils/customerSettings';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -248,6 +249,13 @@ export default function SettingsPage() {
   const { token } = useAuth();
   const { t, i18n } = useHydratedTranslation();
 
+  // Clear cache on every mount so we always get fresh data from the server.
+  // This is important so that language changes made via the header switcher
+  // (which now also writes to the backend) are immediately visible here.
+  useEffect(() => {
+    clearSettingsCache();
+  }, []);
+
   const { settings, loading, updateSettings: updateSettingsHook } = useCustomerSettings(token || undefined);
 
   const [localSettings, setLocalSettings] = useState(settings);
@@ -262,6 +270,7 @@ export default function SettingsPage() {
   const committedRef = useRef(settings);
   // Detects the loading true→false transition so we only sync real server data once
   const prevLoadingRef = useRef(false);
+  // Reset to false on every mount so re-navigation to this page always re-syncs from server
   const initializedRef = useRef(false);
 
   // Sync localSettings from server ONCE — only when the fetch finishes for the first time.
@@ -364,7 +373,7 @@ export default function SettingsPage() {
         {/* Header */}
         <div className="px-6 py-5">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-medium text-gray-900 dark:text-gray-100">
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {t('settings.title')}
             </h1>
 
@@ -394,7 +403,7 @@ export default function SettingsPage() {
 
         {/* Language & Currency */}
         <div className="px-6 py-5">
-          <h2 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-4">
+          <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
             {t('settings.languageCurrency')}
           </h2>
           <div className="space-y-4">
@@ -450,7 +459,7 @@ export default function SettingsPage() {
 
         {/* Email Settings */}
         <div className="px-6 py-5">
-          <h2 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-4">
+          <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
             {t('settings.emailSettings')}
           </h2>
           <div className="space-y-4">
@@ -495,7 +504,7 @@ export default function SettingsPage() {
 
         {/* Notifications */}
         <div className="px-6 py-5">
-          <h2 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-4">
+          <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
             {t('settings.notifications')}
           </h2>
           <div className="space-y-4">
@@ -522,7 +531,7 @@ export default function SettingsPage() {
 
         {/* Delete Account */}
         <div className="px-6 py-5">
-          <h2 className="text-base font-medium text-gray-700 dark:text-gray-300 mb-4">
+          <h2 className="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4">
             {t('settings.deleteAccount')}
           </h2>
           <div className="h-px bg-gray-200 dark:bg-gray-700 mb-4" />
